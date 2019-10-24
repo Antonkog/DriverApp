@@ -1,0 +1,38 @@
+=============================================================================
+21.10.2019
+Create Driver App Project
+-----------------------------------------------------------------------------
+
+Create buildSrc Module
+
+
+Icons unter: W:\Marketing\Icons\Apps\app-icon-drive
+
+
+App Name definiert in (res/values/app.xml)
+------------------------------------------
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name" translatable="false">Driver App</string>
+
+  <!-- This String is used in the User Agent -->
+  <string name="useragent_appname" translatable="false">ABONA Driver App</string>
+</resources>
+
+Neue Ordner im Projekt Ordner erstellt:
+---------------------------------------
+
+doc
+quality
+tools
+
+
+Name...............: Driver App
+Package Name.......: com.abona_erp.driver.app
+Save location......: C:\Users\Murat\Desktop\ABONA-DEV\Project\App\DriverApp
+Language...........: Java
+Minimum API level..: API 23: Android 6.0 (Marshmallow)
+
+=============================================================================
+End of file

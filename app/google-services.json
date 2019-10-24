@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "724562515953",
+    "firebase_url": "https://abona-driverapp.firebaseio.com",
+    "project_id": "abona-driverapp",
+    "storage_bucket": "abona-driverapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:724562515953:android:70d4460e19826ed13b9650",
+        "android_client_info": {
+          "package_name": "com.abona_erp.driver.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "724562515953-e7hvik18pfg1c3i087gc82pj48jvif6g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBB3yAxZxTOR8tWBFgUklf8h1wZrKV6nvg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "724562515953-e7hvik18pfg1c3i087gc82pj48jvif6g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
