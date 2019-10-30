@@ -1,8 +1,8 @@
 <resources>
-  <string name="tab_text_pending">Pending</string>
-  <string name="tab_text_running">Running</string>
-  <string name="tab_text_cmr">CMR</string>
-  <string name="tab_text_completed">Completed</string>
+  <string name="tab_text_pending">Pending\u0020</string>
+  <string name="tab_text_running">Running\u0020</string>
+  <string name="tab_text_cmr">CMR\u0020</string>
+  <string name="tab_text_completed">Completed\u0020</string>
 
   <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
   <string name="notification_channel_id">default</string>

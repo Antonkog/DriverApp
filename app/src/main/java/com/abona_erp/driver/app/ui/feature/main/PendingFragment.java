@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -12,9 +13,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.repository.NotifyRepository;
+import com.abona_erp.driver.app.ui.event.MapEvent;
+import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 
 import java.util.List;
 
@@ -38,10 +42,11 @@ public class PendingFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View root = inflater.inflate(R.layout.fragment_pending, container, false);
     
-    listView = (RecyclerView)root.findViewById(R.id.lv_pending_notify);
+    listView = (RecyclerView) root.findViewById(R.id.lv_pending_notify);
   
     LinearLayoutManager recyclerLayoutManager =
-      new LinearLayoutManager(getContext().getApplicationContext());
+      new LinearLayoutManager(getContext().getApplicationContext(),
+        RecyclerView.VERTICAL, false);
     listView.setLayoutManager(recyclerLayoutManager);
   
     DividerItemDecoration dividerItemDecoration =
@@ -49,7 +54,7 @@ public class PendingFragment extends Fragment {
         recyclerLayoutManager.getOrientation());
     listView.addItemDecoration(dividerItemDecoration);
   
-    NotifyRepository.getNotifyDatabase(getContext()).notifyDao().getNotifies()
+    NotifyRepository.getNotifyDatabase(getContext()).notifyDao().getPendingNotifies()
       .observe(this, new Observer<List<Notify>>() {
         @Override
         public void onChanged(@Nullable List<Notify> notifies) {
@@ -57,12 +62,45 @@ public class PendingFragment extends Fragment {
             return;
           }
           
-          NotifyViewAdapter viewAdapter = new NotifyViewAdapter(notifies,
-            getContext());
+          //listView.addItemDecoration(getSectionCallback(notifies));
+          
+          NotifyViewAdapter viewAdapter = new NotifyViewAdapter(notifies, getContext());
           listView.setAdapter(viewAdapter);
+          viewAdapter.setOnItemListener(new NotifyViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Notify notify) {
+              App.eventBus.post(new TaskDetailEvent(notify));
+            }
+            
+            @Override
+            public void onMapClick() {
+              App.eventBus.post(new MapEvent());
+            }
+          });
         }
       });
     
     return root;
   }
+  
+  /*
+  private RecyclerSectionItemDecoration.SectionCallback getSectionCallback(final List<Notify> notifyList) {
+    return new RecyclerSectionItemDecoration.SectionCallback() {
+    
+      @Nullable
+      @Override
+      public SectionInfo getSectionHeader(int position) {
+        Notify notify = notifyList.get(position);
+        
+        return new SectionInfo(notify.getCreatedAt().toString(), "TEST", AppCompatResources.getDrawable(getContext(), R.drawable.ic_circle));
+      }
+      
+      @Override
+      public boolean isSection(int position) {
+        return !notifyList.get(position).getCreatedAt().toString().equals(notifyList.get(position - 1).getCreatedAt().toString());
+      }
+    };
+  }
+ 
+   */
 }

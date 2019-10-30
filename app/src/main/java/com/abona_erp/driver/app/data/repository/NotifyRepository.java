@@ -29,10 +29,66 @@ public class NotifyRepository {
     return notifyDatabase;
   }
   
-  public LiveData<List<Notify>> getNotifies(Context context) {
+  public LiveData<List<Notify>> getPendingNotifies(Context context) {
     if (notifyDao == null) {
       notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
     }
-    return notifyDao.getNotifies();
+    return notifyDao.getPendingNotifies();
+  }
+  
+  public LiveData<List<Notify>> getRunningNotifies(Context context) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    return notifyDao.getRunningNotifies();
+  }
+  
+  public LiveData<List<Notify>> getCompletedNotifies(Context context) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    return notifyDao.getCompletedNotifies();
+  }
+  
+  public void updateNotify(Context context, Notify notify) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    notifyDao.updateNotify(notify);
+  }
+  
+  public LiveData<Integer> getNotificationCount(Context context) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    return notifyDao.getNotificationCount();
+  }
+  
+  public LiveData<Integer> getPendingTaskCount(Context context) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    return notifyDao.getPendingTaskCount();
+  }
+  
+  public LiveData<Integer> getRunningTaskCount(Context context) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    return notifyDao.getRunningTaskCount();
+  }
+  
+  public LiveData<Integer> getCMRTaskCount(Context context) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    return notifyDao.getCMRTaskCount();
+  }
+  
+  public LiveData<Integer> getCompletedTaskCount(Context context) {
+    if (notifyDao == null) {
+      notifyDao = NotifyRepository.getNotifyDatabase(context).notifyDao();
+    }
+    return notifyDao.getCompletedTaskCount();
   }
 }

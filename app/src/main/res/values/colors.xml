@@ -4,5 +4,13 @@
   <color name="colorPrimaryDark">#1F1C2C</color>
   <color name="colorAccent">#D81B60</color>
 
+  <color name="clrAbona">#E30613</color>
+  <color name="clrFont">#1F1C2C</color>
+  <color name="clrWhite">#FFF</color>
+
   <color name="timeline_path_new_task">#27ae60</color>
+
+  <color name="clrListViewHeader">#C3CFE2</color>
+  <color name="clrWarningLight">#ff4757</color>
+  <color name="clrWarningDark">#ED4C67</color>
 </resources>

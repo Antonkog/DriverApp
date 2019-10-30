@@ -7,8 +7,13 @@ import android.util.Log;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.repository.NotifyRepository;
+import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.app.util.DateConverter;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -47,9 +52,21 @@ public class NotifyJobService extends JobService {
   }
   
   private Notify getNotifyObjectFromBundle(Bundle bundle) {
+    String rawJson = bundle.getString("data");
+  
     Notify notify = new Notify();
-    notify.setData(bundle.getString("data"));
-    notify.setSelected(false);
+    notify.setData(rawJson);
+    notify.setRead(false);
+    notify.setCreatedAt(AppUtils.getCurrentDateTime());
+    notify.setModifiedAt(AppUtils.getCurrentDateTime());
+    
+    try {
+      JSONObject jsonRoot = new JSONObject(rawJson);
+      JSONObject jsonTaskItem = jsonRoot.getJSONObject("TaskItem");
+      notify.setStatus(jsonTaskItem.getInt("Status"));
+      notify.setTaskDueFinish(DateConverter.fromTimestamp(jsonTaskItem.getString("TaskDueDateFinish")));
+    } catch (JSONException ignore) {
+    }
     
     return notify;
   }

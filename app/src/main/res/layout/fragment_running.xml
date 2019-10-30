@@ -5,4 +5,10 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/lv_running_notify"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    />
+
 </LinearLayout>

@@ -5,12 +5,89 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:background="@drawable/main_menu_background"
+  android:layout_margin="@dimen/spacing_medium"
   android:minHeight="80dp">
 
   <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
+    <LinearLayout
+      android:id="@+id/ll_header_background"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/spacing_medium"
+      android:background="@color/clrListViewHeader">
+
+      <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_warning_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/spacing_xsmall"
+        android:src="@drawable/ic_danger"
+        android:tint="@color/clrWarningLight"
+        android:visibility="gone"
+        />
+
+      <View
+        android:layout_width="@dimen/spacing_large"
+        android:layout_height="0dp"
+        />
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp"
+          android:text="Task Finish"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_task_finish"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="14sp"
+          android:textColor="@color/clrFont"
+          android:text="29.10.2019 10:33:33"
+          />
+
+      </LinearLayout>
+
+      <View
+        android:layout_width="@dimen/spacing_xxxlarge"
+        android:layout_height="0dp"
+        />
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp"
+          android:text="Due in"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_due_in"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="14sp"
+          android:textColor="@color/clrFont"
+          android:text="1d 20h 30min"
+          />
+
+      </LinearLayout>
+
+    </LinearLayout>
 
     <LinearLayout
       android:layout_width="match_parent"
@@ -22,73 +99,306 @@
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_marginLeft="@dimen/spacing_medium"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:layout_marginRight="@dimen/spacing_medium"
         android:layout_weight="1">
-
-        <com.abona_erp.driver.app.ui.widget.AsapTextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginLeft="@dimen/spacing_xmedium"
-          android:layout_marginStart="@dimen/spacing_xmedium"
-          android:layout_marginTop="@dimen/spacing_xmedium"
-          android:text="Order No.:"
-          />
-
-        <com.abona_erp.driver.app.ui.widget.AsapTextView
-          android:id="@+id/tv_order_no"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginLeft="@dimen/spacing_xmedium"
-          android:layout_marginStart="@dimen/spacing_xmedium"
-          android:text="2019-389483-2334"
-          />
 
       </LinearLayout>
 
       <!-- 2/3 -->
       <LinearLayout
+        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/spacing_medium"
+          android:textColor="@color/grey_40"
+          android:textSize="12sp"
+          android:text="Kunde:"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_customer_name"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/clrFont"
+          android:textStyle="bold"
+          android:textSize="16sp"
+          android:text="Daimler AG"
+          />
+
+        <View
+          android:layout_width="0dp"
+          android:layout_height="@dimen/spacing_xsmall"
+          />
+
+        <LinearLayout
+          android:orientation="horizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+          <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <!-- 2/3 1/2 -->
+            <LinearLayout
+              android:orientation="vertical"
+              android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:layout_marginTop="@dimen/spacing_medium"
+              android:layout_weight="1">
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey_40"
+                android:textSize="12sp"
+                android:text="KD-Nr.:"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:id="@+id/tv_customer_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/clrFont"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="100429"
+                />
+
+              <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spacing_xsmall"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey_40"
+                android:textSize="12sp"
+                android:text="Referenz 1 (Ladung):"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:id="@+id/tv_reference_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/clrFont"
+                android:textSize="16sp"
+                android:text="komplett"
+                />
+
+            </LinearLayout>
+
+            <!-- 2/3 2/2 -->
+            <LinearLayout
+              android:orientation="vertical"
+              android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:layout_marginTop="@dimen/spacing_medium"
+              android:layout_weight="1">
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey_40"
+                android:textSize="12sp"
+                android:text="Order No.:"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:id="@+id/tv_order_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/clrFont"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="201936299"
+                />
+
+              <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spacing_xsmall"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey_40"
+                android:textSize="12sp"
+                android:text="Referenz 2:"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:id="@+id/tv_reference_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/clrFont"
+                android:textSize="16sp"
+                />
+
+            </LinearLayout>
+
+          </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+          android:layout_width="0dp"
+          android:layout_height="@dimen/spacing_xsmall"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp"
+          android:textColor="@color/grey_40"
+          android:text="Description (Waren):"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_description"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="16sp"
+          android:textColor="@color/clrFont"
+          />
 
       </LinearLayout>
 
       <!-- 3/3 -->
       <LinearLayout
+        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_marginLeft="@dimen/spacing_medium"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:layout_marginRight="@dimen/spacing_medium">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/spacing_medium"
+          android:textColor="@color/grey_40"
+          android:textSize="12sp"
+          android:text="Anschrift:"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_name1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/clrFont"
+          android:textSize="16sp"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_name2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/clrFont"
+          android:textSize="16sp"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_street"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/clrFont"
+          android:textSize="16sp"
+          />
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:weightSum="3">
+
+          <!-- 1/3 NATION -->
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_nation"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="@color/clrFont"
+              android:textSize="16sp"
+              />
+
+          </LinearLayout>
+
+          <!-- 2/3 ZIP CODE -->
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_zip"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="@color/clrFont"
+              android:textSize="16sp"
+              />
+
+          </LinearLayout>
+
+          <!-- 3/3 CITY -->
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.7">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_city"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="@color/clrFont"
+              android:textSize="16sp"
+              />
+
+          </LinearLayout>
+
+        </LinearLayout>
 
       </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Description Field -->
-    <com.abona_erp.driver.app.ui.widget.AsapTextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/spacing_xmedium"
-      android:layout_marginStart="@dimen/spacing_xmedium"
-      android:layout_marginLeft="@dimen/spacing_xmedium"
-      android:text="Description"
-      />
-
     <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:minHeight="24dp"
-      android:layout_marginLeft="@dimen/spacing_xmedium"
-      android:layout_marginStart="@dimen/spacing_xmedium"
-      android:layout_marginEnd="@dimen/spacing_xmedium"
-      android:layout_marginRight="@dimen/spacing_xmedium"
-      android:layout_marginBottom="@dimen/spacing_xmedium"
-      android:padding="@dimen/spacing_medium"
-      android:background="@drawable/bg_task_item_description">
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_gravity="end"
+      android:layout_marginStart="@dimen/spacing_medium"
+      android:layout_marginLeft="@dimen/spacing_medium"
+      android:layout_marginEnd="@dimen/spacing_medium"
+      android:layout_marginRight="@dimen/spacing_medium"
+      android:layout_marginBottom="@dimen/spacing_medium">
 
-      <com.abona_erp.driver.app.ui.widget.AsapTextView
-        android:id="@+id/tv_description"
+      <Button
+        android:id="@+id/btn_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,"
+        android:background="@drawable/button_shape"
+        android:drawableLeft="@android:drawable/ic_dialog_map"
+        android:textColor="#fff"
+        android:text="Map"
         />
 
     </LinearLayout>
@@ -96,13 +406,13 @@
   </LinearLayout>
 
   <com.lid.lib.LabelImageView
-    android:id="@+id/image"
+    android:id="@+id/liv_label"
     android:layout_width="60dp"
     android:layout_height="60dp"
     android:layout_alignParentEnd="true"
     app:label_orientation="RIGHT_TOP"
     app:label_text="NEW"
-    app:label_backgroundColor="#C2185B"
+    app:label_backgroundColor="#2980b9"
     />
 
 </RelativeLayout>

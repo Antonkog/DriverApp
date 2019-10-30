@@ -1,16 +1,40 @@
 package com.abona_erp.driver.app.data.entity;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
-@Entity
+import com.abona_erp.driver.app.util.DateConverter;
+
+import java.util.Date;
+
+@Entity(tableName = "taskItem")
 public class Notify {
   
   @PrimaryKey(autoGenerate = true)
   private int id;
   
+  @ColumnInfo(name = "data")
   private String data;
-  private boolean selected;
+  
+  @ColumnInfo(name = "read")
+  private boolean read;
+  
+  @ColumnInfo(name = "status")
+  private int status;
+  
+  @ColumnInfo(name = "task_due_finish")
+  @TypeConverters({DateConverter.class})
+  private Date taskDueFinish;
+  
+  @ColumnInfo(name = "created_at")
+  @TypeConverters({DateConverter.class})
+  private Date createdAt;
+  
+  @ColumnInfo(name = "modified_at")
+  @TypeConverters({DateConverter.class})
+  private Date modifiedAt;
   
   public int getId() {
     return id;
@@ -28,11 +52,43 @@ public class Notify {
     this.data = data;
   }
   
-  public boolean getSelected() {
-    return selected;
+  public boolean getRead() {
+    return read;
   }
   
-  public void setSelected(boolean selected) {
-    this.selected = selected;
+  public void setRead(boolean read) {
+    this.read = read;
+  }
+  
+  public int getStatus() {
+    return status;
+  }
+  
+  public void setStatus(int status) {
+    this.status = status;
+  }
+  
+  public Date getTaskDueFinish() {
+    return taskDueFinish;
+  }
+  
+  public void setTaskDueFinish(Date taskDueFinish) {
+    this.taskDueFinish = taskDueFinish;
+  }
+  
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+  
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+  
+  public Date getModifiedAt() {
+    return modifiedAt;
+  }
+  
+  public void setModifiedAt(Date modifiedAt) {
+    this.modifiedAt = modifiedAt;
   }
 }
