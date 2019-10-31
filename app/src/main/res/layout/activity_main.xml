@@ -969,47 +969,231 @@
 
 
       <!-- DETAIL VIEW -->
-      <androidx.core.widget.NestedScrollView
+      <LinearLayout
         android:id="@+id/task_detail_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_detail_view"
-        android:visibility="gone">
+        android:weightSum="2">
 
-        <!-- CONTENT -->
+        <androidx.core.widget.NestedScrollView
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_weight="1"
+          android:background="@drawable/bg_detail_view"
+          android:visibility="visible">
+
+          <!-- CONTENT -->
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- HEADER -->
+            <LinearLayout
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="?attr/actionBarSize">
+
+              <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/task_detail_view_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/spacing_medium"
+                android:padding="@dimen/spacing_medium"
+                android:src="@drawable/ic_arrow_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="@color/clrFont"
+                />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+              android:id="@+id/lv_activity_step"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="10dp"
+              android:paddingRight="10dp"
+              android:paddingBottom="10dp"
+              android:clipToPadding="false"
+              tools:listitem="@layout/step_activity"
+              app:layout_behavior="@string/appbar_scrolling_view_behavior"
+              />
+
+          </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
         <LinearLayout
           android:orientation="vertical"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent">
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:background="@drawable/main_menu_background"
+          android:layout_weight="1">
 
-          <!-- HEADER -->
+          <View
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            />
+
+          <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_middle"
+            android:textSize="12sp"
+            android:textColor="@color/grey_40"
+            android:text="Kunde:"
+            />
+
+          <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/clrFont"
+            android:text="MKII 40"
+            />
+
           <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
+            android:layout_height="wrap_content"
+            android:weightSum="2">
 
-            <androidx.appcompat.widget.AppCompatImageButton
-              android:id="@+id/task_detail_view_close"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center_vertical"
-              android:layout_marginLeft="@dimen/spacing_medium"
-              android:padding="@dimen/spacing_medium"
-              android:src="@drawable/ic_arrow_back"
-              android:background="?attr/selectableItemBackgroundBorderless"
-              android:tint="@color/clrFont"
-              />
-
-            <View
+            <LinearLayout
+              android:orientation="vertical"
               android:layout_width="0dp"
               android:layout_height="wrap_content"
-              android:layout_weight="1"
+              android:layout_marginTop="@dimen/spacing_middle"
+              android:layout_weight="1">
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/grey_40"
+                android:text="KD-Nr.:"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/clrFont"
+                android:text="15370"
+                />
+
+              <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spacing_middle"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/grey_40"
+                android:text="Referenz 1 (Ladung):"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/clrFont"
+                android:text="komplett"
+                />
+
+              <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spacing_middle"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/grey_40"
+                android:text="Description (Waren):"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/clrFont"
+                android:text="N/A"
+                />
+
+            </LinearLayout>
+
+            <View
+              android:layout_width="@dimen/spacing_middle"
+              android:layout_height="0dp"
               />
+
+            <LinearLayout
+              android:orientation="vertical"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1">
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/grey_40"
+                android:text="Order-Nr.:"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/clrFont"
+                android:text="2019/36/299"
+                />
+
+              <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spacing_middle"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/grey_40"
+                android:text="Referenz 2:"
+                />
+
+              <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/clrFont"
+                android:text=""
+                />
+
+            </LinearLayout>
+
+          </LinearLayout>
+
+          <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+
+          <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/spacing_middle"
+            android:layout_weight="1">
 
             <androidx.appcompat.widget.AppCompatButton
               android:id="@+id/task_detail_view_start_activity"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:layout_alignParentEnd="true"
               android:layout_gravity="center"
               android:background="@drawable/button_shape"
               android:drawableLeft="@drawable/ic_done"
@@ -1018,53 +1202,15 @@
               android:text="Start Activity"
               />
 
-            <View
-              android:layout_width="@dimen/spacing_xmedium"
-              android:layout_height="0dp"
-              />
-
-          </LinearLayout>
-
-          <ernestoyaquello.com.verticalstepperform.VerticalStepperFormView
-            android:id="@+id/stepper_form"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
-            app:form_circle_background_color="@color/clrFont"
-            />
+          </RelativeLayout>
 
         </LinearLayout>
 
-      </androidx.core.widget.NestedScrollView>
 
-      <RelativeLayout
-        android:id="@+id/map_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
 
-        <com.google.android.gms.maps.MapView
-          android:id="@+id/map"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          class="com.google.android.gms.maps.SupportMapFragment"
-          />
+      </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatImageButton
-          android:id="@+id/map_view_close"
-          android:layout_width="48dp"
-          android:layout_height="48dp"
-          android:layout_marginTop="@dimen/spacing_medium"
-          android:layout_marginLeft="@dimen/spacing_medium"
-          android:layout_marginStart="@dimen/spacing_medium"
-          android:clickable="true"
-          android:focusable="true"
-          android:src="@drawable/ic_arrow_back"
-          android:background="@color/clrFont"
-          android:tint="#fff"
-          />
-
-      </RelativeLayout>
+      <include layout="@layout/activity_map_layout" />
 
     </FrameLayout>
 

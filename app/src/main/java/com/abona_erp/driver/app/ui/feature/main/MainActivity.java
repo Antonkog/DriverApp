@@ -9,8 +9,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.abona_erp.driver.app.App;
@@ -18,12 +19,13 @@ import com.abona_erp.driver.app.AppExecutors;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.model.ActivityStep;
 import com.abona_erp.driver.app.data.repository.NotifyRepository;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.BaseEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
-import com.abona_erp.driver.app.ui.feature.main.steps.ActivityStep;
+import com.abona_erp.driver.app.ui.feature.main.adapter.ActivityStepAdapter;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.badges.Badge;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeSpan;
@@ -39,10 +41,10 @@ import com.google.firebase.iid.InstanceIdResult;
 
 import org.greenrobot.eventbus.Subscribe;
 
-import ernestoyaquello.com.verticalstepperform.VerticalStepperFormView;
-import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends BaseActivity implements OnMapReadyCallback, StepperFormListener {
+public class MainActivity extends BaseActivity implements OnMapReadyCallback {
   
   private Handler mHandler;
   
@@ -54,6 +56,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, St
   private GoogleMap gmap;
   
   private NotifyDao notifyDao;
+  
+  private RecyclerView lvActivityStep;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +103,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, St
     
     registerCloseTaskDetailView();
     //registerStartActivity();
-    
-    notifyDao.getNotificationCount().observe(this, new Observer<Integer>() {
+  
+    notifyDao.getNotificationCount().observe(MainActivity.this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
         if (integer.intValue() <= 0) {
@@ -111,7 +115,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, St
           ((AsapTextView) findViewById(R.id.badge_notification)).setVisibility(View.VISIBLE);
           ((AppCompatImageButton) findViewById(R.id.badge_notification_icon))
             .setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications));
-          
+        
           if (integer.intValue() <= 99) {
             ((AsapTextView) findViewById(R.id.badge_notification)).setText(String.valueOf(integer.intValue()));
           } else {
@@ -272,16 +276,24 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, St
           hideTaskDetailView();
         }
       });
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    lvActivityStep = (RecyclerView)findViewById(R.id.lv_activity_step);
   
-    ActivityStep activityStep1 = new ActivityStep("Driving to loading");
-    ActivityStep activityStep2 = new ActivityStep("Waiting for loading");
-    ActivityStep activityStep3 = new ActivityStep("Loading complete");
+    List<ActivityStep> list = new ArrayList<>();
+    list.add(new ActivityStep());
+    list.add(new ActivityStep());
+    list.add(new ActivityStep());
   
-    VerticalStepperFormView stepperFormView = (VerticalStepperFormView)findViewById(R.id.stepper_form);
-    stepperFormView.setup(this, activityStep1, activityStep2, activityStep3)
-      .includeConfirmationStep(false)
-      .displayBottomNavigation(false)
-      .init();
+    LinearLayoutManager lm = new LinearLayoutManager(getApplicationContext(),
+      RecyclerView.VERTICAL, false);
+    lvActivityStep.setLayoutManager(lm);
+  
+    ActivityStepAdapter adapter = new ActivityStepAdapter(list, getApplicationContext());
+    lvActivityStep.setAdapter(adapter);
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
   }
   
   public void setTabBadge(int tabIndex, Badge badge) {
@@ -344,15 +356,5 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, St
         App.eventBus.removeStickyEvent(event);
       }
     }, delayMillis);
-  }
-  
-  @Override
-  public void onCompletedForm() {
-  
-  }
-  
-  @Override
-  public void onCancelledForm() {
-  
   }
 }

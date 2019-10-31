@@ -3,6 +3,7 @@ package com.abona_erp.driver.app.data.repository;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
 import com.abona_erp.driver.app.data.NotifyDatabase;
@@ -17,7 +18,7 @@ public class NotifyRepository {
   private NotifyDao notifyDao;
   private static final Object LOCK = new Object();
   
-  public synchronized static NotifyDatabase getNotifyDatabase(Context context) {
+  public static synchronized NotifyDatabase getNotifyDatabase(Context context) {
     if (notifyDatabase == null) {
       synchronized (LOCK) {
         if (notifyDatabase == null) {

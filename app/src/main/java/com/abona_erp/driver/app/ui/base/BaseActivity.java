@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -20,14 +21,14 @@ public abstract class BaseActivity extends AppCompatActivity {
   
   public ProgressBar mProgressBar;
   
-  public NestedScrollView mTaskDetailView;
+  public LinearLayout mTaskDetailView;
   public AppCompatImageButton mTaskDetailViewClose;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     
-    mTaskDetailView = (NestedScrollView) findViewById(R.id.task_detail_view);
+    mTaskDetailView = (LinearLayout) findViewById(R.id.task_detail_view);
   }
   
   @Override
@@ -70,7 +71,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     if (mTaskDetailView != null) {
       mTaskDetailView.setVisibility(View.VISIBLE);
     } else {
-      mTaskDetailView = (NestedScrollView) findViewById(R.id.task_detail_view);
+      mTaskDetailView = (LinearLayout) findViewById(R.id.task_detail_view);
       mTaskDetailView.setVisibility(View.VISIBLE);
     }
   }
@@ -79,7 +80,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     if (mTaskDetailView != null) {
       mTaskDetailView.setVisibility(View.GONE);
     } else {
-      mTaskDetailView = (NestedScrollView) findViewById(R.id.task_detail_view);
+      mTaskDetailView = (LinearLayout) findViewById(R.id.task_detail_view);
       mTaskDetailView.setVisibility(View.GONE);
     }
   }
