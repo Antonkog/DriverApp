@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/map_layout"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:visibility="gone">
+
+  <com.google.android.gms.maps.MapView
+    android:id="@+id/map"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    class="com.google.android.gms.maps.SupportMapFragment"
+    />
+  
+  <androidx.appcompat.widget.AppCompatImageButton
+    android:id="@+id/map_view_close"
+    android:layout_width="@dimen/icon_size_48"
+    android:layout_height="@dimen/icon_size_48"
+    android:layout_marginTop="@dimen/spacing_medium"
+    android:layout_marginLeft="@dimen/spacing_medium"
+    android:layout_marginStart="@dimen/spacing_medium"
+    android:src="@drawable/ic_arrow_back"
+    android:background="@color/clrFont"
+    android:tint="#fff"
+    />
+
+</RelativeLayout>
