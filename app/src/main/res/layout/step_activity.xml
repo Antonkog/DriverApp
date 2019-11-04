@@ -46,6 +46,7 @@
         />
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_started"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
@@ -67,6 +68,7 @@
         />
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_finished"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
@@ -96,25 +98,32 @@
         android:layout_marginTop="@dimen/spacing_mlarge">
 
         <ImageView
+          android:id="@+id/iv_activity_step_dot"
           android:layout_width="@dimen/spacing_mlarge"
           android:layout_height="@dimen/spacing_mlarge"
+          android:visibility="visible"
           android:tint="@color/clrFont"
+          android:src="@drawable/shape_round_solid"
           app:srcCompat="@drawable/shape_round_solid"/>
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_activity_step_no"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerInParent="true"
           android:visibility="gone"
           android:textColor="#fff"
+          android:textSize="10sp"
           android:text="1"
           />
 
         <ImageView
+          android:id="@+id/iv_activity_step_check_mark"
           android:layout_width="@dimen/spacing_middle"
           android:layout_height="@dimen/spacing_middle"
           android:layout_centerInParent="true"
           android:visibility="gone"
+          android:src="@drawable/ic_done"
           app:srcCompat="@drawable/ic_done"
           />
 
@@ -131,6 +140,7 @@
       android:layout_marginStart="@dimen/spacing_large">
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
@@ -139,11 +149,11 @@
         />
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:textColor="@color/grey_40"
-        android:text="DESCRIPTION"
         />
 
       <LinearLayout
@@ -155,11 +165,11 @@
         android:orientation="horizontal">
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_activity_step_status"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:background="@drawable/status_bg"
           android:textColor="#fff"
-          android:text="PENDING"
           />
 
       </LinearLayout>

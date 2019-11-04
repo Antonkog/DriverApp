@@ -6,7 +6,9 @@
   android:id="@+id/task_detail_view"
   android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="match_parent"
+  android:visibility="gone"
+  android:background="@drawable/bg_detail_view">
 
   <!-- HEADER -->
   <RelativeLayout
@@ -48,22 +50,30 @@
         android:id="@+id/lv_activity_step"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        android:clipToPadding="false"
-        tools:listitem="@layout/step_activity"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        tools:listitem="@layout/step_activity" />
 
     </LinearLayout>
+
+    <View
+      android:layout_width="1dp"
+      android:layout_height="match_parent"
+      android:background="@color/grey_20"
+      />
 
     <!-- RIGHT CONTENT -->
     <LinearLayout
       android:orientation="vertical"
       android:layout_width="0dp"
       android:layout_height="match_parent"
-      android:layout_weight="1">
+      android:layout_weight="1"
+      android:paddingLeft="@dimen/spacing_middle"
+      android:paddingRight="@dimen/spacing_middle"
+      android:layout_marginEnd="@dimen/spacing_middle">
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:layout_width="wrap_content"
@@ -75,11 +85,11 @@
         />
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_customer_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:textColor="@color/clrFont"
-        android:text="MKII 40"
         />
 
       <LinearLayout
@@ -103,11 +113,11 @@
             />
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/tv_activity_step_customer_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/clrFont"
-            android:text="15370"
             />
 
           <View
@@ -124,11 +134,11 @@
             />
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/tv_activity_step_reference_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/clrFont"
-            android:text="komplett"
             />
 
           <View
@@ -145,11 +155,11 @@
             />
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/tv_activity_step_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/clrFont"
-            android:text="N/A"
             />
 
         </LinearLayout>
@@ -174,11 +184,11 @@
             />
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/tv_activity_step_order_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/clrFont"
-            android:text="2019/36/299"
             />
 
           <View
@@ -195,11 +205,11 @@
             />
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/tv_activity_step_reference_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/clrFont"
-            android:text=""
             />
 
         </LinearLayout>
@@ -215,20 +225,39 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize">
 
-    <androidx.appcompat.widget.AppCompatButton
-      android:id="@+id/task_detail_view_start_activity"
+    <LinearLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentEnd="true"
       android:layout_centerVertical="true"
-      android:layout_marginEnd="@dimen/spacing_middle"
-      android:layout_marginRight="@dimen/spacing_middle"
-      android:background="@drawable/button_shape"
-      android:drawableLeft="@drawable/ic_done"
-      android:drawablePadding="@dimen/spacing_xmedium"
-      android:textColor="#fff"
-      android:text="Start Activity"
-      />
+      android:layout_alignParentEnd="true">
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/task_detail_view_back_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_middle"
+        android:layout_marginRight="@dimen/spacing_middle"
+        android:background="@drawable/button_shape"
+        android:drawableLeft="@drawable/ic_arrow_back"
+        android:drawablePadding="@dimen/spacing_xmedium"
+        android:textColor="@color/clrWhite"
+        android:text="BACK"
+        />
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/task_detail_view_start_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_middle"
+        android:layout_marginRight="@dimen/spacing_middle"
+        android:background="@drawable/button_shape"
+        android:drawableLeft="@drawable/ic_done"
+        android:drawablePadding="@dimen/spacing_xmedium"
+        android:textColor="#fff"
+        android:text="Start Activity"
+        />
+
+    </LinearLayout>
 
   </RelativeLayout>
 

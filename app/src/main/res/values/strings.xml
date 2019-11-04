@@ -1,4 +1,5 @@
 <resources>
+  <string name="search">Search</string>
   <string name="tab_text_pending">Pending\u0020</string>
   <string name="tab_text_running">Running\u0020</string>
   <string name="tab_text_cmr">CMR\u0020</string>

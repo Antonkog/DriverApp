@@ -7,6 +7,8 @@
   <color name="clrAbona">#E30613</color>
   <color name="clrFont">#1F1C2C</color>
   <color name="clrWhite">#FFF</color>
+  <color name="clrMainHeader">#F5F7FA</color>
+  <color name="clrIcon">#1F1C2C</color>
 
   <color name="timeline_path_new_task">#27ae60</color>
 

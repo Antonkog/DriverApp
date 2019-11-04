@@ -53,9 +53,9 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
       case 1:
         return PendingFragment.newInstance();
       case 2:
-        return CompletedFragment.newInstance();
-      case 3:
         return CMRFragment.newInstance();
+      case 3:
+        return CompletedFragment.newInstance();
       default:
         throw new IllegalArgumentException();
     }
@@ -81,14 +81,9 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
   
       badgeValues.put(position, badge.getNumber());
-  
-      Log.d("kdfkdk", "ssssssssssssssssssssssssss");
-    
     } else {
       tabText.setText(mContext.getResources().getString(tabTitles[position]));
       badgeValues.put(position, 0);
-  
-      Log.d("kdfkdk", "kkkkkkkkkkkkkkkkkkkkkkkkk");
     }
     
     return v;

@@ -27,9 +27,10 @@ import java.util.Locale;
 public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.ViewHolder> {
   
   private static final String TAG = NotifyViewAdapter.class.getSimpleName();
-  
-  private List<Notify> notifyList;
-  private Context context;
+
+  private final Context context;
+  private final LayoutInflater mInflater;
+  private List<Notify> mNotifyList;
   private OnItemClickListener listener;
   private Handler handler = new Handler();
   
@@ -37,36 +38,26 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   
   public interface OnItemClickListener {
     void onItemClick(Notify notify);
-    void onMapClick();
+    void onMapClick(Notify notify);
   }
   
-  public NotifyViewAdapter(List<Notify> list, Context ctx) {
-    notifyList = list;
+  public NotifyViewAdapter(Context ctx) {
     context = ctx;
-  }
-  
-  @Override
-  public int getItemCount() {
-    return notifyList.size();
+    mInflater = LayoutInflater.from(ctx);
   }
   
   @Override
   public NotifyViewAdapter.ViewHolder
   onCreateViewHolder(ViewGroup parent, int viewType) {
     
-    View view = LayoutInflater.from(parent.getContext())
-      .inflate(R.layout.task_item, parent, false);
-    
-    NotifyViewAdapter.ViewHolder viewHolder =
-      new NotifyViewAdapter.ViewHolder(view);
-
-    return viewHolder;
+    View itemView = mInflater.inflate(R.layout.task_item, parent, false);
+    return new NotifyViewAdapter.ViewHolder(itemView);
   }
   
   @Override
   public void onBindViewHolder(NotifyViewAdapter.ViewHolder holder, int position) {
-    final int itemPos = position;
-    final Notify notify = notifyList.get(position);
+
+    final Notify notify = mNotifyList.get(position);
   
     holder.setIsRecyclable(false);
     
@@ -83,9 +74,13 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     data = gson.fromJson(jsonText, Data.class);
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
-      
-    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
-    holder.tvTaskFinish.setText(formatter.format(data.getTaskItem().getTaskDueDateFinish()));
+
+    synchronized (this) {
+      SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+        Locale.getDefault());
+      String dateTime = sdf.format(data.getTaskItem().getTaskDueDateFinish());
+      holder.tvTaskFinish.setText(dateTime);
+    }
       
     if (data.getTaskItem().getKundenName() != null)
       holder.tvCustomerName.setText(data.getTaskItem().getKundenName());
@@ -132,7 +127,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     handler.removeCallbacksAndMessages(null);
   }
   
-  public class ViewHolder extends RecyclerView.ViewHolder {
+  class ViewHolder extends RecyclerView.ViewHolder {
     
     public AsapTextView tvTaskFinish;
     
@@ -199,7 +194,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       btnMap.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          listener.onMapClick();
+          listener.onMapClick(notify);
         }
       });
       
@@ -210,5 +205,20 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       dueInCounter.endDate = finishDate;
       handler.postDelayed(dueInCounter, 100);
     }
+  }
+
+  public void setNotifyList(List<Notify> notifyList) {
+    mNotifyList = notifyList;
+    notifyDataSetChanged();
+  }
+
+  // getItemCount() is called many times, and when it is first called,
+  // mNotifyList has not been updated (means initially, it's null,
+  // and we can't return null).
+  @Override
+  public int getItemCount() {
+    if (mNotifyList != null)
+      return mNotifyList.size();
+    else return 0;
   }
 }

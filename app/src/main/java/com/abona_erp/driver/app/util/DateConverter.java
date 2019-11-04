@@ -12,7 +12,7 @@ public class DateConverter {
   static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   
   @TypeConverter
-  public static Date fromTimestamp(String value) {
+  public synchronized static Date fromTimestamp(String value) {
     if (value != null) {
       try {
         return df.parse(value);
@@ -25,7 +25,7 @@ public class DateConverter {
   }
   
   @TypeConverter
-  public static String dateToTimestamp(Date value) {
+  public synchronized static String dateToTimestamp(Date value) {
     return value == null ? null : df.format(value);
   }
 }
