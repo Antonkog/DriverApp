@@ -1,2 +1,2 @@
-include ':app', ':core', ':timeline-view'
+include ':app', ':core'
 rootProject.name='Driver App'
