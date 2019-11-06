@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/software_info_layout"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/main_menu_background"
+  android:layout_marginBottom="?attr/actionBarSize"
+  android:clickable="false"
+  android:focusable="false"
+  android:visibility="visible">
+
+  <View
+    android:layout_width="0dp"
+    android:layout_height="@dimen/spacing_large"
+    />
+
+  <ImageView
+    android:layout_width="96dp"
+    android:layout_height="96dp"
+    android:layout_gravity="center_horizontal"
+    android:src="@drawable/app_icon_drive_192px"
+    />
+
+  <View
+    android:layout_width="0dp"
+    android:layout_height="@dimen/spacing_middle"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="18sp"
+    android:textColor="@color/clrFont"
+    android:textStyle="bold"
+    android:text="ABONA Driver App"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="16sp"
+    android:text="ver 1.0.0.0"
+    />
+
+  <View
+    android:layout_width="0dp"
+    android:layout_height="@dimen/spacing_large"
+    />
+
+  <ImageView
+    android:layout_width="256dp"
+    android:layout_height="80dp"
+    android:layout_gravity="center_horizontal"
+    android:src="@drawable/ic_logo_abona"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="18sp"
+    android:textColor="@color/clrFont"
+    android:text="DEUTSCHLAND"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="14sp"
+    android:text="Heinrich-Blanc-Straße 30"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="14sp"
+    android:text="76646 Bruchsal (Germany)"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="14sp"
+    android:text="Tel. 07251 97600"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="14sp"
+    android:text="info@abona-erp.com"
+    />
+
+</LinearLayout>

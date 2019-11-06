@@ -11,6 +11,9 @@ import com.abona_erp.driver.app.data.entity.Notify;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+
 @Dao
 public interface NotifyDao {
   
@@ -25,6 +28,9 @@ public interface NotifyDao {
   
   @Query("SELECT * FROM taskItem WHERE status = 100 ORDER BY task_due_finish ASC")
   LiveData<List<Notify>> getAllCompletedNotifications();
+  
+  @Query("SELECT * FROM taskItem WHERE id = :id LIMIT 1")
+  Single<Notify> loadNotifyById(int id);
   
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   void insertNotify(Notify notify);

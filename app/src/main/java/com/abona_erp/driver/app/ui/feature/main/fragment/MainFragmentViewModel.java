@@ -1,0 +1,46 @@
+package com.abona_erp.driver.app.ui.feature.main.fragment;
+
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+
+import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.repository.DriverRepository;
+
+import java.util.List;
+
+public class MainFragmentViewModel extends AndroidViewModel {
+  
+  private DriverRepository mRepository;
+  
+  private LiveData<List<Notify>> mAllPendingNotifications;
+  private LiveData<List<Notify>> mAllRunningNotifications;
+  private LiveData<List<Notify>> mAllCMRNotifications;
+  private LiveData<List<Notify>> mAllCompletedNotifications;
+  
+  public MainFragmentViewModel(Application application) {
+    super(application);
+    mRepository = new DriverRepository(application);
+    mAllPendingNotifications = mRepository.getAllPendingNotifications();
+    mAllRunningNotifications = mRepository.getAllRunningNotifications();
+    mAllCMRNotifications = mRepository.getAllCMRNotifications();
+    mAllCompletedNotifications = mRepository.getAllCompletedNotifications();
+  }
+  
+  LiveData<List<Notify>> getAllPendingNotifications() {
+    return mAllPendingNotifications;
+  }
+  
+  LiveData<List<Notify>> getAllRunningNotifications() {
+    return mAllRunningNotifications;
+  }
+  
+  LiveData<List<Notify>> getAllCMRNotifications() {
+    return mAllCMRNotifications;
+  }
+  
+  LiveData<List<Notify>> getAllCompletedNotifications() {
+    return mAllCompletedNotifications;
+  }
+}

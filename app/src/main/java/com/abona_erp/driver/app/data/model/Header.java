@@ -7,6 +7,11 @@ import java.util.Date;
 
 public class Header {
   
+  public Header() {
+    timestampSenderUTC = new Date(System.currentTimeMillis());
+    version = 1;
+  }
+  
   @SerializedName("TimestampSenderUTC")
   @Expose
   private Date timestampSenderUTC;

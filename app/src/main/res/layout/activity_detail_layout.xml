@@ -7,7 +7,6 @@
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:visibility="gone"
   android:background="@drawable/bg_detail_view">
 
   <!-- HEADER -->
@@ -17,7 +16,7 @@
 
     <!-- BACK BUTTON -->
     <androidx.appcompat.widget.AppCompatImageButton
-      android:id="@+id/task_detail_view_close"
+      android:id="@+id/btn_detail_back"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_centerVertical="true"
@@ -232,7 +231,7 @@
       android:layout_alignParentEnd="true">
 
       <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/task_detail_view_back_activity"
+        android:id="@+id/btn_detail_back_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/spacing_middle"
@@ -245,7 +244,7 @@
         />
 
       <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/task_detail_view_start_activity"
+        android:id="@+id/btn_detail_next_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/spacing_middle"

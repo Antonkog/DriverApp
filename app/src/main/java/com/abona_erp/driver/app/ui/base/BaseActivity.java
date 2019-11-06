@@ -21,14 +21,9 @@ public abstract class BaseActivity extends AppCompatActivity {
   
   public ProgressBar mProgressBar;
   
-  public LinearLayout mTaskDetailView;
-  public AppCompatImageButton mTaskDetailViewClose;
-  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
-    mTaskDetailView = (LinearLayout) findViewById(R.id.task_detail_view);
   }
   
   @Override
@@ -44,54 +39,5 @@ public abstract class BaseActivity extends AppCompatActivity {
   
   public void showProgressBar(boolean visibility) {
     mProgressBar.setVisibility(visibility ? View.VISIBLE : View.INVISIBLE);
-  }
-  
-  public void registerStartActivity() {
-    ((AppCompatButton) findViewById(R.id.task_detail_view_start_activity))
-      .setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          hideTaskDetailView();
-          
-        }
-      });
-  }
-  
-  public void registerCloseTaskDetailView() {
-    ((AppCompatImageButton) findViewById(R.id.task_detail_view_close))
-      .setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          hideTaskDetailView();
-        }
-      });
-  }
-  
-  public void showTaskDetailView() {
-    if (mTaskDetailView != null) {
-      mTaskDetailView.setVisibility(View.VISIBLE);
-    } else {
-      mTaskDetailView = (LinearLayout) findViewById(R.id.task_detail_view);
-      mTaskDetailView.setVisibility(View.VISIBLE);
-    }
-  }
-  
-  public void hideTaskDetailView() {
-    if (mTaskDetailView != null) {
-      mTaskDetailView.setVisibility(View.GONE);
-    } else {
-      mTaskDetailView = (LinearLayout) findViewById(R.id.task_detail_view);
-      mTaskDetailView.setVisibility(View.GONE);
-    }
-  }
-  
-  public void showMapView() {
-    ((RelativeLayout) findViewById(R.id.map_layout))
-      .setVisibility(View.VISIBLE);
-  }
-  
-  public void hideMapView() {
-    ((RelativeLayout) findViewById(R.id.map_layout))
-      .setVisibility(View.GONE);
   }
 }

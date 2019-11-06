@@ -14,6 +14,9 @@ import com.abona_erp.driver.app.data.entity.Notify;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+
 public class DriverRepository {
 
   private NotifyDao mNotifyDao;
@@ -53,6 +56,10 @@ public class DriverRepository {
 
   public LiveData<List<Notify>> getAllCompletedNotifications() {
     return mAllCompletedNotifications;
+  }
+  
+  public Single<Notify> getNotifyById(int id) {
+    return mNotifyDao.loadNotifyById(id);
   }
 
   public void insert(Notify notify) {
