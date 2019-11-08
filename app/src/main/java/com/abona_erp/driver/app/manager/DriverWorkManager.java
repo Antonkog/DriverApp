@@ -43,13 +43,10 @@ public class DriverWorkManager extends Worker {
     super(context, workerParameters);
   }
   
-  @NonNull
-  @Override
-  public Result doWork() {
-    Log.d(TAG, "WorkManager - doWork() started...");
-    
+  private void process() {
     // TOKEN:
     String token = getInputData().getString("token");
+    int state = getInputData().getInt("state", 0);
   
     JsonDeserializer deserializer = new DoubleJsonDeserializer();
     Gson mGson = new GsonBuilder()
@@ -57,57 +54,46 @@ public class DriverWorkManager extends Worker {
       .registerTypeAdapter(double.class, deserializer)
       .registerTypeAdapter(Double.class, deserializer)
       .create();
-    
+  
     // DEFINING RETROFIT API SERVICE:
     Retrofit retrofit = new Retrofit.Builder()
       .baseUrl("http://172.30.1.38:4000/api/device/")
       .addConverterFactory(GsonConverterFactory.create(mGson))
       .build();
-    
+  
     Data mData = new Data();
     Header header = new Header();
     header.setDataType(DataType.DEVICE_PROFILE);
     mData.setHeader(header);
-    
+  
     DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
-    deviceProfileItem.setModel(Build.MODEL);
-    deviceProfileItem.setManufacturer(Build.MANUFACTURER);
-    
-    Log.d(TAG, "MODEL " + Build.MODEL);
-    Log.d(TAG, "MANUFACTURER " + Build.MANUFACTURER);
-    Log.d(TAG, "DEVICE " + Build.DEVICE);
-    
+  
     TelephonyManager tm = (TelephonyManager)getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
     try {
       deviceProfileItem.setDeviceId(tm.getDeviceId());
-      Log.d(TAG, "ID " + tm.getDeviceId());
     } catch (SecurityException ignore){
     }
     
-    deviceProfileItem.setSerial(Build.SERIAL);
-    Log.d(TAG, "SERIAL " + Build.SERIAL);
-    deviceProfileItem.setInstanceId(token);
-    Log.d(TAG, "TOKEN " + token);
-
-    Date currentDate = new Date();
-    Log.d(TAG, currentDate.toString());
-    deviceProfileItem.setCreatedDate(currentDate);
-
-    
-    // TODO: created and updated
-    //long firstInstallTime = AppUtils.getAppFirstInstallTime(getApplicationContext());
-    //mData.getDeviceProfileItem().setCreatedDate();
-    // Updated
-    //mData.getDeviceProfileItem().setLanguageCode(Locale.getDefault().toString());
-    Log.d(TAG, Locale.getDefault().toString());
-    deviceProfileItem.setLanguageCode(Locale.getDefault().toString());
-    //mData.getDeviceProfileItem().setVersionCode(1000);
-    //mData.getDeviceProfileItem().setVersionName("1.0.0.0");
-    
-    // TODO: versionName and versionCode
-    
+    switch (state) {
+      case 0:
+        deviceProfileItem.setModel(Build.MODEL);
+        deviceProfileItem.setManufacturer(Build.MANUFACTURER);
+        deviceProfileItem.setSerial(Build.SERIAL);
+        deviceProfileItem.setInstanceId(token);
+        Date currentDate = new Date();
+        deviceProfileItem.setCreatedDate(currentDate);
+        deviceProfileItem.setUpdatedDate(currentDate);
+        deviceProfileItem.setLanguageCode(Locale.getDefault().toString());
+        deviceProfileItem.setVersionCode(1000);
+        deviceProfileItem.setVersionName("1.0.0.0");
+        break;
+        
+      case 1:
+        deviceProfileItem.setInstanceId(token);
+        break;
+    }
+  
     mData.setDeviceProfileItem(deviceProfileItem);
-    
     
     TokenService service = retrofit.create(TokenService.class);
     Call<PostResponse> call = service.deviceProfile(mData);
@@ -115,16 +101,39 @@ public class DriverWorkManager extends Worker {
       @Override
       public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
         if (response.isSuccessful()) {
-          Log.d("+++++", "Communicate with REST-API successfully!");
+          Log.d(TAG, "==============================================================================");
+          Log.d(TAG, "Communicate with REST-API successfully!");
+          Log.d(TAG, "==============================================================================");
         }
       }
-  
+    
       @Override
       public void onFailure(Call<PostResponse> call, Throwable t) {
-        Result.failure();
+        Log.d(TAG, "==============================================================================");
+        Log.e(TAG, "Error on communication!");
+        Log.d(TAG, "==============================================================================");
+        Result.retry();
       }
     });
+  }
+  
+  @NonNull
+  @Override
+  public Result doWork() {
+    Log.d(TAG, "==============================================================================");
+    Log.d(TAG, "doWork() started.");
+    Log.d(TAG, "==============================================================================");
     
+    if (getRunAttemptCount() > 3) {
+      return Result.failure();
+    }
+    
+    try {
+      process();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Result.retry();
+    }
     return Result.success();
   }
   

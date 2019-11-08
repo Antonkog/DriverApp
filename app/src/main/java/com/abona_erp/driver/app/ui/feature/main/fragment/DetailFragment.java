@@ -14,6 +14,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
@@ -27,12 +32,17 @@ import com.abona_erp.driver.app.ui.feature.main.adapter.ActivityStepAdapter;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DoubleJsonDeserializer;
+import com.abona_erp.driver.app.work.ActivityWorkManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -64,6 +74,9 @@ public class DetailFragment extends Fragment {
   private ActivityStepAdapter mAdapter;
   private DetailFragmentViewModel mViewModel;
   
+  private WorkManager mWorkManager;
+  private SimpleDateFormat mSdf;
+  
   public DetailFragment() {
     // Required empty public constructor.
   }
@@ -75,6 +88,8 @@ public class DetailFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    mSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
   
     JsonDeserializer deserializer = new DoubleJsonDeserializer();
     mGson = new GsonBuilder()
@@ -89,6 +104,8 @@ public class DetailFragment extends Fragment {
     
     mViewModel = ViewModelProviders.of(this)
       .get(DetailFragmentViewModel.class);
+    
+    mWorkManager = WorkManager.getInstance(getContext());
   }
   
   @Override
@@ -181,7 +198,8 @@ public class DetailFragment extends Fragment {
       mBtnNextActivity.setText("CMR FINISHED");
     } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
       mBtnBackActivity.setVisibility(View.GONE);
-      mBtnNextActivity.setVisibility(View.GONE);
+      mBtnNextActivity.setVisibility(View.VISIBLE);
+      mBtnNextActivity.setText("DELETE");
     }
   }
   
@@ -229,6 +247,18 @@ public class DetailFragment extends Fragment {
                 mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.PENDING);
                 mNotify.setData(mGson.toJson(mData));
                 mViewModel.update(mNotify);
+                requestActivityChange(
+                  1,
+                  mData.getTaskItem().getActivities().get(i).getMandantId(),
+                  mData.getTaskItem().getActivities().get(i).getTaskId(),
+                  mData.getTaskItem().getActivities().get(i).getActivityId(),
+                  mData.getTaskItem().getActivities().get(i).getName(),
+                  mData.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
+                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mData.getTaskItem().getActivities().get(i).getSequence()
+                );
     
                 mActivityList.clear();
                 if (mData.getTaskItem().getActivities().size() > 0) {
@@ -244,6 +274,18 @@ public class DetailFragment extends Fragment {
                 mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
                 mNotify.setData(mGson.toJson(mData));
                 mViewModel.update(mNotify);
+                requestActivityChange(
+                  1,
+                  mData.getTaskItem().getActivities().get(i).getMandantId(),
+                  mData.getTaskItem().getActivities().get(i).getTaskId(),
+                  mData.getTaskItem().getActivities().get(i).getActivityId(),
+                  mData.getTaskItem().getActivities().get(i).getName(),
+                  mData.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
+                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mData.getTaskItem().getActivities().get(i).getSequence()
+                );
     
                 mActivityList.clear();
                 if (mData.getTaskItem().getActivities().size() > 0) {
@@ -291,8 +333,21 @@ public class DetailFragment extends Fragment {
               
               if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
                 mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
+                mData.getTaskItem().getActivities().get(i).setFinished(new Date());
                 mNotify.setData(mGson.toJson(mData));
                 mViewModel.update(mNotify);
+                requestActivityChange(
+                  0,
+                  mData.getTaskItem().getActivities().get(i).getMandantId(),
+                  mData.getTaskItem().getActivities().get(i).getTaskId(),
+                  mData.getTaskItem().getActivities().get(i).getActivityId(),
+                  mData.getTaskItem().getActivities().get(i).getName(),
+                  mData.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
+                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mData.getTaskItem().getActivities().get(i).getSequence()
+                );
   
                 mActivityList.clear();
                 if (mData.getTaskItem().getActivities().size() > 0) {
@@ -310,8 +365,21 @@ public class DetailFragment extends Fragment {
               
               if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
                 mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
+                mData.getTaskItem().getActivities().get(i).setStarted(new Date());
                 mNotify.setData(mGson.toJson(mData));
                 mViewModel.update(mNotify);
+                requestActivityChange(
+                  0,
+                  mData.getTaskItem().getActivities().get(i).getMandantId(),
+                  mData.getTaskItem().getActivities().get(i).getTaskId(),
+                  mData.getTaskItem().getActivities().get(i).getActivityId(),
+                  mData.getTaskItem().getActivities().get(i).getName(),
+                  mData.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
+                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mData.getTaskItem().getActivities().get(i).getSequence()
+                );
                 
                 mActivityList.clear();
                 if (mData.getTaskItem().getActivities().size() > 0) {
@@ -329,9 +397,10 @@ public class DetailFragment extends Fragment {
           mData.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
           mNotify.setData(mGson.toJson(mData));
           mViewModel.update(mNotify);
-          applyButtonState();
+          App.eventBus.post(new BackEvent());
         } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-        
+          mViewModel.delete(mNotify);
+          App.eventBus.post(new BackEvent());
         }
       }
     });
@@ -347,5 +416,61 @@ public class DetailFragment extends Fragment {
     mTvReference1 = (AsapTextView)root.findViewById(R.id.tv_activity_step_reference_1);
     mTvReference2 = (AsapTextView)root.findViewById(R.id.tv_activity_step_reference_2);
     mTvDescription = (AsapTextView)root.findViewById(R.id.tv_activity_step_desc);
+  }
+  
+  private androidx.work.Data createInputData(
+    int header_type,
+    int mandantId,
+    int taskId,
+    int activityId,
+    String name,
+    String description,
+    String started,
+    String finished,
+    int status,
+    int sequence
+  ) {
+    androidx.work.Data data = new androidx.work.Data.Builder()
+      .putInt("header_type", header_type)
+      .putInt("mandant_id", mandantId)
+      .putInt("task_id", taskId)
+      .putInt("activity_id", activityId)
+      .putString("name", name)
+      .putString("description", description)
+      .putString("started", started)
+      .putString("finished", finished)
+      .putInt("status", status)
+      .putInt("sequence", sequence)
+      .build();
+    return data;
+  }
+  
+  private void requestActivityChange(
+    int header_type,
+    int mandantId,
+    int taskId,
+    int activityId,
+    String name,
+    String description,
+    String started,
+    String finished,
+    int status,
+    int sequence
+  ) {
+    Constraints mConstraints = new Constraints.Builder()
+      .setRequiresCharging(false)
+      .setRequiredNetworkType(NetworkType.CONNECTED)
+      .build();
+  
+    OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest
+      .Builder(ActivityWorkManager.class)
+      .setConstraints(mConstraints)
+      .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+        TimeUnit.MICROSECONDS)
+      .setInitialDelay(10, TimeUnit.SECONDS)
+      .setInputData(createInputData(header_type, mandantId, taskId, activityId, name, description, started, finished, status, sequence))
+      .addTag(UUID.randomUUID().toString())
+      .build();
+    mWorkManager.enqueue(oneTimeWorkRequest);
   }
 }

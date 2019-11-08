@@ -12,8 +12,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
+import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.feature.main.TabsPagerAdapter;
 import com.abona_erp.driver.app.ui.widget.badges.Badge;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeSpan;
@@ -26,8 +28,14 @@ public class MainFragment extends Fragment {
   
   private TabLayout mMainTab;
   private TabLayout mMainBottomTab;
-  public ViewPager mViewPager;
+  private ViewPager mViewPager;
   private TabsPagerAdapter mPagerAdapter;
+  
+  private int mPendingCount;
+  private int mRunningCount;
+  private int mCMRCount;
+  private int mCompletedCount;
+  private int mRowTaskCount;
   
   private MainFragmentViewModel mainViewModel;
   
@@ -116,6 +124,7 @@ public class MainFragment extends Fragment {
       
       @Override
       public void onChanged(List<Notify> notifyList) {
+        mPendingCount = notifyList.size();
         TabLayout.Tab tab = mMainTab.getTabAt(1);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
@@ -132,6 +141,8 @@ public class MainFragment extends Fragment {
       .observe(this, new Observer<List<Notify>>() {
       @Override
       public void onChanged(List<Notify> notifyList) {
+        mRunningCount = notifyList.size();
+        App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
         TabLayout.Tab tab = mMainTab.getTabAt(0);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
@@ -148,6 +159,7 @@ public class MainFragment extends Fragment {
       new Observer<List<Notify>>() {
       @Override
       public void onChanged(List<Notify> notifyList) {
+        mCMRCount = notifyList.size();
         TabLayout.Tab tab = mMainTab.getTabAt(2);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
@@ -164,6 +176,13 @@ public class MainFragment extends Fragment {
       new Observer<List<Notify>>() {
         @Override
         public void onChanged(List<Notify> notifyList) {
+          mCompletedCount = notifyList.size();
+          if (mCompletedCount > 0) {
+            App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
+          } else {
+            App.eventBus.post(new TaskStatusEvent(0));
+          }
+          
           TabLayout.Tab tab = mMainTab.getTabAt(3);
           tab.setCustomView(null);
           if (notifyList.size() > 0) {
@@ -175,6 +194,26 @@ public class MainFragment extends Fragment {
           }
         }
       });
+    
+    mainViewModel.getRowCount().observe(this, new Observer<Integer>() {
+      @Override
+      public void onChanged(Integer integer) {
+        mRowTaskCount = integer.intValue();
+        App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
+      }
+    });
+  }
+  
+  private int calculateTaskStatusPercentage() {
+    if (mRowTaskCount == 0) {
+      return 0;
+    }
+    else if (mRowTaskCount == mCompletedCount) {
+      return 100;
+    } else {
+      float percentage = ((100.0f / mRowTaskCount) * ((mRunningCount * 0.5f) + mCompletedCount));
+      return (int)percentage;
+    }
   }
   
   private void setTabBadge(int tabIndex, Badge badge) {

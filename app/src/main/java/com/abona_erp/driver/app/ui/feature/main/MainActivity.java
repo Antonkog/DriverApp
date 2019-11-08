@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.ui.feature.main;
 
+import android.Manifest;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
@@ -30,6 +32,7 @@ import com.abona_erp.driver.app.ui.event.BackEvent;
 import com.abona_erp.driver.app.ui.event.BaseEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
+import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.LastActivityAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
@@ -43,6 +46,11 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.tree.rh.ctlib.CT;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -61,6 +69,7 @@ public class MainActivity extends BaseActivity {
 
   private Gson mGson;
   private Data mData;
+  private WorkManager mWorkManager;
   
   private RecyclerView lvLastActivity;
   private PieView mMainPieView;
@@ -72,10 +81,34 @@ public class MainActivity extends BaseActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Dexter.withActivity(this)
+      .withPermissions(Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.CAMERA)
+      .withListener(new MultiplePermissionsListener() {
+        @Override
+        public void onPermissionsChecked(MultiplePermissionsReport report) {
+          requestToken(App.spManager.getFirebaseToken());
+        }
+  
+        @Override
+        public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+    
+        }
+      }).check();
+      
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    mWorkManager = WorkManager.getInstance(this);
 
     mMainPieView = (PieView)findViewById(R.id.mainPieView);
     mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrAbona));
     mMainPieView.setInnerBackgroundColor(getResources().getColor(R.color.clrFont));
+    mMainPieView.setInnerText("0 %");
+    mMainPieView.setPercentage(0);
 
     JsonDeserializer deserializer = new DoubleJsonDeserializer();
     mGson = new GsonBuilder()
@@ -110,11 +143,8 @@ public class MainActivity extends BaseActivity {
           if (!task.isSuccessful()) {
             return;
           }
-        
-          // Get new Instance ID token:
-          String token = task.getResult().getToken();
-          Log.d("TEST","Firebase registration Token=" + token);
-          requestToken(token);
+          App.spManager.setFirebaseToken(task.getResult().getToken());
+          Log.d("MainActivity","Firebase registration Token=" + task.getResult().getToken());
         }
       });
 
@@ -150,6 +180,20 @@ public class MainActivity extends BaseActivity {
     });
 
     loadMainFragment(MainFragment.newInstance());
+  }
+  
+  @Subscribe
+  public void onMessageEvent(TaskStatusEvent event) {
+    if (event.getPercentage() < 0)
+      return;
+    
+    mMainPieView.setPercentage(event.getPercentage());
+    mMainPieView.setInnerText(event.getPercentage() + " %");
+    if (event.getPercentage() == 100) {
+      mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrTaskFinished));
+    } else {
+      mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrAbona));
+    }
   }
 
   @Subscribe
@@ -212,24 +256,38 @@ public class MainActivity extends BaseActivity {
   private void requestToken(String token) {
   
     Constraints mConstraints = new Constraints.Builder()
+      .setRequiresCharging(false)
       .setRequiredNetworkType(NetworkType.CONNECTED)
       .build();
     
     OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest
       .Builder(DriverWorkManager.class)
       .setConstraints(mConstraints)
+      .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+        TimeUnit.MICROSECONDS)
+      .setInitialDelay(10, TimeUnit.SECONDS)
       .setInputData(createInputData(token))
       .addTag(UUID.randomUUID().toString())
-      /*.setInitialDelay(2, TimeUnit.SECONDS)*/
       .build();
-    WorkManager.getInstance(this).enqueue(oneTimeWorkRequest);
-    //App.getWorkManager().enqueue(oneTimeWorkRequest);
+    mWorkManager.enqueue(oneTimeWorkRequest);
   }
   
   private androidx.work.Data createInputData(String token) {
-    androidx.work.Data data = new androidx.work.Data.Builder()
-      .putString("token", token)
-      .build();
+    androidx.work.Data data;
+    if (!App.spManager.getFirstTimeRun()) {
+      App.spManager.setFirstTimeRun(true);
+      // FIRST INSTALL: STATE 0
+      data = new androidx.work.Data.Builder()
+        .putString("token", token)
+        .putInt("state", 0)
+        .build();
+    } else {
+      // TOKEN UPDATE: STATE 1
+      data = new androidx.work.Data.Builder()
+        .putString("token", token)
+        .putInt("state", 1)
+        .build();
+    }
     return data;
   }
   

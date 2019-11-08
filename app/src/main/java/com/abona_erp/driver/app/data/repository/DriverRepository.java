@@ -25,6 +25,7 @@ public class DriverRepository {
   private LiveData<List<Notify>> mAllCMRNotifications;
   private LiveData<List<Notify>> mAllCompletedNotifications;
   private LiveData<Integer> mNotReadNotificationCount;
+  private LiveData<Integer> mRowCount;
 
   private LastActivityDao mLastActivityDao;
   private LiveData<List<LastActivity>> mAllLastActivityItems;
@@ -37,6 +38,7 @@ public class DriverRepository {
     mAllCMRNotifications = mNotifyDao.getAllCMRNotifications();
     mAllCompletedNotifications = mNotifyDao.getAllCompletedNotifications();
     mNotReadNotificationCount = mNotifyDao.getNotReadNotificationCount();
+    mRowCount = mNotifyDao.getRowCount();
 
     mLastActivityDao = db.lastActivityDao();
     mAllLastActivityItems = mLastActivityDao.getLastActivityItems();
@@ -69,9 +71,17 @@ public class DriverRepository {
   public void update(Notify notify) {
     new updateAsyncTask(mNotifyDao).execute(notify);
   }
+  
+  public void delete(Notify notify) {
+    new deleteAsyncTask(mNotifyDao).execute(notify);
+  }
 
   public LiveData<List<LastActivity>> getAllLastActivityItems() {
     return mAllLastActivityItems;
+  }
+  
+  public LiveData<Integer> getRowCount() {
+    return mRowCount;
   }
 
   public void insert(LastActivity lastActivity) {
@@ -112,6 +122,21 @@ public class DriverRepository {
     @Override
     protected Void doInBackground(final Notify... params) {
       mAsyncTaskDao.updateNotify(params[0]);
+      return null;
+    }
+  }
+  
+  private static class deleteAsyncTask extends AsyncTask<Notify, Void, Void> {
+    
+    private NotifyDao mAsyncTaskDao;
+    
+    deleteAsyncTask(NotifyDao dao) {
+      mAsyncTaskDao = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(final Notify... params) {
+      mAsyncTaskDao.delete(params[0]);
       return null;
     }
   }

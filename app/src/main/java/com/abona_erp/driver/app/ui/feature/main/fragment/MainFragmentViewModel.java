@@ -19,6 +19,8 @@ public class MainFragmentViewModel extends AndroidViewModel {
   private LiveData<List<Notify>> mAllCMRNotifications;
   private LiveData<List<Notify>> mAllCompletedNotifications;
   
+  private LiveData<Integer> mRowCount;
+  
   public MainFragmentViewModel(Application application) {
     super(application);
     mRepository = new DriverRepository(application);
@@ -26,6 +28,8 @@ public class MainFragmentViewModel extends AndroidViewModel {
     mAllRunningNotifications = mRepository.getAllRunningNotifications();
     mAllCMRNotifications = mRepository.getAllCMRNotifications();
     mAllCompletedNotifications = mRepository.getAllCompletedNotifications();
+    
+    mRowCount = mRepository.getRowCount();
   }
   
   LiveData<List<Notify>> getAllPendingNotifications() {
@@ -42,5 +46,9 @@ public class MainFragmentViewModel extends AndroidViewModel {
   
   LiveData<List<Notify>> getAllCompletedNotifications() {
     return mAllCompletedNotifications;
+  }
+  
+  LiveData<Integer> getRowCount() {
+    return mRowCount;
   }
 }

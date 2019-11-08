@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.ui.feature.main.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +15,20 @@ import com.abona_erp.driver.app.data.model.ActivityStep;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapter.ViewHolder> {
   
   private static final String TAG = ActivityStepAdapter.class.getSimpleName();
+  
+  private static final String DATE_FORMAT_IN = "yyyy-MM-dd HH:mm:ss";
+  private static final String DATE_FORMAT_OUT = "EEE, d MMM yyyy HH:mm:ss";
+  
+  private static final String NOT_SET_TIMESTAMP_GLYPH = "--.--.---- --:--:--";
 
   class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -51,10 +59,20 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
   private final Context mContext;
   private final LayoutInflater mInflater;
   private List<ActivityStep> mActivityStepItems;
+  private final SimpleDateFormat mSdfIn;
+  private final SimpleDateFormat mSdfOut;
+  private Date mDateMin;
   
   public ActivityStepAdapter(Context ctx) {
     mContext = ctx;
     mInflater = LayoutInflater.from(mContext);
+    mSdfIn = new SimpleDateFormat(DATE_FORMAT_IN, Locale.getDefault());
+    mSdfOut = new SimpleDateFormat(DATE_FORMAT_OUT, Locale.getDefault());
+    try {
+      mDateMin = mSdfIn.parse("0001-01-01 00:00:00");
+    } catch (ParseException e) {
+      Log.e(TAG, e.getMessage());
+    }
   }
   
   @Override
@@ -67,30 +85,38 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
   
   @Override
   public void onBindViewHolder(ActivityStepAdapter.ViewHolder holder, int position) {
+    Log.d(TAG, "onBindViewHolder()");
     if (mActivityStepItems != null) {
 
       ActivityStep current = mActivityStepItems.get(position);
 
       holder.setIsRecyclable(false);
       if (current.getTaskStatus().equals(TaskStatus.PENDING)) {
+        Log.d(TAG, "TaskStatus.PENDING");
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
         holder.iv_activity_step_check_mark.setVisibility(View.GONE);
         holder.tv_activity_step_no.setVisibility(View.VISIBLE);
         holder.tv_activity_step_no.setText(String.valueOf(position+1));
+        holder.tv_activity_step_status.setBackground(mContext.getResources()
+          .getDrawable(R.drawable.status_pending_bg));
 
         if (current.getActivityItem().getStarted() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getStarted());
-            holder.tv_activity_step_started.setText(dateTime);
+          if (current.getActivityItem().getStarted().compareTo(mDateMin) == 0) {
+            holder.tv_activity_step_started.setText(NOT_SET_TIMESTAMP_GLYPH);
+          } else {
+            holder.tv_activity_step_started.setText(mSdfOut.format(current.getActivityItem().getStarted()));
           }
+        } else {
+          holder.tv_activity_step_started.setText(NOT_SET_TIMESTAMP_GLYPH);
         }
         if (current.getActivityItem().getFinished() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getFinished());
-            holder.tv_activity_step_finished.setText(dateTime);
+          if (current.getActivityItem().getFinished().compareTo(mDateMin) == 0) {
+            holder.tv_activity_step_finished.setText(NOT_SET_TIMESTAMP_GLYPH);
+          } else {
+            holder.tv_activity_step_finished.setText(mSdfOut.format(current.getActivityItem().getFinished()));
           }
+        } else {
+          holder.tv_activity_step_finished.setText(NOT_SET_TIMESTAMP_GLYPH);
         }
         if (current.getActivityItem().getName() != null)
           holder.tv_activity_step_name.setText(current.getActivityItem().getName());
@@ -98,30 +124,42 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
           holder.tv_activity_step_description.setText(current.getActivityItem().getDescription());
         holder.tv_activity_step_status.setText(current.getActivityItem().getStatus().toString());
       } else if (current.getTaskStatus().equals(TaskStatus.RUNNING)) {
+        Log.d(TAG, "TaskStatus.RUNNING");
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
 
-        if (current.getActivityItem().getStatus().equals(ActivityStatus.PENDING) || current.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
+        if (current.getActivityItem().getStatus().equals(ActivityStatus.PENDING)) {
           holder.iv_activity_step_check_mark.setVisibility(View.GONE);
           holder.tv_activity_step_no.setVisibility(View.VISIBLE);
           holder.tv_activity_step_no.setText(String.valueOf(position+1));
+          holder.tv_activity_step_status.setBackground(mContext.getResources().getDrawable(R.drawable.status_pending_bg));
+        } else if (current.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
+          holder.iv_activity_step_check_mark.setVisibility(View.GONE);
+          holder.tv_activity_step_no.setVisibility(View.VISIBLE);
+          holder.tv_activity_step_no.setText(String.valueOf(position+1));
+          holder.tv_activity_step_status.setBackground(mContext.getResources().getDrawable(R.drawable.status_running_bg));
         } else if (current.getActivityItem().getStatus().equals(ActivityStatus.FINISHED)) {
           holder.tv_activity_step_no.setVisibility(View.GONE);
           holder.iv_activity_step_check_mark.setVisibility(View.VISIBLE);
+          holder.tv_activity_step_status.setBackground(mContext.getResources().getDrawable(R.drawable.status_finished_bg));
         }
 
         if (current.getActivityItem().getStarted() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getStarted());
-            holder.tv_activity_step_started.setText(dateTime);
+          if (current.getActivityItem().getStarted().compareTo(mDateMin) == 0) {
+            holder.tv_activity_step_started.setText(NOT_SET_TIMESTAMP_GLYPH);
+          } else {
+            holder.tv_activity_step_started.setText(mSdfOut.format(current.getActivityItem().getStarted()));
           }
+        } else {
+          holder.tv_activity_step_started.setText(NOT_SET_TIMESTAMP_GLYPH);
         }
         if (current.getActivityItem().getFinished() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getFinished());
-            holder.tv_activity_step_finished.setText(dateTime);
+          if (current.getActivityItem().getFinished().compareTo(mDateMin) == 0) {
+            holder.tv_activity_step_finished.setText(NOT_SET_TIMESTAMP_GLYPH);
+          } else {
+            holder.tv_activity_step_finished.setText(mSdfOut.format(current.getActivityItem().getFinished()));
           }
+        } else {
+          holder.tv_activity_step_finished.setText(NOT_SET_TIMESTAMP_GLYPH);
         }
         if (current.getActivityItem().getName() != null)
           holder.tv_activity_step_name.setText(current.getActivityItem().getName());
@@ -129,7 +167,10 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
           holder.tv_activity_step_description.setText(current.getActivityItem().getDescription());
         holder.tv_activity_step_status.setText(current.getActivityItem().getStatus().toString());
       } else if (current.getTaskStatus().equals(TaskStatus.CMR)) {
+        Log.d(TAG, "TaskStatus.CMR");
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
+        holder.tv_activity_step_status.setBackground(mContext.getResources()
+          .getDrawable(R.drawable.status_finished_bg));
 
         if (current.getActivityItem().getStatus().equals(ActivityStatus.PENDING) || current.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
           holder.iv_activity_step_check_mark.setVisibility(View.GONE);
@@ -141,18 +182,10 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
         }
 
         if (current.getActivityItem().getStarted() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getStarted());
-            holder.tv_activity_step_started.setText(dateTime);
-          }
+          holder.tv_activity_step_started.setText(mSdfOut.format(current.getActivityItem().getStarted()));
         }
         if (current.getActivityItem().getFinished() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getFinished());
-            holder.tv_activity_step_finished.setText(dateTime);
-          }
+          holder.tv_activity_step_finished.setText(mSdfOut.format(current.getActivityItem().getFinished()));
         }
         if (current.getActivityItem().getName() != null)
           holder.tv_activity_step_name.setText(current.getActivityItem().getName());
@@ -160,7 +193,10 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
           holder.tv_activity_step_description.setText(current.getActivityItem().getDescription());
         holder.tv_activity_step_status.setText(current.getActivityItem().getStatus().toString());
       } else if (current.getTaskStatus().equals(TaskStatus.FINISHED)) {
+        Log.d(TAG, "TaskStatus.FINISHED");
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
+        holder.tv_activity_step_status.setBackground(mContext.getResources()
+          .getDrawable(R.drawable.status_finished_bg));
 
         if (current.getActivityItem().getStatus().equals(ActivityStatus.PENDING) || current.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
           holder.iv_activity_step_check_mark.setVisibility(View.GONE);
@@ -172,18 +208,10 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
         }
 
         if (current.getActivityItem().getStarted() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getStarted());
-            holder.tv_activity_step_started.setText(dateTime);
-          }
+          holder.tv_activity_step_started.setText(mSdfOut.format(current.getActivityItem().getStarted()));
         }
         if (current.getActivityItem().getFinished() != null) {
-          synchronized (this) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
-            String dateTime = sdf.format(current.getActivityItem().getFinished());
-            holder.tv_activity_step_finished.setText(dateTime);
-          }
+          holder.tv_activity_step_finished.setText(mSdfOut.format(current.getActivityItem().getFinished()));
         }
         if (current.getActivityItem().getName() != null)
           holder.tv_activity_step_name.setText(current.getActivityItem().getName());

@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
-import com.abona_erp.driver.app.util.AppUtils;
 
 import java.util.List;
 

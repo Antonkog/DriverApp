@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.data.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -37,7 +38,13 @@ public interface NotifyDao {
   
   @Update
   void updateNotify(Notify notify);
+  
+  @Delete
+  void delete(Notify notify);
 
   @Query("SELECT COUNT(id) FROM taskItem WHERE read = 0")
   LiveData<Integer> getNotReadNotificationCount();
+  
+  @Query("SELECT COUNT(id) FROM taskItem")
+  LiveData<Integer> getRowCount();
 }

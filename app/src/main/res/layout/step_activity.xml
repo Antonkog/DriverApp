@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:textColor="@color/clrFont"
-        android:text="30.12.2019 11:45:23"
+        android:minWidth="140dp"
         />
 
       <View
@@ -73,7 +73,6 @@
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:textColor="@color/clrFont"
-        android:text="31.12.2019 11:45:23"
         />
 
     </LinearLayout>
@@ -168,7 +167,7 @@
           android:id="@+id/tv_activity_step_status"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:background="@drawable/status_bg"
+          android:background="@drawable/status_pending_bg"
           android:textColor="#fff"
           />
 

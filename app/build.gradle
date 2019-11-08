@@ -66,6 +66,10 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:2.6.2"
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.6.2"
 
+    // OkHttp:
+    implementation 'com.squareup.okhttp3:okhttp:4.2.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.1'
+
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
     implementation "io.reactivex.rxjava2:rxjava:2.2.12"
 
@@ -78,6 +82,7 @@ dependencies {
     implementation 'com.github.zurche:plain-pie:v0.2.9'
     implementation 'com.github.linger1216:labelview:v1.1.2'
     implementation 'com.github.shivam301296:Android-CustomToast:1.0.1'
+    implementation 'com.karumi:dexter:6.0.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

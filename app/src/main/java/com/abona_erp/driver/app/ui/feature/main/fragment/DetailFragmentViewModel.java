@@ -25,4 +25,8 @@ public class DetailFragmentViewModel extends AndroidViewModel {
   void update(Notify notify) {
     mRepository.update(notify);
   }
+  
+  void delete(Notify notify) {
+    mRepository.delete(notify);
+  }
 }

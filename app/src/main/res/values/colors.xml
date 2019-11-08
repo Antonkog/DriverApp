@@ -9,6 +9,7 @@
   <color name="clrWhite">#FFF</color>
   <color name="clrMainHeader">#F5F7FA</color>
   <color name="clrIcon">#1F1C2C</color>
+  <color name="clrTaskFinished">#10ac84</color>
 
   <color name="timeline_path_new_task">#27ae60</color>
 
