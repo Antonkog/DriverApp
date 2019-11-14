@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- MULTILANG -->
+  <string name="action_cancel">Отмена</string>
+  <string name="action_ok">ОК</string>
+  <string name="action_save">Сохранить</string>
+  <string name="menu_settings">Параметры</string>
+  <string name="menu_about">О программе</string>
+  <!-- MULTILANG -->
+
+  <string name="yes">Да</string>
+  <string name="no">Нет</string>
+  <string name="cancel">Отменить</string>
+  <string name="enable">Включить</string>
+  <string name="next">Далее</string>
+  <string name="back">Назад</string>
+
+  <string name="theme_light">Светлая</string>
+  <string name="theme_dark">Тёмная</string>
+</resources>

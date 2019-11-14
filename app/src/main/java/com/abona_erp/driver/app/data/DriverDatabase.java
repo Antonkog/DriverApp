@@ -17,7 +17,7 @@ import com.abona_erp.driver.app.data.entity.Notify;
 @Database(entities = {
   Notify.class,
   LastActivity.class
-}, version = 1, exportSchema = true)
+}, version = 1, exportSchema = false)
 public abstract class DriverDatabase extends RoomDatabase {
 
   public abstract NotifyDao notifyDao();
@@ -31,7 +31,7 @@ public abstract class DriverDatabase extends RoomDatabase {
       synchronized (DriverDatabase.class) {
         if (INSTANCE == null) {
           INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-            DriverDatabase.class, "abona_driver")
+            DriverDatabase.class, "abona_driver01")
             .build();
         }
       }

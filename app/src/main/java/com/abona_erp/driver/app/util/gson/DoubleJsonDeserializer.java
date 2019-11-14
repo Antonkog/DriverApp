@@ -1,5 +1,6 @@
-package com.abona_erp.driver.app.util;
+package com.abona_erp.driver.app.util.gson;
 
+import com.abona_erp.driver.app.logging.Log;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -14,6 +15,7 @@ public class DoubleJsonDeserializer implements JsonDeserializer<Double> {
     try {
       return json.getAsDouble();
     } catch (Exception e) {
+      Log.e("DoubleJsonDeserializer", json != null ? json.toString() : "");
       return 0D;
     }
   }

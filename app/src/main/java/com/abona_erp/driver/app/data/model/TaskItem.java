@@ -10,11 +10,11 @@ public class TaskItem {
   
   @SerializedName("MandantId")
   @Expose
-  private int mandantId;
+  private Integer mandantId;
   
   @SerializedName("TaskId")
   @Expose
-  private int taskId;
+  private Integer taskId;
   
   @SerializedName("AbonaTransferNr")
   @Expose
@@ -22,19 +22,19 @@ public class TaskItem {
   
   @SerializedName("PreviousTaskId")
   @Expose
-  private int previousTaskId;
+  private Integer previousTaskId;
   
   @SerializedName("NextTaskId")
   @Expose
-  private int nextTaskId;
+  private Integer nextTaskId;
   
   @SerializedName("VehiclePreviousTaskId")
   @Expose
-  private int vehiclePreviousTaskId;
+  private Integer vehiclePreviousTaskId;
   
   @SerializedName("VehicleNextTaskId")
   @Expose
-  private int vehicleNextTaskId;
+  private Integer vehicleNextTaskId;
   
   @SerializedName("ChangeReason")
   @Expose
@@ -42,7 +42,7 @@ public class TaskItem {
   
   @SerializedName("OrderNo")
   @Expose
-  private int orderNo;
+  private Integer orderNo;
   
   @SerializedName("Description")
   @Expose
@@ -54,7 +54,7 @@ public class TaskItem {
   
   @SerializedName("KundenNr")
   @Expose
-  private int kundenNr;
+  private Integer kundenNr;
   
   @SerializedName("ReferenceIdCustomer1")
   @Expose
@@ -80,6 +80,10 @@ public class TaskItem {
   @Expose
   private TaskStatus status;
   
+  @SerializedName("PercentFinished")
+  @Expose
+  private Double percentFinished;
+  
   @SerializedName("PalletsAmount")
   @Expose
   private int palletsAmount;
@@ -88,19 +92,19 @@ public class TaskItem {
   @Expose
   List<ActivityItem> activities;
   
-  public int getMandantId() {
+  public Integer getMandantId() {
     return mandantId;
   }
   
-  public void setMandantId(int mandantId) {
+  public void setMandantId(Integer mandantId) {
     this.mandantId = mandantId;
   }
   
-  public int getTaskId() {
+  public Integer getTaskId() {
     return taskId;
   }
   
-  public void setTaskId(int taskId) {
+  public void setTaskId(Integer taskId) {
     this.taskId = taskId;
   }
   
@@ -112,35 +116,35 @@ public class TaskItem {
     this.abonaTransferNr = abonaTransferNr;
   }
   
-  public int getPreviousTaskId() {
+  public Integer getPreviousTaskId() {
     return previousTaskId;
   }
   
-  public void setPreviousTaskId(int previousTaskId) {
+  public void setPreviousTaskId(Integer previousTaskId) {
     this.previousTaskId = previousTaskId;
   }
   
-  public int getNextTaskId() {
+  public Integer getNextTaskId() {
     return nextTaskId;
   }
   
-  public void setNextTaskId(int nextTaskId) {
+  public void setNextTaskId(Integer nextTaskId) {
     this.nextTaskId = nextTaskId;
   }
   
-  public int getVehiclePreviousTaskId() {
+  public Integer getVehiclePreviousTaskId() {
     return vehiclePreviousTaskId;
   }
   
-  public void setVehiclePreviousTaskId(int vehiclePreviousTaskId) {
+  public void setVehiclePreviousTaskId(Integer vehiclePreviousTaskId) {
     this.vehiclePreviousTaskId = vehiclePreviousTaskId;
   }
   
-  public int getVehicleNextTaskId() {
+  public Integer getVehicleNextTaskId() {
     return vehicleNextTaskId;
   }
   
-  public void setVehicleNextTaskId(int vehicleNextTaskId) {
+  public void setVehicleNextTaskId(Integer vehicleNextTaskId) {
     this.vehicleNextTaskId = vehicleNextTaskId;
   }
   
@@ -152,11 +156,11 @@ public class TaskItem {
     this.changeReason = changeReason;
   }
   
-  public int getOrderNo() {
+  public Integer getOrderNo() {
     return orderNo;
   }
   
-  public void setOrderNo(int orderNo) {
+  public void setOrderNo(Integer orderNo) {
     this.orderNo = orderNo;
   }
   
@@ -176,11 +180,11 @@ public class TaskItem {
     this.kundenName = kundenName;
   }
   
-  public int getKundenNr() {
+  public Integer getKundenNr() {
     return kundenNr;
   }
   
-  public void setKundenNr(int kundenNr) {
+  public void setKundenNr(Integer kundenNr) {
     this.kundenNr = kundenNr;
   }
   
@@ -232,11 +236,19 @@ public class TaskItem {
     this.status = status;
   }
   
-  public int getPalletsAmount() {
+  public Double getPercentFinished() {
+    return percentFinished;
+  }
+  
+  public void setPercentFinished(Double percentFinished) {
+    this.percentFinished = percentFinished;
+  }
+  
+  public Integer getPalletsAmount() {
     return palletsAmount;
   }
   
-  public void setPalletsAmount(int palletsAmount) {
+  public void setPalletsAmount(Integer palletsAmount) {
     this.palletsAmount = palletsAmount;
   }
   

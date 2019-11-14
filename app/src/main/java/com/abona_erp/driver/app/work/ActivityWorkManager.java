@@ -103,17 +103,13 @@ public class ActivityWorkManager extends Worker {
       @Override
       public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
         if (response.isSuccessful()) {
-          Log.d(TAG, "==============================================================================");
-          Log.d(TAG, "Communicate with REST-API successfully!");
-          Log.d(TAG, "==============================================================================");
+          Log.d(TAG, "***** Communicate with REST-API successfully!");
         }
       }
   
       @Override
       public void onFailure(Call<PostResponse> call, Throwable t) {
-        Log.d(TAG, "==============================================================================");
-        Log.e(TAG, "Error on communication!");
-        Log.d(TAG, "==============================================================================");
+        Log.e(TAG, "***** Error on communication!");
         Result.retry();
       }
     });
@@ -121,9 +117,7 @@ public class ActivityWorkManager extends Worker {
   
   @Override
   public Result doWork() {
-    Log.d(TAG, "==============================================================================");
-    Log.d(TAG, "doWork() started.");
-    Log.d(TAG, "==============================================================================");
+    Log.d(TAG, "***** doWork() started.");
   
     if (getRunAttemptCount() > 3) {
       return Result.failure();

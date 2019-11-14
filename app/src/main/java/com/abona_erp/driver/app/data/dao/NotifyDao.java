@@ -33,8 +33,11 @@ public interface NotifyDao {
   @Query("SELECT * FROM taskItem WHERE id = :id LIMIT 1")
   Single<Notify> loadNotifyById(int id);
   
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
-  void insertNotify(Notify notify);
+  @Query("SELECT * FROM taskItem WHERE mandant_id = :mandantId AND task_id = :taskId LIMIT 1")
+  Single<Notify> loadNotifyByTaskMandantId(int mandantId, int taskId);
+  
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  long insertNotify(Notify notify);
   
   @Update
   void updateNotify(Notify notify);

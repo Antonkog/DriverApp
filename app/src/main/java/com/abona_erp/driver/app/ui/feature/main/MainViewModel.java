@@ -11,6 +11,8 @@ import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.List;
 
+import io.reactivex.Single;
+
 public class MainViewModel extends AndroidViewModel {
 
   private DriverRepository mRepository;
@@ -65,5 +67,9 @@ public class MainViewModel extends AndroidViewModel {
 
   void update(Notify notify) {
     mRepository.update(notify);
+  }
+  
+  Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
+    return mRepository.getNotifyByMandantTaskId(mandantId, taskId);
   }
 }

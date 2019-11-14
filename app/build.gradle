@@ -15,6 +15,12 @@ android {
         versionName Versions.androidVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
+        vectorDrawables.useSupportLibrary = true
+
+        buildConfigField "long", "BUILD_TIMESTAMP", getLastCommitTimestamp() + "L"
+        buildConfigField "String[]", "LANGUAGES", "new String[]{\"en_US\",\"de_DE\",\"ru_RU\"}"
+        buildConfigField "int", "CANONICAL_VERSION_CODE", "$Versions.androidVersionCode"
     }
     buildTypes {
         release {
@@ -41,6 +47,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.1.0"
 
+    implementation 'androidx.multidex:multidex:2.0.1'
+
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 
@@ -50,7 +58,7 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:2.2.1"
 
     implementation 'com.google.firebase:firebase-analytics:17.2.1'
-    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.0.1'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     // WorkManager:
@@ -83,10 +91,30 @@ dependencies {
     implementation 'com.github.linger1216:labelview:v1.1.2'
     implementation 'com.github.shivam301296:Android-CustomToast:1.0.1'
     implementation 'com.karumi:dexter:6.0.0'
+    implementation 'com.shuhart.stepview:stepview:1.5.0'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.9'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.0'
+    implementation 'com.annimon:stream:1.2.1'
+    implementation 'org.whispersystems:signal-service-android:2.13.9'
+    implementation 'com.github.TutorialsAndroid:KAlertDialog:v7.0.19'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
+
+def getLastCommitTimestamp() {
+    new ByteArrayOutputStream().withStream { os ->
+        def result = exec {
+            executable = 'git'
+            args = ['log', '-1', '--pretty=format:%ct']
+            standardOutput = os
+        }
+
+        return os.toString() + "000"
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

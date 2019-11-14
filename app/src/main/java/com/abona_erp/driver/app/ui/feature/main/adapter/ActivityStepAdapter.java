@@ -29,6 +29,8 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
   private static final String DATE_FORMAT_OUT = "EEE, d MMM yyyy HH:mm:ss";
   
   private static final String NOT_SET_TIMESTAMP_GLYPH = "--.--.---- --:--:--";
+  
+  private boolean mDeleted = false;
 
   class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -41,6 +43,8 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
     private final AsapTextView tv_activity_step_name;
     private final AsapTextView tv_activity_step_description;
     private final AsapTextView tv_activity_step_status;
+    
+    private boolean deleted;
 
     private ViewHolder(View itemView) {
       super(itemView);
@@ -91,7 +95,32 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
       ActivityStep current = mActivityStepItems.get(position);
 
       holder.setIsRecyclable(false);
-      if (current.getTaskStatus().equals(TaskStatus.PENDING)) {
+      if (mDeleted) {
+        holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
+        holder.tv_activity_step_status.setBackground(mContext.getResources()
+          .getDrawable(R.drawable.status_deleted_bg));
+  
+        if (current.getActivityItem().getStatus().equals(ActivityStatus.PENDING) || current.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
+          holder.iv_activity_step_check_mark.setVisibility(View.GONE);
+          holder.tv_activity_step_no.setVisibility(View.VISIBLE);
+          holder.tv_activity_step_no.setText(String.valueOf(position+1));
+        } else if (current.getActivityItem().getStatus().equals(ActivityStatus.FINISHED)) {
+          holder.tv_activity_step_no.setVisibility(View.GONE);
+          holder.iv_activity_step_check_mark.setVisibility(View.VISIBLE);
+        }
+  
+        if (current.getActivityItem().getStarted() != null) {
+          holder.tv_activity_step_started.setText(mSdfOut.format(current.getActivityItem().getStarted()));
+        }
+        if (current.getActivityItem().getFinished() != null) {
+          holder.tv_activity_step_finished.setText(mSdfOut.format(current.getActivityItem().getFinished()));
+        }
+        if (current.getActivityItem().getName() != null)
+          holder.tv_activity_step_name.setText(current.getActivityItem().getName());
+        if (current.getActivityItem().getDescription() != null)
+          holder.tv_activity_step_description.setText(current.getActivityItem().getDescription());
+        holder.tv_activity_step_status.setText(mContext.getResources().getString(R.string.label_deleted));
+      } else if (current.getTaskStatus().equals(TaskStatus.PENDING)) {
         Log.d(TAG, "TaskStatus.PENDING");
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
         holder.iv_activity_step_check_mark.setVisibility(View.GONE);
@@ -126,7 +155,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
       } else if (current.getTaskStatus().equals(TaskStatus.RUNNING)) {
         Log.d(TAG, "TaskStatus.RUNNING");
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
-
+        
         if (current.getActivityItem().getStatus().equals(ActivityStatus.PENDING)) {
           holder.iv_activity_step_check_mark.setVisibility(View.GONE);
           holder.tv_activity_step_no.setVisibility(View.VISIBLE);
@@ -224,8 +253,9 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
     }
   }
 
-  public void setActivityStepItems(List<ActivityStep> items) {
+  public void setActivityStepItems(List<ActivityStep> items, boolean deleted) {
     mActivityStepItems = items;
+    mDeleted = deleted;
     notifyDataSetChanged();
   }
 

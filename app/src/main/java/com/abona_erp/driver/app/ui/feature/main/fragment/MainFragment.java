@@ -31,7 +31,6 @@ public class MainFragment extends Fragment {
   private ViewPager mViewPager;
   private TabsPagerAdapter mPagerAdapter;
   
-  private int mPendingCount;
   private int mRunningCount;
   private int mCMRCount;
   private int mCompletedCount;
@@ -124,7 +123,6 @@ public class MainFragment extends Fragment {
       
       @Override
       public void onChanged(List<Notify> notifyList) {
-        mPendingCount = notifyList.size();
         TabLayout.Tab tab = mMainTab.getTabAt(1);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
@@ -142,7 +140,7 @@ public class MainFragment extends Fragment {
       @Override
       public void onChanged(List<Notify> notifyList) {
         mRunningCount = notifyList.size();
-        App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
+        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
         TabLayout.Tab tab = mMainTab.getTabAt(0);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
@@ -160,6 +158,7 @@ public class MainFragment extends Fragment {
       @Override
       public void onChanged(List<Notify> notifyList) {
         mCMRCount = notifyList.size();
+        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
         TabLayout.Tab tab = mMainTab.getTabAt(2);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
@@ -182,7 +181,6 @@ public class MainFragment extends Fragment {
           } else {
             App.eventBus.post(new TaskStatusEvent(0));
           }
-          
           TabLayout.Tab tab = mMainTab.getTabAt(3);
           tab.setCustomView(null);
           if (notifyList.size() > 0) {
@@ -194,7 +192,7 @@ public class MainFragment extends Fragment {
           }
         }
       });
-    
+  
     mainViewModel.getRowCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
@@ -211,11 +209,11 @@ public class MainFragment extends Fragment {
     else if (mRowTaskCount == mCompletedCount) {
       return 100;
     } else {
-      float percentage = ((100.0f / mRowTaskCount) * ((mRunningCount * 0.5f) + mCompletedCount));
-      return (int)percentage;
+      float percentage = ((100.0f / mRowTaskCount) * ((mRunningCount * 0.5f) + (mCMRCount * 0.9f) + mCompletedCount));
+      return (int)Math.round(percentage);
     }
   }
-  
+
   private void setTabBadge(int tabIndex, Badge badge) {
     TabLayout.Tab tab = mMainTab.getTabAt(tabIndex);
     tab.setCustomView(mPagerAdapter.getTabView(tabIndex, badge));

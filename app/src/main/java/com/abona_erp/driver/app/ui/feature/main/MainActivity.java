@@ -1,6 +1,11 @@
 package com.abona_erp.driver.app.ui.feature.main;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +14,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
@@ -27,9 +34,12 @@ import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.Data;
 import com.abona_erp.driver.app.manager.DriverWorkManager;
+import com.abona_erp.driver.app.receiver.GeofenceBroadcastReceiver;
+import com.abona_erp.driver.app.service.impl.GeofenceErrorMessages;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.BackEvent;
 import com.abona_erp.driver.app.ui.event.BaseEvent;
+import com.abona_erp.driver.app.ui.event.InfoEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
@@ -38,7 +48,15 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.abona_erp.driver.app.util.DoubleJsonDeserializer;
+import com.abona_erp.driver.app.util.Dialogs;
+import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.developer.kalert.KAlertDialog;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -55,13 +73,18 @@ import com.tree.rh.ctlib.CT;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import az.plainpie.PieView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements OnCompleteListener<Void> {
   
   public static final String BACK_STACK_ROOT_TAG = "root_fragment";
   
@@ -77,10 +100,36 @@ public class MainActivity extends BaseActivity {
   // VIEW MODEL:
   private MainViewModel mMainViewModel;
   
+  private enum PendingGeofenceTask {
+    ADD, REMOVE, NONE
+  }
+  
+  // Provides access to the Geofencing API.
+  private GeofencingClient mGeofencingClient;
+  private PendingIntent mGeofencePendingIntent;
+  private PendingGeofenceTask mPendingGeofenceTask = PendingGeofenceTask.NONE;
+  private ArrayList<Geofence> mGeofenceList;
+  
+  @Override
+  public void onComplete(@NonNull Task<Void> task) {
+    mPendingGeofenceTask = PendingGeofenceTask.NONE;
+    if (task.isSuccessful()) {
+    
+    } else {
+      // Get the status code for the error and log it using a user-friendly message.
+      String errorMessage = GeofenceErrorMessages.getErrorString(this, task.getException());
+      Log.w("*****", errorMessage);
+    }
+  }
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+  
+    if (!App.spManager.getFirstTimeRun()) {
+      TextSecurePreferences.setFCMSenderID(getBaseContext(), "724562515953");
+    }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -118,14 +167,31 @@ public class MainActivity extends BaseActivity {
       .registerTypeAdapter(Double.class, deserializer)
       .create();
 
-    //mActivityList = new ArrayList<>();
-
     lvLastActivity = (RecyclerView)findViewById(R.id.lv_last_activity);
     LinearLayoutManager recyclerLayoutManager =
       new LinearLayoutManager(getApplicationContext(),
         RecyclerView.VERTICAL, false);
     lvLastActivity.setLayoutManager(recyclerLayoutManager);
     LastActivityAdapter lastActivityAdapter = new LastActivityAdapter(getApplicationContext());
+    lastActivityAdapter.setOnItemListener(new LastActivityAdapter.OnItemClickListener() {
+      @Override
+      public void onItemClick(int mandantID, int taskId) {
+        mMainViewModel.getNotifyByMandantTaskId(mandantID, taskId).observeOn(AndroidSchedulers.mainThread())
+          .subscribeOn(Schedulers.io())
+          .subscribe(new DisposableSingleObserver<Notify>() {
+            @Override
+            public void onSuccess(Notify notify) {
+              App.eventBus.post(new TaskDetailEvent(notify));
+            }
+  
+            @Override
+            public void onError(Throwable e) {
+              //Dialogs.showInfoDialog(getApplicationContext(), "Task Item", "Task existiert nicht mehr!");
+              App.eventBus.post(new InfoEvent());
+            }
+          });
+      }
+    });
     lvLastActivity.setAdapter(lastActivityAdapter);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +246,73 @@ public class MainActivity extends BaseActivity {
     });
 
     loadMainFragment(MainFragment.newInstance());
+  
+    // Empty list for storing geofences.
+    mGeofenceList = new ArrayList<>();
+    mGeofencePendingIntent = null;
+    populateGeofenceList();
+    mGeofencingClient = LocationServices.getGeofencingClient(this);
+    
+    addGeofencesButtonHandler(null);
+  }
+  
+  private void populateGeofenceList() {
+    for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet()) {
+      
+      mGeofenceList.add(new Geofence.Builder()
+        // Set the request ID of the geofence. This is a string to identify this
+        // geofence.
+        .setRequestId(entry.getKey())
+        
+        // Set the circular region of this geofence.
+        .setCircularRegion(
+          entry.getValue().latitude,
+          entry.getValue().longitude,
+          Constants.GEOFENCE_RADIUS_IN_METERS
+        )
+        
+        // Set the expiration duration of the geofence. This geofence gets automatically
+        // removed after this period of time.
+        .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+        
+        // Set the transition types of interest. Alerts are only generated for these
+        // transition. We track entry and exit transitions in this sample.
+        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+          Geofence.GEOFENCE_TRANSITION_EXIT)
+        
+        // Create the geofence.
+        .build());
+    }
+  }
+  
+  public void showNotification(Context context, String title, String body, Intent intent) {
+    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    
+    int notificationId = 1;
+    String channelId = "channel-01";
+    String channelName = "Channel Name";
+    int importance = NotificationManager.IMPORTANCE_HIGH;
+    
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+      NotificationChannel mChannel = new NotificationChannel(
+        channelId, channelName, importance);
+      notificationManager.createNotificationChannel(mChannel);
+    }
+    
+    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, channelId)
+      .setSmallIcon(R.mipmap.ic_launcher)
+      .setContentTitle(title)
+      .setContentText(body);
+    
+    TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+    stackBuilder.addNextIntent(intent);
+    PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+      0,
+      PendingIntent.FLAG_UPDATE_CURRENT
+    );
+    mBuilder.setContentIntent(resultPendingIntent);
+    
+    notificationManager.notify(notificationId, mBuilder.build());
   }
   
   @Subscribe
@@ -214,6 +347,15 @@ public class MainActivity extends BaseActivity {
   }
   
   @Subscribe
+  public void onMessageEvent(InfoEvent event) {
+    new KAlertDialog(this, KAlertDialog.WARNING_TYPE)
+      .setTitleText("NOT FOUND")
+      .setContentText("Task existiert nicht mehr!")
+      .setConfirmText("OK")
+      .show();
+  }
+  
+  @Subscribe
   public void onMessageEvent(BackEvent event) {
     FragmentManager fragments = getSupportFragmentManager();
     Fragment mainFrag = fragments.findFragmentByTag("main");
@@ -245,12 +387,68 @@ public class MainActivity extends BaseActivity {
   protected void onStart() {
     super.onStart();
     App.eventBus.register(this);
+    
+    performPendingGeofenceTask();
   }
   
   @Override
   protected void onStop() {
     super.onStop();
     App.eventBus.unregister(this);
+  }
+  
+  private GeofencingRequest getGeofencingRequest() {
+    GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+    
+    // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
+    // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
+    // is already inside that geofence.
+    builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+    
+    // Add the geofences to be monitored by geofencing service.
+    builder.addGeofences(mGeofenceList);
+    
+    // Return a GeofencingRequest.
+    return builder.build();
+  }
+  
+  public void addGeofencesButtonHandler(View view) {
+    addGeofences();
+  }
+  
+  @SuppressWarnings("MissingPermission")
+  private void addGeofences() {
+    mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+      .addOnCompleteListener(this);
+  }
+  
+  public void removeGeofencesButtonHandler(View view) {
+    removeGeofences();
+  }
+  
+  @SuppressWarnings("MissingPermission")
+  private void removeGeofences() {
+    mGeofencingClient.removeGeofences(getGeofencePendingIntent()).addOnCompleteListener(this);
+  }
+  
+  private PendingIntent getGeofencePendingIntent() {
+    // Reuse the PendingIntent if we already have it.
+    if (mGeofencePendingIntent != null) {
+      return mGeofencePendingIntent;
+    }
+    Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
+    // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+    // addGeofences() and removeGeofences().
+    mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    return mGeofencePendingIntent;
+  }
+  
+  private void performPendingGeofenceTask() {
+    if (mPendingGeofenceTask == PendingGeofenceTask.ADD) {
+      addGeofences();
+    } else if (mPendingGeofenceTask == PendingGeofenceTask.REMOVE) {
+      removeGeofences();
+    }
   }
   
   private void requestToken(String token) {

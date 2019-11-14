@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.data.repository;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
@@ -11,6 +12,8 @@ import com.abona_erp.driver.app.data.dao.LastActivityDao;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.List;
 
@@ -27,7 +30,7 @@ public class DriverRepository {
   private LiveData<Integer> mNotReadNotificationCount;
   private LiveData<Integer> mRowCount;
 
-  private LastActivityDao mLastActivityDao;
+  private static LastActivityDao mLastActivityDao;
   private LiveData<List<LastActivity>> mAllLastActivityItems;
   
   public DriverRepository(Application application) {
@@ -63,9 +66,14 @@ public class DriverRepository {
   public Single<Notify> getNotifyById(int id) {
     return mNotifyDao.loadNotifyById(id);
   }
+  
+  public Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
+    return mNotifyDao.loadNotifyByTaskMandantId(mandantId, taskId);
+  }
 
-  public void insert(Notify notify) {
+  public long insert(Notify notify) {
     new insertAsyncTask(mNotifyDao).execute(notify);
+    return 0;
   }
   
   public void update(Notify notify) {
@@ -106,7 +114,17 @@ public class DriverRepository {
 
     @Override
     protected Void doInBackground(final Notify... params) {
-      mAsyncTaskDao.insertNotify(params[0]);
+      long oid = mAsyncTaskDao.insertNotify(params[0]);
+      if (oid > 0) {
+        LastActivity lastActivity = new LastActivity();
+        lastActivity.setStatusType(0);
+        lastActivity.setMandantOid(params[0].getMandantId());
+        lastActivity.setTaskOid(params[0].getTaskId());
+        lastActivity.setOrderNo(params[0].getOrderNo());
+        lastActivity.setCreatedAt(AppUtils.getCurrentDateTime());
+        lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+        mLastActivityDao.insert(lastActivity);
+      }
       return null;
     }
   }

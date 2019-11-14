@@ -412,6 +412,7 @@
     android:layout_alignParentEnd="true"
     app:label_orientation="RIGHT_TOP"
     app:label_text="NEW"
+    app:label_textSize="10sp"
     app:label_backgroundColor="#2980b9"
     />
 

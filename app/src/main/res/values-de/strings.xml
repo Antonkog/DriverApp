@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- MULTILANG -->
+  <string name="action_cancel">Abbrechen</string>
+  <string name="action_ok">OK</string>
+  <string name="action_save">Speichern</string>
+  <string name="menu_settings">Einstellungen</string>
+  <string name="menu_about">Über</string>
+  <!-- MULTILANG -->
+
+
+  <string name="yes">Ja</string>
+  <string name="no">Nein</string>
+
+  <string name="pending">Offen\u0020</string>
+  <string name="running">In Arbeit\u0020</string>
+  <string name="cmr">CMR\u0020</string>
+  <string name="completed">Erledigt\u0020</string>
+
+  <string name="label_new">NEU</string>
+  <string name="label_updated">UPDATED</string>
+  <string name="label_deleted">GELÖSCHT</string>
+  <string name="label_changed">GEÄNDERT</string>
+</resources>

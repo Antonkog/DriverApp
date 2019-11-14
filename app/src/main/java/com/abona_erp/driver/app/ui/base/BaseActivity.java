@@ -1,25 +1,31 @@
 package com.abona_erp.driver.app.ui.base;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.widget.NestedScrollView;
 
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageActivityHelper;
+import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
+
+import java.util.Locale;
 
 public abstract class BaseActivity extends AppCompatActivity {
   
   public ProgressBar mProgressBar;
+  
+  @Override
+  protected void attachBaseContext(Context newBase) {
+    super.attachBaseContext(DynamicLanguageContextWrapper
+      .updateContext(newBase, TextSecurePreferences.getLanguage(newBase)));
+  }
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -39,5 +45,14 @@ public abstract class BaseActivity extends AppCompatActivity {
   
   public void showProgressBar(boolean visibility) {
     mProgressBar.setVisibility(visibility ? View.VISIBLE : View.INVISIBLE);
+  }
+  
+  @Override
+  protected void onResume() {
+    super.onResume();
+    DynamicLanguageActivityHelper.recreateIfNotInCorrectLanguage(this,
+      TextSecurePreferences.getLanguage(this));
+  
+    Log.d(BaseActivity.class.getSimpleName(), Locale.getDefault().toString());
   }
 }

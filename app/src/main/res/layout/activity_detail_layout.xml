@@ -12,7 +12,8 @@
   <!-- HEADER -->
   <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize">
+    android:layout_height="?attr/actionBarSize"
+    android:background="#C3CFE2">
 
     <!-- BACK BUTTON -->
     <androidx.appcompat.widget.AppCompatImageButton
@@ -28,6 +29,24 @@
       android:tint="@color/clrFont"
       />
 
+    <com.shuhart.stepview.StepView
+      android:id="@+id/detail_step_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="80dp"
+      android:layout_marginRight="80dp"
+      android:padding="@dimen/spacing_large"
+      android:layout_centerInParent="true"
+      app:sv_selectedCircleRadius="10dp"
+      app:sv_selectedCircleColor="@color/clrWhite"
+      app:sv_selectedTextColor="@color/clrFont"
+      app:sv_stepLineWidth="1dp"
+      app:sv_nextTextColor="@color/grey_40"
+      app:sv_nextStepLineColor="@color/grey_40"
+      app:sv_doneTextColor="@color/clrFont"
+      app:sv_animationType="None"
+      />
+
   </RelativeLayout>
 
   <!-- CONTENT -->
@@ -35,6 +54,7 @@
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
+    android:layout_marginTop="@dimen/spacing_large"
     android:weightSum="2">
 
     <!-- LEFT CONTENT -->

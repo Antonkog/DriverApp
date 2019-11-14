@@ -72,7 +72,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="Order Status"
+      android:text="Task Status"
       android:shadowColor="@android:color/black"
       android:shadowDx="1"
       android:shadowDy="1"

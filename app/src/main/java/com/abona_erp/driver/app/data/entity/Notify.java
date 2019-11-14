@@ -24,6 +24,15 @@ public class Notify {
   @ColumnInfo(name = "status")
   private int status;
   
+  @ColumnInfo(name = "order_no")
+  private int orderNo;
+  
+  @ColumnInfo(name = "mandant_id")
+  private int mandantId;
+  
+  @ColumnInfo(name = "task_id")
+  private int taskId;
+  
   @ColumnInfo(name = "task_due_finish")
   @TypeConverters({DateConverter.class})
   private Date taskDueFinish;
@@ -66,6 +75,30 @@ public class Notify {
   
   public void setStatus(int status) {
     this.status = status;
+  }
+  
+  public int getMandantId() {
+    return mandantId;
+  }
+  
+  public void setMandantId(int mandantId) {
+    this.mandantId = mandantId;
+  }
+  
+  public int getTaskId() {
+    return taskId;
+  }
+  
+  public void setTaskId(int taskId) {
+    this.taskId = taskId;
+  }
+  
+  public int getOrderNo() {
+    return orderNo;
+  }
+  
+  public void setOrderNo(int orderNo) {
+    this.orderNo = orderNo;
   }
   
   public Date getTaskDueFinish() {

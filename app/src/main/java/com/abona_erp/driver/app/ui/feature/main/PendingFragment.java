@@ -1,26 +1,26 @@
 package com.abona_erp.driver.app.ui.feature.main;
 
-  import android.os.Bundle;
-  import android.view.LayoutInflater;
-  import android.view.View;
-  import android.view.ViewGroup;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-  import androidx.fragment.app.Fragment;
-  import androidx.lifecycle.Observer;
-  import androidx.lifecycle.ViewModelProviders;
-  import androidx.recyclerview.widget.DividerItemDecoration;
-  import androidx.recyclerview.widget.LinearLayoutManager;
-  import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-  import com.abona_erp.driver.app.App;
-  import com.abona_erp.driver.app.R;
-  import com.abona_erp.driver.app.data.entity.Notify;
-  import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
-  import com.abona_erp.driver.app.ui.event.MapEvent;
-  import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
-  import com.abona_erp.driver.app.ui.feature.main.view_model.PendingViewModel;
+import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
+import com.abona_erp.driver.app.ui.event.MapEvent;
+import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
+import com.abona_erp.driver.app.ui.feature.main.view_model.PendingViewModel;
 
-  import java.util.List;
+import java.util.List;
 
 public class PendingFragment extends Fragment {
 

@@ -30,10 +30,10 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
   
   @StringRes
   private static final int[] tabTitles = new int[] {
-    R.string.tab_text_running,
-    R.string.tab_text_pending,
-    R.string.tab_text_cmr,
-    R.string.tab_text_completed
+    R.string.running,
+    R.string.pending,
+    R.string.cmr,
+    R.string.completed
   };
   
   private final Context mContext;

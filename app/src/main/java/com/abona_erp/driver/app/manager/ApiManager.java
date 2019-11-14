@@ -6,12 +6,11 @@ import android.content.pm.PackageManager;
 
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.data.remote.ActivityService;
+import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
-import com.abona_erp.driver.app.util.DoubleJsonDeserializer;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
+import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -31,7 +30,16 @@ public class ApiManager implements Manager {
   private static final int DISK_CACHE_SIZE = 10 * 1024 * 1024;  // 10 MB
   
   private Context mContext;
+  private TokenService mTokenService;
   private ActivityService mActivityService;
+  
+  public TokenService getTokenApi() {
+    if (mTokenService == null) {
+      mTokenService = provideRetrofit("http://172.30.1.38:4000/api/device/")
+        .create(TokenService.class);
+    }
+    return mTokenService;
+  }
   
   public ActivityService getActivityApi() {
     if (mActivityService == null) {

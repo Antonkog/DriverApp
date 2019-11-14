@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.feature.main;
 
 import android.content.Context;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,13 @@ import android.widget.LinearLayout;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.abona_erp.driver.app.util.AppUtils;
 import com.lid.lib.LabelImageView;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +36,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   private OnItemClickListener listener;
   private Handler handler = new Handler();
   
-  private Data data;
+  private Data mData = null;
   
   public interface OnItemClickListener {
     void onItemClick(Notify notify);
@@ -44,6 +46,8 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   public NotifyViewAdapter(Context ctx) {
     context = ctx;
     mInflater = LayoutInflater.from(ctx);
+    
+    mData = new Data();
   }
   
   @Override
@@ -58,65 +62,78 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   public void onBindViewHolder(NotifyViewAdapter.ViewHolder holder, int position) {
 
     final Notify notify = mNotifyList.get(position);
+    if (notify == null)
+      return;
+    
+    String raw = notify.getData();
+    if (raw == null || TextUtils.isEmpty(raw))
+      return;
+    mData = App.getGson().fromJson(raw, Data.class);
   
     holder.setIsRecyclable(false);
     
-    // Read content of notify.
-    String jsonText = notify.getData();
-      
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-  
-    data = new Data();
-    Gson gson = new GsonBuilder()
-      .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-      .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-      .create();
-    data = gson.fromJson(jsonText, Data.class);
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
     synchronized (this) {
       SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
         Locale.getDefault());
-      String dateTime = sdf.format(data.getTaskItem().getTaskDueDateFinish());
-      holder.tvTaskFinish.setText(dateTime);
+      if (mData.getTaskItem().getTaskDueDateFinish() != null) {
+        String dateTime = sdf.format(mData.getTaskItem().getTaskDueDateFinish());
+        holder.tvTaskFinish.setText(dateTime);
+        holder.bind(notify, mData.getTaskItem().getTaskDueDateFinish(), listener);
+      }
     }
       
-    if (data.getTaskItem().getKundenName() != null)
-      holder.tvCustomerName.setText(data.getTaskItem().getKundenName());
-    holder.tvCustomerNo.setText(String.valueOf(data.getTaskItem().getKundenNr()));
-    String orderNo = String.valueOf(data.getTaskItem().getOrderNo());
-    String tmp = orderNo.substring(0, 4);
-    tmp += "/";
-    tmp += orderNo.substring(4, 6);
-    tmp += "/";
-    tmp += orderNo.substring(6);
-    holder.tvOrderNo.setText(tmp);
-      
-    if (data.getTaskItem().getReferenceIdCustomer1() != null)
-      holder.tvReference1.setText(data.getTaskItem().getReferenceIdCustomer1());
-    if (data.getTaskItem().getReferenceIdCustomer2() != null)
-      holder.tvReference2.setText(data.getTaskItem().getReferenceIdCustomer2());
-    if (data.getTaskItem().getDescription() != null)
-      holder.tvDescription.setText(data.getTaskItem().getDescription());
-    if (data.getTaskItem().getAddress().getName1() != null)
-      holder.tvName1.setText(data.getTaskItem().getAddress().getName1());
-    if (data.getTaskItem().getAddress().getName2() != null)
-      holder.tvName2.setText(data.getTaskItem().getAddress().getName2());
-    if (data.getTaskItem().getAddress().getStreet() != null)
-      holder.tvStreet.setText(data.getTaskItem().getAddress().getStreet());
-    if (data.getTaskItem().getAddress().getNation() != null)
-      holder.tvNation.setText(data.getTaskItem().getAddress().getNation());
-    if (data.getTaskItem().getAddress().getZip() != null)
-      holder.tvZip.setText(data.getTaskItem().getAddress().getZip());
-    if (data.getTaskItem().getAddress().getCity() != null)
-      holder.tvCity.setText(data.getTaskItem().getAddress().getCity());
-      
-    if (notify.getRead()) {
-      holder.livLabel.setVisibility(View.GONE);
+    if (mData.getTaskItem().getKundenName() != null)
+      holder.tvCustomerName.setText(mData.getTaskItem().getKundenName());
+    if (mData.getTaskItem().getKundenNr() != null)
+      holder.tvCustomerNo.setText(String.valueOf(mData.getTaskItem().getKundenNr()));
+    if (mData.getTaskItem().getOrderNo() != null) {
+      holder.tvOrderNo.setText(AppUtils.parseOrderNo(mData.getTaskItem().getOrderNo()));
     }
     
-    holder.bind(notify, data.getTaskItem().getTaskDueDateFinish(), listener);
+    if (mData.getTaskItem().getReferenceIdCustomer1() != null)
+      holder.tvReference1.setText(mData.getTaskItem().getReferenceIdCustomer1());
+    if (mData.getTaskItem().getReferenceIdCustomer2() != null)
+      holder.tvReference2.setText(mData.getTaskItem().getReferenceIdCustomer2());
+    if (mData.getTaskItem().getDescription() != null)
+      holder.tvDescription.setText(mData.getTaskItem().getDescription());
+    if (mData.getTaskItem().getAddress().getName1() != null)
+      holder.tvName1.setText(mData.getTaskItem().getAddress().getName1());
+    if (mData.getTaskItem().getAddress().getName2() != null)
+      holder.tvName2.setText(mData.getTaskItem().getAddress().getName2());
+    if (mData.getTaskItem().getAddress().getStreet() != null)
+      holder.tvStreet.setText(mData.getTaskItem().getAddress().getStreet());
+    if (mData.getTaskItem().getAddress().getNation() != null)
+      holder.tvNation.setText(mData.getTaskItem().getAddress().getNation());
+    if (mData.getTaskItem().getAddress().getZip() != null)
+      holder.tvZip.setText(mData.getTaskItem().getAddress().getZip());
+    if (mData.getTaskItem().getAddress().getCity() != null)
+      holder.tvCity.setText(mData.getTaskItem().getAddress().getCity());
+    
+    if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.CREATED)) {
+      if (notify.getRead()) {
+        holder.livLabel.setVisibility(View.GONE);
+      } else {
+        holder.livLabel.setVisibility(View.VISIBLE);
+        holder.livLabel.setLabelText(context.getResources().getString(R.string.label_new));
+        holder.livLabel.setLabelBackgroundColor(context.getResources().getColor(R.color.clrLabelNew));
+      }
+    } else if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.UPDATED_ABONA)) {
+      if (notify.getRead()) {
+        holder.livLabel.setVisibility(View.GONE);
+      } else {
+        holder.livLabel.setVisibility(View.VISIBLE);
+        holder.livLabel.setLabelText(context.getResources().getString(R.string.label_updated));
+        holder.livLabel.setLabelBackgroundColor(context.getResources().getColor(R.color.clrLabelUpdated));
+      }
+    } else if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
+      if (notify.getRead()) {
+        holder.livLabel.setVisibility(View.GONE);
+      } else {
+        holder.livLabel.setVisibility(View.VISIBLE);
+        holder.livLabel.setLabelText(context.getResources().getString(R.string.label_deleted));
+        holder.livLabel.setLabelBackgroundColor(context.getResources().getColor(R.color.clrLabelDeleted));
+      }
+    }
   }
   
   public void setOnItemListener(OnItemClickListener listener) {
@@ -129,33 +146,33 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   
   class ViewHolder extends RecyclerView.ViewHolder {
     
-    public AsapTextView tvTaskFinish;
+    AsapTextView tvTaskFinish;
     
-    public AsapTextView tvDueIn;
+    AsapTextView tvDueIn;
     
-    public AsapTextView tvCustomerName;
-    public AsapTextView tvCustomerNo;
-    public AsapTextView tvOrderNo;
-    public AsapTextView tvReference1;
-    public AsapTextView tvReference2;
-    public AsapTextView tvDescription;
-    public AsapTextView tvName1;
-    public AsapTextView tvName2;
-    public AsapTextView tvStreet;
-    public AsapTextView tvNation;
-    public AsapTextView tvZip;
-    public AsapTextView tvCity;
-    public Button btnMap;
+    AsapTextView tvCustomerName;
+    AsapTextView tvCustomerNo;
+    AsapTextView tvOrderNo;
+    AsapTextView tvReference1;
+    AsapTextView tvReference2;
+    AsapTextView tvDescription;
+    AsapTextView tvName1;
+    AsapTextView tvName2;
+    AsapTextView tvStreet;
+    AsapTextView tvNation;
+    AsapTextView tvZip;
+    AsapTextView tvCity;
+    Button btnMap;
     
-    public LabelImageView livLabel;
+    LabelImageView livLabel;
     
-    public AppCompatImageView ivWarning;
-    public LinearLayout llHeaderBackground;
+    AppCompatImageView ivWarning;
+    LinearLayout llHeaderBackground;
     
     long dueInMillis;
     DueInCounterRunnable dueInCounter;
     
-    public ViewHolder(View view) {
+    ViewHolder(View view) {
       super(view);
       tvTaskFinish = (AsapTextView) view.findViewById(R.id.tv_task_finish);
       tvDueIn = (AsapTextView) view.findViewById(R.id.tv_due_in);

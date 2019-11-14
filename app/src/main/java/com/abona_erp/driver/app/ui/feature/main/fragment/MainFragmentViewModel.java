@@ -5,10 +5,13 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.List;
+
+import io.reactivex.Single;
 
 public class MainFragmentViewModel extends AndroidViewModel {
   
@@ -50,5 +53,21 @@ public class MainFragmentViewModel extends AndroidViewModel {
   
   LiveData<Integer> getRowCount() {
     return mRowCount;
+  }
+  
+  Single<Notify> getNotifyById(int id) {
+    return mRepository.getNotifyById(id);
+  }
+  
+  void update(Notify notify) {
+    mRepository.update(notify);
+  }
+  
+  void delete(Notify notify) {
+    mRepository.delete(notify);
+  }
+  
+  void insert(LastActivity lastActivity) {
+    mRepository.insert(lastActivity);
   }
 }

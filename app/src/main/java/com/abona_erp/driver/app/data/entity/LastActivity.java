@@ -18,11 +18,22 @@ public class LastActivity {
 
   @NonNull
   @ColumnInfo(name = "status_name")
-  private String statusName;
+  private int statusType;
+  
+  @NonNull
+  @ColumnInfo(name = "task_oid")
+  private int taskOid;
+  
+  @NonNull
+  @ColumnInfo(name = "mandant_oid")
+  private int mandantOid;
 
   @NonNull
   @ColumnInfo(name = "order_no")
   private int orderNo;
+  
+  @ColumnInfo(name = "description")
+  private String description;
 
   @ColumnInfo(name = "created_at")
   @TypeConverters({DateConverter.class})
@@ -41,12 +52,12 @@ public class LastActivity {
   }
 
   @NonNull
-  public String getStatusName() {
-    return statusName;
+  public int getStatusType() {
+    return statusType;
   }
 
-  public void setStatusName(@NonNull String statusName) {
-    this.statusName = statusName;
+  public void setStatusType(@NonNull int statusType) {
+    this.statusType = statusType;
   }
 
   @NonNull
@@ -56,6 +67,32 @@ public class LastActivity {
 
   public void setOrderNo(@NonNull int orderNo) {
     this.orderNo = orderNo;
+  }
+  
+  @NonNull
+  public int getMandantOid() {
+    return mandantOid;
+  }
+  
+  public void setMandantOid(@NonNull int mandantOid) {
+    this.mandantOid = mandantOid;
+  }
+  
+  @NonNull
+  public int getTaskOid() {
+    return taskOid;
+  }
+  
+  public void setTaskOid(@NonNull int taskOid) {
+    this.taskOid = taskOid;
+  }
+  
+  public String getDescription() {
+    return description;
+  }
+  
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   @NonNull
