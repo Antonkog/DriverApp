@@ -23,6 +23,10 @@ public class ConfirmationItem {
   @Expose
   private Integer taskId;
   
+  @SerializedName("TaskChangeId")
+  @Expose
+  private Integer taskChangeId;
+  
   @SerializedName("ActivityId")
   @Expose
   private Integer activityId;
@@ -69,6 +73,14 @@ public class ConfirmationItem {
   
   public void setTaskId(Integer taskId) {
     this.taskId = taskId;
+  }
+  
+  public Integer getTaskChangeId() {
+    return taskChangeId;
+  }
+  
+  public void setTaskChangeId(Integer taskChangeId) {
+    this.taskChangeId = taskChangeId;
   }
   
   public Integer getActivityId() {

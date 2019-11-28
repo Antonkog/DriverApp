@@ -1,12 +1,14 @@
 package com.abona_erp.driver.app.ui.feature.main;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -32,23 +34,36 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.model.ConfirmationItem;
+import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.DataType;
+import com.abona_erp.driver.app.data.model.Header;
 import com.abona_erp.driver.app.manager.DriverWorkManager;
 import com.abona_erp.driver.app.receiver.GeofenceBroadcastReceiver;
+import com.abona_erp.driver.app.service.ServiceWorker;
 import com.abona_erp.driver.app.service.impl.GeofenceErrorMessages;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.BackEvent;
 import com.abona_erp.driver.app.ui.event.BaseEvent;
+import com.abona_erp.driver.app.ui.event.CameraEvent;
 import com.abona_erp.driver.app.ui.event.InfoEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
+import com.abona_erp.driver.app.ui.event.SoftwareAboutEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.LastActivityAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.about.SoftwareAboutFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.abona_erp.driver.app.util.Dialogs;
+import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.util.DeviceUtils;
+import com.abona_erp.driver.app.util.PowerMenuUtils;
+import com.abona_erp.driver.app.util.concurrent.MainUiThread;
 import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.developer.kalert.KAlertDialog;
@@ -69,13 +84,20 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 import com.tree.rh.ctlib.CT;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -83,8 +105,13 @@ import az.plainpie.PieView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends BaseActivity implements OnCompleteListener<Void> {
+  
+  private static final String TAG = MainActivity.class.getSimpleName();
   
   public static final String BACK_STACK_ROOT_TAG = "root_fragment";
   
@@ -96,6 +123,9 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   
   private RecyclerView lvLastActivity;
   private PieView mMainPieView;
+  
+  private PowerMenu mProfileMenu;
+  private AppCompatImageButton mMainPopupMenu;
 
   // VIEW MODEL:
   private MainViewModel mMainViewModel;
@@ -122,32 +152,77 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     }
   }
   
+  private OnMenuItemClickListener<PowerMenuItem> onProfileItemClickListener =
+    new OnMenuItemClickListener<PowerMenuItem>() {
+      @Override
+      public void onItemClick(int position, PowerMenuItem item) {
+        loadFragment(SettingsFragment.newInstance());
+        mProfileMenu.dismiss();
+      }
+    };
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    
+    // ---------------------------------------------------------------------------------------------
+    // Start Worker Service:
+    ServiceWorker serviceWorker = new ServiceWorker(getApplicationContext());
+    Intent mServiceWorkerIntent = new Intent(getApplicationContext(), serviceWorker.getClass());
+    if (!isMyServiceRunning(serviceWorker.getClass())) {
+      startService(mServiceWorkerIntent);
+    }
+    
+    // ---------------------------------------------------------------------------------------------
+    // Permission Request:
+    Dexter.withActivity(this)
+      .withPermissions(
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.CAMERA,
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE)
+      .withListener(new MultiplePermissionsListener() {
+        @Override
+        public void onPermissionsChecked(MultiplePermissionsReport report) {
+          Log.i(TAG, "onPermissionChecked() called!");
+          TextSecurePreferences.setDeviceIMEI(getBaseContext(), DeviceUtils.getUniqueIMEI(getBaseContext()));
+          TextSecurePreferences.setDeviceModel(getBaseContext(), Build.MODEL);
+          TextSecurePreferences.setDeviceManufacturer(getBaseContext(), Build.MANUFACTURER);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+              TextSecurePreferences.setDeviceSerial(getBaseContext(), Build.getSerial());
+            } catch (SecurityException e) {
+              e.printStackTrace();
+            }
+          } else {
+            TextSecurePreferences.setDeviceSerial(getBaseContext(), Build.SERIAL);
+          }
+          runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              //requestToken(App.spManager.getFirebaseToken());
+            }
+          });
+        
+        }
+      
+        @Override
+        public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+        
+        }
+      }).check();
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    
   
     if (!App.spManager.getFirstTimeRun()) {
       TextSecurePreferences.setFCMSenderID(getBaseContext(), "724562515953");
     }
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Dexter.withActivity(this)
-      .withPermissions(Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.CAMERA)
-      .withListener(new MultiplePermissionsListener() {
-        @Override
-        public void onPermissionsChecked(MultiplePermissionsReport report) {
-          requestToken(App.spManager.getFirebaseToken());
-        }
-  
-        @Override
-        public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-    
-        }
-      }).check();
-      
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -158,6 +233,16 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     mMainPieView.setInnerBackgroundColor(getResources().getColor(R.color.clrFont));
     mMainPieView.setInnerText("0 %");
     mMainPieView.setPercentage(0);
+    
+    mMainPopupMenu = (AppCompatImageButton)findViewById(R.id.main_popup_menu);
+    mProfileMenu = PowerMenuUtils.getProfilePowerMenu(this, this,
+      onProfileItemClickListener);
+    mMainPopupMenu.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        mProfileMenu.showAsAnchorRightTop(mMainPopupMenu);
+      }
+    });
 
     JsonDeserializer deserializer = new DoubleJsonDeserializer();
     mGson = new GsonBuilder()
@@ -256,6 +341,18 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     addGeofencesButtonHandler(null);
   }
   
+  private boolean isMyServiceRunning(Class<?> serviceClass) {
+    ActivityManager manager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+      if (serviceClass.getName().equals(service.service.getClassName())) {
+        Log.i(TAG, "isMyServiceRunning? " + "true");
+        return true;
+      }
+    }
+    Log.i(TAG, "isMyServiceRunning?" + "false");
+    return false;
+  }
+  
   private void populateGeofenceList() {
     for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet()) {
       
@@ -335,15 +432,61 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   }
   
   @Subscribe
+  public void onMessageEvent(CameraEvent event) {
+    loadCameraFragment(PhotoFragment.newInstance(), event);
+  }
+  
+  @Subscribe
   public void onMessageEvent(TaskDetailEvent event) {
   
     Notify notify = event.getNotify();
     if (!notify.getRead()) {
       notify.setRead(true);
       mMainViewModel.update(notify);
+      
+      Data data = new Data();
+      data = App.getGson().fromJson(notify.getData(), Data.class);
+      
+      Data confirmData = new Data();
+      Header confirmHeader = new Header();
+      confirmHeader.setDataType(DataType.CONFIRMATION);
+      confirmHeader.setTimestampSenderUTC(data.getHeader().getTimestampSenderUTC());
+      confirmData.setHeader(confirmHeader);
+      ConfirmationItem confirmationItem = new ConfirmationItem();
+      confirmationItem.setConfirmationType(ConfirmationType.TASK_CONFIRMED_BY_USER);
+      Date date = DateConverter.fromTimestamp(new Date().toString());
+      confirmationItem.setTimeStampConfirmationUTC(date);
+      confirmationItem.setTaskChangeId(data.getTaskItem().getTaskChangeId());
+      confirmationItem.setMandantId(data.getTaskItem().getMandantId());
+      confirmationItem.setTaskId(data.getTaskItem().getTaskId());
+      //confirmationItem.setTaskItem(data.getTaskItem());
+      confirmData.setConfirmationItem(confirmationItem);
+  
+      Call<Data> call = App.apiManager.getConfirmApi().confirm(confirmData);
+      call.enqueue(new Callback<Data>() {
+        @Override
+        public void onResponse(Call<Data> call, Response<Data> response) {
+          if (response.isSuccessful()) {
+            Log.d(TAG, "*********************************** SUCCESSFUL");
+            Log.d(TAG, response.toString());
+          } else {
+            Log.w(TAG, "********************************* ERROR in onResponse");
+          }
+        }
+    
+        @Override
+        public void onFailure(Call<Data> call, Throwable t) {
+          Log.w(TAG, t.getMessage());
+        }
+      });
     }
     
     loadActivityFragment(DetailFragment.newInstance(), event);
+  }
+  
+  @Subscribe
+  public void onMessageEvent(SoftwareAboutEvent event) {
+    loadSoftwareAboutFragment(SoftwareAboutFragment.newInstance());
   }
   
   @Subscribe
@@ -368,18 +511,25 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   private static long back_pressed;
   @Override
   public void onBackPressed() {
-    if (back_pressed + 2000 > System.currentTimeMillis()) {
-      super.onBackPressed();
+    FragmentManager fragments = getSupportFragmentManager();
+    Fragment mainFrag = fragments.findFragmentByTag("main");
+    
+    if (fragments.getBackStackEntryCount() > 1) {
+      fragments.popBackStackImmediate();
     } else {
-      new CT.Builder(getBaseContext(), "Press once again to exit!")
-        .image(R.drawable.ic_info)
-        .borderWidth(4)
-        .backCol(getResources().getColor(R.color.clrFont))
-        .textCol(Color.WHITE)
-        .borderCol(getResources().getColor(R.color.clrAbona))
-        .radius(20, 20, 20, 20)
-        .show();
-      back_pressed = System.currentTimeMillis();
+      if (back_pressed + 2000 > System.currentTimeMillis()) {
+        super.onBackPressed();
+      } else {
+        new CT.Builder(getBaseContext(), "Press once again to exit!")
+          .image(R.drawable.ic_info)
+          .borderWidth(4)
+          .backCol(getResources().getColor(R.color.clrFont))
+          .textCol(Color.WHITE)
+          .borderCol(getResources().getColor(R.color.clrAbona))
+          .radius(20, 20, 20, 20)
+          .show();
+        back_pressed = System.currentTimeMillis();
+      }
     }
   }
   
@@ -498,6 +648,37 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     fragmentManager.beginTransaction()
       .replace(R.id.main_container, fragment, "main")
       .addToBackStack(BACK_STACK_ROOT_TAG)
+      .commit();
+  }
+  
+  private void loadFragment(Fragment fragment) {
+    getSupportFragmentManager()
+      .beginTransaction()
+      .replace(R.id.main_container, fragment)
+      .addToBackStack(null)
+      .commit();
+  }
+  
+  private void loadCameraFragment(Fragment fragment, CameraEvent event) {
+    if (event == null)
+      return;
+  
+    Bundle bundle = new Bundle();
+    bundle.putInt("oid", event.getNotify().getId());
+    fragment.setArguments(bundle);
+  
+    getSupportFragmentManager()
+      .beginTransaction()
+      .replace(R.id.main_container, fragment)
+      .addToBackStack(null)
+      .commit();
+  }
+  
+  private void loadSoftwareAboutFragment(Fragment fragment) {
+    getSupportFragmentManager()
+      .beginTransaction()
+      .replace(R.id.main_container, fragment)
+      .addToBackStack(null)
       .commit();
   }
   

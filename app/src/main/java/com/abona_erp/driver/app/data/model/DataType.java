@@ -14,10 +14,10 @@ package com.abona_erp.driver.app.data.model;
 public enum DataType {
   
   TASK(0),
-  ACTIVITY(1),
-  CONFIRMATION(2),
-  DEVICE_PROFILE(3),
-  UNDO_ACTIVITY(4);
+  ACTIVITY(20),
+  UNDO_ACTIVITY(21),
+  CONFIRMATION(40),
+  DEVICE_PROFILE(60);
   
   int dataType;
   

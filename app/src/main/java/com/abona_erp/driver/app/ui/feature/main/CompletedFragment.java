@@ -69,6 +69,10 @@ public class CompletedFragment extends Fragment {
       public void onMapClick(Notify notify) {
         App.eventBus.post(new MapEvent(notify));
       }
+      
+      @Override
+      public void onCameraClick(Notify notify) {
+      }
     });
 
     listView.setAdapter(adapter);

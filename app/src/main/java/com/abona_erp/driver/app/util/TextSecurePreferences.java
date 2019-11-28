@@ -13,6 +13,12 @@ public class TextSecurePreferences {
   
   private static final String TAG = TextSecurePreferences.class.getSimpleName();
   
+  public static final String DEVICE_IMEI = "pref_device_imei";
+  public static final String DEVICE_MODEL = "pref_device_model";
+  public static final String DEVICE_MANUFACTURER = "pref_device_manufacturer";
+  public static final String DEVICE_SERIAL = "pref_device_serial";
+  public static final String DEVICE_REGISTRATED = "pref_device_registrated";
+  
   public  static final String REGISTERED_GCM_PREF              = "pref_gcm_registered";
   
   private static final String GCM_DISABLED_PREF                = "pref_gcm_disabled";
@@ -24,6 +30,46 @@ public class TextSecurePreferences {
   public static final String LANGUAGE_PREF                     = "pref_language";
   
   private static final String JOB_MANAGER_VERSION = "pref_job_manager_version";
+  
+  public static String getDeviceIMEI(Context context) {
+    return getStringPreference(context, DEVICE_IMEI, "");
+  }
+  
+  public static void setDeviceIMEI(Context context, String deviceIMEI) {
+    setStringPreference(context, DEVICE_IMEI, deviceIMEI);
+  }
+  
+  public static String getDeviceModel(Context context) {
+    return getStringPreference(context, DEVICE_MODEL, "");
+  }
+  
+  public static void setDeviceModel(Context context, String deviceModel) {
+    setStringPreference(context, DEVICE_MODEL, deviceModel);
+  }
+  
+  public static String getDeviceManufacturer(Context context) {
+    return getStringPreference(context, DEVICE_MANUFACTURER, "");
+  }
+  
+  public static void setDeviceManufacturer(Context context, String deviceManufacturer) {
+    setStringPreference(context, DEVICE_MANUFACTURER, deviceManufacturer);
+  }
+  
+  public static String getDeviceSerial(Context context) {
+    return getStringPreference(context, DEVICE_SERIAL, "");
+  }
+  
+  public static void setDeviceSerial(Context context, String deviceSerial) {
+    setStringPreference(context, DEVICE_SERIAL, deviceSerial);
+  }
+  
+  public static boolean isDeviceRegistrated(Context context) {
+    return getBooleanPreference(context, DEVICE_REGISTRATED, false);
+  }
+  
+  public static void setDeviceRegistrated(Context context, boolean success) {
+    setBooleanPreference(context, DEVICE_REGISTRATED, success);
+  }
   
   public static boolean isFcmDisabled(Context context) {
     return getBooleanPreference(context, GCM_DISABLED_PREF, false);

@@ -7,6 +7,7 @@ import androidx.room.TypeConverters;
 
 import com.abona_erp.driver.app.util.DateConverter;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Entity(tableName = "taskItem")
@@ -32,6 +33,9 @@ public class Notify {
   
   @ColumnInfo(name = "task_id")
   private int taskId;
+  
+  @ColumnInfo(name = "photo_urls")
+  private ArrayList<String> photoUrls = new ArrayList<>();
   
   @ColumnInfo(name = "task_due_finish")
   @TypeConverters({DateConverter.class})
@@ -107,6 +111,14 @@ public class Notify {
   
   public void setTaskDueFinish(Date taskDueFinish) {
     this.taskDueFinish = taskDueFinish;
+  }
+  
+  public ArrayList<String> getPhotoUrls() {
+    return photoUrls;
+  }
+  
+  public void setPhotoUrls(ArrayList<String> photoUrls) {
+    this.photoUrls = photoUrls;
   }
   
   public Date getCreatedAt() {

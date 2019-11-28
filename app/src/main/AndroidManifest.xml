@@ -5,20 +5,30 @@
   package="com.abona_erp.driver.app"
   android:installLocation="auto">
 
-  <uses-sdk tools:overrideLibrary="androidx.camera.core,androidx.camera.camera2"/>
+  <uses-feature android:name="android.hardware.camera" />
+  <!--<uses-sdk tools:overrideLibrary="androidx.camera.core,androidx.camera.camera2"/>-->
 
   <!-- Google Maps for Android v2 requires OpenGL ES v2 -->
   <uses-feature android:glEsVersion="0x00020000" android:required="true" />
 
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
   <!-- Required if your app targets Android 10 (API level 29) or higher -->
   <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <!--<uses-permission android:name="android.hardware.camera.autofocus" />-->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
   <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -36,6 +46,8 @@
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:hardwareAccelerated="true"
+    android:usesCleartextTraffic="true"
+    android:largeHeap="true"
     android:theme="@style/AppTheme"
     tools:ignore="GoogleAppIndexingWarning">
 
@@ -87,6 +99,22 @@
       />
     <!-- FCM Notifications -->
 
+    <!-- WORKER SERVICE -->
+    <service
+      android:name=".service.ServiceWorker"
+      android:enabled="true"
+      android:exported="false">
+    </service>
+    <receiver
+      android:name=".receiver.WorkerRestartBroadcastReceiver"
+      android:process=":remote">
+      <intent-filter>
+        <action android:name="restart0"/>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+      </intent-filter>
+    </receiver>
+    <!-- WORKER SERVICE -->
+
     <!-- GEOFENCING -->
     <receiver android:name=".receiver.GeofenceBroadcastReceiver"
       android:enabled="true"
@@ -117,6 +145,17 @@
 
     </receiver>
     <!-- RE-START -->
+
+    <provider
+      android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.provider"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_provider_paths">
+      </meta-data>
+    </provider>
 
     <!-- Necessary for apps that target Android 9.0 or higher -->
     <uses-library android:name="org.apache.http.legacy" android:required="false" />

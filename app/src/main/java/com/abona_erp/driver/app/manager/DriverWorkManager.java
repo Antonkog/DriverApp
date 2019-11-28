@@ -1,27 +1,26 @@
 package com.abona_erp.driver.app.manager;
   
-  import android.content.Context;
-  import android.os.Build;
-  import android.telephony.TelephonyManager;
-  import android.util.Log;
+import android.content.Context;
+import android.util.Log;
   
-  import androidx.annotation.NonNull;
-  import androidx.work.Worker;
-  import androidx.work.WorkerParameters;
+import androidx.annotation.NonNull;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
-  import com.abona_erp.driver.app.App;
-  import com.abona_erp.driver.app.data.model.Data;
-  import com.abona_erp.driver.app.data.model.DataType;
-  import com.abona_erp.driver.app.data.model.DeviceProfileItem;
-  import com.abona_erp.driver.app.data.model.Header;
-  import com.abona_erp.driver.app.data.remote.response.PostResponse;
+import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.DataType;
+import com.abona_erp.driver.app.data.model.DeviceProfileItem;
+import com.abona_erp.driver.app.data.model.Header;
+import com.abona_erp.driver.app.data.remote.response.PostResponse;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
+
+import java.util.Date;
+import java.util.Locale;
   
-  import java.util.Date;
-  import java.util.Locale;
-  
-  import retrofit2.Call;
-  import retrofit2.Callback;
-  import retrofit2.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DriverWorkManager extends Worker {
   
@@ -45,29 +44,21 @@ public class DriverWorkManager extends Worker {
     mData.setHeader(header);
     
     DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
-    
-    TelephonyManager tm = (TelephonyManager)getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-    try {
-      deviceProfileItem.setDeviceId(tm.getDeviceId());
-    } catch (SecurityException ignore){
-    }
+
+    deviceProfileItem.setInstanceId(token);
+    deviceProfileItem.setDeviceId(TextSecurePreferences.getDeviceIMEI(getApplicationContext()));
     
     switch (state) {
       case 0:
-        deviceProfileItem.setModel(Build.MODEL);
-        deviceProfileItem.setManufacturer(Build.MANUFACTURER);
-        deviceProfileItem.setSerial(Build.SERIAL);
-        deviceProfileItem.setInstanceId(token);
+        deviceProfileItem.setModel(TextSecurePreferences.getDeviceModel(getApplicationContext()));
+        deviceProfileItem.setManufacturer(TextSecurePreferences.getDeviceManufacturer(getApplicationContext()));
+        deviceProfileItem.setSerial(TextSecurePreferences.getDeviceSerial(getApplicationContext()));
         Date currentDate = new Date();
         deviceProfileItem.setCreatedDate(currentDate);
         deviceProfileItem.setUpdatedDate(currentDate);
         deviceProfileItem.setLanguageCode(Locale.getDefault().toString());
         deviceProfileItem.setVersionCode(1000);
         deviceProfileItem.setVersionName("1.0.0.0");
-        break;
-      
-      case 1:
-        deviceProfileItem.setInstanceId(token);
         break;
     }
     

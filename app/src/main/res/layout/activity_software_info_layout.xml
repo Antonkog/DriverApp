@@ -5,66 +5,132 @@
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@drawable/main_menu_background"
-  android:layout_marginBottom="?attr/actionBarSize"
-  android:clickable="false"
-  android:focusable="false"
-  android:visibility="visible">
+  android:background="@drawable/main_menu_background">
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize">
+
+    <!-- BACK BUTTON -->
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/btn_software_about_back"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_marginLeft="@dimen/spacing_large"
+      android:layout_marginEnd="@dimen/spacing_large"
+      android:padding="@dimen/spacing_large"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      android:src="@drawable/ic_arrow_back"
+      android:tint="@color/clrFont"
+      />
+
+  </RelativeLayout>
+
+  <View
+    android:layout_width="0dp"
+    android:layout_height="@dimen/spacing_small"
+    />
+
+  <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="2">
+
+    <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+
+      <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/app_icon_drive_192px"
+        />
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_middle"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        android:textColor="@color/clrFont"
+        android:textStyle="bold"
+        android:text="ABONA Driver App"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="16sp"
+        android:text="ver 1.0.0"
+        />
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+
+      <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/signet_abona"
+        />
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_middle"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        android:textColor="@color/clrFont"
+        android:textStyle="bold"
+        android:text="ABONA REST API"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="16sp"
+        android:text="ver 1.0.0"
+        />
+
+    </LinearLayout>
+
+  </LinearLayout>
 
   <View
     android:layout_width="0dp"
     android:layout_height="@dimen/spacing_large"
     />
 
-  <ImageView
-    android:layout_width="96dp"
-    android:layout_height="96dp"
-    android:layout_gravity="center_horizontal"
-    android:src="@drawable/app_icon_drive_192px"
-    />
-
-  <View
-    android:layout_width="0dp"
-    android:layout_height="@dimen/spacing_middle"
-    />
-
-  <com.abona_erp.driver.app.ui.widget.AsapTextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:textSize="18sp"
-    android:textColor="@color/clrFont"
-    android:textStyle="bold"
-    android:text="ABONA Driver App"
-    />
-
-  <com.abona_erp.driver.app.ui.widget.AsapTextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:textSize="16sp"
-    android:text="ver 1.0.0.0"
-    />
-
-  <View
-    android:layout_width="0dp"
-    android:layout_height="@dimen/spacing_large"
-    />
-
-  <ImageView
+  <androidx.appcompat.widget.AppCompatImageView
     android:layout_width="256dp"
     android:layout_height="80dp"
     android:layout_gravity="center_horizontal"
-    android:src="@drawable/ic_logo_abona"
+    android:src="@drawable/ic_logo_abona_deutschland_black"
     />
 
-  <com.abona_erp.driver.app.ui.widget.AsapTextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:textSize="18sp"
-    android:textColor="@color/clrFont"
-    android:text="DEUTSCHLAND"
+  <View
+    android:layout_width="0dp"
+    android:layout_height="@dimen/spacing_large"
     />
 
   <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -97,6 +163,12 @@
     android:layout_gravity="center_horizontal"
     android:textSize="14sp"
     android:text="info@abona-erp.com"
+    />
+
+  <View
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_weight="1"
     />
 
 </LinearLayout>

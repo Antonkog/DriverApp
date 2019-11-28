@@ -16,7 +16,8 @@ public enum TaskChangeReason {
   CREATED(0),
   UPDATED_ABONA(1),
   UPDATED_APP(2),
-  DELETED(3);
+  DELETED(3),
+  IS_CONFIRMED(4);
   
   int taskChangeReason;
   

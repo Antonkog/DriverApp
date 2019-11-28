@@ -8,8 +8,10 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDao;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
+import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.util.AppUtils;
@@ -33,8 +35,11 @@ public class DriverRepository {
   private static LastActivityDao mLastActivityDao;
   private LiveData<List<LastActivity>> mAllLastActivityItems;
   
+  private DeviceProfileDAO mDeviceProfileDAO;
+  private LiveData<List<DeviceProfile>> mAllDeviceProfiles;
+  
   public DriverRepository(Application application) {
-    DriverDatabase db = DriverDatabase.getDatabase(application);
+    DriverDatabase db = DriverDatabase.getDatabase();
     mNotifyDao = db.notifyDao();
     mAllPendingNotifications = mNotifyDao.getAllPendingNotifications();
     mAllRunningNotifications = mNotifyDao.getAllRunningNotifications();
@@ -45,6 +50,10 @@ public class DriverRepository {
 
     mLastActivityDao = db.lastActivityDao();
     mAllLastActivityItems = mLastActivityDao.getLastActivityItems();
+    
+    // Device Profile:
+    mDeviceProfileDAO = db.deviceProfileDAO();
+    mAllDeviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
   }
   
   public LiveData<List<Notify>> getAllPendingNotifications() {
@@ -103,6 +112,22 @@ public class DriverRepository {
   public LiveData<Integer> getNotReadNotificationCount() {
     return mNotReadNotificationCount;
   }
+  
+  // -----------------------------------------------------------------------------------------------
+  // DEVICE PROFILE:
+  public void insert(DeviceProfile deviceProfile) {
+    new insertDeviceProfileAsyncTask(mDeviceProfileDAO).execute(deviceProfile);
+  }
+  
+  public void update(DeviceProfile deviceProfile) {
+    new updateDeviceProfileAsyncTask(mDeviceProfileDAO).execute(deviceProfile);
+  }
+  
+  public LiveData<List<DeviceProfile>> getAllDeviceProfiles() {
+    return mAllDeviceProfiles;
+  }
+  // DEVICE PROFILE:
+  // -----------------------------------------------------------------------------------------------
 
   private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
 
@@ -185,6 +210,40 @@ public class DriverRepository {
     @Override
     protected Void doInBackground(final LastActivity... params) {
       mAsyncTaskDao.update(params[0]);
+      return null;
+    }
+  }
+  
+  // -----------------------------------------------------------------------------------------------
+  // DEVICE PROFILE
+  // -----------------------------------------------------------------------------------------------
+  
+  private static class insertDeviceProfileAsyncTask extends AsyncTask<DeviceProfile, Void, Void> {
+    
+    private DeviceProfileDAO mDAO;
+    
+    insertDeviceProfileAsyncTask(DeviceProfileDAO dao) {
+      mDAO = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(final DeviceProfile... params) {
+      mDAO.insert(params[0]);
+      return null;
+    }
+  }
+  
+  private static class updateDeviceProfileAsyncTask extends AsyncTask<DeviceProfile, Void, Void> {
+    
+    private DeviceProfileDAO mDAO;
+    
+    updateDeviceProfileAsyncTask(DeviceProfileDAO dao) {
+      mDAO = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(final DeviceProfile... params) {
+      mDAO.update(params[0]);
       return null;
     }
   }

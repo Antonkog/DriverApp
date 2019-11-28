@@ -16,6 +16,10 @@ public class TaskItem {
   @Expose
   private Integer taskId;
   
+  @SerializedName("TaskChangeId")
+  @Expose
+  private Integer taskChangeId;
+  
   @SerializedName("AbonaTransferNr")
   @Expose
   private String abonaTransferNr;
@@ -106,6 +110,14 @@ public class TaskItem {
   
   public void setTaskId(Integer taskId) {
     this.taskId = taskId;
+  }
+  
+  public Integer getTaskChangeId() {
+    return taskChangeId;
+  }
+  
+  public void setTaskChangeId(Integer taskChangeId) {
+    this.taskChangeId = taskChangeId;
   }
   
   public String getAbonaTransferNr() {

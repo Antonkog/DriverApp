@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.data.remote.ActivityService;
+import com.abona_erp.driver.app.data.remote.ConfirmService;
 import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
@@ -31,19 +32,28 @@ public class ApiManager implements Manager {
   
   private Context mContext;
   private TokenService mTokenService;
+  private ConfirmService mConfirmService;
   private ActivityService mActivityService;
   
   public TokenService getTokenApi() {
     if (mTokenService == null) {
-      mTokenService = provideRetrofit("http://172.30.1.38:4000/api/device/")
+      mTokenService = provideRetrofit("http://213.144.11.162:5000/api/device/")
         .create(TokenService.class);
     }
     return mTokenService;
   }
   
+  public ConfirmService getConfirmApi() {
+    if (mConfirmService == null) {
+      mConfirmService = provideRetrofit("http://213.144.11.162:5000/api/confirmation/")
+        .create(ConfirmService.class);
+    }
+    return mConfirmService;
+  }
+  
   public ActivityService getActivityApi() {
     if (mActivityService == null) {
-      mActivityService = provideRetrofit("http://172.30.1.38:4000/api/activity/")
+      mActivityService = provideRetrofit("http://213.144.11.162:5000/api/activity/")
         .create(ActivityService.class);
     }
     return mActivityService;

@@ -13,7 +13,7 @@
     android:layout_width="220dp"
     android:layout_height="match_parent"
     android:background="@drawable/main_menu_background">
-
+<!--
     <androidx.appcompat.widget.AppCompatImageView
       android:layout_width="56dp"
       android:layout_height="56dp"
@@ -26,30 +26,67 @@
       android:layout_width="0dp"
       android:layout_height="25dp"
       />
+    -->
+    <View
+      android:layout_width="0dp"
+      android:layout_height="@dimen/spacing_large"
+      />
 
-    <com.abona_erp.driver.app.ui.widget.AsapTextView
+    <LinearLayout
+      android:orientation="horizontal"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="KA-EX-1234"
-      android:textStyle="bold"
-      android:textAllCaps="true"
-      android:textSize="20sp"
-      android:textColor="#1F1C2C"
-      />
+      android:layout_marginStart="@dimen/spacing_medium"
+      android:layout_marginEnd="@dimen/spacing_medium">
 
-    <com.abona_erp.driver.app.ui.widget.AsapTextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:textSize="12sp"
-      android:text="Hegelmann Express GmbH"
-      android:textColor="#808080"
-      />
+      <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_app_icon_driver"
+        />
+
+      <View
+        android:layout_width="@dimen/spacing_medium"
+        android:layout_height="0dp"
+        />
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="KA-EX-1234"
+          android:textStyle="bold"
+          android:textAllCaps="true"
+          android:textSize="20sp"
+          android:textColor="#1F1C2C"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:textSize="12sp"
+          android:text="Hegelmann Express GmbH"
+          android:textColor="#808080"
+          />
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+
 
     <View
       android:layout_width="0dp"
-      android:layout_height="25dp"
+      android:layout_height="@dimen/spacing_large"
       />
 
     <az.plainpie.PieView

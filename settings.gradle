@@ -1,2 +1,2 @@
-include ':app', ':core'
+include ':app', ':core', ':flag-kit', ':photolib', ':imagegallery'
 rootProject.name='Driver App'

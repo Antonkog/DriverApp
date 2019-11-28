@@ -6,6 +6,9 @@
   <string name="action_save">Сохранить</string>
   <string name="menu_settings">Параметры</string>
   <string name="menu_about">О программе</string>
+
+  <string name="current_location">текущее местоположение</string>
+  <string name="destination_location">Место назначения</string>
   <!-- MULTILANG -->
 
   <string name="yes">Да</string>

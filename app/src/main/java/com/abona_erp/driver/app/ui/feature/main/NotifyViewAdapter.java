@@ -6,9 +6,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,10 +18,14 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.Data;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
+import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.flag_kit.FlagKit;
 import com.lid.lib.LabelImageView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +46,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   public interface OnItemClickListener {
     void onItemClick(Notify notify);
     void onMapClick(Notify notify);
+    void onCameraClick(Notify notify);
   }
   
   public NotifyViewAdapter(Context ctx) {
@@ -102,12 +108,56 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       holder.tvName2.setText(mData.getTaskItem().getAddress().getName2());
     if (mData.getTaskItem().getAddress().getStreet() != null)
       holder.tvStreet.setText(mData.getTaskItem().getAddress().getStreet());
-    if (mData.getTaskItem().getAddress().getNation() != null)
+    if (mData.getTaskItem().getAddress().getNation() != null) {
       holder.tvNation.setText(mData.getTaskItem().getAddress().getNation());
+      holder.ivFlagKit.setCountryCode(mData.getTaskItem().getAddress().getNation());
+    }
     if (mData.getTaskItem().getAddress().getZip() != null)
       holder.tvZip.setText(mData.getTaskItem().getAddress().getZip());
     if (mData.getTaskItem().getAddress().getCity() != null)
       holder.tvCity.setText(mData.getTaskItem().getAddress().getCity());
+    
+    if (mData.getTaskItem().getActivities().size() > 0) {
+      int size = mData.getTaskItem().getActivities().size();
+      if (size == 0) {
+        holder.pbActivityStep.setVisibility(View.GONE);
+        holder.tvPercent.setVisibility(View.GONE);
+        holder.tvPercentStatus.setVisibility(View.GONE);
+      } else {
+        holder.pbActivityStep.setVisibility(View.VISIBLE);
+        holder.tvPercent.setVisibility(View.VISIBLE);
+        holder.tvPercentStatus.setVisibility(View.VISIBLE);
+        ProgressBarDrawable progStep = new ProgressBarDrawable(size);
+        holder.pbActivityStep.setProgressDrawable(progStep);
+        int count = 0;
+        for (int i = 0; i < size; i++) {
+          String valid_until = "01/01/0001";
+          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+          Date strDate = null;
+          try {
+            strDate = sdf.parse(valid_until);
+          } catch (ParseException e) {
+            e.printStackTrace();
+          }
+          if (mData.getTaskItem().getActivities().get(i).getStarted() != null && mData.getTaskItem().getActivities().get(i).getStarted().after(strDate)) {
+            count++;
+            holder.tvPercentStatus.setText(mData.getTaskItem().getActivities().get(i).getName());
+          }
+          if (mData.getTaskItem().getActivities().get(i).getFinished() != null && mData.getTaskItem().getActivities().get(i).getFinished().after(strDate))
+            count++;
+        }
+        if (count <= 0) {
+          holder.pbActivityStep.setProgress(0);
+          holder.tvPercent.setText("0 %");
+        } else if (count >= size*2) {
+          holder.pbActivityStep.setProgress(100);
+          holder.tvPercent.setText("100 %");
+        } else {
+          holder.pbActivityStep.setProgress(Math.round((100.f / (size*2)) * count));
+          holder.tvPercent.setText(Math.round((100.f / (size*2)) * count) + " %");
+        }
+      }
+    }
     
     if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.CREATED)) {
       if (notify.getRead()) {
@@ -162,12 +212,18 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     AsapTextView tvNation;
     AsapTextView tvZip;
     AsapTextView tvCity;
-    Button btnMap;
+    AppCompatButton btnMap;
+    AppCompatButton btnCamera;
     
     LabelImageView livLabel;
+    FlagKit ivFlagKit;
     
     AppCompatImageView ivWarning;
     LinearLayout llHeaderBackground;
+    
+    AsapTextView tvPercent;
+    AsapTextView tvPercentStatus;
+    ProgressBar pbActivityStep;
     
     long dueInMillis;
     DueInCounterRunnable dueInCounter;
@@ -188,10 +244,15 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       tvNation = (AsapTextView) view.findViewById(R.id.tv_nation);
       tvZip = (AsapTextView) view.findViewById(R.id.tv_zip);
       tvCity = (AsapTextView) view.findViewById(R.id.tv_city);
-      btnMap = (Button) view.findViewById(R.id.btn_map);
+      btnMap = (AppCompatButton) view.findViewById(R.id.btn_map);
+      btnCamera = (AppCompatButton) view.findViewById(R.id.btn_camera);
       livLabel = (LabelImageView) view.findViewById(R.id.liv_label);
       ivWarning = (AppCompatImageView) view.findViewById(R.id.iv_warning_icon);
       llHeaderBackground = (LinearLayout) view.findViewById(R.id.ll_header_background);
+      ivFlagKit = (FlagKit) view.findViewById(R.id.iv_flag_kit);
+      pbActivityStep = (ProgressBar) view.findViewById(R.id.pb_activity_step);
+      tvPercent = (AsapTextView) view.findViewById(R.id.tv_percent);
+      tvPercentStatus = (AsapTextView) view.findViewById(R.id.tv_percent_status);
   
       dueInCounter = new DueInCounterRunnable(handler, context, tvDueIn, ivWarning, llHeaderBackground, new Date());
     }
@@ -212,6 +273,13 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         @Override
         public void onClick(View view) {
           listener.onMapClick(notify);
+        }
+      });
+      
+      btnCamera.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          listener.onCameraClick(notify);
         }
       });
       

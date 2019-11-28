@@ -19,6 +19,7 @@ import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.PendingViewModel;
+import com.developer.kalert.KAlertDialog;
 
 import java.util.List;
 
@@ -68,6 +69,14 @@ public class PendingFragment extends Fragment {
       @Override
       public void onMapClick(Notify notify) {
         App.eventBus.post(new MapEvent(notify));
+      }
+      
+      @Override
+      public void onCameraClick(Notify notify) {
+        new KAlertDialog(getContext())
+          .setTitleText("Fotos zum Auftrag?")
+          .setContentText("Um Fotos machen zu können, muss der Task gestartet sein!")
+          .show();
       }
     });
 

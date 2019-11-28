@@ -24,7 +24,7 @@
     <RelativeLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/spacing_mlarge">
+      android:layout_marginTop="@dimen/spacing_large">
 
       <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="@dimen/spacing_mlarge"
@@ -50,7 +50,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:padding="@dimen/spacing_large">
+    android:paddingTop="@dimen/spacing_large"
+    android:paddingLeft="@dimen/spacing_large"
+    android:paddingRight="@dimen/spacing_large">
 
     <LinearLayout
       android:orientation="vertical"

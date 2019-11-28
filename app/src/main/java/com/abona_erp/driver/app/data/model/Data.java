@@ -25,6 +25,10 @@ public class Data {
   @Expose
   private DeviceProfileItem deviceProfileItem;
   
+  @SerializedName("TaskStatusInfo")
+  @Expose
+  private TaskStatusInfo taskStatusInfo;
+  
   public Header getHeader() {
     return header;
   }
@@ -63,5 +67,13 @@ public class Data {
   
   public void setDeviceProfileItem(DeviceProfileItem deviceProfileItem) {
     this.deviceProfileItem = deviceProfileItem;
+  }
+  
+  public TaskStatusInfo getTaskStatusInfo() {
+    return taskStatusInfo;
+  }
+  
+  public void setTaskStatusInfo(TaskStatusInfo taskStatusInfo) {
+    this.taskStatusInfo = taskStatusInfo;
   }
 }

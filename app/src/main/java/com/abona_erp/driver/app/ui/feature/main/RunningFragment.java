@@ -17,6 +17,7 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
+import com.abona_erp.driver.app.ui.event.CameraEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.RunningViewModel;
@@ -68,6 +69,11 @@ public class RunningFragment extends Fragment {
       @Override
       public void onMapClick(Notify notify) {
         App.eventBus.post(new MapEvent(notify));
+      }
+      
+      @Override
+      public void onCameraClick(Notify notify) {
+        App.eventBus.post(new CameraEvent(notify));
       }
     });
 

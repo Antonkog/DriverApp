@@ -26,8 +26,11 @@ import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @SuppressLint("NewApi")
 public class FcmService extends FirebaseMessagingService {
@@ -35,39 +38,19 @@ public class FcmService extends FirebaseMessagingService {
   private static final String TAG = FcmService.class.getSimpleName();
   
   private static final int NOTIFICATION_ID = 1453;
+  private static Timer mTimer = new Timer();
+  private static LinkedList<RemoteMessage> mNotifyData = new LinkedList<>();
+  
+  public void onCreate() {
+    super.onCreate();
+    mTimer.scheduleAtFixedRate(new workerTask(), 0, 1000);
+  }
   
   @Override
   public void onMessageReceived(RemoteMessage message) {
     
-    String from = message.getFrom();
-    Log.d(TAG, "onMessage - from: " + from);
-    Log.i(TAG, "FCM message... Delay: "
-      + (System.currentTimeMillis() - message.getSentTime()));
-    
-    Bundle extras = new Bundle();
-    
-    if (message.getNotification() != null) {
-      extras.putString(PushConstants.TITLE, message.getNotification().getTitle());
-      extras.putString(PushConstants.MESSAGE, message.getNotification().getBody());
-    }
-    //for (Map.Entry<String, String> entry : message.getData().entrySet()) {
-    //  extras.putString(entry.getKey(), entry.getValue());
-    //}
-    
-    if (extras != null && isAvailableSender(from)) {
-      
-      if (message.getData().size() > 0) {
-        Log.d(TAG, "Data " + message.getData());
-        scheduleJob(message.getData());
-      }
-      
-      if (App.isAppInForeground) {
-        Log.d(TAG, "foreground");
-      } else {
-        Log.d(TAG, "background");
-        showNotificationIfPossible(getApplicationContext(), extras);
-      }
-    }
+    Log.d(TAG, "FCM Message... latency (" + (System.currentTimeMillis() - message.getSentTime()) + " ms)");
+    mNotifyData.add(message);
   }
   
   @Override
@@ -101,7 +84,7 @@ public class FcmService extends FirebaseMessagingService {
    * Create and show a simple notification containing the received
    * FCM message.
    */
-  public void createNotification(Context context, Bundle extras) {
+  public void createNotification(Context context) {
     NotificationManager mNotificationManager = ServiceUtil
       .getNotificationManager(getApplicationContext());
     
@@ -138,34 +121,9 @@ public class FcmService extends FirebaseMessagingService {
     mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
   }
   
-  private void showNotificationIfPossible(Context context, Bundle extras) {
-    
-    // Send a notification if there is a message or title,
-    // otherwise just send data.
-    String message = extras.getString(PushConstants.MESSAGE);
-    String title = extras.getString(PushConstants.TITLE);
-    
-    Log.d(TAG, "message =[" + message + "]");
-    Log.d(TAG, "title =[" + title + "]");
-    
-    if ((message != null && message.length() != 0)
-      || (title != null && title.length() != 0))
-    {
-      Log.d(TAG, "create notification 1");
-      
-      if (title == null || title.isEmpty()) {
-        extras.putString(PushConstants.TITLE, getAppName(this));
-      }
-      
-      createNotification(context, extras);
-    } else {
-      Log.d(TAG, "create notification 2");
-      
-      extras.putString(PushConstants.TITLE, getAppName(this));
-      extras.putString(PushConstants.MESSAGE, "You have got a new task");
+  private void showNotificationIfPossible(Context context) {
   
-      createNotification(context, extras);
-    }
+    createNotification(context);
   }
   
   public static String getAppName(Context context) {
@@ -186,5 +144,33 @@ public class FcmService extends FirebaseMessagingService {
     String savedSenderID = TextSecurePreferences
       .getFCMSenderID(getApplicationContext());
     return from.equals(savedSenderID);
+  }
+  
+  private static int counter = 0;
+  private class workerTask extends TimerTask {
+    public void run() {
+      if (!mNotifyData.isEmpty()) {
+        Log.i(TAG, "Insert Notification to Database " + (++counter));
+        RemoteMessage message = mNotifyData.removeFirst();
+        if (message == null)
+          return;
+        
+        if (message.getFrom() != null && isAvailableSender(message.getFrom())) {
+          if (message.getData().size() > 0) {
+            Log.d(TAG, "Data " + message.getData());
+            scheduleJob(message.getData());
+          }
+  
+          if (App.isAppInForeground) {
+            Log.d(TAG, "foreground");
+          } else {
+            Log.d(TAG, "background");
+            showNotificationIfPossible(getApplicationContext());
+          }
+        }
+      } else {
+        counter = 0;
+      }
+    }
   }
 }

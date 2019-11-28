@@ -55,11 +55,11 @@ public class MainFragmentViewModel extends AndroidViewModel {
     return mRowCount;
   }
   
-  Single<Notify> getNotifyById(int id) {
+  public Single<Notify> getNotifyById(int id) {
     return mRepository.getNotifyById(id);
   }
   
-  void update(Notify notify) {
+  public void update(Notify notify) {
     mRepository.update(notify);
   }
   

@@ -115,14 +115,16 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
       synchronized (this) {
         holder.tv_Order_No.setText(AppUtils.parseOrderNo(current.getOrderNo()));
       }
-
-      synchronized (this) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-          Locale.getDefault());
-        String dateTime = sdf.format(current.getCreatedAt());
-        holder.tv_Timestamp.setText(dateTime);
+      
+      if (current.getCreatedAt() != null) {
+        synchronized (this) {
+          SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+            Locale.getDefault());
+          String dateTime = sdf.format(current.getCreatedAt());
+          holder.tv_Timestamp.setText(dateTime);
+        }
       }
-
+      
       LastActivity lastActivity = mLastActivityItems.get(position);
     } else {
       holder.tv_Status_Name.setText("null");
