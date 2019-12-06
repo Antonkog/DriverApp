@@ -4,20 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.abona_erp.driver.app.util.DateConverter;
-
-import java.util.Date;
 
 @Entity(tableName = "device_profile")
 public class DeviceProfile {
   
   @PrimaryKey(autoGenerate = true)
   private int id;
-  
-  @ColumnInfo(name = "is_registrated")
-  private boolean isRegistrated;
   
   @ColumnInfo(name = "device_id")
   private String deviceId;
@@ -44,12 +36,12 @@ public class DeviceProfile {
   private String versionName;
   
   @ColumnInfo(name = "created_at")
-  @TypeConverters({DateConverter.class})
-  private Date createdAt;
+  //@TypeConverters({DateConverter.class})
+  private String createdAt;
   
   @ColumnInfo(name = "modified_at")
-  @TypeConverters({DateConverter.class})
-  private Date modifiedAt;
+  //@TypeConverters({DateConverter.class})
+  private String modifiedAt;
   
   public int getId() {
     return id;
@@ -57,14 +49,6 @@ public class DeviceProfile {
   
   public void setId(int id) {
     this.id = id;
-  }
-  
-  public boolean isRegistrated() {
-    return isRegistrated;
-  }
-  
-  public void isRegistrated(boolean success) {
-    this.isRegistrated = success;
   }
   
   public String getDeviceId() {
@@ -132,20 +116,20 @@ public class DeviceProfile {
   }
   
   @NonNull
-  public Date getCreatedAt() {
+  public String getCreatedAt() {
     return createdAt;
   }
   
-  public void setCreatedAt(@NonNull Date createdAt) {
+  public void setCreatedAt(@NonNull String createdAt) {
     this.createdAt = createdAt;
   }
   
   @NonNull
-  public Date getModifiedAt() {
+  public String getModifiedAt() {
     return modifiedAt;
   }
   
-  public void setModifiedAt(@NonNull Date modifiedAt) {
+  public void setModifiedAt(@NonNull String modifiedAt) {
     this.modifiedAt = modifiedAt;
   }
 }

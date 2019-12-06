@@ -88,6 +88,63 @@
 
       </LinearLayout>
 
+      <View
+        android:layout_width="@dimen/spacing_xxxlarge"
+        android:layout_height="0dp"
+        />
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp"
+          android:text="Order No"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_order_no"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/clrFont"
+          android:textStyle="bold"
+          android:textSize="14sp"
+          tools:text="2019/41/370"
+          />
+
+      </LinearLayout>
+
+      <View
+        android:layout_width="@dimen/spacing_xxxlarge"
+        android:layout_height="0dp"
+        />
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp"
+          android:text="Task ID"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_task_id"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="14sp"
+          android:textColor="@color/clrFont"
+          tools:text="21"
+          />
+
+      </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -571,7 +628,7 @@
               android:layout_height="match_parent"
               android:layout_marginTop="@dimen/spacing_medium"
               android:layout_weight="1">
-
+<!--
               <com.abona_erp.driver.app.ui.widget.AsapTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -589,7 +646,7 @@
                 android:textSize="16sp"
                 android:text="201936299"
                 />
-
+-->
               <View
                 android:layout_width="0dp"
                 android:layout_height="@dimen/spacing_xsmall"

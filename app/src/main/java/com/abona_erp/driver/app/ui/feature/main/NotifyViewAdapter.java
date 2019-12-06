@@ -16,9 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
-import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
@@ -41,7 +40,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   private OnItemClickListener listener;
   private Handler handler = new Handler();
   
-  private Data mData = null;
+  private CommItem mCommItem = null;
   
   public interface OnItemClickListener {
     void onItemClick(Notify notify);
@@ -53,7 +52,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     context = ctx;
     mInflater = LayoutInflater.from(ctx);
     
-    mData = new Data();
+    mCommItem = new CommItem();
   }
   
   @Override
@@ -74,51 +73,54 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     String raw = notify.getData();
     if (raw == null || TextUtils.isEmpty(raw))
       return;
-    mData = App.getGson().fromJson(raw, Data.class);
+    mCommItem = App.getGson().fromJson(raw, CommItem.class);
   
     holder.setIsRecyclable(false);
     
     synchronized (this) {
       SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
         Locale.getDefault());
-      if (mData.getTaskItem().getTaskDueDateFinish() != null) {
-        String dateTime = sdf.format(mData.getTaskItem().getTaskDueDateFinish());
+      if (mCommItem.getTaskItem().getTaskDueDateFinish() != null) {
+        String dateTime = sdf.format(mCommItem.getTaskItem().getTaskDueDateFinish());
         holder.tvTaskFinish.setText(dateTime);
-        holder.bind(notify, mData.getTaskItem().getTaskDueDateFinish(), listener);
+        holder.bind(notify, mCommItem.getTaskItem().getTaskDueDateFinish(), listener);
       }
     }
       
-    if (mData.getTaskItem().getKundenName() != null)
-      holder.tvCustomerName.setText(mData.getTaskItem().getKundenName());
-    if (mData.getTaskItem().getKundenNr() != null)
-      holder.tvCustomerNo.setText(String.valueOf(mData.getTaskItem().getKundenNr()));
-    if (mData.getTaskItem().getOrderNo() != null) {
-      holder.tvOrderNo.setText(AppUtils.parseOrderNo(mData.getTaskItem().getOrderNo()));
+    if (mCommItem.getTaskItem().getKundenName() != null)
+      holder.tvCustomerName.setText(mCommItem.getTaskItem().getKundenName());
+    if (mCommItem.getTaskItem().getKundenNr() != null)
+      holder.tvCustomerNo.setText(String.valueOf(mCommItem.getTaskItem().getKundenNr()));
+    if (mCommItem.getTaskItem().getOrderNo() != null) {
+      holder.tvOrderNo.setText(AppUtils.parseOrderNo(mCommItem.getTaskItem().getOrderNo()));
     }
     
-    if (mData.getTaskItem().getReferenceIdCustomer1() != null)
-      holder.tvReference1.setText(mData.getTaskItem().getReferenceIdCustomer1());
-    if (mData.getTaskItem().getReferenceIdCustomer2() != null)
-      holder.tvReference2.setText(mData.getTaskItem().getReferenceIdCustomer2());
-    if (mData.getTaskItem().getDescription() != null)
-      holder.tvDescription.setText(mData.getTaskItem().getDescription());
-    if (mData.getTaskItem().getAddress().getName1() != null)
-      holder.tvName1.setText(mData.getTaskItem().getAddress().getName1());
-    if (mData.getTaskItem().getAddress().getName2() != null)
-      holder.tvName2.setText(mData.getTaskItem().getAddress().getName2());
-    if (mData.getTaskItem().getAddress().getStreet() != null)
-      holder.tvStreet.setText(mData.getTaskItem().getAddress().getStreet());
-    if (mData.getTaskItem().getAddress().getNation() != null) {
-      holder.tvNation.setText(mData.getTaskItem().getAddress().getNation());
-      holder.ivFlagKit.setCountryCode(mData.getTaskItem().getAddress().getNation());
+    if (mCommItem.getTaskItem().getReferenceIdCustomer1() != null)
+      holder.tvReference1.setText(mCommItem.getTaskItem().getReferenceIdCustomer1());
+    if (mCommItem.getTaskItem().getReferenceIdCustomer2() != null)
+      holder.tvReference2.setText(mCommItem.getTaskItem().getReferenceIdCustomer2());
+    if (mCommItem.getTaskItem().getDescription() != null)
+      holder.tvDescription.setText(mCommItem.getTaskItem().getDescription());
+    if (mCommItem.getTaskItem().getAddress().getName1() != null)
+      holder.tvName1.setText(mCommItem.getTaskItem().getAddress().getName1());
+    if (mCommItem.getTaskItem().getAddress().getName2() != null)
+      holder.tvName2.setText(mCommItem.getTaskItem().getAddress().getName2());
+    if (mCommItem.getTaskItem().getAddress().getStreet() != null)
+      holder.tvStreet.setText(mCommItem.getTaskItem().getAddress().getStreet());
+    if (mCommItem.getTaskItem().getAddress().getNation() != null) {
+      holder.tvNation.setText(mCommItem.getTaskItem().getAddress().getNation());
+      holder.ivFlagKit.setCountryCode(mCommItem.getTaskItem().getAddress().getNation());
     }
-    if (mData.getTaskItem().getAddress().getZip() != null)
-      holder.tvZip.setText(mData.getTaskItem().getAddress().getZip());
-    if (mData.getTaskItem().getAddress().getCity() != null)
-      holder.tvCity.setText(mData.getTaskItem().getAddress().getCity());
+    if (mCommItem.getTaskItem().getAddress().getZip() != null)
+      holder.tvZip.setText(mCommItem.getTaskItem().getAddress().getZip());
+    if (mCommItem.getTaskItem().getAddress().getCity() != null)
+      holder.tvCity.setText(mCommItem.getTaskItem().getAddress().getCity());
     
-    if (mData.getTaskItem().getActivities().size() > 0) {
-      int size = mData.getTaskItem().getActivities().size();
+    if (mCommItem.getTaskItem().getTaskId() > 0)
+      holder.tvTaskId.setText(String.valueOf(mCommItem.getTaskItem().getTaskId()));
+    
+    if (mCommItem.getTaskItem().getActivities().size() > 0) {
+      int size = mCommItem.getTaskItem().getActivities().size();
       if (size == 0) {
         holder.pbActivityStep.setVisibility(View.GONE);
         holder.tvPercent.setVisibility(View.GONE);
@@ -139,11 +141,11 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
           } catch (ParseException e) {
             e.printStackTrace();
           }
-          if (mData.getTaskItem().getActivities().get(i).getStarted() != null && mData.getTaskItem().getActivities().get(i).getStarted().after(strDate)) {
+          if (mCommItem.getTaskItem().getActivities().get(i).getStarted() != null && mCommItem.getTaskItem().getActivities().get(i).getStarted().after(strDate)) {
             count++;
-            holder.tvPercentStatus.setText(mData.getTaskItem().getActivities().get(i).getName());
+            holder.tvPercentStatus.setText(mCommItem.getTaskItem().getActivities().get(i).getName());
           }
-          if (mData.getTaskItem().getActivities().get(i).getFinished() != null && mData.getTaskItem().getActivities().get(i).getFinished().after(strDate))
+          if (mCommItem.getTaskItem().getActivities().get(i).getFinished() != null && mCommItem.getTaskItem().getActivities().get(i).getFinished().after(strDate))
             count++;
         }
         if (count <= 0) {
@@ -159,7 +161,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       }
     }
     
-    if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.CREATED)) {
+    if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.CREATED)) {
       if (notify.getRead()) {
         holder.livLabel.setVisibility(View.GONE);
       } else {
@@ -167,7 +169,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         holder.livLabel.setLabelText(context.getResources().getString(R.string.label_new));
         holder.livLabel.setLabelBackgroundColor(context.getResources().getColor(R.color.clrLabelNew));
       }
-    } else if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.UPDATED_ABONA)) {
+    } else if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.UPDATED_ABONA)) {
       if (notify.getRead()) {
         holder.livLabel.setVisibility(View.GONE);
       } else {
@@ -175,7 +177,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         holder.livLabel.setLabelText(context.getResources().getString(R.string.label_updated));
         holder.livLabel.setLabelBackgroundColor(context.getResources().getColor(R.color.clrLabelUpdated));
       }
-    } else if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
+    } else if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
       if (notify.getRead()) {
         holder.livLabel.setVisibility(View.GONE);
       } else {
@@ -225,6 +227,9 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     AsapTextView tvPercentStatus;
     ProgressBar pbActivityStep;
     
+    // DEBUG
+    AsapTextView tvTaskId;
+    
     long dueInMillis;
     DueInCounterRunnable dueInCounter;
     
@@ -253,6 +258,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       pbActivityStep = (ProgressBar) view.findViewById(R.id.pb_activity_step);
       tvPercent = (AsapTextView) view.findViewById(R.id.tv_percent);
       tvPercentStatus = (AsapTextView) view.findViewById(R.id.tv_percent_status);
+      tvTaskId = (AsapTextView) view.findViewById(R.id.tv_task_id);
   
       dueInCounter = new DueInCounterRunnable(handler, context, tvDueIn, ivWarning, llHeaderBackground, new Date());
     }

@@ -8,9 +8,9 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
-public interface ActivityService {
+public interface FCMService {
   
   @Headers("Content-Type:application/json; charset=UTF-8")
-  @POST("activity")
-  Call<ResultOfAction> activityChange(@Body CommItem commItem);
+  @POST("deviceprofile")
+  Call<ResultOfAction> deviceProfile(@Body CommItem commItem);
 }

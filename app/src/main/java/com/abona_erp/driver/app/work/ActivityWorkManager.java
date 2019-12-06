@@ -10,10 +10,10 @@ import androidx.work.WorkerParameters;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
-import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.data.model.Header;
-import com.abona_erp.driver.app.data.remote.response.PostResponse;
+import com.abona_erp.driver.app.data.model.ResultOfAction;
 
 
 import java.text.ParseException;
@@ -52,13 +52,13 @@ public class ActivityWorkManager extends Worker {
     int mStatus = getInputData().getInt("status", 0);
     int mSequence = getInputData().getInt("sequence", 0);
 
-    Data mData = new Data();
+    CommItem mCommItem = new CommItem();
     Header header = new Header();
     if (mHeaderType == 0)
       header.setDataType(DataType.ACTIVITY);
     else if (mHeaderType == 1)
       header.setDataType(DataType.UNDO_ACTIVITY);
-    mData.setHeader(header);
+    mCommItem.setHeader(header);
     
     ActivityItem activityItem = new ActivityItem();
     activityItem.setMandantId(mMandantId);
@@ -95,20 +95,20 @@ public class ActivityWorkManager extends Worker {
     }
     activityItem.setSequence(mSequence);
     
-    mData.setActivityItem(activityItem);
+    mCommItem.setActivityItem(activityItem);
   
     
-    Call<PostResponse> call = App.apiManager.getActivityApi().activityChange(mData);
-    call.enqueue(new Callback<PostResponse>() {
+    Call<ResultOfAction> call = App.apiManager.getActivityApi().activityChange(mCommItem);
+    call.enqueue(new Callback<ResultOfAction>() {
       @Override
-      public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
+      public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
         if (response.isSuccessful()) {
           Log.d(TAG, "***** Communicate with REST-API successfully!");
         }
       }
   
       @Override
-      public void onFailure(Call<PostResponse> call, Throwable t) {
+      public void onFailure(Call<ResultOfAction> call, Throwable t) {
         Log.e(TAG, "***** Error on communication!");
         Result.retry();
       }

@@ -86,7 +86,7 @@ public class MainFragment extends Fragment {
     
     mMainBottomTab = (TabLayout)root.findViewById(R.id.main_bottom_tab);
     mMainBottomTab.addTab(mMainBottomTab.newTab().setIcon(R.drawable.ic_home), 0);
-    mMainBottomTab.addTab(mMainBottomTab.newTab().setIcon(R.drawable.ic_info), 1);
+    mMainBottomTab.addTab(mMainBottomTab.newTab().setIcon(R.drawable.ic_info_24px), 1);
     
     // set icon color pre-selected:
     mMainBottomTab.getTabAt(0).getIcon().setColorFilter(getResources().getColor(R.color.clrAbona), PorterDuff.Mode.SRC_IN);

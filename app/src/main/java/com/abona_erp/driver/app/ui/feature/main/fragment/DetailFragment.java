@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +24,16 @@ import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.ActivityStep;
-import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.ConfirmationType;
+import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.event.BackEvent;
@@ -43,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +61,7 @@ public class DetailFragment extends Fragment {
   
   private static final String TAG = DetailFragment.class.getCanonicalName();
   
-  private Data mData;
+  private CommItem mCommItem;
   private int mOid;
   
   private List<ActivityStep> mActivityList;
@@ -84,6 +91,9 @@ public class DetailFragment extends Fragment {
   private int mCMRCount;
   private int mCompletedCount;
   private int mRowTaskCount;
+  
+  private DriverDatabase mDB = DriverDatabase.getDatabase();
+  private OfflineConfirmationDAO mOfflineWorkDAO = mDB.offlineConfirmationDAO();
   
   public DetailFragment() {
     // Required empty public constructor.
@@ -171,37 +181,37 @@ public class DetailFragment extends Fragment {
           if (notify != null) {
             mNotify = notify;
           }
-          if (mData != null)
-            mData = null;
-          mData = new Data();
-          mData = App.getGson().fromJson(notify.getData(), Data.class);
+          if (mCommItem != null)
+            mCommItem = null;
+          mCommItem = new CommItem();
+          mCommItem = App.getGson().fromJson(notify.getData(), CommItem.class);
   
           applyButtonState();
           mAdapter = new ActivityStepAdapter(getContext());
   
           mActivityList.clear();
-          if (mData.getTaskItem().getActivities().size() > 0) {
-            for (int i = 0; i < mData.getTaskItem().getActivities().size(); i++) {
-              mActivityList.add(new ActivityStep(mData.getTaskItem().getTaskStatus(), mData.getTaskItem().getActivities().get(i)));
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
+              mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(i)));
             }
           }
   
-          mAdapter.setActivityStepItems(mActivityList, mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+          mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
           mListView.setAdapter(mAdapter);
   
-          if (mData.getTaskItem().getKundenName() != null) {
-            mTvCustomerName.setText(mData.getTaskItem().getKundenName());
+          if (mCommItem.getTaskItem().getKundenName() != null) {
+            mTvCustomerName.setText(mCommItem.getTaskItem().getKundenName());
           }
-          mTvKDNo.setText(String.valueOf(mData.getTaskItem().getKundenNr()));
-          mTvOrderNo.setText(AppUtils.parseOrderNo(mData.getTaskItem().getOrderNo()));
-          if (mData.getTaskItem().getReferenceIdCustomer1() != null) {
-            mTvReference1.setText(mData.getTaskItem().getReferenceIdCustomer1());
+          mTvKDNo.setText(String.valueOf(mCommItem.getTaskItem().getKundenNr()));
+          mTvOrderNo.setText(AppUtils.parseOrderNo(mCommItem.getTaskItem().getOrderNo()));
+          if (mCommItem.getTaskItem().getReferenceIdCustomer1() != null) {
+            mTvReference1.setText(mCommItem.getTaskItem().getReferenceIdCustomer1());
           }
-          if (mData.getTaskItem().getReferenceIdCustomer2() != null) {
-            mTvReference2.setText(mData.getTaskItem().getReferenceIdCustomer2());
+          if (mCommItem.getTaskItem().getReferenceIdCustomer2() != null) {
+            mTvReference2.setText(mCommItem.getTaskItem().getReferenceIdCustomer2());
           }
-          if (mData.getTaskItem().getDescription() != null) {
-            mTvDescription.setText(mData.getTaskItem().getDescription());
+          if (mCommItem.getTaskItem().getDescription() != null) {
+            mTvDescription.setText(mCommItem.getTaskItem().getDescription());
           }
         }
   
@@ -227,32 +237,32 @@ public class DetailFragment extends Fragment {
   
   private void applyButtonState() {
     
-    if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mData.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
+    if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
       mBtnNextActivity.setVisibility(View.VISIBLE);
       mBtnNextActivity.setText("CLOSE");
       mBtnBackActivity.setVisibility(View.GONE);
-    } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+    } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
       mDetailStepView.go(0, true);
       mBtnBackActivity.setVisibility(View.GONE);
       mBtnNextActivity.setVisibility(View.VISIBLE);
       mBtnNextActivity.setText("START ACTIVITY");
-    } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+    } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
       mDetailStepView.go(1, true);
       mBtnBackActivity.setVisibility(View.VISIBLE);
       mBtnNextActivity.setVisibility(View.VISIBLE);
     
-      int activityCount = mData.getTaskItem().getActivities().size();
-      if (mData.getTaskItem().getActivities().get(activityCount-1).getStatus().equals(ActivityStatus.FINISHED)) {
+      int activityCount = mCommItem.getTaskItem().getActivities().size();
+      if (mCommItem.getTaskItem().getActivities().get(activityCount-1).getStatus().equals(ActivityStatus.FINISHED)) {
         mBtnNextActivity.setText("FINISHED");
       } else {
         mBtnNextActivity.setText("NEXT");
       }
-    } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+    } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
       mDetailStepView.go(2, true);
       mBtnBackActivity.setVisibility(View.GONE);
       mBtnNextActivity.setVisibility(View.VISIBLE);
       mBtnNextActivity.setText("CMR FINISHED");
-    } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+    } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
       mDetailStepView.go(3, false);
       mDetailStepView.done(true);
       mBtnBackActivity.setVisibility(View.VISIBLE);
@@ -304,72 +314,74 @@ public class DetailFragment extends Fragment {
     mBtnBackActivity.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-          if (mData.getTaskItem().getActivities().size() > 0) {
-            for (int i = mData.getTaskItem().getActivities().size()-1; i >= 0; i--) {
-              if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
+        if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int i = mCommItem.getTaskItem().getActivities().size()-1; i >= 0; i--) {
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
                 continue;
               }
   
-              if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
-                mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.PENDING);
-                mNotify.setData(App.getGson().toJson(mData));
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.PENDING);
+                mNotify.setData(App.getGson().toJson(mCommItem));
                 mViewModel.update(mNotify);
+                /*
                 requestActivityChange(
                   1,
-                  mData.getTaskItem().getActivities().get(i).getMandantId(),
-                  mData.getTaskItem().getActivities().get(i).getTaskId(),
-                  mData.getTaskItem().getActivities().get(i).getActivityId(),
-                  mData.getTaskItem().getActivities().get(i).getName(),
-                  mData.getTaskItem().getActivities().get(i).getDescription(),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
-                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
-                  mData.getTaskItem().getActivities().get(i).getSequence()
+                  mCommItem.getTaskItem().getActivities().get(i).getMandantId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getTaskId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getActivityId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getName(),
+                  mCommItem.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getFinished()),
+                  mCommItem.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mCommItem.getTaskItem().getActivities().get(i).getSequence()
                 );
-    
+    */
                 mActivityList.clear();
-                if (mData.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mData.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mData.getTaskItem().getTaskStatus(), mData.getTaskItem().getActivities().get(j)));
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
-                mAdapter.setActivityStepItems(mActivityList, mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
                 break;
               }
   
-              if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
-                mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
-                mNotify.setData(App.getGson().toJson(mData));
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
+                mNotify.setData(App.getGson().toJson(mCommItem));
                 mViewModel.update(mNotify);
+                /*
                 requestActivityChange(
                   1,
-                  mData.getTaskItem().getActivities().get(i).getMandantId(),
-                  mData.getTaskItem().getActivities().get(i).getTaskId(),
-                  mData.getTaskItem().getActivities().get(i).getActivityId(),
-                  mData.getTaskItem().getActivities().get(i).getName(),
-                  mData.getTaskItem().getActivities().get(i).getDescription(),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
-                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
-                  mData.getTaskItem().getActivities().get(i).getSequence()
+                  mCommItem.getTaskItem().getActivities().get(i).getMandantId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getTaskId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getActivityId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getName(),
+                  mCommItem.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getFinished()),
+                  mCommItem.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mCommItem.getTaskItem().getActivities().get(i).getSequence()
                 );
-    
+    */
                 mActivityList.clear();
-                if (mData.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mData.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mData.getTaskItem().getTaskStatus(), mData.getTaskItem().getActivities().get(j)));
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
-                mAdapter.setActivityStepItems(mActivityList, mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
-                if (i == mData.getTaskItem().getActivities().size()-1) {
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
                   mBtnNextActivity.setText("NEXT");
                 }
                 break;
               }
             }
           }
-        } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
           App.eventBus.post(new BackEvent());
         }
       }
@@ -380,23 +392,305 @@ public class DetailFragment extends Fragment {
       @Override
       public void onClick(View view) {
         applyButtonState();
-  
-        if (mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mData.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
+        
+        if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
           mNotify.setStatus(100);
-          mData.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-          mNotify.setData(App.getGson().toJson(mData));
+          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+          mNotify.setData(App.getGson().toJson(mCommItem));
+          mViewModel.update(mNotify);
+          
+          mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(new DisposableSingleObserver<LastActivity>() {
+              @Override
+              public void onSuccess(LastActivity lastActivity) {
+                lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+                lastActivity.setStatusType(9);
+  
+                ArrayList<String> _list = lastActivity.getDetailList();
+  
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                  Locale.getDefault());
+                LastActivityDetails _detail = new LastActivityDetails();
+                _detail.setDescription("DELETED");
+                _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+                _list.add(App.getGson().toJson(_detail));
+                lastActivity.setDetailList(_list);
+  
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    mViewModel.update(lastActivity);
+                  }
+                });
+              }
+  
+              @Override
+              public void onError(Throwable e) {
+    
+              }
+            });
+  
+          App.eventBus.post(new BackEvent());
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+          
+          mActivityList.clear();
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+              mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                mCommItem.getTaskItem().getActivities().get(j)));
+            }
+            mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
+              .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+            
+            boolean fFinished = false;
+            for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+              if (mCommItem.getTaskItem().getActivities().get(j).getStatus().equals(ActivityStatus.FINISHED)) {
+                if (j == mCommItem.getTaskItem().getActivities().size()-1) {
+                  fFinished = true;
+                  mBtnNextActivity.setText("FINISHED");
+                }
+                continue;
+              }
+            }
+            
+            if (!fFinished) {
+              new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
+                .setTitleText("Start Activity")
+                .setContentText("Möchten Sie den Task starten?")
+                .setCancelText("Abbrechen")
+                .setConfirmText("Task Starten")
+                .confirmButtonColor(R.drawable.btn_confirmation_ok)
+                .showCancelButton(true)
+                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                  @Override
+                  public void onClick(KAlertDialog sDialog) {
+                    mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                    mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTime());
+                    mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                    mNotify.setStatus(50);
+                    mNotify.setData(App.getGson().toJson(mCommItem));
+                    mViewModel.update(mNotify);
+                    applyButtonState();
+  
+                    mActivityList.clear();
+                    if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                      for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                        mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                          mCommItem.getTaskItem().getActivities().get(j)));
+                      }
+                      mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
+                        .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                    }
+  /*
+                    mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribeOn(Schedulers.io())
+                      .subscribe(new DisposableSingleObserver<LastActivity>() {
+                        @Override
+                        public void onSuccess(LastActivity lastActivity) {
+                          
+                          lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+                          lastActivity.setStatusType(2);
+        
+                          ArrayList<String> _list = lastActivity.getDetailList();
+  
+                          SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                            Locale.getDefault());
+                          LastActivityDetails _detail = new LastActivityDetails();
+                          _detail.setDescription("CHANGED");
+                          _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+                          _list.add(App.getGson().toJson(_detail));
+                          lastActivity.setDetailList(_list);
+        
+                          AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                              mViewModel.update(lastActivity);
+                            }
+                          });
+                        }
+      
+                        @Override
+                        public void onError(Throwable e) {
+        
+                        }
+                      });
+                    */
+                    setOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    sDialog.cancel();
+              }
+            })
+            .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
+              @Override
+              public void onClick(KAlertDialog sDialog) {
+                sDialog.cancel();
+              }
+            })
+            .show();
+            } else {
+              mNotify.setStatus(100);
+              mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+              mNotify.setData(App.getGson().toJson(mCommItem));
+              mViewModel.update(mNotify);
+              applyButtonState();
+  
+              mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new DisposableSingleObserver<LastActivity>() {
+                  @Override
+                  public void onSuccess(LastActivity lastActivity) {
+                    
+                    lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+                    lastActivity.setStatusType(3);
+        
+                    ArrayList<String> _list = lastActivity.getDetailList();
+  
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                      Locale.getDefault());
+                    LastActivityDetails _detail = new LastActivityDetails();
+                    _detail.setDescription("FINISHED TASK");
+                    _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+                    _list.add(App.getGson().toJson(_detail));
+                    lastActivity.setDetailList(_list);
+        
+                    AsyncTask.execute(new Runnable() {
+                      @Override
+                      public void run() {
+                        mViewModel.update(lastActivity);
+                      }
+                    });
+                  }
+      
+                  @Override
+                  public void onError(Throwable e) {
+        
+                  }
+                });
+            }
+          }
+          
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+        
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
+                  mNotify.setStatus(90);
+                  mCommItem.getTaskItem().setTaskStatus(TaskStatus.CMR);
+                  mNotify.setData(App.getGson().toJson(mCommItem));
+                  mViewModel.update(mNotify);
+                  applyButtonState();
+                }
+                continue;
+              }
+              
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
+                mCommItem.getTaskItem().getActivities().get(i).setFinished(AppUtils.getCurrentDateTime());
+                mNotify.setData(App.getGson().toJson(mCommItem));
+                mViewModel.update(mNotify);
+  
+                setOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                
+                if (i < mCommItem.getTaskItem().getActivities().size()-1) {
+                  mCommItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
+                  mCommItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTime());
+                  mNotify.setData(App.getGson().toJson(mCommItem));
+                  mViewModel.update(mNotify);
+  
+                  setOfflineWork(mNotify.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                }
+  
+                mActivityList.clear();
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
+                  }
+                }
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+  
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
+                  mBtnNextActivity.setText("FINISHED");
+                }
+                break;
+              }
+  
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
+                mCommItem.getTaskItem().getActivities().get(i).setStarted(AppUtils.getCurrentDateTime());
+                mNotify.setData(App.getGson().toJson(mCommItem));
+                mViewModel.update(mNotify);
+                
+                if (i != 0)
+                  setOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+  
+                mActivityList.clear();
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
+                  }
+                }
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                break;
+              }
+            }
+          }
+        
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+  
+          mNotify.setStatus(100);
+          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+          mNotify.setData(App.getGson().toJson(mCommItem));
+          mViewModel.update(mNotify);
+          applyButtonState();
+          
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+          mViewModel.delete(mNotify);
+  
+          mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(new DisposableSingleObserver<LastActivity>() {
+              @Override
+              public void onSuccess(LastActivity lastActivity) {
+        
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    mViewModel.delete(lastActivity);
+                  }
+                });
+              }
+      
+              @Override
+              public void onError(Throwable e) {
+        
+              }
+            });
+          
+          App.eventBus.post(new BackEvent());
+        }
+        
+/*
+        if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
+          mNotify.setStatus(100);
+          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+          mNotify.setData(App.getGson().toJson(mCommItem));
           mViewModel.update(mNotify);
   
           LastActivity lastActivity = new LastActivity();
-          lastActivity.setMandantOid(mData.getTaskItem().getMandantId());
-          lastActivity.setTaskOid(mData.getTaskItem().getTaskId());
-          lastActivity.setOrderNo(mData.getTaskItem().getOrderNo());
+          lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
+          lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
+          lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
           lastActivity.setStatusType(9);
           lastActivity.setCreatedAt(new Date());
           mViewModel.insert(lastActivity);
   
           App.eventBus.post(new BackEvent());
-        } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
   
           new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
             .setTitleText("Start Activity")
@@ -408,18 +702,31 @@ public class DetailFragment extends Fragment {
             .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
               @Override
               public void onClick(KAlertDialog sDialog) {
-                mData.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                mData.getTaskItem().getActivities().get(0).setStarted(new Date());
-                mData.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                mCommItem.getTaskItem().getActivities().get(0).setStarted(new Date());
+                mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
                 mNotify.setStatus(50);
-                mNotify.setData(App.getGson().toJson(mData));
+                mNotify.setData(App.getGson().toJson(mCommItem));
                 mViewModel.update(mNotify);
-                applyButtonState();
-  
+                applyButtonState();*/
+  /*
+                DriverDatabase db = DriverDatabase.getDatabase();
+                OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+                
+                OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+                offlineConfirmation.setNotifyId((int)mNotify.getId());
+                offlineConfirmation.setConfirmType(ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    dao.insert(offlineConfirmation);
+                  }
+                });
+  *//*
                 LastActivity lastActivity = new LastActivity();
-                lastActivity.setMandantOid(mData.getTaskItem().getMandantId());
-                lastActivity.setTaskOid(mData.getTaskItem().getTaskId());
-                lastActivity.setOrderNo(mData.getTaskItem().getOrderNo());
+                lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
+                lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
+                lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
                 lastActivity.setStatusType(1);
                 lastActivity.setDescription(getContext().getResources().getString(R.string.pending) + " -> " + getContext().getResources().getString(R.string.running));
                 lastActivity.setCreatedAt(new Date());
@@ -427,12 +734,12 @@ public class DetailFragment extends Fragment {
                 sDialog.cancel();
   
                 mActivityList.clear();
-                if (mData.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mData.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mData.getTaskItem().getTaskStatus(), mData.getTaskItem().getActivities().get(j)));
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
-                mAdapter.setActivityStepItems(mActivityList, mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
               }
             })
             .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
@@ -443,21 +750,21 @@ public class DetailFragment extends Fragment {
             })
             .show();
           
-        } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-          if (mData.getTaskItem().getActivities().size() > 0) {
-            for (int i = 0; i < mData.getTaskItem().getActivities().size(); i++) {
-              if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
-                if (i == mData.getTaskItem().getActivities().size()-1) {
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
                   mNotify.setStatus(90);
-                  mData.getTaskItem().setTaskStatus(TaskStatus.CMR);
-                  mNotify.setData(App.getGson().toJson(mData));
+                  mCommItem.getTaskItem().setTaskStatus(TaskStatus.CMR);
+                  mNotify.setData(App.getGson().toJson(mCommItem));
                   mViewModel.update(mNotify);
                   applyButtonState();
   
                   LastActivity lastActivity = new LastActivity();
-                  lastActivity.setMandantOid(mData.getTaskItem().getMandantId());
-                  lastActivity.setTaskOid(mData.getTaskItem().getTaskId());
-                  lastActivity.setOrderNo(mData.getTaskItem().getOrderNo());
+                  lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
+                  lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
+                  lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
                   lastActivity.setStatusType(1);
                   lastActivity.setDescription(getContext().getResources().getString(R.string.running) + " -> " + getContext().getResources().getString(R.string.cmr));
                   lastActivity.setCreatedAt(new Date());
@@ -466,86 +773,86 @@ public class DetailFragment extends Fragment {
                 continue;
               }
               
-              if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
-                mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
-                mData.getTaskItem().getActivities().get(i).setFinished(new Date());
-                mNotify.setData(App.getGson().toJson(mData));
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
+                mCommItem.getTaskItem().getActivities().get(i).setFinished(new Date());
+                mNotify.setData(App.getGson().toJson(mCommItem));
                 mViewModel.update(mNotify);
                 requestActivityChange(
                   0,
-                  mData.getTaskItem().getActivities().get(i).getMandantId(),
-                  mData.getTaskItem().getActivities().get(i).getTaskId(),
-                  mData.getTaskItem().getActivities().get(i).getActivityId(),
-                  mData.getTaskItem().getActivities().get(i).getName(),
-                  mData.getTaskItem().getActivities().get(i).getDescription(),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
-                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
-                  mData.getTaskItem().getActivities().get(i).getSequence()
+                  mCommItem.getTaskItem().getActivities().get(i).getMandantId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getTaskId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getActivityId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getName(),
+                  mCommItem.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getFinished()),
+                  mCommItem.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mCommItem.getTaskItem().getActivities().get(i).getSequence()
                 );
   
                 mActivityList.clear();
-                if (mData.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mData.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mData.getTaskItem().getTaskStatus(), mData.getTaskItem().getActivities().get(j)));
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
-                mAdapter.setActivityStepItems(mActivityList, mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
   
-                if (i == mData.getTaskItem().getActivities().size()-1) {
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
                   mBtnNextActivity.setText("FINISHED");
                 }
                 break;
               }
               
-              if (mData.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
-                mData.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
-                mData.getTaskItem().getActivities().get(i).setStarted(new Date());
-                mNotify.setData(App.getGson().toJson(mData));
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
+                mCommItem.getTaskItem().getActivities().get(i).setStarted(new Date());
+                mNotify.setData(App.getGson().toJson(mCommItem));
                 mViewModel.update(mNotify);
                 requestActivityChange(
                   0,
-                  mData.getTaskItem().getActivities().get(i).getMandantId(),
-                  mData.getTaskItem().getActivities().get(i).getTaskId(),
-                  mData.getTaskItem().getActivities().get(i).getActivityId(),
-                  mData.getTaskItem().getActivities().get(i).getName(),
-                  mData.getTaskItem().getActivities().get(i).getDescription(),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getStarted()),
-                  mSdf.format(mData.getTaskItem().getActivities().get(i).getFinished()),
-                  mData.getTaskItem().getActivities().get(i).getStatus().ordinal(),
-                  mData.getTaskItem().getActivities().get(i).getSequence()
+                  mCommItem.getTaskItem().getActivities().get(i).getMandantId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getTaskId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getActivityId(),
+                  mCommItem.getTaskItem().getActivities().get(i).getName(),
+                  mCommItem.getTaskItem().getActivities().get(i).getDescription(),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getStarted()),
+                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getFinished()),
+                  mCommItem.getTaskItem().getActivities().get(i).getStatus().ordinal(),
+                  mCommItem.getTaskItem().getActivities().get(i).getSequence()
                 );
                 
                 mActivityList.clear();
-                if (mData.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mData.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mData.getTaskItem().getTaskStatus(), mData.getTaskItem().getActivities().get(j)));
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
-                mAdapter.setActivityStepItems(mActivityList, mData.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
                 break;
               }
             }
           }
-        } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
           mNotify.setStatus(100);
-          mData.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-          mNotify.setData(App.getGson().toJson(mData));
+          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+          mNotify.setData(App.getGson().toJson(mCommItem));
           mViewModel.update(mNotify);
           applyButtonState();
   
           LastActivity lastActivity = new LastActivity();
-          lastActivity.setMandantOid(mData.getTaskItem().getMandantId());
-          lastActivity.setTaskOid(mData.getTaskItem().getTaskId());
-          lastActivity.setOrderNo(mData.getTaskItem().getOrderNo());
+          lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
+          lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
+          lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
           lastActivity.setStatusType(1);
           lastActivity.setDescription(getContext().getResources().getString(R.string.cmr) + " -> " + getContext().getResources().getString(R.string.completed));
           lastActivity.setCreatedAt(new Date());
           mViewModel.insert(lastActivity);
-        } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
           mViewModel.delete(mNotify);
           App.eventBus.post(new BackEvent());
-        }
+        }*/
       }
     });
     
@@ -561,7 +868,7 @@ public class DetailFragment extends Fragment {
     mTvReference2 = (AsapTextView)root.findViewById(R.id.tv_activity_step_reference_2);
     mTvDescription = (AsapTextView)root.findViewById(R.id.tv_activity_step_desc);
   }
-  
+/*
   private androidx.work.Data createInputData(
     int header_type,
     int mandantId,
@@ -616,5 +923,19 @@ public class DetailFragment extends Fragment {
       .addTag(UUID.randomUUID().toString())
       .build();
     mWorkManager.enqueue(oneTimeWorkRequest);
+  }
+ */
+
+  private void setOfflineWork(int notifyId, int activityId, int confirmationType) {
+    OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+    offlineConfirmation.setNotifyId(notifyId);
+    offlineConfirmation.setActivityId(activityId);
+    offlineConfirmation.setConfirmType(confirmationType);
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        mOfflineWorkDAO.insert(offlineConfirmation);
+      }
+    });
   }
 }

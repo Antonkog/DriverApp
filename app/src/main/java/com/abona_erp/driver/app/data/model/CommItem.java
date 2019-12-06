@@ -3,7 +3,7 @@ package com.abona_erp.driver.app.data.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Data {
+public class CommItem {
   
   @SerializedName("Header")
   @Expose

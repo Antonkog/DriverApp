@@ -6,6 +6,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.abona_erp.driver.app.manager.ApiManager;
 import com.abona_erp.driver.app.manager.SharedPrefManager;
+import com.abona_erp.driver.app.util.gson.BooleanJsonDeserializer;
 import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
@@ -68,6 +69,10 @@ public class App extends BaseApp {
     
     deserializer = new StringJsonDeserializer();
     gsonBuilder.registerTypeAdapter(String.class, deserializer);
+    
+    deserializer = new BooleanJsonDeserializer();
+    gsonBuilder.registerTypeAdapter(boolean.class, deserializer);
+    gsonBuilder.registerTypeAdapter(Boolean.class, deserializer);
     
     return gsonBuilder.create();
   }

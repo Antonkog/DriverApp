@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="current_location">aktualna lokalizacja</string>
+  <string name="action_cancel">Anuluj</string>
+  <string name="action_ok">OK</string>
+  <string name="action_save">Zapisz</string>
+  <string name="menu_settings">Ustawienia</string>
+  <string name="menu_about">O programie</string>
+
+  <string name="need_permissions">Potrzebujesz uprawnień!</string>
+  <string name="permission_message_settings">Ta aplikacja wymaga pozwolenia na korzystanie z tej funkcji. Możesz przyznać je w ustawieniach aplikacji.</string>
+
+  <string name="current_location">Aktualna lokalizacja</string>
   <string name="destination_location">Miejsce docelowe</string>
+
+  <string name="label_new">Nowy</string>
+  <string name="label_updated">Zaktualizowano</string>
+  <string name="label_deleted">Usunięte</string>
+  <string name="label_changed">Zmieniono</string>
+  <string name="label_done">Gotowy</string>
 </resources>

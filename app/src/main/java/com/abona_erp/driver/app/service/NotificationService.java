@@ -6,34 +6,40 @@ import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PowerManager;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.ConfirmationItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
-import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.data.model.Header;
-import com.abona_erp.driver.app.data.model.TaskItem;
+import com.abona_erp.driver.app.data.model.LastActivityDetails;
+import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DateConverter;
 import com.abona_erp.driver.app.util.concurrent.MainUiThread;
 import com.abona_erp.driver.app.util.concurrent.ThreadExecutor;
+import com.abona_erp.driver.app.work.ConfirmationAsyncTask;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 
-import java.io.IOException;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,7 +56,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
   boolean isWorking = false;
   boolean jobCancelled = false;
   
-  Data mData;
+  CommItem mCommItem;
   DriverRepository mRepository;
   
   Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -60,7 +66,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
   ThreadExecutor mThreadExecutor;
   
   public NotificationService() {
-    mData = new Data();
+    mCommItem = new CommItem();
     mRepository = new DriverRepository(getApplication());
     
     mThreadExecutor = ThreadExecutor.getInstance();
@@ -111,11 +117,11 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
       String raw = jobParameters.getExtras().getString("data");
       if (raw == null)
         return;
-      mData = new Data();
-      mData = App.getGson().fromJson(raw, Data.class);
+      mCommItem = new CommItem();
+      mCommItem = App.getGson().fromJson(raw, CommItem.class);
       
-      if (mData.getTaskItem().getMandantId() != null && mData.getTaskItem().getTaskId() != null) {
-        mRepository.getNotifyByMandantTaskId(mData.getTaskItem().getMandantId(), mData.getTaskItem().getTaskId()).observeOn(AndroidSchedulers.mainThread())
+      if (mCommItem.getTaskItem().getMandantId() != null && mCommItem.getTaskItem().getTaskId() != null) {
+        mRepository.getNotifyByMandantTaskId(mCommItem.getTaskItem().getMandantId(), mCommItem.getTaskItem().getTaskId()).observeOn(AndroidSchedulers.mainThread())
           .subscribeOn(Schedulers.io())
           .subscribe(new DisposableSingleObserver<Notify>() {
             @Override
@@ -124,102 +130,102 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
   
               notify.setData(raw);
               notify.setRead(false);
-              if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+              if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
                 notify.setStatus(0);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
                 notify.setStatus(50);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
                 notify.setStatus(90);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
                 notify.setStatus(100);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
                 notify.setStatus(51);
               }
-              notify.setTaskDueFinish(mData.getTaskItem().getTaskDueDateFinish());
-              notify.setOrderNo(mData.getTaskItem().getOrderNo());
+              notify.setTaskDueFinish(mCommItem.getTaskItem().getTaskDueDateFinish());
+              notify.setOrderNo(mCommItem.getTaskItem().getOrderNo());
               notify.setModifiedAt(AppUtils.getCurrentDateTime());
   
               mRepository.update(notify);
+              startRingtone(notification);
+              
+              mRepository.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId()).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new DisposableSingleObserver<LastActivity>() {
+                  @Override
+                  public void onSuccess(LastActivity lastActivity) {
+                    lastActivity.setCustomer(mCommItem.getTaskItem().getKundenName());
+                    lastActivity.setOrderNo(AppUtils.parseOrderNo(mCommItem.getTaskItem().getOrderNo()));
+                    lastActivity.setStatusType(1);
+                    lastActivity.setConfirmStatus(0);
+                    lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+                    /*
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                      Locale.getDefault());
+                    Date timestamp = new Date();
+                    lastActivity.setModifiedAt(sdf.format(timestamp));
+                     */
+                    ArrayList<String> _list = lastActivity.getDetailList();
   
-              LastActivity lastActivity = new LastActivity();
-              lastActivity.setStatusType(2);
-              lastActivity.setMandantOid(mData.getTaskItem().getMandantId());
-              lastActivity.setTaskOid(mData.getTaskItem().getTaskId());
-              lastActivity.setOrderNo(mData.getTaskItem().getOrderNo());
-              lastActivity.setCreatedAt(AppUtils.getCurrentDateTime());
-              lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-              mRepository.insert(lastActivity);
+                    LastActivityDetails _detail = new LastActivityDetails();
+                    _detail.setDescription("UPDATE");
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                      Locale.getDefault());
+                    _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+                    _list.add(App.getGson().toJson(_detail));
+                    lastActivity.setDetailList(_list);
+                    mRepository.update(lastActivity);
   
-              Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-              Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-              r.play();
+                    DriverDatabase db = DriverDatabase.getDatabase();
+                    OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+                    
+                    OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+                    offlineConfirmation.setNotifyId(notify.getId());
+                    offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal());
+                    AsyncTask.execute(new Runnable() {
+                      @Override
+                      public void run() {
+                        dao.insert(offlineConfirmation);
+                      }
+                    });
+                  }
+  
+                  @Override
+                  public void onError(Throwable e) {
+    
+                  }
+                });
             }
   
             @Override
             public void onError(Throwable e) {
-              Log.d(TAG, "***** NICHT VORHANDEN - INSERT *****");
+              Log.i(TAG, "******* TASK NICHT VORHANDEN - HINZUFÜGEN *******");
               
               Notify notify = new Notify();
-              notify.setMandantId(mData.getTaskItem().getMandantId());
-              notify.setTaskId(mData.getTaskItem().getTaskId());
+              notify.setMandantId(mCommItem.getTaskItem().getMandantId());
+              notify.setTaskId(mCommItem.getTaskItem().getTaskId());
               notify.setData(raw);
               notify.setRead(false);
-              if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+              if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
                 notify.setStatus(0);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
                 notify.setStatus(50);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
                 notify.setStatus(90);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
                 notify.setStatus(100);
-              } else if (mData.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
                 notify.setStatus(51);
               }
-              notify.setTaskDueFinish(mData.getTaskItem().getTaskDueDateFinish());
-              notify.setOrderNo(mData.getTaskItem().getOrderNo());
+              notify.setTaskDueFinish(mCommItem.getTaskItem().getTaskDueDateFinish());
+              notify.setOrderNo(mCommItem.getTaskItem().getOrderNo());
               notify.setCreatedAt(AppUtils.getCurrentDateTime());
               notify.setModifiedAt(AppUtils.getCurrentDateTime());
-              
-              Data confirmData = new Data();
-              Header confirmHeader = new Header();
-              confirmHeader.setDataType(DataType.CONFIRMATION);
-              confirmHeader.setTimestampSenderUTC(mData.getHeader().getTimestampSenderUTC());
-              confirmData.setHeader(confirmHeader);
-              ConfirmationItem confirmationItem = new ConfirmationItem();
-              confirmationItem.setConfirmationType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE);
-              Date date = DateConverter.fromTimestamp(new Date().toString());
-              confirmationItem.setTimeStampConfirmationUTC(date);
-              confirmationItem.setMandantId(mData.getTaskItem().getMandantId());
-              confirmationItem.setTaskId(mData.getTaskItem().getTaskId());
-              //confirmationItem.setTaskItem(mData.getTaskItem());
-              confirmationItem.setTaskChangeId(mData.getTaskItem().getTaskChangeId());
-              confirmData.setConfirmationItem(confirmationItem);
-              
-              Call<Data> call = App.apiManager.getConfirmApi().confirm(confirmData);
-              call.enqueue(new Callback<Data>() {
-                @Override
-                public void onResponse(Call<Data> call, Response<Data> response) {
-                  if (response.isSuccessful()) {
-                    Log.d(TAG, "SUCCESSFUL");
-                    Log.d(TAG, response.toString());
-                  } else {
-                    Log.w(TAG, "ERROR in onResponse");
-                  }
-                }
-  
-                @Override
-                public void onFailure(Call<Data> call, Throwable t) {
-                  Log.w(TAG, t.getMessage());
-                }
-              });
-  
               mRepository.insert(notify);
-  
               startRingtone(notification);
             }
           });
       } else {
-        Log.w(TAG, "Keine gültige Task Item");
+        Log.w(TAG, "Keine gültiger Task Item");
       }
     } catch (NullPointerException e) {
       Log.w(TAG, e.getMessage());

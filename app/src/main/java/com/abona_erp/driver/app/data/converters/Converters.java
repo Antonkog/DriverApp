@@ -8,10 +8,10 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class PhotoUrlConverters {
+public class Converters {
   
   @TypeConverter
-  public static ArrayList<String> fromPhotoUrl(String value) {
+  public static ArrayList<String> stringToArrayList(String value) {
     Type listType = new TypeToken<ArrayList<String>>() {}.getType();
     return new Gson().fromJson(value, listType);
   }

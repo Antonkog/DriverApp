@@ -18,16 +18,17 @@ import io.reactivex.Single;
 @Dao
 public interface NotifyDao {
   
-  @Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish ASC")
+  //@Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish ASC")
+  @Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish AND order_no AND task_id ASC")
   LiveData<List<Notify>> getAllPendingNotifications();
   
-  @Query("SELECT * FROM taskItem WHERE status = 50 ORDER BY task_due_finish ASC")
+  @Query("SELECT * FROM taskItem WHERE status = 50 ORDER BY task_due_finish AND order_no AND task_id ASC")
   LiveData<List<Notify>> getAllRunningNotifications();
 
-  @Query("SELECT * FROM taskItem WHERE status = 90 ORDER BY task_due_finish ASC")
+  @Query("SELECT * FROM taskItem WHERE status = 90 ORDER BY task_due_finish AND order_no AND task_id ASC")
   LiveData<List<Notify>> getAllCMRNotifications();
   
-  @Query("SELECT * FROM taskItem WHERE status = 100 ORDER BY task_due_finish ASC")
+  @Query("SELECT * FROM taskItem WHERE status = 100 ORDER BY task_due_finish AND order_no AND task_id ASC")
   LiveData<List<Notify>> getAllCompletedNotifications();
   
   @Query("SELECT * FROM taskItem WHERE id = :id LIMIT 1")

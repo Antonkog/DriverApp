@@ -2,6 +2,7 @@
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/root_last_activity"
   android:orientation="horizontal"
   android:layout_width="match_parent"
@@ -38,7 +39,7 @@
         android:layout_width="@dimen/spacing_middle"
         android:layout_height="@dimen/spacing_middle"
         android:layout_centerInParent="true"
-        app:srcCompat="@drawable/ic_notifications_outline"
+        tools:src="@drawable/ic_notifications_outline"
         />
 
     </RelativeLayout>
@@ -65,13 +66,14 @@
         android:layout_height="wrap_content">
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
-          android:id="@+id/tv_last_activity_status_name"
+          android:id="@+id/tv_last_activity_customer"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="center_vertical"
           android:textAppearance="@style/TextAppearance.AppCompat.Caption"
           android:textStyle="bold"
-          android:textColor="@color/clrAbona"
+          android:textColor="@color/clrFont"
+          tools:text="DAIMLER AG"
           />
 
         <View
@@ -80,40 +82,76 @@
           />
 
         <androidx.appcompat.widget.AppCompatImageView
-          android:id="@+id/iv_last_activity_read_mark"
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:src="@drawable/ic_double_check_mark"
-          android:visibility="gone"
+          android:id="@+id/iv_last_activity_done_all"
+          android:layout_width="16dp"
+          android:layout_height="16dp"
+          android:tint="@color/grey_40"
+          android:src="@drawable/ic_done_all"
+          android:visibility="visible"
           />
 
       </LinearLayout>
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:id="@+id/tv_last_activity_order_no"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="@color/grey_60"
-        />
-
-      <com.abona_erp.driver.app.ui.widget.AsapTextView
-        android:id="@+id/tv_last_activity_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/status_pending_bg"
+        android:textColor="#fff"
         android:textSize="10sp"
-        android:textColor="@color/grey_60"
-        android:visibility="gone"
+        tools:Text="110"
+        />
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_small"
+        />
+
+      <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_last_activity_task_id"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@drawable/status_pending_bg"
+          android:textColor="#fff"
+          android:textSize="10sp"
+          tools:Text="110"
+          />
+
+        <View
+          android:layout_width="@dimen/spacing_small"
+          android:layout_height="0dp"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_last_activity_status_type"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@drawable/status_pending_bg"
+          android:textColor="#fff"
+          android:textSize="10sp"
+          tools:Text="NEU"
+          />
+
+      </LinearLayout>
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_small"
         />
 
       <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:id="@+id/tv_last_activity_timestamp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
+        android:background="@drawable/status_pending_bg"
+        android:textColor="#fff"
         android:textSize="10sp"
-        android:textColor="@color/grey_60"
+        tools:Text="110"
         />
 
     </LinearLayout>

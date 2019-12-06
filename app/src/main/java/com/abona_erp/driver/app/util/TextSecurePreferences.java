@@ -13,62 +13,62 @@ public class TextSecurePreferences {
   
   private static final String TAG = TextSecurePreferences.class.getSimpleName();
   
-  public static final String DEVICE_IMEI = "pref_device_imei";
-  public static final String DEVICE_MODEL = "pref_device_model";
-  public static final String DEVICE_MANUFACTURER = "pref_device_manufacturer";
-  public static final String DEVICE_SERIAL = "pref_device_serial";
-  public static final String DEVICE_REGISTRATED = "pref_device_registrated";
+  private static final String PREF_FIRST_TIME_RUN             = "pref_first_time_run";
+  private static final String PREF_PERMISSION                 = "pref_permission";
+  private static final String PREF_GCM_REGISTRATION_ID        = "pref_gcm_registration_id";
+  private static final String PREF_GCM_REGISTRATION_ID_UPDATE = "pref_gcm_registration_id_update";
+  private static final String PREF_GCM_REGISTRATION_ID_TIME   = "pref_gcm_registration_id_last_set_time";
+  private static final String PREF_DEVICE_REGISTRATED         = "pref_device_registrated";
+  private static final String PREF_ACCESS_TOKEN               = "pref_access_token";
   
-  public  static final String REGISTERED_GCM_PREF              = "pref_gcm_registered";
+  private static final String PREF_ACTIVITY_BACK_ENABLE       = "pref_activity_back_enable";
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  public static final String REGISTERED_GCM_PREF               = "pref_gcm_registered";
   
   private static final String GCM_DISABLED_PREF                = "pref_gcm_disabled";
-  private static final String GCM_REGISTRATION_ID_PREF         = "pref_gcm_registration_id";
+  
   private static final String GCM_REGISTRATION_ID_VERSION_PREF = "pref_gcm_registration_id_version";
-  private static final String GCM_REGISTRATION_ID_TIME_PREF    = "pref_gcm_registration_id_last_set_time";
+  
   private static final String GCM_SENDER_ID_PREF               = "pref_gcm_sender_id";
   
   public static final String LANGUAGE_PREF                     = "pref_language";
   
-  private static final String JOB_MANAGER_VERSION = "pref_job_manager_version";
+
   
-  public static String getDeviceIMEI(Context context) {
-    return getStringPreference(context, DEVICE_IMEI, "");
-  }
-  
-  public static void setDeviceIMEI(Context context, String deviceIMEI) {
-    setStringPreference(context, DEVICE_IMEI, deviceIMEI);
-  }
-  
-  public static String getDeviceModel(Context context) {
-    return getStringPreference(context, DEVICE_MODEL, "");
-  }
-  
-  public static void setDeviceModel(Context context, String deviceModel) {
-    setStringPreference(context, DEVICE_MODEL, deviceModel);
-  }
-  
-  public static String getDeviceManufacturer(Context context) {
-    return getStringPreference(context, DEVICE_MANUFACTURER, "");
-  }
-  
-  public static void setDeviceManufacturer(Context context, String deviceManufacturer) {
-    setStringPreference(context, DEVICE_MANUFACTURER, deviceManufacturer);
-  }
-  
-  public static String getDeviceSerial(Context context) {
-    return getStringPreference(context, DEVICE_SERIAL, "");
-  }
-  
-  public static void setDeviceSerial(Context context, String deviceSerial) {
-    setStringPreference(context, DEVICE_SERIAL, deviceSerial);
-  }
+
+
   
   public static boolean isDeviceRegistrated(Context context) {
-    return getBooleanPreference(context, DEVICE_REGISTRATED, false);
+    return getBooleanPreference(context, PREF_DEVICE_REGISTRATED, false);
   }
   
   public static void setDeviceRegistrated(Context context, boolean success) {
-    setBooleanPreference(context, DEVICE_REGISTRATED, success);
+    setBooleanPreference(context, PREF_DEVICE_REGISTRATED, success);
+  }
+  
+  public static boolean isDevicePermissionsGranted(Context context) {
+    return getBooleanPreference(context, PREF_PERMISSION, false);
+  }
+  
+  public static void setDevicePermissionsGranted(Context context, boolean granted) {
+    setBooleanPreference(context, PREF_PERMISSION, granted);
+  }
+  
+  public static boolean isDeviceFirstTimeRun(Context context) {
+    return getBooleanPreference(context, PREF_FIRST_TIME_RUN, false);
+  }
+  
+  public static void setDeviceFirstTimeRun(Context context, boolean firstTimeRun) {
+    setBooleanPreference(context, PREF_FIRST_TIME_RUN, firstTimeRun);
   }
   
   public static boolean isFcmDisabled(Context context) {
@@ -80,26 +80,34 @@ public class TextSecurePreferences {
   }
   
   public static void setFcmToken(Context context, String registrationId) {
-    setStringPreference(context, GCM_REGISTRATION_ID_PREF, registrationId);
-    setIntegerPrefrence(context, GCM_REGISTRATION_ID_VERSION_PREF, Util.getCanonicalVersionCode());
+    setStringPreference(context, PREF_GCM_REGISTRATION_ID, registrationId);
+    //setIntegerPrefrence(context, GCM_REGISTRATION_ID_VERSION_PREF, Util.getCanonicalVersionCode());
   }
   
   public static String getFcmToken(Context context) {
-    int storedRegistrationIdVersion = getIntegerPreference(context, GCM_REGISTRATION_ID_VERSION_PREF, 0);
+    //int storedRegistrationIdVersion = getIntegerPreference(context, GCM_REGISTRATION_ID_VERSION_PREF, 0);
     
-    if (storedRegistrationIdVersion != Util.getCanonicalVersionCode()) {
-      return null;
-    } else {
-      return getStringPreference(context, GCM_REGISTRATION_ID_PREF, null);
-    }
+    //if (storedRegistrationIdVersion != Util.getCanonicalVersionCode()) {
+    //  return null;
+    //} else {
+      return getStringPreference(context, PREF_GCM_REGISTRATION_ID, null);
+    //}
   }
   
-  public static long getFcmTokenLastSetTime(Context context) {
-    return getLongPreference(context, GCM_REGISTRATION_ID_TIME_PREF, 0);
+  public static void setFcmTokenUpdate(Context context, boolean update) {
+    setBooleanPreference(context, PREF_GCM_REGISTRATION_ID_UPDATE, update);
   }
   
-  public static void setFcmTokenLastSetTime(Context context, long timestamp) {
-    setLongPreference(context, GCM_REGISTRATION_ID_TIME_PREF, timestamp);
+  public static boolean getFcmTokenUpdate(Context context) {
+    return getBooleanPreference(context, PREF_GCM_REGISTRATION_ID_UPDATE, false);
+  }
+  
+  public static String getFcmTokenLastSetTime(Context context) {
+    return getStringPreference(context, PREF_GCM_REGISTRATION_ID_TIME, "");
+  }
+  
+  public static void setFcmTokenLastSetTime(Context context, String timestamp) {
+    setStringPreference(context, PREF_GCM_REGISTRATION_ID_TIME, timestamp);
   }
   
   public static boolean isPushRegistered(Context context) {
@@ -119,6 +127,14 @@ public class TextSecurePreferences {
     setStringPreference(context, GCM_SENDER_ID_PREF, senderID);
   }
   
+  public static String getAccessToken(Context context) {
+    return getStringPreference(context, PREF_ACCESS_TOKEN, "");
+  }
+  
+  public static void setAccessToken(Context context, String accessToken) {
+    setStringPreference(context, PREF_ACCESS_TOKEN, accessToken);
+  }
+  
   public static String getLanguage(Context context) {
     return getStringPreference(context, LANGUAGE_PREF, "en");
   }
@@ -127,12 +143,12 @@ public class TextSecurePreferences {
     setStringPreference(context, LANGUAGE_PREF, language);
   }
   
-  public static void setJobManagerVersion(Context context, int version) {
-    setIntegerPrefrence(context, JOB_MANAGER_VERSION, version);
+  public static boolean getActivityBackEnable(Context context) {
+    return getBooleanPreference(context, PREF_ACTIVITY_BACK_ENABLE, false);
   }
   
-  public static int getJobManagerVersion(Context contex) {
-    return getIntegerPreference(contex, JOB_MANAGER_VERSION, 1);
+  public static void setActivityBackEnable(Context context, boolean enable) {
+    setBooleanPreference(context, PREF_ACTIVITY_BACK_ENABLE, enable);
   }
   
   public static void setBooleanPreference(Context context, String key, boolean value) {

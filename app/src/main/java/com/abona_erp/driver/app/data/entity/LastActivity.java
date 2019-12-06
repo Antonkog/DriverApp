@@ -1,48 +1,54 @@
 package com.abona_erp.driver.app.data.entity;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.data.converters.TimestampConverter;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 @Entity(tableName = "last_activity_table")
-public class LastActivity {
+public class LastActivity implements Serializable {
 
   @PrimaryKey(autoGenerate = true)
   private int id;
-
-  @NonNull
-  @ColumnInfo(name = "status_name")
+  
+  @ColumnInfo(name = "task_id")
+  private int taskId;
+  
+  @ColumnInfo(name = "client_id")
+  private int clientId;
+  
+  @ColumnInfo(name = "customer")
+  private String customer;
+  
+  @ColumnInfo(name = "order_no")
+  private String orderNo;
+  
+  @ColumnInfo(name = "detail_list")
+  private ArrayList<String> detailList = new ArrayList<>();
+  
+  @ColumnInfo(name = "status_type")
   private int statusType;
   
-  @NonNull
-  @ColumnInfo(name = "task_oid")
-  private int taskOid;
+  @ColumnInfo(name = "confirm_status")
+  private int confirmStatus;
   
-  @NonNull
-  @ColumnInfo(name = "mandant_oid")
-  private int mandantOid;
-
-  @NonNull
-  @ColumnInfo(name = "order_no")
-  private int orderNo;
-  
-  @ColumnInfo(name = "description")
-  private String description;
-
   @ColumnInfo(name = "created_at")
-  @TypeConverters({DateConverter.class})
+  @TypeConverters({TimestampConverter.class})
   private Date createdAt;
-
+  
   @ColumnInfo(name = "modified_at")
-  @TypeConverters({DateConverter.class})
+  @TypeConverters({TimestampConverter.class})
   private Date modifiedAt;
 
+  // ------------------------------------------------------------------------
+  // GETTER SETTER
+  
   public int getId() {
     return id;
   }
@@ -50,66 +56,76 @@ public class LastActivity {
   public void setId(int id) {
     this.id = id;
   }
-
-  @NonNull
-  public int getStatusType() {
-    return statusType;
+  
+  public int getTaskId() {
+    return taskId;
   }
-
-  public void setStatusType(@NonNull int statusType) {
-    this.statusType = statusType;
+  
+  public void setTaskId(int taskId) {
+    this.taskId = taskId;
   }
-
-  @NonNull
-  public int getOrderNo() {
+  
+  public int getClientId() {
+    return clientId;
+  }
+  
+  public void setClientId(int clientId) {
+    this.clientId = clientId;
+  }
+  
+  public String getCustomer() {
+    return customer;
+  }
+  
+  public void setCustomer(String customer) {
+    this.customer = customer;
+  }
+  
+  public String getOrderNo() {
     return orderNo;
   }
-
-  public void setOrderNo(@NonNull int orderNo) {
+  
+  public void setOrderNo(String orderNo) {
     this.orderNo = orderNo;
   }
   
-  @NonNull
-  public int getMandantOid() {
-    return mandantOid;
+  public int getStatusType() {
+    return statusType;
   }
   
-  public void setMandantOid(@NonNull int mandantOid) {
-    this.mandantOid = mandantOid;
+  public void setStatusType(int statusType) {
+    this.statusType = statusType;
   }
   
-  @NonNull
-  public int getTaskOid() {
-    return taskOid;
+  public ArrayList<String> getDetailList() {
+    return detailList;
   }
   
-  public void setTaskOid(@NonNull int taskOid) {
-    this.taskOid = taskOid;
+  public void setDetailList(ArrayList<String> detailList) {
+    this.detailList = detailList;
   }
   
-  public String getDescription() {
-    return description;
+  public int getConfirmStatus() {
+    return confirmStatus;
   }
   
-  public void setDescription(String description) {
-    this.description = description;
+  public void setConfirmStatus(int confirmStatus) {
+    this.confirmStatus = confirmStatus;
   }
-
-  @NonNull
+  
   public Date getCreatedAt() {
     return createdAt;
   }
-
-  public void setCreatedAt(@NonNull Date createdAt) {
+  
+  public void setCreatedAt(Date createdAt) {
     this.createdAt = createdAt;
   }
-
-  @NonNull
+  
   public Date getModifiedAt() {
     return modifiedAt;
   }
-
-  public void setModifiedAt(@NonNull Date modifiedAt) {
+  
+  public void setModifiedAt(Date modifiedAt) {
     this.modifiedAt = modifiedAt;
   }
 }

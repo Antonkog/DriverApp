@@ -122,13 +122,30 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
         holder.tv_activity_step_status.setText(mContext.getResources().getString(R.string.label_deleted));
       } else if (current.getTaskStatus().equals(TaskStatus.PENDING)) {
         Log.d(TAG, "TaskStatus.PENDING");
+  
+        if (current.getActivityItem().getStatus().equals(ActivityStatus.PENDING)) {
+          holder.iv_activity_step_check_mark.setVisibility(View.GONE);
+          holder.tv_activity_step_no.setVisibility(View.VISIBLE);
+          holder.tv_activity_step_no.setText(String.valueOf(position+1));
+          holder.tv_activity_step_status.setBackground(mContext.getResources().getDrawable(R.drawable.status_pending_bg));
+        } else if (current.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
+          holder.iv_activity_step_check_mark.setVisibility(View.GONE);
+          holder.tv_activity_step_no.setVisibility(View.VISIBLE);
+          holder.tv_activity_step_no.setText(String.valueOf(position+1));
+          holder.tv_activity_step_status.setBackground(mContext.getResources().getDrawable(R.drawable.status_running_bg));
+        } else if (current.getActivityItem().getStatus().equals(ActivityStatus.FINISHED)) {
+          holder.tv_activity_step_no.setVisibility(View.GONE);
+          holder.iv_activity_step_check_mark.setVisibility(View.VISIBLE);
+          holder.tv_activity_step_status.setBackground(mContext.getResources().getDrawable(R.drawable.status_finished_bg));
+        }
+        /*
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
         holder.iv_activity_step_check_mark.setVisibility(View.GONE);
         holder.tv_activity_step_no.setVisibility(View.VISIBLE);
         holder.tv_activity_step_no.setText(String.valueOf(position+1));
         holder.tv_activity_step_status.setBackground(mContext.getResources()
           .getDrawable(R.drawable.status_pending_bg));
-
+*/
         if (current.getActivityItem().getStarted() != null) {
           if (current.getActivityItem().getStarted().compareTo(mDateMin) == 0) {
             holder.tv_activity_step_started.setText(NOT_SET_TIMESTAMP_GLYPH);

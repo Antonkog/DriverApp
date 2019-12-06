@@ -59,6 +59,10 @@ public class MainFragmentViewModel extends AndroidViewModel {
     return mRepository.getNotifyById(id);
   }
   
+  public Single<LastActivity> getLastActivityByTaskClientId(int taskId, int clientId) {
+    return mRepository.getLastActivityByTaskClientId(taskId, clientId);
+  }
+  
   public void update(Notify notify) {
     mRepository.update(notify);
   }
@@ -69,5 +73,13 @@ public class MainFragmentViewModel extends AndroidViewModel {
   
   void insert(LastActivity lastActivity) {
     mRepository.insert(lastActivity);
+  }
+  
+  public void update(LastActivity lastActivity) {
+    mRepository.update(lastActivity);
+  }
+  
+  public void delete(LastActivity lastActivity) {
+    mRepository.delete(lastActivity);
   }
 }

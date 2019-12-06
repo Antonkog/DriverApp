@@ -49,7 +49,7 @@ public class FcmService extends FirebaseMessagingService {
   @Override
   public void onMessageReceived(RemoteMessage message) {
     
-    Log.d(TAG, "FCM Message... latency (" + (System.currentTimeMillis() - message.getSentTime()) + " ms)");
+    Log.d(TAG, "++ FCM Message... latency (" + (System.currentTimeMillis() - message.getSentTime()) + " ms)");
     mNotifyData.add(message);
   }
   

@@ -1,6 +1,5 @@
 package com.abona_erp.driver.app.data.dao;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -15,7 +14,7 @@ import java.util.List;
 public interface DeviceProfileDAO {
   
   @Query("SELECT * FROM device_profile ORDER BY created_at DESC")
-  LiveData<List<DeviceProfile>> getDeviceProfiles();
+  List<DeviceProfile> getDeviceProfiles();
   
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   long insert(DeviceProfile deviceProfile);

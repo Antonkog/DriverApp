@@ -1,25 +1,31 @@
 package com.abona_erp.driver.app.data.repository;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
+import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
-import com.abona_erp.driver.app.data.dao.LastActivityDao;
+import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
+import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.ConfirmationType;
+import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.util.AppUtils;
-import com.abona_erp.driver.core.base.ContextUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class DriverRepository {
@@ -32,11 +38,11 @@ public class DriverRepository {
   private LiveData<Integer> mNotReadNotificationCount;
   private LiveData<Integer> mRowCount;
 
-  private static LastActivityDao mLastActivityDao;
+  private static LastActivityDAO mLastActivityDAO;
   private LiveData<List<LastActivity>> mAllLastActivityItems;
   
   private DeviceProfileDAO mDeviceProfileDAO;
-  private LiveData<List<DeviceProfile>> mAllDeviceProfiles;
+  //private List<DeviceProfile> mAllDeviceProfiles;
   
   public DriverRepository(Application application) {
     DriverDatabase db = DriverDatabase.getDatabase();
@@ -48,12 +54,12 @@ public class DriverRepository {
     mNotReadNotificationCount = mNotifyDao.getNotReadNotificationCount();
     mRowCount = mNotifyDao.getRowCount();
 
-    mLastActivityDao = db.lastActivityDao();
-    mAllLastActivityItems = mLastActivityDao.getLastActivityItems();
+    mLastActivityDAO = db.lastActivityDAO();
+    mAllLastActivityItems = mLastActivityDAO.getLastActivityItems();
     
     // Device Profile:
     mDeviceProfileDAO = db.deviceProfileDAO();
-    mAllDeviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
+    //mAllDeviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
   }
   
   public LiveData<List<Notify>> getAllPendingNotifications() {
@@ -79,6 +85,10 @@ public class DriverRepository {
   public Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
     return mNotifyDao.loadNotifyByTaskMandantId(mandantId, taskId);
   }
+  
+  public Single<LastActivity> getLastActivityByTaskClientId(int taskId, int clientId) {
+    return mLastActivityDAO.getLastActivityByTaskClientId(taskId, clientId);
+  }
 
   public long insert(Notify notify) {
     new insertAsyncTask(mNotifyDao).execute(notify);
@@ -102,11 +112,15 @@ public class DriverRepository {
   }
 
   public void insert(LastActivity lastActivity) {
-    new insertLastActivityAsyncTask(mLastActivityDao).execute(lastActivity);
+    new insertLastActivityAsyncTask(mLastActivityDAO).execute(lastActivity);
   }
 
   public void update(LastActivity lastActivity) {
-    new updateLastActivityAsyncTask(mLastActivityDao).execute(lastActivity);
+    new updateLastActivityAsyncTask(mLastActivityDAO).execute(lastActivity);
+  }
+  
+  public void delete(LastActivity lastActivity) {
+    new deleteLastActivityAsyncTask(mLastActivityDAO).execute(lastActivity);
   }
 
   public LiveData<Integer> getNotReadNotificationCount() {
@@ -123,33 +137,71 @@ public class DriverRepository {
     new updateDeviceProfileAsyncTask(mDeviceProfileDAO).execute(deviceProfile);
   }
   
-  public LiveData<List<DeviceProfile>> getAllDeviceProfiles() {
-    return mAllDeviceProfiles;
-  }
+  //public List<DeviceProfile> getAllDeviceProfiles() {
+  //  return mAllDeviceProfiles;
+  //}
   // DEVICE PROFILE:
   // -----------------------------------------------------------------------------------------------
 
   private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
 
-    private NotifyDao mAsyncTaskDao;
+    private NotifyDao mDAO;
 
     insertAsyncTask(NotifyDao dao) {
-      mAsyncTaskDao = dao;
+      mDAO = dao;
     }
 
     @Override
     protected Void doInBackground(final Notify... params) {
-      long oid = mAsyncTaskDao.insertNotify(params[0]);
+      long oid = mDAO.insertNotify(params[0]);
       if (oid > 0) {
-        LastActivity lastActivity = new LastActivity();
-        lastActivity.setStatusType(0);
-        lastActivity.setMandantOid(params[0].getMandantId());
-        lastActivity.setTaskOid(params[0].getTaskId());
-        lastActivity.setOrderNo(params[0].getOrderNo());
-        lastActivity.setCreatedAt(AppUtils.getCurrentDateTime());
-        lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-        mLastActivityDao.insert(lastActivity);
+        DriverDatabase db = DriverDatabase.getDatabase();
+        OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+  
+        OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+        offlineConfirmation.setNotifyId((int) oid);
+        offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal());
+        dao.insert(offlineConfirmation);
+        
+        CommItem commItem = App.getGson().fromJson(params[0].getData(), CommItem.class);
+        if (commItem != null) {
+          /*
+          if (commItem.getTaskItem().getActivities().size() > 0) {
+            for (int i = 0; i < commItem.getTaskItem().getActivities().size(); i++) {
+              OfflineConfirmation _offline = new OfflineConfirmation();
+              _offline.setNotifyId((int)oid);
+              _offline.setConfirmType(ConfirmationType.ACTIVITY_CONFIRMED_BY_DEVICE.ordinal());
+              dao.insert(_offline);
+            }
+          }
+          */
+          
+          // Add Last Activity DB Item:
+          LastActivity lastActivity = new LastActivity();
+          lastActivity.setTaskId(commItem.getTaskItem().getTaskId());
+          lastActivity.setClientId(commItem.getTaskItem().getMandantId());
+          lastActivity.setCustomer(commItem.getTaskItem().getKundenName());
+          lastActivity.setOrderNo(AppUtils.parseOrderNo(commItem.getTaskItem().getOrderNo()));
+          lastActivity.setStatusType(0);
+          lastActivity.setConfirmStatus(0);
+          synchronized (this) {
+            
+            lastActivity.setCreatedAt(AppUtils.getCurrentDateTime());
+            lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+  
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+              Locale.getDefault());
+            LastActivityDetails _detail = new LastActivityDetails();
+            _detail.setDescription("NEU");
+            _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+            ArrayList<String> _list = new ArrayList<>();
+            _list.add(App.getGson().toJson(_detail));
+            lastActivity.setDetailList(_list);
+          }
+          mLastActivityDAO.insert(lastActivity);
+        }
       }
+      
       return null;
     }
   }
@@ -186,30 +238,45 @@ public class DriverRepository {
 
   private static class insertLastActivityAsyncTask extends AsyncTask<LastActivity, Void, Void> {
 
-    private LastActivityDao mAsyncTaskDao;
+    private LastActivityDAO mDAO;
 
-    insertLastActivityAsyncTask(LastActivityDao dao) {
-      mAsyncTaskDao = dao;
+    insertLastActivityAsyncTask(LastActivityDAO dao) {
+      mDAO = dao;
     }
 
     @Override
     protected Void doInBackground(final LastActivity... params) {
-      mAsyncTaskDao.insert(params[0]);
+      mDAO.insert(params[0]);
       return null;
     }
   }
 
   private static class updateLastActivityAsyncTask extends AsyncTask<LastActivity, Void, Void> {
 
-    private LastActivityDao mAsyncTaskDao;
+    private LastActivityDAO mDAO;
 
-    updateLastActivityAsyncTask(LastActivityDao dao) {
-      mAsyncTaskDao = dao;
+    updateLastActivityAsyncTask(LastActivityDAO dao) {
+      mDAO = dao;
     }
 
     @Override
     protected Void doInBackground(final LastActivity... params) {
-      mAsyncTaskDao.update(params[0]);
+      mDAO.update(params[0]);
+      return null;
+    }
+  }
+  
+  private static class deleteLastActivityAsyncTask extends AsyncTask<LastActivity, Void, Void> {
+    
+    private LastActivityDAO mDAO;
+    
+    deleteLastActivityAsyncTask(LastActivityDAO dao) {
+      mDAO = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(final LastActivity... params) {
+      mDAO.delete(params[0]);
       return null;
     }
   }

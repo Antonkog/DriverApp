@@ -7,8 +7,17 @@
   <string name="menu_settings">Параметры</string>
   <string name="menu_about">О программе</string>
 
+  <string name="need_permissions">Нужны разрешения!</string>
+  <string name="permission_message_settings">Это приложение требует разрешения для использования этой функции. Вы можете предоставить их в настройках приложения.</string>
+
   <string name="current_location">текущее местоположение</string>
   <string name="destination_location">Место назначения</string>
+
+  <string name="label_new">новый</string>
+  <string name="label_updated">обновленный</string>
+  <string name="label_deleted">Исключен</string>
+  <string name="label_changed">Изменено</string>
+  <string name="label_done">Выполнено</string>
   <!-- MULTILANG -->
 
   <string name="yes">Да</string>

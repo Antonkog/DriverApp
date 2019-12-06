@@ -26,7 +26,7 @@ public class MainViewModel extends AndroidViewModel {
   private LiveData<List<Notify>> mAllCMRNotifications;
   private LiveData<List<Notify>> mAllCompletedNotifications;
   
-  private LiveData<List<DeviceProfile>> mAllDeviceProfiles;
+  //private List<DeviceProfile> mAllDeviceProfiles;
 
   public MainViewModel(Application application) {
     super(application);
@@ -39,7 +39,7 @@ public class MainViewModel extends AndroidViewModel {
     mAllCMRNotifications = mRepository.getAllCMRNotifications();
     mAllCompletedNotifications = mRepository.getAllCompletedNotifications();
     
-    mAllDeviceProfiles = mRepository.getAllDeviceProfiles();
+    //mAllDeviceProfiles = mRepository.getAllDeviceProfiles();
   }
 
   LiveData<Integer> getNotReadNotificationCount() {
@@ -88,9 +88,9 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.update(deviceProfile);
   }
   
-  LiveData<List<DeviceProfile>> getAllDeviceProfiles() {
-    return mAllDeviceProfiles;
-  }
+  //List<DeviceProfile> getAllDeviceProfiles() {
+  //  return mAllDeviceProfiles;
+  //}
   // DEVICE PROFILE:
   // -----------------------------------------------------------------------------------------------
 }

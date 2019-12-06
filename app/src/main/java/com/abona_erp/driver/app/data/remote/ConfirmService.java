@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.data.remote;
 
-import com.abona_erp.driver.app.data.model.Data;
+import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.ResultOfAction;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -11,5 +12,5 @@ public interface ConfirmService {
   
   @Headers("Content-Type:application/json; charset=UTF-8")
   @POST("confirm")
-  Call<Data> confirm(@Body Data data);
+  Call<ResultOfAction> confirm(@Body CommItem commItem);
 }
