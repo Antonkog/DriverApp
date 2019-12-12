@@ -23,7 +23,7 @@ public class PowerMenuUtils {
   ) {
     return new PowerMenu.Builder(context)
       .setHeaderView(R.layout.item_title_header)
-      .addItem(new PowerMenuItem("Settings", false))
+      .addItem(new PowerMenuItem(context.getResources().getString(R.string.menu_settings), false))
       .setLifecycleOwner(lifecycleOwner)
       .setAnimation(MenuAnimation.SHOWUP_TOP_RIGHT)
       .setMenuRadius(10f)

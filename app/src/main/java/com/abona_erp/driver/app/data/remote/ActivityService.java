@@ -10,7 +10,7 @@ import retrofit2.http.POST;
 
 public interface ActivityService {
   
-  @Headers("Content-Type:application/json; charset=UTF-8")
+  @Headers("Content-Type:application/json")
   @POST("activity")
   Call<ResultOfAction> activityChange(@Body CommItem commItem);
 }

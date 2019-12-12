@@ -39,7 +39,7 @@
         android:layout_width="@dimen/spacing_middle"
         android:layout_height="@dimen/spacing_middle"
         android:layout_centerInParent="true"
-        tools:src="@drawable/ic_notifications_outline"
+        tools:src="@drawable/abona_36x36"
         />
 
     </RelativeLayout>

@@ -13,20 +13,7 @@
     android:layout_width="220dp"
     android:layout_height="match_parent"
     android:background="@drawable/main_menu_background">
-<!--
-    <androidx.appcompat.widget.AppCompatImageView
-      android:layout_width="56dp"
-      android:layout_height="56dp"
-      android:src="@drawable/ic_app_icon_driver"
-      android:layout_gravity="center_horizontal"
-      android:layout_marginTop="26dp"
-      />
 
-    <View
-      android:layout_width="0dp"
-      android:layout_height="25dp"
-      />
-    -->
     <View
       android:layout_width="0dp"
       android:layout_height="@dimen/spacing_large"
@@ -34,7 +21,7 @@
 
     <LinearLayout
       android:orientation="horizontal"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:layout_marginStart="@dimen/spacing_medium"
@@ -54,27 +41,31 @@
 
       <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center">
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_vehicle_registration_number"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:text="KA-EX-1234"
+          android:text="@string/registration_number"
+          android:singleLine="true"
           android:textStyle="bold"
           android:textAllCaps="true"
-          android:textSize="20sp"
+          android:textSize="18sp"
           android:textColor="#1F1C2C"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_vehicle_client_name"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
+          android:singleLine="true"
           android:textSize="12sp"
-          android:text="Hegelmann Express GmbH"
+          tools:text="Hegelmann Express"
           android:textColor="#808080"
           />
 
@@ -109,7 +100,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="Task Status"
+      android:text="@string/task_status"
       android:shadowColor="@android:color/black"
       android:shadowDx="1"
       android:shadowDy="1"
@@ -123,7 +114,7 @@
       android:layout_weight="1"
       android:layout_marginTop="@dimen/spacing_large"
       android:clipToPadding="false"
-      tools:listitem="@layout/last_activity_item"
+      tools:listitem="@layout/item_last_activity"
       app:layout_behavior="@string/appbar_scrolling_view_behavior"
       />
 

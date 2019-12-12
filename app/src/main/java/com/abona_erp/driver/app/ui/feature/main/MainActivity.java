@@ -47,6 +47,7 @@ import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.receiver.GeofenceBroadcastReceiver;
+import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.service.ServiceWorker;
 import com.abona_erp.driver.app.service.impl.GeofenceErrorMessages;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
@@ -59,6 +60,7 @@ import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.SoftwareAboutEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
+import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.LastActivityAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
@@ -68,10 +70,12 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.PowerMenuUtils;
 import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.core.base.ContextUtils;
 import com.developer.kalert.KAlertDialog;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -98,6 +102,7 @@ import com.skydoves.powermenu.PowerMenuItem;
 import com.tree.rh.ctlib.CT;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -122,13 +127,13 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   public static final String BACK_STACK_ROOT_TAG = "root_fragment";
   
   private Handler mHandler;
-
-  private Gson mGson;
+  
   private CommItem mCommItem;
-  private WorkManager mWorkManager;
   
   private RecyclerView lvLastActivity;
   private PieView mMainPieView;
+  private AsapTextView mVehicleRegistrationNumber;
+  private AsapTextView mVehicleClientName;
   
   private PowerMenu mProfileMenu;
   private AppCompatImageButton mMainPopupMenu;
@@ -145,8 +150,6 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   private PendingIntent mGeofencePendingIntent;
   private PendingGeofenceTask mPendingGeofenceTask = PendingGeofenceTask.NONE;
   private ArrayList<Geofence> mGeofenceList;
-  
-  private ProgressDialog mProgressDialog;
   
   @Override
   public void onComplete(@NonNull Task<Void> task) {
@@ -217,10 +220,12 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         }
       });
     
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    mVehicleClientName = (AsapTextView)findViewById(R.id.tv_vehicle_client_name);
+    mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
+    mVehicleRegistrationNumber = (AsapTextView)findViewById(R.id.tv_vehicle_registration_number);
+    mVehicleRegistrationNumber.setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
     
-    mWorkManager = WorkManager.getInstance(this);
-    mProgressDialog = new ProgressDialog(MainActivity.this);
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     mMainPieView = (PieView)findViewById(R.id.mainPieView);
     mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrAbona));
@@ -237,14 +242,6 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         mProfileMenu.showAsAnchorRightTop(mMainPopupMenu);
       }
     });
-
-    JsonDeserializer deserializer = new DoubleJsonDeserializer();
-    mGson = new GsonBuilder()
-      .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-      .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-      .registerTypeAdapter(double.class, deserializer)
-      .registerTypeAdapter(Double.class, deserializer)
-      .create();
 
     lvLastActivity = (RecyclerView)findViewById(R.id.lv_last_activity);
     LinearLayoutManager recyclerLayoutManager =
@@ -278,8 +275,17 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     
     mHandler = new Handler();
     
-    
-
+    /*
+    SimpleDateFormat form = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
+      Locale.getDefault());
+    form.setTimeZone(TimeZone.getTimeZone("UTC"));
+    Log.i(TAG, Locale.getDefault().toString());
+    Date currentDate = AppUtils.getCurrentDateTime();
+    Log.i(TAG, currentDate.toString());
+    Log.i(TAG, form.format(currentDate));
+    Log.i(TAG, form.format(AppUtils.getCurrentDateTimeUtc()));
+    Log.i(TAG, "*********************************************************************");
+*/
     mMainViewModel.getNotReadNotificationCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
@@ -303,6 +309,27 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         }
       }
     });
+    /*
+    mMainViewModel.getRowCount().observe(MainActivity.this, new Observer<Integer>() {
+      @Override
+      public void onChanged(Integer integer) {
+        if (integer == null)
+          return;
+        if (integer == 0) {
+          mMainViewModel.getAllLastActivityItems().observe(MainActivity.this, new Observer<List<LastActivity>>() {
+            @Override
+            public void onChanged(List<LastActivity> lastActivities) {
+              if (lastActivities.size() > 0) {
+                for (int i = 0; i < lastActivities.size(); i++) {
+                  mMainViewModel.delete(lastActivities.get(i));
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+     */
 
     mMainViewModel.getAllLastActivityItems().observe(this, new Observer<List<LastActivity>>() {
       @Override
@@ -324,102 +351,20 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     mGeofencingClient = LocationServices.getGeofencingClient(this);
     
     addGeofencesButtonHandler(null);
-    /*
-    String body = "grant_type:password&" +
-      "username:manyvehicles@abona-erp.com&" +
-      "password:1234qwerQWER,.-";
-    
-    try {
-      Call<String> call = App.apiManager.getTokenApi().authentication(body);
-      Response<String> response = call.execute();
-    } catch (IOException e) {
-      e.printStackTrace();
+    startBackgroundWorkerService();
+  }
+  
+  public BackgroundServiceWorker mBackgroundWorkerService;
+  public Intent mIntentBackgroundWorkerService;
+  public void startBackgroundWorkerService() {
+    if (mBackgroundWorkerService == null) {
+      mBackgroundWorkerService = new BackgroundServiceWorker(ContextUtils.getApplicationContext());
     }
-  */
-  
-  
-    
-  /*
-    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-    
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    builder.sslSocketFactory(getSSLConfig(getBaseContext()), )
-    
-   */
-  
-/*
-    OkHttpClient client = new OkHttpClient();
-    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-    RequestBody body = RequestBody.create(mediaType, "grant_type=password&username=manyvehicles%40abona-erp.com&password=1234qwerQWER%2C.-");
-  
-    Request request = new Request.Builder()
-      .url("https://213.144.11.162:5000/authentication")
-      .post(body)
-      .addHeader("Content-Type", "application/x-www-form-urlencoded")
-      .addHeader("User-Agent", "PostmanRuntime/7.20.1")*/
-      //.addHeader("Accept", "*/*")
-     /* .addHeader("Cache-Control", "no-cache")
-      .addHeader("Host", "localhost:5000")
-      .addHeader("Accept-Encoding", "gzip, deflate")
-      .addHeader("Content-Length", "84")
-      .addHeader("Connection", "keep-alive")
-      .addHeader("cache-control", "no-cache")
-      .build();
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          //Response response = client.newCall(request).execute();
-          Response response = getOkHttpClient().newCall(request).execute();
-          Log.i(TAG, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        
-      }
-    });
-*/
-  
-/*
-    Retrofit.Builder builder = new Retrofit.Builder()
-      .baseUrl("https://213.144.11.162:5000/")
-      .client(getOkHttpClient())
-      .addConverterFactory(GsonConverterFactory.create());
-    Retrofit retrofit = builder.build();
-  
-    TokenService tokenService = retrofit.create(TokenService.class);
-    Call<String> call = tokenService.authentication(body);
-    call.enqueue(new Callback<String>() {
-      @Override
-      public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-        Log.i(TAG, "EK*********************************************************");
-        if (response.isSuccessful()) {
-          Log.i(TAG, "EK1*********************************************************");
-        }
-      }
-  
-      @Override
-      public void onFailure(Call<String> call, Throwable t) {
-    
-      }
-    });*/
-    /*
-    call.enqueue(new Callback<String>() {
-      @Override
-      public void onResponse(Call<String> call, Response<String> response) {
-        Log.i(TAG, "EK*********************************************************");
-        if (response.isSuccessful()) {
-          Log.i(TAG, "EK1*********************************************************");
-        }
-      }
-  
-      @Override
-      public void onFailure(Call<String> call, Throwable t) {
-    
-      }
-    });
-    */
+    mIntentBackgroundWorkerService = new Intent(ContextUtils.getApplicationContext(),
+      mBackgroundWorkerService.getClass());
+    if (!isMyServiceRunning(mBackgroundWorkerService.getClass())) {
+      startService(mIntentBackgroundWorkerService);
+    }
   }
   
   @Override
@@ -630,6 +575,21 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       fragments.popBackStackImmediate();
     }
   }
+  
+  @Subscribe
+  public void onMessageEvent(VehicleRegistrationEvent event) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        if (mVehicleRegistrationNumber != null) {
+          mVehicleRegistrationNumber.setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
+        }
+        if (mVehicleClientName != null) {
+          mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
+        }
+      }
+    });
+  }
 
   private static long back_pressed;
   @Override
@@ -791,7 +751,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       mCommItem = null;
     mCommItem = new CommItem();
     String json = event.getNotify().getData();
-    mCommItem = mGson.fromJson(json, CommItem.class);
+    mCommItem = App.getGson().fromJson(json, CommItem.class);
     
     if (mCommItem.getTaskItem().getAddress().getLongitude() == null)
       return;
@@ -1010,94 +970,4 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       }
     }, delayMillis);
   }
-  /*
-  private static SSLContext getSSLConfig(Context context) throws CertificateException, IOException,
-    KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
-    
-    // Loading CAs from an InputStream:
-    CertificateFactory cf = null;
-    cf = CertificateFactory.getInstance("X.509");
-  
-    Certificate ca;
-    try (InputStream cert = context.getResources().openRawResource(R.raw.driver)) {
-      ca = cf.generateCertificate(cert);
-    }
-    
-    String keyStoreType = KeyStore.getDefaultType();
-    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-    keyStore.load(null, null);
-    keyStore.setCertificateEntry("ca", ca);
-  
-    // Creating a TrustManager that trusts the CAs in our KeyStore.
-    String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-    TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-    tmf.init(keyStore);
-  
-    // Creating an SSLSocketFactory that uses our TrustManager
-    SSLContext sslContext = SSLContext.getInstance("TLS");
-    sslContext.init(null, tmf.getTrustManagers(), null);
-  
-    return sslContext;
-  }
-  
-  OkHttpClient okHttpClient = null;
-  private OkHttpClient getOkHttpClient() {
-    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-    
-    if (okHttpClient == null) {
-      synchronized (MainActivity.class) {
-        if (okHttpClient == null) {
-          okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .hostnameVerifier(new HostnameVerifier() {
-              @Override
-              public boolean verify(String s, SSLSession sslSession) {
-                return true;
-              }
-            })
-            .sslSocketFactory(getsslsocket())
-            .addInterceptor(new Interceptor() {
-              @NotNull
-              @Override
-              public Response intercept(@NotNull Chain chain) throws IOException {
-                Request.Builder builder = chain.request().newBuilder();
-                return chain.proceed(builder.build());
-              }
-            })
-            .addInterceptor(logging)
-            .build();
-        }
-      }
-    }
-    return okHttpClient;
-  }*/
-  /*
-  private SSLSocketFactory getsslsocket() {
-    try {
-      SSLContext sslContext = SSLContext.getInstance("TLS");
-      X509TrustManager tm = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-    
-        }
-  
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-    
-        }
-  
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-          return new X509Certificate[0];
-        }
-      };
-      sslContext.init(null, new TrustManager[]{tm}, null);
-      return sslContext.getSocketFactory();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-   */
 }

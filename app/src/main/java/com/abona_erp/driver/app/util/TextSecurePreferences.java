@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.logging.Log;
 
 import java.util.Collections;
@@ -13,15 +14,18 @@ public class TextSecurePreferences {
   
   private static final String TAG = TextSecurePreferences.class.getSimpleName();
   
-  private static final String PREF_FIRST_TIME_RUN             = "pref_first_time_run";
-  private static final String PREF_PERMISSION                 = "pref_permission";
-  private static final String PREF_GCM_REGISTRATION_ID        = "pref_gcm_registration_id";
-  private static final String PREF_GCM_REGISTRATION_ID_UPDATE = "pref_gcm_registration_id_update";
-  private static final String PREF_GCM_REGISTRATION_ID_TIME   = "pref_gcm_registration_id_last_set_time";
-  private static final String PREF_DEVICE_REGISTRATED         = "pref_device_registrated";
-  private static final String PREF_ACCESS_TOKEN               = "pref_access_token";
+  private static final String PREF_FIRST_TIME_RUN              = "pref_first_time_run";
+  private static final String PREF_PERMISSION                  = "pref_permission";
+  private static final String PREF_GCM_REGISTRATION_ID         = "pref_gcm_registration_id";
+  private static final String PREF_GCM_REGISTRATION_ID_UPDATE  = "pref_gcm_registration_id_update";
+  private static final String PREF_GCM_REGISTRATION_ID_TIME    = "pref_gcm_registration_id_last_set_time";
+  private static final String PREF_DEVICE_REGISTRATED          = "pref_device_registrated";
+  private static final String PREF_ACCESS_TOKEN                = "pref_access_token";
   
-  private static final String PREF_ACTIVITY_BACK_ENABLE       = "pref_activity_back_enable";
+  private static final String PREF_ACTIVITY_BACK_ENABLE        = "pref_activity_back_enable";
+  
+  private static final String PREF_CLIENT_NAME                 = "pref_client_name";
+  private static final String PREF_VEHICLE_REGISTRATION_NUMBER = "pref_vehicle_registration_number";
   
   
   
@@ -149,6 +153,23 @@ public class TextSecurePreferences {
   
   public static void setActivityBackEnable(Context context, boolean enable) {
     setBooleanPreference(context, PREF_ACTIVITY_BACK_ENABLE, enable);
+  }
+  
+  public static String getClientName(Context context) {
+    return getStringPreference(context, PREF_CLIENT_NAME, "");
+  }
+  
+  public static void setClientName(Context context, String clientName) {
+    setStringPreference(context, PREF_CLIENT_NAME, clientName);
+  }
+  
+  public static String getVehicleRegistrationNumber(Context context) {
+    return getStringPreference(context, PREF_VEHICLE_REGISTRATION_NUMBER,
+      context.getResources().getString(R.string.registration_number));
+  }
+  
+  public static void setVehicleRegistrationNumber(Context context, String registrationNumber) {
+    setStringPreference(context, PREF_VEHICLE_REGISTRATION_NUMBER, registrationNumber);
   }
   
   public static void setBooleanPreference(Context context, String key, boolean value) {

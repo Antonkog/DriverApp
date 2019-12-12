@@ -19,6 +19,7 @@ public class MainViewModel extends AndroidViewModel {
   private DriverRepository mRepository;
 
   private LiveData<Integer> mNotReadNotificationCount;
+  private LiveData<Integer> mRowCount;
   private LiveData<List<LastActivity>> mAllLastActivityItems;
 
   private LiveData<List<Notify>> mAllPendingNotifications;
@@ -33,6 +34,7 @@ public class MainViewModel extends AndroidViewModel {
     mRepository = new DriverRepository(application);
     mAllLastActivityItems = mRepository.getAllLastActivityItems();
     mNotReadNotificationCount = mRepository.getNotReadNotificationCount();
+    mRowCount = mRepository.getRowCount();
 
     mAllPendingNotifications = mRepository.getAllPendingNotifications();
     mAllRunningNotifications = mRepository.getAllRunningNotifications();
@@ -44,6 +46,10 @@ public class MainViewModel extends AndroidViewModel {
 
   LiveData<Integer> getNotReadNotificationCount() {
     return mNotReadNotificationCount;
+  }
+  
+  LiveData<Integer> getRowCount() {
+    return mRowCount;
   }
 
   LiveData<List<LastActivity>> getAllLastActivityItems() {
@@ -92,5 +98,13 @@ public class MainViewModel extends AndroidViewModel {
   //  return mAllDeviceProfiles;
   //}
   // DEVICE PROFILE:
+  // -----------------------------------------------------------------------------------------------
+  
+  // -----------------------------------------------------------------------------------------------
+  // LAST ACTIVITY:
+  void delete(LastActivity lastActivity) {
+    mRepository.delete(lastActivity);
+  }
+  // LAST ACTIVITY:
   // -----------------------------------------------------------------------------------------------
 }

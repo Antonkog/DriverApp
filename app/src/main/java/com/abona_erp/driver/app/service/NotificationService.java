@@ -9,9 +9,11 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PowerManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.LastActivity;
@@ -26,8 +28,10 @@ import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
+import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.concurrent.MainUiThread;
 import com.abona_erp.driver.app.util.concurrent.ThreadExecutor;
 import com.abona_erp.driver.app.work.ConfirmationAsyncTask;
@@ -119,6 +123,33 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
         return;
       mCommItem = new CommItem();
       mCommItem = App.getGson().fromJson(raw, CommItem.class);
+      
+      // CHECK VEHICLE REGISTRATION NUMBER:
+      if (mCommItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
+        if (mCommItem.getVehicleItem() != null) {
+          if (mCommItem.getVehicleItem().getRegistrationNumber() != null) {
+            TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
+              mCommItem.getVehicleItem().getRegistrationNumber());
+          } else {
+            TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
+              getApplicationContext().getResources().getString(R.string.registration_number));
+          }
+          if (mCommItem.getVehicleItem().getClientName() != null) {
+            TextSecurePreferences.setClientName(getApplicationContext(),
+              mCommItem.getVehicleItem().getClientName());
+          } else {
+            TextSecurePreferences.setClientName(getApplicationContext(), "");
+          }
+        } else {
+          TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
+            getApplicationContext().getResources().getString(R.string.registration_number));
+          TextSecurePreferences.setClientName(getApplicationContext(), "");
+        }
+        
+        App.eventBus.post(new VehicleRegistrationEvent());
+        startRingtone(notification);
+        return;
+      }
       
       if (mCommItem.getTaskItem().getMandantId() != null && mCommItem.getTaskItem().getTaskId() != null) {
         mRepository.getNotifyByMandantTaskId(mCommItem.getTaskItem().getMandantId(), mCommItem.getTaskItem().getTaskId()).observeOn(AndroidSchedulers.mainThread())

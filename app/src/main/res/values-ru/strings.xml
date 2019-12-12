@@ -7,6 +7,27 @@
   <string name="menu_settings">Параметры</string>
   <string name="menu_about">О программе</string>
 
+  <string name="yes">Да</string>
+  <string name="no">Нет</string>
+  <string name="search">Поиск</string>
+  <string name="map">карта</string>
+  <string name="camera">камера</string>
+
+  <string name="registration_number">Нет автомобиля</string>
+  <string name="task_status">статус задачи</string>
+  <string name="task_finish">Завершение задачи</string>
+  <string name="due_in">Осталось</string>
+  <string name="order_no">№ заказа</string>
+  <string name="task_id">Task ID</string>
+  <string name="activity_status">Статус активности</string>
+  <string name="task_total_status">Общий статус задачи</string>
+  <string name="customer">Клиент</string>
+  <string name="customer_no">№ клиента</string>
+  <string name="reference_1">Референция 1</string>
+  <string name="reference_2">Референция 2</string>
+  <string name="description">Описание</string>
+  <string name="address">Адрес</string>
+
   <string name="need_permissions">Нужны разрешения!</string>
   <string name="permission_message_settings">Это приложение требует разрешения для использования этой функции. Вы можете предоставить их в настройках приложения.</string>
 
@@ -18,10 +39,12 @@
   <string name="label_deleted">Исключен</string>
   <string name="label_changed">Изменено</string>
   <string name="label_done">Выполнено</string>
+
+  <string name="preference_language">Язык</string>
+  <string name="preference_language_show">Русский</string>
   <!-- MULTILANG -->
 
-  <string name="yes">Да</string>
-  <string name="no">Нет</string>
+
   <string name="cancel">Отменить</string>
   <string name="enable">Включить</string>
   <string name="next">Далее</string>

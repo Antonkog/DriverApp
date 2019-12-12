@@ -18,6 +18,7 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
+import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
@@ -83,7 +84,12 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       if (mCommItem.getTaskItem().getTaskDueDateFinish() != null) {
         String dateTime = sdf.format(mCommItem.getTaskItem().getTaskDueDateFinish());
         holder.tvTaskFinish.setText(dateTime);
-        holder.bind(notify, mCommItem.getTaskItem().getTaskDueDateFinish(), listener);
+        if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING) || mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+          holder.enableDueInTimer(true, mCommItem.getTaskItem().getTaskDueDateFinish());
+        } else {
+          holder.enableDueInTimer(false, mCommItem.getTaskItem().getTaskDueDateFinish());
+        }
+        holder.bind(notify, /*mCommItem.getTaskItem().getTaskDueDateFinish(), */listener);
       }
     }
       
@@ -267,7 +273,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       this.dueInMillis = dueInMillis;
     }
     
-    public void bind(Notify notify, Date finishDate, final OnItemClickListener listener) {
+    public void bind(Notify notify,/* Date finishDate,*/ final OnItemClickListener listener) {
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -288,15 +294,29 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
           listener.onCameraClick(notify);
         }
       });
-      
+      /*
       handler.removeCallbacks(dueInCounter);
       dueInCounter.tv_DueIn = tvDueIn;
       dueInCounter.iv_Warning = ivWarning;
       dueInCounter.ll_Background = llHeaderBackground;
       dueInCounter.endDate = finishDate;
-      handler.postDelayed(dueInCounter, 100);
+      handler.postDelayed(dueInCounter, 100);*/
+    }
+  
+    public void enableDueInTimer(boolean enable, Date finishDate) {
+      if (enable) {
+        handler.removeCallbacks(dueInCounter);
+        dueInCounter.tv_DueIn = tvDueIn;
+        dueInCounter.iv_Warning = ivWarning;
+        dueInCounter.ll_Background = llHeaderBackground;
+        dueInCounter.endDate = finishDate;
+        handler.postDelayed(dueInCounter, 100);
+      } else {
+        handler.removeCallbacks(dueInCounter);
+      }
     }
   }
+  
 
   public void setNotifyList(List<Notify> notifyList) {
     mNotifyList = notifyList;

@@ -1,14 +1,14 @@
 package com.abona_erp.driver.app.data.model;
   
-  import com.google.gson.JsonDeserializationContext;
-  import com.google.gson.JsonDeserializer;
-  import com.google.gson.JsonElement;
-  import com.google.gson.JsonParseException;
-  import com.google.gson.JsonSerializationContext;
-  import com.google.gson.JsonSerializer;
-  import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.annotations.JsonAdapter;
   
-  import java.lang.reflect.Type;
+import java.lang.reflect.Type;
 
 @JsonAdapter(DataType.Serializer.class)
 public enum DataType {
@@ -17,7 +17,8 @@ public enum DataType {
   ACTIVITY(20),
   UNDO_ACTIVITY(21),
   CONFIRMATION(40),
-  DEVICE_PROFILE(60);
+  DEVICE_PROFILE(60),
+  VEHICLE(80);
   
   int dataType;
   

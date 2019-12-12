@@ -96,6 +96,9 @@ public class TaskItem {
   @Expose
   List<ActivityItem> activities;
   
+  // ------------------------------------------------------------------------
+  // GETTER & SETTER
+  
   public Integer getMandantId() {
     return mandantId;
   }
@@ -266,5 +269,9 @@ public class TaskItem {
   
   public List<ActivityItem> getActivities() {
     return activities;
+  }
+  
+  public void setActivities(List<ActivityItem> activities) {
+    this.activities = activities;
   }
 }

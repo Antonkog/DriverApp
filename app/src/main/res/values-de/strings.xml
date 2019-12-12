@@ -7,16 +7,39 @@
   <string name="menu_settings">Einstellungen</string>
   <string name="menu_about">Über</string>
 
+  <string name="yes">Ja</string>
+  <string name="no">Nein</string>
+  <string name="search">Suche</string>
+  <string name="map">Karte</string>
+  <string name="camera">Kamera</string>
+
+  <string name="registration_number">Kein Fahrzeug</string>
+  <string name="task_status">Task Status</string>
+  <string name="task_finish">Task Fertig stellen</string>
+  <string name="due_in">Fällig in</string>
+  <string name="order_no">Auftragsnummer</string>
+  <string name="task_id">Task ID</string>
+  <string name="activity_status">Aktivität Status</string>
+  <string name="task_total_status">Task Total Status</string>
+  <string name="customer">Kunde</string>
+  <string name="customer_no">KD-No</string>
+  <string name="reference_1">Referenz 1</string>
+  <string name="reference_2">Referenz 2</string>
+  <string name="description">Beschreibung</string>
+  <string name="address">Anschrift</string>
+
   <string name="need_permissions">Berechtigungen!</string>
   <string name="permission_message_settings">Diese App benötigt die Erlaubnis, diese Funktion zu nutzen. Sie können sie in den App-Einstellungen gewähren.</string>
 
   <string name="current_location">Aktuelle Position</string>
   <string name="destination_location">Zielort</string>
+
+  <string name="preference_language">Sprache</string>
+  <string name="preference_language_show">Deutsch</string>
   <!-- MULTILANG -->
 
 
-  <string name="yes">Ja</string>
-  <string name="no">Nein</string>
+
 
   <string name="pending">Offen\u0020</string>
   <string name="running">In Arbeit\u0020</string>

@@ -9,6 +9,10 @@ public class ResultOfAction {
   @Expose
   private boolean isSuccess;
   
+  @SerializedName("IsException")
+  @Expose
+  private boolean isException;
+  
   @SerializedName("Text")
   @Expose
   private String text;
@@ -17,12 +21,21 @@ public class ResultOfAction {
   @Expose
   private CommItem commItem;
   
+  
   public boolean getIsSuccess() {
     return isSuccess;
   }
   
   public void setIsSuccess(boolean isSuccess) {
     this.isSuccess = isSuccess;
+  }
+  
+  public boolean getIsException() {
+    return isException;
+  }
+  
+  public void setIsException(boolean isException) {
+    this.isException = isException;
   }
   
   public String getText() {

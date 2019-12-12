@@ -6,6 +6,27 @@
   <string name="menu_settings">Ustawienia</string>
   <string name="menu_about">O programie</string>
 
+  <string name="yes">Tak</string>
+  <string name="no">Nie</string>
+  <string name="search">Szukaj</string>
+  <string name="map">Mapa</string>
+  <string name="camera">kamera</string>
+
+  <string name="registration_number">Brak pojazdu</string>
+  <string name="task_status">Status zadania</string>
+  <string name="task_finish">Zakończ zadanie</string>
+  <string name="due_in">Z powodu</string>
+  <string name="order_no">Nr zamówienia</string>
+  <string name="task_id">ID zadania</string>
+  <string name="activity_status">Status aktywności</string>
+  <string name="task_total_status">Całkowity status zadania</string>
+  <string name="customer">Klient</string>
+  <string name="customer_no">Numer klienta</string>
+  <string name="reference_1">Referencja 1</string>
+  <string name="reference_2">Referencja 2</string>
+  <string name="description">Opis</string>
+  <string name="address">Adresa</string>
+
   <string name="need_permissions">Potrzebujesz uprawnień!</string>
   <string name="permission_message_settings">Ta aplikacja wymaga pozwolenia na korzystanie z tej funkcji. Możesz przyznać je w ustawieniach aplikacji.</string>
 
@@ -17,4 +38,7 @@
   <string name="label_deleted">Usunięte</string>
   <string name="label_changed">Zmieniono</string>
   <string name="label_done">Gotowy</string>
+
+  <string name="preference_language">Język</string>
+  <string name="preference_language_show">Polski</string>
 </resources>

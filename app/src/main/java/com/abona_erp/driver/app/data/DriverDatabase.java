@@ -41,7 +41,7 @@ public abstract class DriverDatabase extends RoomDatabase {
       synchronized (DriverDatabase.class) {
         if (INSTANCE == null) {
           INSTANCE = Room.databaseBuilder(ContextUtils.getApplicationContext(),
-            DriverDatabase.class, "abona_driver00")
+            DriverDatabase.class, "abona_driver77")
             .build();
         }
       }

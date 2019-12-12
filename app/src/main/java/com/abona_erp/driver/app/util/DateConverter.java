@@ -38,6 +38,7 @@ public class DateConverter {
   
   @TypeConverter
   public synchronized static String dateToTimestamp(Date value) {
-    return value == null ? null : df.format(value);
+    return value == null ? null : dfUtc.format(value);
+    //return value == null ? null : df.format(value);
   }
 }

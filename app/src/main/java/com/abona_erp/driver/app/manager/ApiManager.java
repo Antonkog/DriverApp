@@ -84,7 +84,8 @@ public class ApiManager implements Manager {
     return new Retrofit.Builder()
       .baseUrl(url)
       .client(provideOkHttpClient())
-      .addConverterFactory(GsonConverterFactory.create(App.getGson()))
+      //.addConverterFactory(GsonConverterFactory.create(App.getGson()))
+      .addConverterFactory(GsonConverterFactory.create(App.getGsonUtc()))
       .build();
   }
   

@@ -46,7 +46,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textSize="12sp"
-          android:text="Task Finish"
+          android:text="@string/task_finish"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -55,7 +55,7 @@
           android:layout_height="wrap_content"
           android:textSize="14sp"
           android:textColor="@color/clrFont"
-          android:text="29.10.2019 10:33:33"
+          tools:text="29.10.2019 10:33:33"
           />
 
       </LinearLayout>
@@ -74,7 +74,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textSize="12sp"
-          android:text="Due in"
+          android:text="@string/due_in"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -83,7 +83,7 @@
           android:layout_height="wrap_content"
           android:textSize="14sp"
           android:textColor="@color/clrFont"
-          android:text="1d 20h 30min"
+          tools:text="1d 20h 30min"
           />
 
       </LinearLayout>
@@ -102,7 +102,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textSize="12sp"
-          android:text="Order No"
+          android:text="@string/order_no"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -131,7 +131,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textSize="12sp"
-          android:text="Task ID"
+          android:text="@string/task_id"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -166,7 +166,7 @@
           android:layout_marginTop="@dimen/spacing_medium"
           android:textColor="@color/grey_40"
           android:textSize="12sp"
-          android:text="Aktivität Status:"
+          android:text="@string/activity_status"
           />
 
         <LinearLayout
@@ -213,7 +213,7 @@
           android:layout_height="wrap_content"
           android:textColor="@color/grey_40"
           android:textSize="12sp"
-          android:text="Task Gesamt Status:"
+          android:text="@string/task_total_status"
           />
 
         <LinearLayout
@@ -543,7 +543,7 @@
           android:layout_marginTop="@dimen/spacing_medium"
           android:textColor="@color/grey_40"
           android:textSize="12sp"
-          android:text="Kunde:"
+          android:text="@string/customer"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -553,7 +553,7 @@
           android:textColor="@color/clrFont"
           android:textStyle="bold"
           android:textSize="16sp"
-          android:text="Daimler AG"
+          tools:text="Daimler AG"
           />
 
         <View
@@ -584,7 +584,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/grey_40"
                 android:textSize="12sp"
-                android:text="KD-Nr.:"
+                android:text="@string/customer_no"
                 />
 
               <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -594,7 +594,7 @@
                 android:textColor="@color/clrFont"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:text="100429"
+                tools:text="100429"
                 />
 
               <View
@@ -607,7 +607,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/grey_40"
                 android:textSize="12sp"
-                android:text="Referenz 1 (Ladung):"
+                android:text="@string/reference_1"
                 />
 
               <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -616,7 +616,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/clrFont"
                 android:textSize="16sp"
-                android:text="komplett"
+                tools:text="komplett"
                 />
 
             </LinearLayout>
@@ -657,7 +657,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/grey_40"
                 android:textSize="12sp"
-                android:text="Referenz 2:"
+                android:text="@string/reference_2"
                 />
 
               <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -684,7 +684,7 @@
           android:layout_height="wrap_content"
           android:textSize="12sp"
           android:textColor="@color/grey_40"
-          android:text="Description (Waren):"
+          android:text="@string/description"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -714,21 +714,23 @@
           android:layout_marginTop="@dimen/spacing_medium"
           android:textColor="@color/grey_40"
           android:textSize="12sp"
-          android:text="Anschrift:"
+          android:text="@string/address"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
           android:id="@+id/tv_name1"
-          android:layout_width="wrap_content"
+          android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:singleLine="true"
           android:textColor="@color/clrFont"
           android:textSize="16sp"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
           android:id="@+id/tv_name2"
-          android:layout_width="wrap_content"
+          android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:singleLine="true"
           android:textColor="@color/clrFont"
           android:textSize="16sp"
           />
@@ -828,12 +830,11 @@
         android:drawableStart="@drawable/ic_camera"
         android:drawablePadding="@dimen/spacing_small"
         android:textColor="#fff"
-        android:text="CAMERA"
+        android:text="@string/camera"
         />
 
-
       <View
-        android:layout_width="@dimen/spacing_large"
+        android:layout_width="@dimen/spacing_medium"
         android:layout_height="0dp"
         />
 
@@ -845,7 +846,7 @@
         android:drawableStart="@android:drawable/ic_dialog_map"
         android:drawablePadding="@dimen/spacing_small"
         android:textColor="#fff"
-        android:text="Map"
+        android:text="@string/map"
         />
 
     </LinearLayout>

@@ -29,6 +29,13 @@ public class CommItem {
   @Expose
   private TaskStatusInfo taskStatusInfo;
   
+  @SerializedName("VehicleItem")
+  @Expose
+  private VehicleItem vehicleItem;
+  
+  // ------------------------------------------------------------------------
+  // GETTER & SETTER
+  
   public Header getHeader() {
     return header;
   }
@@ -75,5 +82,13 @@ public class CommItem {
   
   public void setTaskStatusInfo(TaskStatusInfo taskStatusInfo) {
     this.taskStatusInfo = taskStatusInfo;
+  }
+  
+  public VehicleItem getVehicleItem() {
+    return vehicleItem;
+  }
+  
+  public void setVehicleItem(VehicleItem vehicleItem) {
+    this.vehicleItem = vehicleItem;
   }
 }
