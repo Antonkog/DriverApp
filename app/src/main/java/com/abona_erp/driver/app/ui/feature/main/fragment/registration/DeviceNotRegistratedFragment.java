@@ -9,8 +9,16 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
+import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
+import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
 import com.abona_erp.driver.core.base.ThreadUtils;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class DeviceNotRegistratedFragment extends Fragment {
   
@@ -47,9 +55,51 @@ public class DeviceNotRegistratedFragment extends Fragment {
     mProgressDialog.setMessage("Device Registration started...");
     mProgressDialog.setTitle("ABONA Driver App");
     mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    /*mProgressDialog.setCancelable(false);*/
     mProgressDialog.show();
     
     mProgressDialog.setProgress(10);
+  }
+  
+  @Subscribe
+  public void onMessageEvent(RegistrationStartEvent event) {
+    if (mProgressDialog != null) {
+      if (mProgressDialog.isShowing()) {
+        mProgressDialog.setMessage("Device Registration started...");
+      }
+    }
+  }
+  
+  @Subscribe
+  public void onMessageEvent(RegistrationErrorEvent event) {
+    if (mProgressDialog != null) {
+      if (mProgressDialog.isShowing()) {
+        mProgressDialog.setMessage("Error on REST-API...");
+      }
+    }
+  }
+  
+  @Subscribe
+  public void onMessageEvent(RegistrationFinishedEvent event) {
+    if (mProgressDialog != null) {
+      if (mProgressDialog.isShowing()) {
+        mProgressDialog.setMessage("Device Registration Successful!");
+      }
+    }
+  }
+  
+  @Override
+  public void onStart() {
+    Log.d(TAG, "onStart()");
+    App.eventBus.register(this);
+    super.onStart();
+  }
+  
+  @Override
+  public void onStop() {
+    super.onStop();
+    Log.d(TAG, "onStop()");
+    App.eventBus.unregister(this);
   }
   
   @Override

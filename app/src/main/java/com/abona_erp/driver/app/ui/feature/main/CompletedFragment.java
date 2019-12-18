@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.ui.feature.main;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,18 +15,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.CompletedViewModel;
 
+import java.util.Calendar;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class CompletedFragment extends Fragment {
 
   private RecyclerView listView;
-  private CompletedViewModel viewModel;
+  private MainViewModel viewModel;
   
   public CompletedFragment() {
   }
@@ -39,7 +48,7 @@ public class CompletedFragment extends Fragment {
     super.onCreate(savedInstanceState);
 
     viewModel = ViewModelProviders.of(this)
-      .get(CompletedViewModel.class);
+      .get(MainViewModel.class);
   }
   
   @Override
@@ -81,6 +90,54 @@ public class CompletedFragment extends Fragment {
       public void onChanged(List<Notify> notifies) {
         if (notifies == null)
           return;
+        
+        synchronized (CompletedFragment.this) {
+          if (notifies.size() > 0) {
+            long now = System.currentTimeMillis() - (7200 * 60 * 1000);
+            for (int i = 0; i < notifies.size(); i++) {
+              // Check older tasks:
+              CommItem commItem = new CommItem();
+              commItem = App.getGson().fromJson(notifies.get(i).getData(), CommItem.class);
+      
+              Calendar calendar = Calendar.getInstance();
+              calendar.setTime(commItem.getTaskItem().getActivities().get(commItem.getTaskItem().getActivities().size()-1).getFinished());
+      
+              if (calendar.getTimeInMillis() < now) {
+                // Older than 2 minutes.
+                Log.i("CompletedFragment", "Older than 5 days...");
+                Log.i("CompletedFragment", "++++++++++++++++++++++++++++++++++++++++++++");
+  
+                viewModel.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(), commItem.getTaskItem().getMandantId())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new DisposableSingleObserver<LastActivity>() {
+                    @Override
+                    public void onSuccess(LastActivity lastActivity) {
+                      AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                          viewModel.delete(lastActivity);
+                        }
+                      });
+                    }
+      
+                    @Override
+                    public void onError(Throwable e) {
+        
+                    }
+                  });
+        
+                final int k = i;
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    viewModel.delete(notifies.get(k));
+                  }
+                });
+              }
+            }
+          }
+        }
 
         adapter.setNotifyList(notifies);
         App.eventBus.post(new BadgeCountEvent(3, notifies.size()));

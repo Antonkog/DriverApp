@@ -38,6 +38,9 @@ public class LastActivity implements Serializable {
   @ColumnInfo(name = "confirm_status")
   private int confirmStatus;
   
+  @ColumnInfo(name = "visible")
+  private boolean visible;
+  
   @ColumnInfo(name = "created_at")
   @TypeConverters({TimestampConverter.class})
   private Date createdAt;
@@ -111,6 +114,14 @@ public class LastActivity implements Serializable {
   
   public void setConfirmStatus(int confirmStatus) {
     this.confirmStatus = confirmStatus;
+  }
+  
+  public boolean getVisible() {
+    return visible;
+  }
+  
+  public void setVisible(boolean visible) {
+    this.visible = visible;
   }
   
   public Date getCreatedAt() {

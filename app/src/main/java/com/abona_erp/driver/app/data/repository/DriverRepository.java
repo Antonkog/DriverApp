@@ -18,6 +18,7 @@ import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
+import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.util.AppUtils;
 
 import java.text.SimpleDateFormat;
@@ -184,6 +185,11 @@ public class DriverRepository {
           lastActivity.setOrderNo(AppUtils.parseOrderNo(commItem.getTaskItem().getOrderNo()));
           lastActivity.setStatusType(0);
           lastActivity.setConfirmStatus(0);
+          if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING) || commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+            lastActivity.setVisible(true);
+          } else {
+            lastActivity.setVisible(false);
+          }
           synchronized (this) {
             
             lastActivity.setCreatedAt(AppUtils.getCurrentDateTime());

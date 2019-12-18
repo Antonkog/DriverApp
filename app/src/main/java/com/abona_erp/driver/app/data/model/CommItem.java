@@ -33,6 +33,10 @@ public class CommItem {
   @Expose
   private VehicleItem vehicleItem;
   
+  @SerializedName("PercentItem")
+  @Expose
+  private PercentItem percentItem;
+  
   // ------------------------------------------------------------------------
   // GETTER & SETTER
   
@@ -90,5 +94,13 @@ public class CommItem {
   
   public void setVehicleItem(VehicleItem vehicleItem) {
     this.vehicleItem = vehicleItem;
+  }
+  
+  public PercentItem getPercentItem() {
+    return percentItem;
+  }
+  
+  public void setPercentItem(PercentItem percentItem) {
+    this.percentItem = percentItem;
   }
 }

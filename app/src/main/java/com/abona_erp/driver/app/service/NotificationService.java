@@ -3,13 +3,11 @@ package com.abona_erp.driver.app.service;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PowerManager;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.abona_erp.driver.app.App;
@@ -19,39 +17,30 @@ import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
-import com.abona_erp.driver.app.data.model.ConfirmationItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.DataType;
-import com.abona_erp.driver.app.data.model.Header;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
-import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
+import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.util.AppUtils;
-import com.abona_erp.driver.app.util.DateConverter;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.concurrent.MainUiThread;
 import com.abona_erp.driver.app.util.concurrent.ThreadExecutor;
-import com.abona_erp.driver.app.work.ConfirmationAsyncTask;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class NotificationService extends JobService implements MediaPlayer.OnPreparedListener {
   
@@ -121,8 +110,9 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
       String raw = jobParameters.getExtras().getString("data");
       if (raw == null)
         return;
+      Log.i(TAG, raw);
       mCommItem = new CommItem();
-      mCommItem = App.getGson().fromJson(raw, CommItem.class);
+      mCommItem = App.getGsonUtc().fromJson(raw, CommItem.class);
       
       // CHECK VEHICLE REGISTRATION NUMBER:
       if (mCommItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
@@ -149,6 +139,13 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
         App.eventBus.post(new VehicleRegistrationEvent());
         startRingtone(notification);
         return;
+      }
+      
+      if (mCommItem.getPercentItem() != null) {
+        if (mCommItem.getPercentItem().getTotalPercentFinished() != null && mCommItem.getPercentItem().getTotalPercentFinished() >= 0) {
+          TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(mCommItem.getPercentItem().getTotalPercentFinished()));
+          App.eventBus.post(new TaskStatusEvent((int)Math.round(mCommItem.getPercentItem().getTotalPercentFinished())));
+        }
       }
       
       if (mCommItem.getTaskItem().getMandantId() != null && mCommItem.getTaskItem().getTaskId() != null) {
@@ -204,6 +201,11 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
                     _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
                     _list.add(App.getGson().toJson(_detail));
                     lastActivity.setDetailList(_list);
+                    if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING) || mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+                      lastActivity.setVisible(true);
+                    } else {
+                      lastActivity.setVisible(false);
+                    }
                     mRepository.update(lastActivity);
   
                     DriverDatabase db = DriverDatabase.getDatabase();

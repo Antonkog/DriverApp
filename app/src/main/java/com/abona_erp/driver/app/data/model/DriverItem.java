@@ -9,6 +9,10 @@ public class DriverItem {
   @Expose
   private String lastnameFirstname;
   
+  @SerializedName("DriverNo")
+  @Expose
+  private Integer driverNo;
+  
   @SerializedName("ImageUrl")
   @Expose
   private String imageUrl;
@@ -19,6 +23,14 @@ public class DriverItem {
   
   public void setLastnameFirstname(String lastnameFirstname) {
     this.lastnameFirstname = lastnameFirstname;
+  }
+  
+  public Integer getDriverNo() {
+    return driverNo;
+  }
+  
+  public void setDriverNo(int driverNo) {
+    this.driverNo = driverNo;
   }
   
   public String getImageUrl() {

@@ -352,6 +352,8 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     
     addGeofencesButtonHandler(null);
     startBackgroundWorkerService();
+    
+    App.eventBus.post(new TaskStatusEvent(TextSecurePreferences.getTaskPercentage(getBaseContext())));
   }
   
   public BackgroundServiceWorker mBackgroundWorkerService;

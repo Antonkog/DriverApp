@@ -44,6 +44,10 @@ public class TaskItem {
   @Expose
   private TaskChangeReason changeReason;
   
+  @SerializedName("ActionType")
+  @Expose
+  private TaskActionType actionType;
+  
   @SerializedName("OrderNo")
   @Expose
   private Integer orderNo;
@@ -83,10 +87,6 @@ public class TaskItem {
   @SerializedName("Status")
   @Expose
   private TaskStatus status;
-  
-  @SerializedName("PercentFinished")
-  @Expose
-  private Double percentFinished;
   
   @SerializedName("PalletsAmount")
   @Expose
@@ -171,6 +171,14 @@ public class TaskItem {
     this.changeReason = changeReason;
   }
   
+  public TaskActionType getActionType() {
+    return actionType;
+  }
+  
+  public void setActionType(TaskActionType actionType) {
+    this.actionType = actionType;
+  }
+  
   public Integer getOrderNo() {
     return orderNo;
   }
@@ -249,14 +257,6 @@ public class TaskItem {
   
   public void setTaskStatus(TaskStatus status) {
     this.status = status;
-  }
-  
-  public Double getPercentFinished() {
-    return percentFinished;
-  }
-  
-  public void setPercentFinished(Double percentFinished) {
-    this.percentFinished = percentFinished;
   }
   
   public Integer getPalletsAmount() {

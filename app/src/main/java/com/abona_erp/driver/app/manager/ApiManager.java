@@ -13,6 +13,7 @@ import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,7 +50,9 @@ public class ApiManager implements Manager {
   
   public FCMService getFCMApi() {
     if (mFCMService == null) {
-      mFCMService = provideRetrofit("https://213.144.11.162:5000/api/device/")
+      mFCMService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+        + ":"
+        + TextSecurePreferences.getServerPort() + "/api/device/")
         .create(FCMService.class);
     }
     return mFCMService;
@@ -57,7 +60,10 @@ public class ApiManager implements Manager {
   
   public TokenService getTokenApi() {
     if (mTokenService == null) {
-      mTokenService = provideRetrofit("https://213.144.11.162:5000/")
+      mTokenService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+        + ":"
+        + TextSecurePreferences.getServerPort()
+        + "/")
         .create(TokenService.class);
     }
     return mTokenService;
@@ -65,7 +71,10 @@ public class ApiManager implements Manager {
   
   public ConfirmService getConfirmApi() {
     if (mConfirmService == null) {
-      mConfirmService = provideRetrofit("https://213.144.11.162:5000/api/confirmation/")
+      mConfirmService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+        + ":"
+        + TextSecurePreferences.getServerPort()
+        + "/api/confirmation/")
         .create(ConfirmService.class);
     }
     return mConfirmService;
@@ -73,7 +82,10 @@ public class ApiManager implements Manager {
   
   public ActivityService getActivityApi() {
     if (mActivityService == null) {
-      mActivityService = provideRetrofit("https://213.144.11.162:5000/api/activity/")
+      mActivityService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+        + ":"
+        + TextSecurePreferences.getServerPort()
+        + "/api/activity/")
         .create(ActivityService.class);
     }
     return mActivityService;
@@ -85,15 +97,15 @@ public class ApiManager implements Manager {
       .baseUrl(url)
       .client(provideOkHttpClient())
       //.addConverterFactory(GsonConverterFactory.create(App.getGson()))
-      .addConverterFactory(GsonConverterFactory.create(App.getGsonUtc()))
+      .addConverterFactory(GsonConverterFactory.create(App.getGson()))
       .build();
   }
   
   private OkHttpClient provideOkHttpClient() {
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-    httpClient.connectTimeout(60, TimeUnit.SECONDS);
-    httpClient.readTimeout(60, TimeUnit.SECONDS);
-    httpClient.writeTimeout(60, TimeUnit.SECONDS);
+    httpClient.connectTimeout(30, TimeUnit.SECONDS);
+    httpClient.readTimeout(30, TimeUnit.SECONDS);
+    httpClient.writeTimeout(30, TimeUnit.SECONDS);
     
     String versionName = BuildConfig.VERSION_NAME;
     try {

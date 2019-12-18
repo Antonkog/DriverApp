@@ -33,6 +33,7 @@ public class GmtDateUtcTypeAdapter implements JsonSerializer<Date>, JsonDeserial
     
     dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
       Locale.getDefault());
+    dateFormat2.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
   
   @Override
@@ -47,12 +48,14 @@ public class GmtDateUtcTypeAdapter implements JsonSerializer<Date>, JsonDeserial
   @Override
   public synchronized Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
     try {
-      synchronized (dateFormat) {
-        return dateFormat.parse(jsonElement.getAsString());
+      synchronized (dateFormatUtc) {
+        Log.i("*********", dateFormatUtc.parse(jsonElement.getAsString()) + " *************************************");
+        return dateFormatUtc.parse(jsonElement.getAsString());
       }
     } catch (ParseException e) {
       try {
         synchronized (dateFormat2) {
+          Log.i("*********", dateFormat2.parse(jsonElement.getAsString()) + " *************************************");
           return dateFormat2.parse(jsonElement.getAsString());
         }
       } catch (ParseException e1) {

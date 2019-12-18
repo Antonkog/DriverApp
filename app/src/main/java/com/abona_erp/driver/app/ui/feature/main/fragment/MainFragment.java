@@ -180,11 +180,12 @@ public class MainFragment extends Fragment {
         @Override
         public void onChanged(List<Notify> notifyList) {
           mCompletedCount = notifyList.size();
+          /*
           if (mCompletedCount > 0) {
             App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
           } else {
             App.eventBus.post(new TaskStatusEvent(0));
-          }
+          }*/
           TabLayout.Tab tab = mMainTab.getTabAt(3);
           tab.setCustomView(null);
           if (notifyList.size() > 0) {
@@ -196,16 +197,16 @@ public class MainFragment extends Fragment {
           }
         }
       });
-  
+  /*
     mainViewModel.getRowCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
         mRowTaskCount = integer.intValue();
         App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
       }
-    });
+    });*/
   }
-  
+  /*
   private int calculateTaskStatusPercentage() {
     if (mRowTaskCount == 0) {
       return 0;
@@ -217,7 +218,7 @@ public class MainFragment extends Fragment {
       return (int)Math.round(percentage);
     }
   }
-
+*/
   private void setTabBadge(int tabIndex, Badge badge) {
     TabLayout.Tab tab = mMainTab.getTabAt(tabIndex);
     tab.setCustomView(mPagerAdapter.getTabView(tabIndex, badge));

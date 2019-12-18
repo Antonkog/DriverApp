@@ -17,7 +17,7 @@ import io.reactivex.Single;
 @Dao
 public interface LastActivityDAO {
   
-  @Query("SELECT * FROM last_activity_table ORDER BY modified_at DESC")
+  @Query("SELECT * FROM last_activity_table WHERE visible == 1 ORDER BY modified_at DESC")
   LiveData<List<LastActivity>> getLastActivityItems();
   
   @Query("SELECT * FROM last_activity_table WHERE task_id = :task_id AND client_id = :client_id LIMIT 1")

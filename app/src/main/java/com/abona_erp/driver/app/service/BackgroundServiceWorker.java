@@ -33,6 +33,10 @@ import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.DeviceRegistratedEvent;
+import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
+import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
+import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
+import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DateConverter;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -103,23 +107,23 @@ public class BackgroundServiceWorker extends Service {
   
       if (!isDevicePermissionGranted()) {
         Log.i(TAG, "******* DEVICE PERMISSION IS NOT GRANTED!!! *******");
-        mHandler.postDelayed(this, 1000 * 2);
+        mHandler.postDelayed(this, 1000 * 30);
         return;
       }
       
       if (!isDeviceRegistrated()) {
-        mHandler.postDelayed(this, 1000 * 2);
+        mHandler.postDelayed(this, 1000 * 30);
         return;
       }
       
       if (!isDeviceUpdateToken()) {
-        mHandler.postDelayed(this, 1000 * 2);
+        mHandler.postDelayed(this, 1000 * 30);
         return;
       }
       
       handleJobs();
       
-      mHandler.postDelayed(this, 1000 * 10);
+      mHandler.postDelayed(this, 1000 * 30);
     }
   }
   
@@ -217,6 +221,14 @@ public class BackgroundServiceWorker extends Service {
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
                       if (response.isSuccessful()) {
                         if (response.body() != null && response.body().getIsSuccess()) {
+                          
+                          if (response.body().getCommItem().getPercentItem() != null) {
+                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
+                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
+                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
+                            }
+                          }
+                          
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
@@ -242,6 +254,13 @@ public class BackgroundServiceWorker extends Service {
             
                           if (response.body().getIsException())
                             return;
+  
+                          if (response.body().getCommItem().getPercentItem() != null) {
+                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
+                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
+                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
+                            }
+                          }
             
                           if (response.body().getCommItem() != null) {
                             notify.setData(App.getGson().toJson(response.body().getCommItem()));
@@ -340,6 +359,14 @@ public class BackgroundServiceWorker extends Service {
                           return;
           
                         if (response.body().getIsSuccess()) {
+  
+                          if (response.body().getCommItem().getPercentItem() != null) {
+                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
+                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
+                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
+                            }
+                          }
+                          
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
@@ -366,6 +393,13 @@ public class BackgroundServiceWorker extends Service {
                             }
                           });
                         } else {
+  
+                          if (response.body().getCommItem().getPercentItem() != null) {
+                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
+                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
+                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
+                            }
+                          }
             
                           if (response.body().getCommItem() != null) {
               
@@ -526,6 +560,8 @@ public class BackgroundServiceWorker extends Service {
   
           if (deviceProfiles.size() > 0) {
             Log.i(TAG, ">>>>>>> PREPARE DEVICE REGISTRATION");
+            
+            App.eventBus.post(new RegistrationStartEvent());
   
             CommItem commItem = new CommItem();
             Header header = new Header();
@@ -549,10 +585,13 @@ public class BackgroundServiceWorker extends Service {
               @Override
               public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
                 if (response.isSuccessful()) {
-                  if (response.body() != null) {
+                  if (response.body() != null && response.body().getIsSuccess()) {
                     Log.d(TAG, ">>>>>>> DEVICE REGISTRATION WAS SUCCESSFULLY!!!");
                     TextSecurePreferences.setDeviceRegistrated(getApplicationContext(), true);
                     App.eventBus.post(new DeviceRegistratedEvent());
+                    App.eventBus.post(new RegistrationFinishedEvent());
+                  } else {
+                    App.eventBus.post(new RegistrationErrorEvent());
                   }
                 } else {
         
@@ -666,7 +705,7 @@ public class BackgroundServiceWorker extends Service {
     RequestBody body = RequestBody.create(mediaType, "grant_type=password&username=manyvehicles%40abona-erp.com&password=1234qwerQWER%2C.-");
     
     Request request = new Request.Builder()
-      .url("https://213.144.11.162:5000/authentication")
+      .url(TextSecurePreferences.getServerIpAddress() + ":" + TextSecurePreferences.getServerPort() + "/authentication")
       .post(body)
       .addHeader("Content-Type", "application/x-www-form-urlencoded")
       .addHeader("Accept-Encoding", "gzip, deflate")

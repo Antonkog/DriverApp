@@ -111,7 +111,7 @@ public class DetailFragment extends Fragment {
       @Override
       public void onChanged(List<Notify> notifyList) {
         mRunningCount = notifyList.size();
-        App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
+        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
       }
     });
     
@@ -119,10 +119,10 @@ public class DetailFragment extends Fragment {
       @Override
       public void onChanged(List<Notify> notifyList) {
         mCMRCount = notifyList.size();
-        App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
+        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
       }
     });
-    
+    /*
     mViewModel.getAllCompletedNotifications().observe(this, new Observer<List<Notify>>() {
       @Override
       public void onChanged(List<Notify> notifyList) {
@@ -134,14 +134,15 @@ public class DetailFragment extends Fragment {
         }
       }
     });
-    
+    */
+    /*
     mViewModel.getRowCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
         mRowTaskCount = integer.intValue();
         App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
       }
-    });
+    });*/
   }
   
   @Override
@@ -174,7 +175,7 @@ public class DetailFragment extends Fragment {
           if (mCommItem != null)
             mCommItem = null;
           mCommItem = new CommItem();
-          mCommItem = App.getGson().fromJson(notify.getData(), CommItem.class);
+          mCommItem = App.getGsonUtc().fromJson(notify.getData(), CommItem.class);
   
           applyButtonState();
           mAdapter = new ActivityStepAdapter(getContext());
@@ -212,7 +213,7 @@ public class DetailFragment extends Fragment {
         }
       });
   }
-  
+  /*
   private int calculateTaskStatusPercentage() {
     if (mRowTaskCount == 0) {
       return 0;
@@ -224,7 +225,7 @@ public class DetailFragment extends Fragment {
       return (int)Math.round(percentage);
     }
   }
-  
+  */
   private void applyButtonState() {
     
     if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
@@ -261,7 +262,7 @@ public class DetailFragment extends Fragment {
       mDetailStepView.done(true);
       mBtnBackActivity.setVisibility(View.VISIBLE);
       mBtnBackActivity.setText("ClOSE");
-      mBtnNextActivity.setVisibility(View.VISIBLE);
+      mBtnNextActivity.setVisibility(View.GONE);
       mBtnNextActivity.setText("DELETE");
     }
   }
@@ -317,7 +318,7 @@ public class DetailFragment extends Fragment {
   
               if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
                 mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.PENDING);
-                mNotify.setData(App.getGson().toJson(mCommItem));
+                mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                 mViewModel.update(mNotify);
                 
                 mActivityList.clear();
@@ -332,7 +333,7 @@ public class DetailFragment extends Fragment {
   
               if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
                 mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
-                mNotify.setData(App.getGson().toJson(mCommItem));
+                mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                 mViewModel.update(mNotify);
                 
                 mActivityList.clear();
@@ -364,7 +365,7 @@ public class DetailFragment extends Fragment {
         if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
           mNotify.setStatus(100);
           mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-          mNotify.setData(App.getGson().toJson(mCommItem));
+          mNotify.setData(App.getGsonUtc().toJson(mCommItem));
           mViewModel.update(mNotify);
           
           mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
@@ -385,6 +386,7 @@ public class DetailFragment extends Fragment {
                 _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
                 _list.add(App.getGson().toJson(_detail));
                 lastActivity.setDetailList(_list);
+                lastActivity.setVisible(false);
   
                 AsyncTask.execute(new Runnable() {
                   @Override
@@ -438,7 +440,7 @@ public class DetailFragment extends Fragment {
                     mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
                     mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
                     mNotify.setStatus(50);
-                    mNotify.setData(App.getGson().toJson(mCommItem));
+                    mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                     mViewModel.update(mNotify);
                     applyButtonState();
   
@@ -500,7 +502,7 @@ public class DetailFragment extends Fragment {
             } else {
               mNotify.setStatus(100);
               mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-              mNotify.setData(App.getGson().toJson(mCommItem));
+              mNotify.setData(App.getGsonUtc().toJson(mCommItem));
               mViewModel.update(mNotify);
               applyButtonState();
   
@@ -686,7 +688,7 @@ public class DetailFragment extends Fragment {
                 if (i == mCommItem.getTaskItem().getActivities().size()-1) {
                   mNotify.setStatus(90);
                   mCommItem.getTaskItem().setTaskStatus(TaskStatus.CMR);
-                  mNotify.setData(App.getGson().toJson(mCommItem));
+                  mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                   mViewModel.update(mNotify);
                   applyButtonState();
                   
@@ -708,6 +710,7 @@ public class DetailFragment extends Fragment {
                         _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
                         _list.add(App.getGson().toJson(_detail));
                         lastActivity.setDetailList(_list);
+                        lastActivity.setVisible(false);
   
                         AsyncTask.execute(new Runnable() {
                           @Override
@@ -729,7 +732,7 @@ public class DetailFragment extends Fragment {
               if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
                 mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
                 mCommItem.getTaskItem().getActivities().get(i).setFinished(AppUtils.getCurrentDateTimeUtc());
-                mNotify.setData(App.getGson().toJson(mCommItem));
+                mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                 mViewModel.update(mNotify);
   
                 setOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
@@ -737,7 +740,7 @@ public class DetailFragment extends Fragment {
                 if (i < mCommItem.getTaskItem().getActivities().size()-1) {
                   mCommItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
                   mCommItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
-                  mNotify.setData(App.getGson().toJson(mCommItem));
+                  mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                   mViewModel.update(mNotify);
   
                   setOfflineWork(mNotify.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
@@ -760,7 +763,7 @@ public class DetailFragment extends Fragment {
               if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
                 mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
                 mCommItem.getTaskItem().getActivities().get(i).setStarted(AppUtils.getCurrentDateTimeUtc());
-                mNotify.setData(App.getGson().toJson(mCommItem));
+                mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                 mViewModel.update(mNotify);
                 
                 if (i != 0)
@@ -782,7 +785,7 @@ public class DetailFragment extends Fragment {
   
           mNotify.setStatus(100);
           mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-          mNotify.setData(App.getGson().toJson(mCommItem));
+          mNotify.setData(App.getGsonUtc().toJson(mCommItem));
           mViewModel.update(mNotify);
           applyButtonState();
           

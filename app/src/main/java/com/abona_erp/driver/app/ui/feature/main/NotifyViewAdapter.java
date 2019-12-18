@@ -27,6 +27,7 @@ import com.lid.lib.LabelImageView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -89,7 +90,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         } else {
           holder.enableDueInTimer(false, mCommItem.getTaskItem().getTaskDueDateFinish());
         }
-        holder.bind(notify, /*mCommItem.getTaskItem().getTaskDueDateFinish(), */listener);
+        holder.bind(notify, listener);
       }
     }
       
@@ -313,6 +314,30 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         handler.postDelayed(dueInCounter, 100);
       } else {
         handler.removeCallbacks(dueInCounter);
+        
+        if (mCommItem.getTaskItem().getActivities().size() > 0) {
+          Calendar endTaskCalendar = Calendar.getInstance();
+          endTaskCalendar.setTime(mCommItem.getTaskItem().getActivities().get(mCommItem.getTaskItem().getActivities().size()-1).getFinished());
+  
+          Calendar finishCalendar = Calendar.getInstance();
+          finishCalendar.setTime(finishDate);
+  
+          long diff = (finishCalendar.getTimeInMillis() - endTaskCalendar.getTimeInMillis()) / 1000 / 60;
+          long hours = diff / 60;
+          
+          long days = hours / 24;
+          String d = diff < 0 ? "-" : "";
+          d += String.valueOf(Math.abs(days));
+          dueInCounter.tv_DueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
+  
+          if (diff < 0) {
+            dueInCounter.iv_Warning.setVisibility(View.VISIBLE);
+            dueInCounter.ll_Background.setBackground(context.getResources().getDrawable(R.drawable.warning_header_bg));
+          } else {
+            dueInCounter.iv_Warning.setVisibility(View.GONE);
+            dueInCounter.ll_Background.setBackground(context.getResources().getDrawable(R.drawable.header_bg));
+          }
+        }
       }
     }
   }

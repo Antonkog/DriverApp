@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -26,6 +27,10 @@ public class TextSecurePreferences {
   
   private static final String PREF_CLIENT_NAME                 = "pref_client_name";
   private static final String PREF_VEHICLE_REGISTRATION_NUMBER = "pref_vehicle_registration_number";
+  private static final String PREF_TASK_PERCENTAGE             = "pref_task_percentage";
+  
+  private static final String PREF_SERVER_IP_ADDRESS           = "pref_server_ip_address";
+  private static final String PREF_SERVER_PORT                 = "pref_server_port";
   
   
   
@@ -170,6 +175,33 @@ public class TextSecurePreferences {
   
   public static void setVehicleRegistrationNumber(Context context, String registrationNumber) {
     setStringPreference(context, PREF_VEHICLE_REGISTRATION_NUMBER, registrationNumber);
+  }
+  
+  public static int getTaskPercentage(Context context) {
+    return getIntegerPreference(context, PREF_TASK_PERCENTAGE, 0);
+  }
+  
+  public static void setTaskPercentage(Context context, int taskPercentage) {
+    setIntegerPrefrence(context, PREF_TASK_PERCENTAGE, taskPercentage);
+  }
+  
+  public static String getServerIpAddress() {
+    return getStringPreference(ContextUtils.getApplicationContext(),
+      PREF_SERVER_IP_ADDRESS, /*"https://93.189.159.10"*/"https://213.144.11.162");
+  }
+  
+  public static void setServerIpAddress(String ipAddress) {
+    setStringPreference(ContextUtils.getApplicationContext(), PREF_SERVER_IP_ADDRESS, ipAddress);
+  }
+  
+  public static int getServerPort() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(),
+      PREF_SERVER_PORT, 5000);
+  }
+  
+  public static void setServerPort(int port) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(),
+      PREF_SERVER_PORT, port);
   }
   
   public static void setBooleanPreference(Context context, String key, boolean value) {

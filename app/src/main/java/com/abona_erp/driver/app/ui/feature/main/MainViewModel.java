@@ -80,8 +80,16 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.update(notify);
   }
   
+  void delete(Notify notify) {
+    mRepository.delete(notify);
+  }
+  
   Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
     return mRepository.getNotifyByMandantTaskId(mandantId, taskId);
+  }
+  
+  Single<LastActivity> getLastActivityByTaskClientId(int taskId, int clientId) {
+    return mRepository.getLastActivityByTaskClientId(taskId, clientId);
   }
   
   // -----------------------------------------------------------------------------------------------
