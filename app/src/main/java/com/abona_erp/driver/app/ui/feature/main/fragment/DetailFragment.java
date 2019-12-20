@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.abona_erp.driver.app.data.model.ActivityStep;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
+import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.event.BackEvent;
@@ -66,6 +68,9 @@ public class DetailFragment extends Fragment {
   private AsapTextView mTvReference1;
   private AsapTextView mTvReference2;
   private AsapTextView mTvDescription;
+  
+  private RelativeLayout mRlBgActionType;
+  private AsapTextView mTvActionType;
   
   private AppCompatButton mBtnBackActivity;
   private AppCompatButton mBtnNextActivity;
@@ -183,7 +188,7 @@ public class DetailFragment extends Fragment {
           mActivityList.clear();
           if (mCommItem.getTaskItem().getActivities().size() > 0) {
             for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
-              mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(i)));
+              mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActionType(), mCommItem.getTaskItem().getActivities().get(i)));
             }
           }
   
@@ -203,6 +208,34 @@ public class DetailFragment extends Fragment {
           }
           if (mCommItem.getTaskItem().getDescription() != null) {
             mTvDescription.setText(mCommItem.getTaskItem().getDescription());
+          }
+  
+          if (mCommItem.getTaskItem().getActionType() != null) {
+            mRlBgActionType.setVisibility(View.VISIBLE);
+            mTvActionType.setVisibility(View.VISIBLE);
+    
+            if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.PICK_UP)) {
+              mRlBgActionType.setBackgroundColor(getContext().getResources().getColor(R.color.clrPickUp));
+              mTvActionType.setText(getContext().getResources().getString(R.string.action_type_pick_up));
+            } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.DROP_OFF)) {
+              mRlBgActionType.setBackgroundColor(getContext().getResources().getColor(R.color.clrDropOff));
+              mTvActionType.setText(getContext().getResources().getString(R.string.action_type_drop_off));
+            } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.TRACTOR_SWAP)) {
+              mRlBgActionType.setBackgroundColor(getContext().getResources().getColor(R.color.clrTractorSwap));
+              mTvActionType.setText(getContext().getResources().getString(R.string.action_type_tractor_swap));
+            } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.GENERAL)) {
+              mRlBgActionType.setBackgroundColor(getContext().getResources().getColor(R.color.clrGeneral));
+              mTvActionType.setText(getContext().getResources().getString(R.string.action_type_general));
+            } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.DELAY)) {
+              mRlBgActionType.setBackgroundColor(getContext().getResources().getColor(R.color.clrDelay));
+              mTvActionType.setText(getContext().getResources().getString(R.string.action_type_delay));
+            } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.UNKNOWN)) {
+              mRlBgActionType.setBackgroundColor(getContext().getResources().getColor(R.color.clrUnknown));
+              mTvActionType.setText(getContext().getResources().getString(R.string.action_type_unknown));
+            }
+          } else {
+            mRlBgActionType.setVisibility(View.GONE);
+            mTvActionType.setVisibility(View.GONE);
           }
         }
   
@@ -262,7 +295,7 @@ public class DetailFragment extends Fragment {
       mDetailStepView.done(true);
       mBtnBackActivity.setVisibility(View.VISIBLE);
       mBtnBackActivity.setText("ClOSE");
-      mBtnNextActivity.setVisibility(View.GONE);
+      mBtnNextActivity.setVisibility(View.VISIBLE);
       mBtnNextActivity.setText("DELETE");
     }
   }
@@ -288,6 +321,9 @@ public class DetailFragment extends Fragment {
   }
   
   private void initComponents(@NonNull View root) {
+    
+    mRlBgActionType = (RelativeLayout)root.findViewById(R.id.rl_bg_action_type);
+    mTvActionType = (AsapTextView)root.findViewById(R.id.tv_action_type);
   
     mDetailStepView = (StepView)root.findViewById(R.id.detail_step_view);
     List<String> steps = new ArrayList<>();
@@ -324,7 +360,7 @@ public class DetailFragment extends Fragment {
                 mActivityList.clear();
                 if (mCommItem.getTaskItem().getActivities().size() > 0) {
                   for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActionType(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
                 mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
@@ -339,7 +375,7 @@ public class DetailFragment extends Fragment {
                 mActivityList.clear();
                 if (mCommItem.getTaskItem().getActivities().size() > 0) {
                   for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActionType(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
                 mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
@@ -409,6 +445,7 @@ public class DetailFragment extends Fragment {
           if (mCommItem.getTaskItem().getActivities().size() > 0) {
             for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
               mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                mCommItem.getTaskItem().getActionType(),
                 mCommItem.getTaskItem().getActivities().get(j)));
             }
             mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
@@ -448,6 +485,7 @@ public class DetailFragment extends Fragment {
                     if (mCommItem.getTaskItem().getActivities().size() > 0) {
                       for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
                         mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                          mCommItem.getTaskItem().getActionType(),
                           mCommItem.getTaskItem().getActivities().get(j)));
                       }
                       mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
@@ -548,6 +586,7 @@ public class DetailFragment extends Fragment {
           if (mCommItem.getTaskItem().getActivities().size() > 0) {
             for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
               mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                mCommItem.getTaskItem().getActionType(),
                 mCommItem.getTaskItem().getActivities().get(i)));
             }
             mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
@@ -749,7 +788,7 @@ public class DetailFragment extends Fragment {
                 mActivityList.clear();
                 if (mCommItem.getTaskItem().getActivities().size() > 0) {
                   for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),mCommItem.getTaskItem().getActionType(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
                 mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
@@ -772,7 +811,7 @@ public class DetailFragment extends Fragment {
                 mActivityList.clear();
                 if (mCommItem.getTaskItem().getActivities().size() > 0) {
                   for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),mCommItem.getTaskItem().getActionType(), mCommItem.getTaskItem().getActivities().get(j)));
                   }
                 }
                 mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);

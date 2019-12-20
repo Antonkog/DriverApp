@@ -18,6 +18,7 @@ import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
+import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.util.AppUtils;
 
@@ -189,6 +190,19 @@ public class DriverRepository {
             lastActivity.setVisible(true);
           } else {
             lastActivity.setVisible(false);
+          }
+          if (commItem.getTaskItem().getActionType().equals(TaskActionType.PICK_UP)) {
+            lastActivity.setTaskActionType(0);
+          } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.DROP_OFF)) {
+            lastActivity.setTaskActionType(1);
+          } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.TRACTOR_SWAP)) {
+            lastActivity.setTaskActionType(3);
+          } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.GENERAL)) {
+            lastActivity.setTaskActionType(2);
+          } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.DELAY)) {
+            lastActivity.setTaskActionType(4);
+          } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.UNKNOWN)) {
+            lastActivity.setTaskActionType(100);
           }
           synchronized (this) {
             

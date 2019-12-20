@@ -99,7 +99,7 @@
         android:background="@drawable/status_pending_bg"
         android:textColor="#fff"
         android:textSize="10sp"
-        tools:Text="110"
+        tools:text="Order No"
         />
 
       <View
@@ -119,7 +119,7 @@
           android:background="@drawable/status_pending_bg"
           android:textColor="#fff"
           android:textSize="10sp"
-          tools:Text="110"
+          tools:text="110"
           />
 
         <View
@@ -134,10 +134,24 @@
           android:background="@drawable/status_pending_bg"
           android:textColor="#fff"
           android:textSize="10sp"
-          tools:Text="NEU"
+          tools:text="UPDATED"
           />
 
       </LinearLayout>
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_small"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_last_activity_action_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        tools:background="@drawable/bg_action_type_pick_up"
+        />
 
       <View
         android:layout_width="0dp"
@@ -151,7 +165,7 @@
         android:background="@drawable/status_pending_bg"
         android:textColor="#fff"
         android:textSize="10sp"
-        tools:Text="110"
+        tools:text="Do., 19 Dez. 2019 14:02:40"
         />
 
     </LinearLayout>

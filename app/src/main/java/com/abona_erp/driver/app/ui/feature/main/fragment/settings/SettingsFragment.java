@@ -1,6 +1,11 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.settings;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
@@ -16,13 +21,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.BackEvent;
+import com.abona_erp.driver.app.ui.feature.main.MainActivity;
+import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import com.abona_erp.driver.core.base.ContextUtils;
+import com.abona_erp.driver.core.base.ThreadUtils;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class SettingsFragment extends Fragment {
@@ -36,6 +46,8 @@ public class SettingsFragment extends Fragment {
   
   private AppCompatImageButton mBtnBack;
   
+  private MainViewModel mainViewModel;
+  
   public SettingsFragment() {
     // Required empty public constructor.
   }
@@ -47,6 +59,8 @@ public class SettingsFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
   }
   
   @Override
@@ -162,6 +176,32 @@ public class SettingsFragment extends Fragment {
         
         int server_port = Integer.valueOf(mTeServerPort.getText().toString());
         TextSecurePreferences.setServerPort(server_port);
+        
+        TextSecurePreferences.setDeviceFirstTimeRun(ContextUtils.getApplicationContext(), false);
+        TextSecurePreferences.setDeviceRegistrated(ContextUtils.getApplicationContext(), false);
+        ThreadUtils.postOnUiThreadDelayed(new Runnable() {
+          @Override
+          public void run() {
+            
+            Intent restartIntent = getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
+            PendingIntent intent = PendingIntent.getActivity(getContext(), 0 , restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager manager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
+            manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, intent);
+            getActivity().finish();
+            Runtime.getRuntime().exit(0);
+          }
+        }, 1000);
+        
+  /*
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getContext().startActivity(intent);
+        if (getContext() instanceof Activity) {
+          ((Activity)getContext()).finish();
+        }
+        Runtime.getRuntime().exit(0);
+       
+   */
       }
     });
   }

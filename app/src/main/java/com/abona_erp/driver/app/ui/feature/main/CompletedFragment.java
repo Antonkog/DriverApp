@@ -25,6 +25,8 @@ import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.CompletedViewModel;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -90,6 +92,20 @@ public class CompletedFragment extends Fragment {
       public void onChanged(List<Notify> notifies) {
         if (notifies == null)
           return;
+  
+        Collections.sort(notifies, new Comparator<Notify>() {
+          @Override
+          public int compare(Notify notify, Notify t1) {
+            return Integer.valueOf(notify.getOrderNo()).compareTo(t1.getOrderNo());
+          }
+        });
+  
+        Collections.sort(notifies, new Comparator<Notify>() {
+          @Override
+          public int compare(Notify notify, Notify t1) {
+            return Integer.valueOf(notify.getTaskId()).compareTo(t1.getTaskId());
+          }
+        });
         
         synchronized (CompletedFragment.this) {
           if (notifies.size() > 0) {

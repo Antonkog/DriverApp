@@ -21,6 +21,8 @@ import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.PendingViewModel;
 import com.developer.kalert.KAlertDialog;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PendingFragment extends Fragment {
@@ -86,6 +88,20 @@ public class PendingFragment extends Fragment {
       public void onChanged(List<Notify> notifies) {
         if (notifies == null)
           return;
+  
+        Collections.sort(notifies, new Comparator<Notify>() {
+          @Override
+          public int compare(Notify notify, Notify t1) {
+            return Integer.valueOf(notify.getOrderNo()).compareTo(t1.getOrderNo());
+          }
+        });
+        
+        Collections.sort(notifies, new Comparator<Notify>() {
+          @Override
+          public int compare(Notify notify, Notify t1) {
+            return Integer.valueOf(notify.getTaskId()).compareTo(t1.getTaskId());
+          }
+        });
 
         adapter.setNotifyList(notifies);
         App.eventBus.post(new BadgeCountEvent(1, notifies.size()));

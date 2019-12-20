@@ -3,9 +3,11 @@ package com.abona_erp.driver.app.data.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
 import com.abona_erp.driver.app.data.converters.TimestampConverter;
+import com.abona_erp.driver.app.data.model.TaskActionType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,6 +42,9 @@ public class LastActivity implements Serializable {
   
   @ColumnInfo(name = "visible")
   private boolean visible;
+  
+  @ColumnInfo(name = "task_action_type")
+  private int taskActionType;
   
   @ColumnInfo(name = "created_at")
   @TypeConverters({TimestampConverter.class})
@@ -122,6 +127,14 @@ public class LastActivity implements Serializable {
   
   public void setVisible(boolean visible) {
     this.visible = visible;
+  }
+  
+  public int getTaskActionType() {
+    return taskActionType;
+  }
+  
+  public void setTaskActionType(int taskActionType) {
+    this.taskActionType = taskActionType;
   }
   
   public Date getCreatedAt() {

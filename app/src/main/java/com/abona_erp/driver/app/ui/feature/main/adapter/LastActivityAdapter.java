@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.LastActivity;
+import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
@@ -30,6 +31,7 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
     final AsapTextView tv_Timestamp;
     final AsapTextView tv_StatusType;
     final AsapTextView tv_TaskId;
+    final AsapTextView tv_TaskActionType;
     
     final AppCompatImageView iv_icon;
     final AppCompatImageView iv_done_all;
@@ -42,6 +44,7 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
       tv_Timestamp = itemView.findViewById(R.id.tv_last_activity_timestamp);
       tv_StatusType = itemView.findViewById(R.id.tv_last_activity_status_type);
       tv_TaskId = itemView.findViewById(R.id.tv_last_activity_task_id);
+      tv_TaskActionType = itemView.findViewById(R.id.tv_last_activity_action_type);
       
       iv_icon = itemView.findViewById(R.id.iv_last_activity_icon);
       iv_done_all = itemView.findViewById(R.id.iv_last_activity_done_all);
@@ -98,6 +101,26 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
       } else if (current.getConfirmStatus() == 2) {
         // CONFIRMED BY USER:
         holder.iv_done_all.setColorFilter(ContextCompat.getColor(mContext, R.color.clrTaskFinished));
+      }
+      
+      if (current.getTaskActionType() == 0) {
+        holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_pick_up));
+        holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_pick_up));
+      } else if (current.getTaskActionType() == 1) {
+        holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_drop_off));
+        holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_drop_off));
+      } else if (current.getTaskActionType() == 3) {
+        holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_tractor_swap));
+        holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_tractor_swap));
+      } else if (current.getTaskActionType() == 4) {
+        holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_delay));
+        holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_delay));
+      } else if (current.getTaskActionType() == 2) {
+        holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_general));
+        holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_general));
+      } else if (current.getTaskActionType() == 100) {
+        holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_unknown));
+        holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_unknown));
       }
       
       if (current.getStatusType() == 0) {

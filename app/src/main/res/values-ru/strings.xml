@@ -28,6 +28,13 @@
   <string name="description">Описание</string>
   <string name="address">Адрес</string>
 
+  <string name="action_type_pick_up">загрузка Стелла</string>
+  <string name="action_type_drop_off">разгрузка</string>
+  <string name="action_type_tractor_swap">Своп трактора</string>
+  <string name="action_type_general">генеральный</string>
+  <string name="action_type_delay">задержка</string>
+  <string name="action_type_unknown">неизвестный</string>
+
   <string name="need_permissions">Нужны разрешения!</string>
   <string name="permission_message_settings">Это приложение требует разрешения для использования этой функции. Вы можете предоставить их в настройках приложения.</string>
 

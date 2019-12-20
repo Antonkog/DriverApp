@@ -34,6 +34,9 @@ public class Notify {
   @ColumnInfo(name = "task_id")
   private int taskId;
   
+  @ColumnInfo(name = "percent_finished")
+  private int percentFinished;
+  
   @ColumnInfo(name = "photo_urls")
   private ArrayList<String> photoUrls = new ArrayList<>();
   
@@ -111,6 +114,14 @@ public class Notify {
   
   public void setTaskDueFinish(Date taskDueFinish) {
     this.taskDueFinish = taskDueFinish;
+  }
+  
+  public int getPercentFinished() {
+    return percentFinished;
+  }
+  
+  public void setPercentFinished(int percentFinished) {
+    this.percentFinished = percentFinished;
   }
   
   public ArrayList<String> getPhotoUrls() {

@@ -3,11 +3,13 @@ package com.abona_erp.driver.app.data.model;
 public class ActivityStep {
 
   private TaskStatus mTaskStatus;
+  private TaskActionType mTaskActionType;
   private ActivityItem mActivityItem;
 
-  public ActivityStep(TaskStatus taskStatus, ActivityItem activityItem) {
-    mTaskStatus = taskStatus;
-    mActivityItem = activityItem;
+  public ActivityStep(TaskStatus taskStatus, TaskActionType taskActionType, ActivityItem activityItem) {
+    this.mTaskStatus = taskStatus;
+    this.mTaskActionType = taskActionType;
+    this.mActivityItem = activityItem;
   }
 
   public TaskStatus getTaskStatus() {
@@ -15,7 +17,15 @@ public class ActivityStep {
   }
 
   public void setTaskStatus(TaskStatus taskStatus) {
-    mTaskStatus = taskStatus;
+    this.mTaskStatus = taskStatus;
+  }
+  
+  public TaskActionType getTaskActionType() {
+    return mTaskActionType;
+  }
+  
+  public void setTaskActionType(TaskActionType taskActionType) {
+    this.mTaskActionType = taskActionType;
   }
 
   public ActivityItem getActivityItem() {
@@ -23,6 +33,6 @@ public class ActivityStep {
   }
 
   public void setActivityItem(ActivityItem activityItem) {
-    mActivityItem = activityItem;
+    this.mActivityItem = activityItem;
   }
 }

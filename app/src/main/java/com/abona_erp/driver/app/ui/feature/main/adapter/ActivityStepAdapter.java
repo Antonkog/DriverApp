@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.ActivityStep;
+import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 
@@ -74,7 +76,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
     mSdfIn = new SimpleDateFormat(DATE_FORMAT_IN, Locale.getDefault());
     mSdfOut = new SimpleDateFormat(DATE_FORMAT_OUT, Locale.getDefault());
     try {
-      mDateMin = mSdfIn.parse("0001-01-01 00:00:00");
+      mDateMin = mSdfIn.parse("0001-01-01 01:00:00");
     } catch (ParseException e) {
       Log.e(TAG, e.getMessage());
     }
@@ -96,6 +98,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
       ActivityStep current = mActivityStepItems.get(position);
 
       holder.setIsRecyclable(false);
+      
       if (mDeleted) {
         holder.iv_activity_step_dot.setVisibility(View.VISIBLE);
         holder.tv_activity_step_status.setBackground(mContext.getResources()

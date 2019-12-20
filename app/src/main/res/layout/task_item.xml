@@ -147,6 +147,26 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+      android:id="@+id/task_item_bg_action_type"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      tools:background="@color/clrUnknown">
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/task_item_action_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_small"
+        android:layout_centerInParent="true"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/clrWhite"
+        tools:text="- 1 -- LADESTELLE"
+        />
+
+    </RelativeLayout>
+
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -629,25 +649,25 @@
               android:layout_height="match_parent"
               android:layout_marginTop="@dimen/spacing_medium"
               android:layout_weight="1">
-<!--
-              <com.abona_erp.driver.app.ui.widget.AsapTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/grey_40"
-                android:textSize="12sp"
-                android:text="Order No.:"
-                />
+              <!--
+                            <com.abona_erp.driver.app.ui.widget.AsapTextView
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:textColor="@color/grey_40"
+                              android:textSize="12sp"
+                              android:text="Order No.:"
+                              />
 
-              <com.abona_erp.driver.app.ui.widget.AsapTextView
-                android:id="@+id/tv_order_no"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/clrFont"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:text="201936299"
-                />
--->
+                            <com.abona_erp.driver.app.ui.widget.AsapTextView
+                              android:id="@+id/tv_order_no"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:textColor="@color/clrFont"
+                              android:textStyle="bold"
+                              android:textSize="16sp"
+                              android:text="201936299"
+                              />
+              -->
               <View
                 android:layout_width="0dp"
                 android:layout_height="@dimen/spacing_xsmall"

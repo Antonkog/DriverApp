@@ -71,7 +71,7 @@ public class ApiManager implements Manager {
   
   public ConfirmService getConfirmApi() {
     if (mConfirmService == null) {
-      mConfirmService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+      mConfirmService = provideRetrofitUtc(TextSecurePreferences.getServerIpAddress()
         + ":"
         + TextSecurePreferences.getServerPort()
         + "/api/confirmation/")
@@ -98,6 +98,16 @@ public class ApiManager implements Manager {
       .client(provideOkHttpClient())
       //.addConverterFactory(GsonConverterFactory.create(App.getGson()))
       .addConverterFactory(GsonConverterFactory.create(App.getGson()))
+      .build();
+  }
+  
+  private Retrofit provideRetrofitUtc(String url) {
+    
+    return new Retrofit.Builder()
+      .baseUrl(url)
+      .client(provideOkHttpClient())
+      //.addConverterFactory(GsonConverterFactory.create(App.getGson()))
+      .addConverterFactory(GsonConverterFactory.create(App.getGsonUtc()))
       .build();
   }
   

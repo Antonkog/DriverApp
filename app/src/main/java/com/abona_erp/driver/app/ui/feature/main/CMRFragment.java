@@ -20,6 +20,8 @@ import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.CMRViewModel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class CMRFragment extends Fragment {
@@ -80,6 +82,20 @@ public class CMRFragment extends Fragment {
       public void onChanged(List<Notify> notifies) {
         if (notifies == null)
           return;
+  
+        Collections.sort(notifies, new Comparator<Notify>() {
+          @Override
+          public int compare(Notify notify, Notify t1) {
+            return Integer.valueOf(notify.getOrderNo()).compareTo(t1.getOrderNo());
+          }
+        });
+  
+        Collections.sort(notifies, new Comparator<Notify>() {
+          @Override
+          public int compare(Notify notify, Notify t1) {
+            return Integer.valueOf(notify.getTaskId()).compareTo(t1.getTaskId());
+          }
+        });
 
         adapter.setNotifyList(notifies);
         App.eventBus.post(new BadgeCountEvent(2, notifies.size()));

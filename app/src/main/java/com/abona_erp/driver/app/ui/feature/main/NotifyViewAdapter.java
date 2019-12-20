@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -17,6 +18,7 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
@@ -92,6 +94,37 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         }
         holder.bind(notify, listener);
       }
+    }
+    
+    if (mCommItem.getTaskItem().getActionType() != null) {
+      holder.rlBgActionType.setVisibility(View.VISIBLE);
+      holder.tvActionType.setVisibility(View.VISIBLE);
+      
+      if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.PICK_UP)) {
+        holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrPickUp));
+        holder.tvActionType.setText(context.getResources().getString(R.string.action_type_pick_up));
+      } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.DROP_OFF)) {
+        holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrDropOff));
+        holder.tvActionType.setText(context.getResources().getString(R.string.action_type_drop_off));
+      } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.TRACTOR_SWAP)) {
+        holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrTractorSwap));
+        holder.tvActionType.setText(context.getResources().getString(R.string.action_type_tractor_swap));
+      } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.GENERAL)) {
+        holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrGeneral));
+        holder.tvActionType.setText(context.getResources().getString(R.string.action_type_general));
+      } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.DELAY)) {
+        holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrDelay));
+        holder.tvActionType.setText(context.getResources().getString(R.string.action_type_delay));
+      } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.UNKNOWN)) {
+        holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrUnknown));
+        holder.tvActionType.setText(context.getResources().getString(R.string.action_type_unknown));
+      } else {
+        holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrUnknown));
+        holder.tvActionType.setText(context.getResources().getString(R.string.action_type_unknown));
+      }
+    } else {
+      holder.rlBgActionType.setVisibility(View.GONE);
+      holder.tvActionType.setVisibility(View.GONE);
     }
       
     if (mCommItem.getTaskItem().getKundenName() != null)
@@ -229,6 +262,8 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     
     AppCompatImageView ivWarning;
     LinearLayout llHeaderBackground;
+    RelativeLayout rlBgActionType;
+    AsapTextView tvActionType;
     
     AsapTextView tvPercent;
     AsapTextView tvPercentStatus;
@@ -266,6 +301,8 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       tvPercent = (AsapTextView) view.findViewById(R.id.tv_percent);
       tvPercentStatus = (AsapTextView) view.findViewById(R.id.tv_percent_status);
       tvTaskId = (AsapTextView) view.findViewById(R.id.tv_task_id);
+      rlBgActionType = (RelativeLayout) view.findViewById(R.id.task_item_bg_action_type);
+      tvActionType = (AsapTextView) view.findViewById(R.id.task_item_action_type);
   
       dueInCounter = new DueInCounterRunnable(handler, context, tvDueIn, ivWarning, llHeaderBackground, new Date());
     }

@@ -21,6 +21,7 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
+import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
@@ -158,6 +159,11 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
   
               notify.setData(raw);
               notify.setRead(false);
+              if (mCommItem.getPercentItem() != null) {
+                if (mCommItem.getPercentItem().getPercentFinished() != null && mCommItem.getPercentItem().getPercentFinished() >= 0) {
+                  notify.setPercentFinished((int)Math.round(mCommItem.getPercentItem().getPercentFinished()));
+                }
+              }
               if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
                 notify.setStatus(0);
               } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
@@ -186,6 +192,21 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
                     lastActivity.setStatusType(1);
                     lastActivity.setConfirmStatus(0);
                     lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+  
+                    if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.PICK_UP)) {
+                      lastActivity.setTaskActionType(0);
+                    } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.DROP_OFF)) {
+                      lastActivity.setTaskActionType(1);
+                    } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.TRACTOR_SWAP)) {
+                      lastActivity.setTaskActionType(3);
+                    } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.GENERAL)) {
+                      lastActivity.setTaskActionType(2);
+                    } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.DELAY)) {
+                      lastActivity.setTaskActionType(4);
+                    } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.UNKNOWN)) {
+                      lastActivity.setTaskActionType(100);
+                    }
+                    
                     /*
                     SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
                       Locale.getDefault());
@@ -236,6 +257,11 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
               Notify notify = new Notify();
               notify.setMandantId(mCommItem.getTaskItem().getMandantId());
               notify.setTaskId(mCommItem.getTaskItem().getTaskId());
+              if (mCommItem.getPercentItem() != null) {
+                if (mCommItem.getPercentItem().getPercentFinished() != null && mCommItem.getPercentItem().getPercentFinished() >= 0) {
+                  notify.setPercentFinished((int)Math.round(mCommItem.getPercentItem().getPercentFinished()));
+                }
+              }
               notify.setData(raw);
               notify.setRead(false);
               if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {

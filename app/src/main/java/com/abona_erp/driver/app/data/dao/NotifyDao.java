@@ -19,7 +19,8 @@ import io.reactivex.Single;
 public interface NotifyDao {
   
   //@Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish ASC")
-  @Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish AND order_no AND task_id ASC")
+  //@Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish AND order_no AND task_id ASC")
+  @Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY order_no AND task_id ASC")
   LiveData<List<Notify>> getAllPendingNotifications();
   
   @Query("SELECT * FROM taskItem WHERE status = 50 ORDER BY task_due_finish AND order_no AND task_id ASC")

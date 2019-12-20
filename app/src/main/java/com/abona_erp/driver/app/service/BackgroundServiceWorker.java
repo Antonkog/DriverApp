@@ -255,7 +255,7 @@ public class BackgroundServiceWorker extends Service {
                           if (response.body().getIsException())
                             return;
   
-                          if (response.body().getCommItem().getPercentItem() != null) {
+                          if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
                               App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
