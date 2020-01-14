@@ -17,6 +17,10 @@ public class DriverItem {
   @Expose
   private String imageUrl;
   
+  @SerializedName("Sms")
+  @Expose
+  private String sms;
+  
   public String getLastnameFirstname() {
     return lastnameFirstname;
   }
@@ -39,5 +43,13 @@ public class DriverItem {
   
   public void setImageUrl(String imageUrl) {
     this.imageUrl = imageUrl;
+  }
+  
+  public String getSms() {
+    return sms;
+  }
+  
+  public void setSms(String sms) {
+    this.sms = sms;
   }
 }

@@ -589,6 +589,10 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         if (mVehicleClientName != null) {
           mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
         }
+        
+        if (event.isDeleteAll()) {
+          mMainPieView.setPercentage(0);
+        }
       }
     });
   }

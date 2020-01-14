@@ -52,4 +52,7 @@ public interface NotifyDao {
   
   @Query("SELECT COUNT(id) FROM taskItem")
   LiveData<Integer> getRowCount();
+  
+  @Query("DELETE FROM taskItem")
+  void deleteAll();
 }

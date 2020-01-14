@@ -117,6 +117,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
       
       // CHECK VEHICLE REGISTRATION NUMBER:
       if (mCommItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
+        VehicleRegistrationEvent event = new VehicleRegistrationEvent();
         if (mCommItem.getVehicleItem() != null) {
           if (mCommItem.getVehicleItem().getRegistrationNumber() != null) {
             TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
@@ -124,6 +125,19 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
           } else {
             TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
               getApplicationContext().getResources().getString(R.string.registration_number));
+            
+            // RESET ALL ITEMS:
+            event.setDeleteAll(true);
+            mRepository.deleteAllNotify();
+            AsyncTask.execute(new Runnable() {
+              @Override
+              public void run() {
+                mRepository.deleteAllLastActivities();
+                DriverDatabase db = DriverDatabase.getDatabase();
+                OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+                dao.deleteAll();
+              }
+            });
           }
           if (mCommItem.getVehicleItem().getClientName() != null) {
             TextSecurePreferences.setClientName(getApplicationContext(),
@@ -137,7 +151,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
           TextSecurePreferences.setClientName(getApplicationContext(), "");
         }
         
-        App.eventBus.post(new VehicleRegistrationEvent());
+        App.eventBus.post(event);
         startRingtone(notification);
         return;
       }

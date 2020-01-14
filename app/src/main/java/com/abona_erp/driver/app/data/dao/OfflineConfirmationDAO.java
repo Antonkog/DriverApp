@@ -25,4 +25,7 @@ public interface OfflineConfirmationDAO {
   
   @Delete
   void delete(OfflineConfirmation offlineConfirmation);
+  
+  @Query("DELETE FROM offline_confirmation")
+  void deleteAll();
 }

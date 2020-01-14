@@ -75,13 +75,17 @@ public class AppUtils {
   }
   
   public static String parseOrderNo(int orderNo) {
-    String _orderNo = String.valueOf(orderNo);
-    String tmp = _orderNo.substring(0, 4);
-    tmp += "/";
-    tmp += _orderNo.substring(4, 6);
-    tmp += "/";
-    tmp += _orderNo.substring(6);
-    return tmp;
+    if (orderNo > 0) {
+      String _orderNo = String.valueOf(orderNo);
+      String tmp = _orderNo.substring(0, 4);
+      tmp += "/";
+      tmp += _orderNo.substring(4, 6);
+      tmp += "/";
+      tmp += _orderNo.substring(6);
+      return tmp;
+    } else {
+      return "";
+    }
   }
   
   /**

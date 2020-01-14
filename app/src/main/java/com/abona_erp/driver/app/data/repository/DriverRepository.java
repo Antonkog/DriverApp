@@ -104,6 +104,10 @@ public class DriverRepository {
   public void delete(Notify notify) {
     new deleteAsyncTask(mNotifyDao).execute(notify);
   }
+  
+  public void deleteAllNotify() {
+    new deleteAllNotifyAsyncTask(mNotifyDao).execute();
+  }
 
   public LiveData<List<LastActivity>> getAllLastActivityItems() {
     return mAllLastActivityItems;
@@ -123,6 +127,10 @@ public class DriverRepository {
   
   public void delete(LastActivity lastActivity) {
     new deleteLastActivityAsyncTask(mLastActivityDAO).execute(lastActivity);
+  }
+  
+  public void deleteAllLastActivities() {
+    mLastActivityDAO.deleteAll();
   }
 
   public LiveData<Integer> getNotReadNotificationCount() {
@@ -252,6 +260,21 @@ public class DriverRepository {
     @Override
     protected Void doInBackground(final Notify... params) {
       mAsyncTaskDao.delete(params[0]);
+      return null;
+    }
+  }
+  
+  private static class deleteAllNotifyAsyncTask extends AsyncTask<Void, Void, Void> {
+    
+    private NotifyDao mAsyncTaskDao;
+    
+    deleteAllNotifyAsyncTask(NotifyDao dao) {
+      mAsyncTaskDao = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(Void... params) {
+      mAsyncTaskDao.deleteAll();
       return null;
     }
   }

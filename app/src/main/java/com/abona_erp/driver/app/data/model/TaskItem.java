@@ -96,6 +96,10 @@ public class TaskItem {
   @Expose
   List<ActivityItem> activities;
   
+  @SerializedName("SwapInfoItem")
+  @Expose
+  private SwapInfoItem swapInfoItem;
+  
   // ------------------------------------------------------------------------
   // GETTER & SETTER
   
@@ -273,5 +277,13 @@ public class TaskItem {
   
   public void setActivities(List<ActivityItem> activities) {
     this.activities = activities;
+  }
+  
+  public SwapInfoItem getSwapInfoItem() {
+    return swapInfoItem;
+  }
+  
+  public void setSwapInfoItem(SwapInfoItem swapInfoItem) {
+    this.swapInfoItem = swapInfoItem;
   }
 }

@@ -31,4 +31,7 @@ public interface LastActivityDAO {
   
   @Delete
   void delete(LastActivity lastActivity);
+  
+  @Query("DELETE FROM last_activity_table")
+  void deleteAll();
 }

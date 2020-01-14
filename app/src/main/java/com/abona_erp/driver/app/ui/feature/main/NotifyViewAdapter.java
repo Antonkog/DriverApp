@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.feature.main;
 
 import android.content.Context;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.flag_kit.FlagKit;
 import com.lid.lib.LabelImageView;
 
@@ -100,6 +102,11 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       holder.rlBgActionType.setVisibility(View.VISIBLE);
       holder.tvActionType.setVisibility(View.VISIBLE);
       
+      holder.swap_header.setVisibility(View.GONE);
+      holder.tvMyVehicleNo.setText("");
+      holder.tvSwapVehicleNo.setText("");
+      holder.tvMyPhoneNo.setText("");
+      holder.tvSwapPhoneNo.setText("");
       if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.PICK_UP)) {
         holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrPickUp));
         holder.tvActionType.setText(context.getResources().getString(R.string.action_type_pick_up));
@@ -107,8 +114,31 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrDropOff));
         holder.tvActionType.setText(context.getResources().getString(R.string.action_type_drop_off));
       } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.TRACTOR_SWAP)) {
+        holder.swap_header.setVisibility(View.VISIBLE);
         holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrTractorSwap));
         holder.tvActionType.setText(context.getResources().getString(R.string.action_type_tractor_swap));
+        holder.tvMyVehicleNo.setText(TextSecurePreferences.getVehicleRegistrationNumber(context));
+        if (mCommItem.getTaskItem().getSwapInfoItem() != null && mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem() != null) {
+          if (mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getRegistrationNumber() != null) {
+            holder.tvSwapVehicleNo.setText(mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getRegistrationNumber());
+          }
+        }
+        TelephonyManager tMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (tMgr != null) {
+          try {
+            holder.tvMyPhoneNo.setText("(" + tMgr.getLine1Number() + ")");
+          } catch (SecurityException e) {
+            e.printStackTrace();
+          }
+        }
+        if (mCommItem.getTaskItem().getSwapInfoItem() != null && mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem() != null
+          && mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers() != null) {
+          if (mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers().size() > 0) {
+            if (mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers().get(0).getSms() != null) {
+              holder.tvSwapPhoneNo.setText("(" + mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers().get(0).getSms() + ")");
+            }
+          }
+        }
       } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.GENERAL)) {
         holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrGeneral));
         holder.tvActionType.setText(context.getResources().getString(R.string.action_type_general));
@@ -269,6 +299,13 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     AsapTextView tvPercentStatus;
     ProgressBar pbActivityStep;
     
+    // SWAP
+    LinearLayout swap_header;
+    AsapTextView tvMyVehicleNo;
+    AsapTextView tvSwapVehicleNo;
+    AsapTextView tvMyPhoneNo;
+    AsapTextView tvSwapPhoneNo;
+    
     // DEBUG
     AsapTextView tvTaskId;
     
@@ -303,6 +340,11 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       tvTaskId = (AsapTextView) view.findViewById(R.id.tv_task_id);
       rlBgActionType = (RelativeLayout) view.findViewById(R.id.task_item_bg_action_type);
       tvActionType = (AsapTextView) view.findViewById(R.id.task_item_action_type);
+      swap_header = (LinearLayout)view.findViewById(R.id.swap_header);
+      tvMyVehicleNo = (AsapTextView)view.findViewById(R.id.tv_my_vehicle_no);
+      tvSwapVehicleNo = (AsapTextView)view.findViewById(R.id.tv_swap_vehicle_no);
+      tvMyPhoneNo = (AsapTextView)view.findViewById(R.id.tv_my_phone_no);
+      tvSwapPhoneNo = (AsapTextView)view.findViewById(R.id.tv_swap_phone_no);
   
       dueInCounter = new DueInCounterRunnable(handler, context, tvDueIn, ivWarning, llHeaderBackground, new Date());
     }
