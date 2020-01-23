@@ -46,8 +46,8 @@ dependencies {
     implementation "com.google.android.material:material:1.2.0-alpha03"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-    implementation "androidx.lifecycle:lifecycle-viewmodel:2.1.0"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
 
     implementation 'androidx.multidex:multidex:2.0.1'
 
@@ -59,12 +59,12 @@ dependencies {
     implementation 'androidx.room:room-rxjava2:2.2.3'
     annotationProcessor "androidx.room:room-compiler:2.2.3"
 
-    implementation 'com.google.firebase:firebase-analytics:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     // WorkManager:
-    implementation 'androidx.work:work-runtime:2.3.0-rc01'
+    implementation 'androidx.work:work-runtime:2.3.0'
 
     // Dagger2
     implementation Dep.Dagger.core
@@ -87,8 +87,10 @@ dependencies {
 
     // Event Bus
     implementation 'org.greenrobot:eventbus:3.1.1'
+    // Logify
+    //implementation 'com.devexpress.logify:logify-alert-android:1.0.2'
 
-    implementation 'de.hdodenhof:circleimageview:3.0.1'
+    implementation 'de.hdodenhof:circleimageview:3.0.2'
     implementation 'com.github.zurche:plain-pie:v0.2.9'
     implementation 'com.github.linger1216:labelview:v1.1.2'
     implementation 'com.github.shivam301296:Android-CustomToast:1.0.1'

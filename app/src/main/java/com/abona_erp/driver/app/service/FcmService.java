@@ -10,12 +10,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
+import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.util.ServiceUtil;
@@ -26,9 +30,15 @@ import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,12 +67,23 @@ public class FcmService extends FirebaseMessagingService {
   public void onNewToken(String token) {
     Log.i(TAG, "onNewToken()");
     
-    if (!TextSecurePreferences.isPushRegistered(getApplicationContext())) {
-      Log.i(TAG, "Got a new FCM token, but the user isn't registered.");
+    if (TextUtils.isEmpty(token) || token.length() <= 0)
       return;
-    }
     
-    //sendRegistrationToServer(token);
+    TextSecurePreferences.setFcmToken(getApplicationContext(), token);
+    DriverDatabase db = DriverDatabase.getDatabase();
+    DeviceProfileDAO dao = db.deviceProfileDAO();
+    List<DeviceProfile> deviceProfiles = dao.getDeviceProfiles();
+    if (deviceProfiles.size() > 0) {
+      TextSecurePreferences.setFcmTokenUpdate(getApplicationContext(), true);
+      DateFormat dfUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+        Locale.getDefault());
+      dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
+      Date currentTimeStamp = new Date();
+      TextSecurePreferences.setFcmTokenLastSetTime(getBaseContext(), dfUtc.format(currentTimeStamp));
+      
+      deviceProfiles.get(0).setInstanceId(token);
+    }
   }
   
   private void scheduleJob(Map<String, String> data) {

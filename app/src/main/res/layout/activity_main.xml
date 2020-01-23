@@ -66,14 +66,12 @@
           android:singleLine="true"
           android:textSize="12sp"
           tools:text="Hegelmann Express"
-          android:textColor="#808080"
+          android:textColor="@color/grey_60"
           />
 
       </LinearLayout>
 
     </LinearLayout>
-
-
 
     <View
       android:layout_width="0dp"
@@ -93,7 +91,7 @@
 
     <View
       android:layout_width="0dp"
-      android:layout_height="5dp"
+      android:layout_height="@dimen/spacing_small"
       />
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -112,7 +110,7 @@
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1"
-      android:layout_marginTop="@dimen/spacing_large"
+      android:layout_marginTop="@dimen/spacing_small"
       android:clipToPadding="false"
       tools:listitem="@layout/item_last_activity"
       app:layout_behavior="@string/appbar_scrolling_view_behavior"

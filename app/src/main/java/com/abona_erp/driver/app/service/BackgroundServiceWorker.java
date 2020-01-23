@@ -360,7 +360,7 @@ public class BackgroundServiceWorker extends Service {
           
                         if (response.body().getIsSuccess()) {
   
-                          if (response.body().getCommItem().getPercentItem() != null) {
+                          if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
                               App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
@@ -394,7 +394,7 @@ public class BackgroundServiceWorker extends Service {
                           });
                         } else {
   
-                          if (response.body().getCommItem().getPercentItem() != null) {
+                          if (response.body() != null && response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
                               App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));

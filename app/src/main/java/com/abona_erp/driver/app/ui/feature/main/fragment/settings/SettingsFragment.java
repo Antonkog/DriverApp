@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
@@ -25,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.BackEvent;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
@@ -47,6 +49,8 @@ public class SettingsFragment extends Fragment {
   private AppCompatImageButton mBtnBack;
   
   private MainViewModel mainViewModel;
+  
+  private DriverDatabase mDb = DriverDatabase.getDatabase();
   
   public SettingsFragment() {
     // Required empty public constructor.
@@ -170,6 +174,20 @@ public class SettingsFragment extends Fragment {
     mBtnSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        
+        // DEVICE RESET BEGIN
+        AsyncTask.execute(new Runnable() {
+          @Override
+          public void run() {
+            mDb.lastActivityDAO().deleteAll();
+            mDb.notifyDao().deleteAll();
+            mDb.offlineConfirmationDAO().deleteAll();
+  
+            TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
+            TextSecurePreferences.setDeviceFirstTimeRun(getContext().getApplicationContext(), false);
+          }
+        });
+        // DEVICE RESET END
         
         String ip_address = mTeIpAddress.getText().toString();
         TextSecurePreferences.setServerIpAddress(ip_address);

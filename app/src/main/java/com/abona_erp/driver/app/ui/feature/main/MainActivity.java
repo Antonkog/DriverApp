@@ -5,7 +5,6 @@ import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -32,7 +32,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
@@ -70,13 +69,12 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.PowerMenuUtils;
-import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.developer.kalert.KAlertDialog;
+//import com.devexpress.logify.alert.android.LogifyAlert;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
@@ -86,9 +84,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -102,7 +97,6 @@ import com.skydoves.powermenu.PowerMenuItem;
 import com.tree.rh.ctlib.CT;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -176,6 +170,10 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // LOGIFY
+    //initializeLogify();
   
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // GET A NEW OR EXISTING VIEWMODEL FROM THE VIEWMODELPROVIDER.
@@ -193,9 +191,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         public void onComplete(@NonNull Task<InstanceIdResult> task) {
           if (!task.isSuccessful()) {
             return;
-          }
-          TextSecurePreferences.setFcmToken(getBaseContext(), task.getResult().getToken());
-          Log.d("MainActivity","Firebase registration Token=" + task.getResult().getToken());
+          }/*
           if (TextSecurePreferences.isDeviceFirstTimeRun(getBaseContext())) {
             AsyncTask.execute(new Runnable() {
               @Override
@@ -210,12 +206,39 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
                   dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
                   Date currentTimestamp = new Date();
                   TextSecurePreferences.setFcmTokenLastSetTime(getBaseContext(), dfUtc.format(currentTimestamp));
-    
+          
                   deviceProfiles.get(0).setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
                   mMainViewModel.update(deviceProfiles.get(0));
                 }
               }
             });
+          }*/
+          if (TextUtils.isEmpty(TextSecurePreferences.getFcmToken(getBaseContext()))
+            || TextSecurePreferences.getFcmToken(getBaseContext()).length() <= 0
+            || !TextSecurePreferences.getFcmToken(getBaseContext()).equals(task.getResult().getToken())) {
+            TextSecurePreferences.setFcmToken(getBaseContext(), task.getResult().getToken());
+            Log.d("MainActivity","Firebase registration Token=" + task.getResult().getToken());
+            if (TextSecurePreferences.isDeviceFirstTimeRun(getBaseContext())) {
+              AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                  DriverDatabase db = DriverDatabase.getDatabase();
+                  DeviceProfileDAO dao = db.deviceProfileDAO();
+                  List<DeviceProfile> deviceProfiles = dao.getDeviceProfiles();
+                  if (deviceProfiles.size() > 0) {
+                    TextSecurePreferences.setFcmTokenUpdate(getBaseContext(), true);
+                    DateFormat dfUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                      Locale.getDefault());
+                    dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    Date currentTimestamp = new Date();
+                    TextSecurePreferences.setFcmTokenLastSetTime(getBaseContext(), dfUtc.format(currentTimestamp));
+          
+                    deviceProfiles.get(0).setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
+                    mMainViewModel.update(deviceProfiles.get(0));
+                  }
+                }
+              });
+            }
           }
         }
       });
@@ -955,6 +978,14 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         }
       });
     builder.show();
+  }
+  
+  private void initializeLogify() {
+    // Initialize the Logify Alert client.
+    //LogifyAlert client = LogifyAlert.getInstance();
+    //client.setApiKey("5B357B2806714B8598C6127F537CD389");
+    //client.setContext(this.getApplicationContext());
+    //client.startExceptionsHandling();
   }
   
   public void removeStickyEvent(final Class<?> eventType) {

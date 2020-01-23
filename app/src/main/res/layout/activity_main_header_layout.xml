@@ -39,6 +39,7 @@
         android:maxLines="1"
         android:maxLength="40"
         android:hint="@string/search"
+        android:textColorHint="@color/grey_60"
         android:drawableTint="@color/clrIcon"
         />
 
@@ -91,6 +92,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
+    android:textColor="@color/grey_60"
     android:text="1."
     />
 <!--
@@ -106,10 +108,10 @@
   <de.hdodenhof.circleimageview.CircleImageView
     android:layout_width="@dimen/icon_size_48"
     android:layout_height="@dimen/icon_size_48"
-    android:src="@drawable/ic_perm_identity_24px"
+    android:src="@drawable/user"
     android:layout_gravity="center_vertical"
     app:civ_border_width="@dimen/spacing_xsmall"
-    app:civ_border_color="@color/clrIcon"
+    app:civ_border_color="@color/grey_60"
     />
 
   <View
@@ -121,16 +123,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
+    android:textColor="@color/grey_60"
     android:text="2."
     />
 
   <de.hdodenhof.circleimageview.CircleImageView
     android:layout_width="@dimen/icon_size_48"
     android:layout_height="@dimen/icon_size_48"
-    android:src="@drawable/ic_perm_identity_24px"
+    android:src="@drawable/user"
     android:layout_gravity="center_vertical"
     app:civ_border_width="@dimen/spacing_xsmall"
-    app:civ_border_color="@color/clrIcon"
+    app:civ_border_color="@color/grey_60"
     />
 
   <androidx.appcompat.widget.AppCompatImageButton

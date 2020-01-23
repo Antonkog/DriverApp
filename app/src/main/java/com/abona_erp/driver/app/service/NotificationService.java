@@ -323,7 +323,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
         .build());
     } else {
-      mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+      mMediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
     }
     mMediaPlayer.setOnPreparedListener(this);
   }
@@ -337,6 +337,8 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
           mMediaPlayer.stop();
+          mMediaPlayer.release();
+          mMediaPlayer = null;
         }
       });
     } catch (Exception e) {

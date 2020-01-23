@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,7 +127,11 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         TelephonyManager tMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         if (tMgr != null) {
           try {
-            holder.tvMyPhoneNo.setText("(" + tMgr.getLine1Number() + ")");
+            if (!TextUtils.isEmpty(tMgr.getLine1Number()) && tMgr.getLine1Number().length() > 0) {
+              holder.tvMyPhoneNo.setText(tMgr.getLine1Number());
+            } else {
+              holder.tvMyPhoneNo.setText("No SIM Card");
+            }
           } catch (SecurityException e) {
             e.printStackTrace();
           }
@@ -135,9 +140,16 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
           && mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers() != null) {
           if (mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers().size() > 0) {
             if (mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers().get(0).getSms() != null) {
-              holder.tvSwapPhoneNo.setText("(" + mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers().get(0).getSms() + ")");
+              holder.tvSwapPhoneNo.setText(mCommItem.getTaskItem().getSwapInfoItem().getVehicleItem().getDrivers().get(0).getSms());
+              holder.tvSwapPhoneNo.setAutoLinkMask(Linkify.PHONE_NUMBERS);
             }
+          } else {
+            holder.tvSwapPhoneNo.setText("No Phone Number");
+            holder.tvSwapPhoneNo.setAutoLinkMask(0);
           }
+        } else {
+          holder.tvSwapPhoneNo.setText("No Phone Number");
+          holder.tvSwapPhoneNo.setAutoLinkMask(0);
         }
       } else if (mCommItem.getTaskItem().getActionType().equals(TaskActionType.GENERAL)) {
         holder.rlBgActionType.setBackgroundColor(context.getResources().getColor(R.color.clrGeneral));

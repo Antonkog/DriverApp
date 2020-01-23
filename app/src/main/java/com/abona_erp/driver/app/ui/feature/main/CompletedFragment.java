@@ -18,11 +18,11 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.MapEvent;
 import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
-import com.abona_erp.driver.app.ui.feature.main.view_model.CompletedViewModel;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -114,6 +114,37 @@ public class CompletedFragment extends Fragment {
               // Check older tasks:
               CommItem commItem = new CommItem();
               commItem = App.getGson().fromJson(notifies.get(i).getData(), CommItem.class);
+  
+              final int k = i;
+              if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    viewModel.delete(notifies.get(k));
+                  }
+                });
+                
+                viewModel.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(), commItem.getTaskItem().getMandantId())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new DisposableSingleObserver<LastActivity>() {
+                    @Override
+                    public void onSuccess(LastActivity lastActivity) {
+                      AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                          viewModel.delete(lastActivity);
+                        }
+                      });
+                    }
+  
+                    @Override
+                    public void onError(Throwable e) {
+    
+                    }
+                  });
+                continue;
+              }
       
               Calendar calendar = Calendar.getInstance();
               calendar.setTime(commItem.getTaskItem().getActivities().get(commItem.getTaskItem().getActivities().size()-1).getFinished());
@@ -143,7 +174,7 @@ public class CompletedFragment extends Fragment {
                     }
                   });
         
-                final int k = i;
+                
                 AsyncTask.execute(new Runnable() {
                   @Override
                   public void run() {

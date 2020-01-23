@@ -15,7 +15,7 @@
 
   <string name="registration_number">Kein Fahrzeug</string>
   <string name="task_status">Task Status</string>
-  <string name="task_finish">Task Fertig stellen</string>
+  <string name="task_finish">Task fertig stellen</string>
   <string name="due_in">Fällig in</string>
   <string name="order_no">Auftragsnummer</string>
   <string name="task_id">Task ID</string>

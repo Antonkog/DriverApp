@@ -295,7 +295,7 @@ public class DetailFragment extends Fragment {
       mDetailStepView.done(true);
       mBtnBackActivity.setVisibility(View.VISIBLE);
       mBtnBackActivity.setText("ClOSE");
-      mBtnNextActivity.setVisibility(View.VISIBLE);
+      mBtnNextActivity.setVisibility(View.GONE);
       mBtnNextActivity.setText("DELETE");
     }
   }
@@ -466,13 +466,20 @@ public class DetailFragment extends Fragment {
               new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
                 .setTitleText("Start Activity")
                 .setContentText("Möchten Sie den Task starten?")
-                .setCancelText("Abbrechen")
+                .setCancelText(getContext().getResources().getString(R.string.action_cancel))
                 .setConfirmText("Task Starten")
                 .confirmButtonColor(R.drawable.btn_confirmation_ok)
                 .showCancelButton(true)
                 .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
                   @Override
                   public void onClick(KAlertDialog sDialog) {
+                    
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // Überprüfen, ob der Task gestartet werden darf?
+                    //
+                    
+                    ////////////////////////////////////////////////////////////////////////////////
+                    
                     mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
                     mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
                     mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);

@@ -187,7 +187,7 @@ public class TextSecurePreferences {
   
   public static String getServerIpAddress() {
     return getStringPreference(ContextUtils.getApplicationContext(),
-      PREF_SERVER_IP_ADDRESS, /*"https://93.189.159.10"*/"https://213.144.11.162");
+      PREF_SERVER_IP_ADDRESS, "https://93.189.159.10"/*"https://213.144.11.162"*/);
   }
   
   public static void setServerIpAddress(String ipAddress) {
