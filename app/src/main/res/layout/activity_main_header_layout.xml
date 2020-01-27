@@ -106,6 +106,7 @@
     />
 -->
   <de.hdodenhof.circleimageview.CircleImageView
+    android:id="@+id/profile1"
     android:layout_width="@dimen/icon_size_48"
     android:layout_height="@dimen/icon_size_48"
     android:src="@drawable/user"
@@ -128,6 +129,7 @@
     />
 
   <de.hdodenhof.circleimageview.CircleImageView
+    android:id="@+id/profile2"
     android:layout_width="@dimen/icon_size_48"
     android:layout_height="@dimen/icon_size_48"
     android:src="@drawable/user"

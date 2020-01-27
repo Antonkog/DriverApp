@@ -24,6 +24,7 @@ import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
+import com.abona_erp.driver.app.ui.event.ProfileEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.util.AppUtils;
@@ -144,6 +145,16 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
               mCommItem.getVehicleItem().getClientName());
           } else {
             TextSecurePreferences.setClientName(getApplicationContext(), "");
+          }
+          
+          // Drivers
+          if (mCommItem.getVehicleItem().getDrivers() != null) {
+            if (mCommItem.getVehicleItem().getDrivers().size() > 0) {
+              if (mCommItem.getVehicleItem().getDrivers().get(0).getImageUrl() != null) {
+                // First Driver
+                App.eventBus.post(new ProfileEvent(mCommItem.getVehicleItem().getDrivers().get(0).getImageUrl()));
+              }
+            }
           }
         } else {
           TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
