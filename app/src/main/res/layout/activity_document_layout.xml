@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="fill_parent"
+  android:background="@drawable/main_menu_background">
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+      android:id="@+id/fragment_gallery"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_above="@id/ll_gallery"
+      />
+
+    <LinearLayout
+      android:id="@+id/ll_gallery"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true">
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_gallery_tools"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="#C3CFE2"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/row_editing_tools"
+        />
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvGalleryView"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#C3CFE2"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/row_image_view"
+        />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/btn_back"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/spacing_medium"
+      android:layout_marginStart="@dimen/spacing_medium"
+      android:layout_marginEnd="@dimen/spacing_large"
+      android:backgroundTint="@color/clrAbona"
+      android:padding="@dimen/spacing_large"
+      android:src="@drawable/ic_arrow_back"
+      android:tint="#fff"
+      />
+
+  </RelativeLayout>
+
+</LinearLayout>
