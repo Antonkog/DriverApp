@@ -9,7 +9,9 @@ import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.data.remote.ActivityService;
 import com.abona_erp.driver.app.data.remote.ConfirmService;
 import com.abona_erp.driver.app.data.remote.FCMService;
+import com.abona_erp.driver.app.data.remote.FileUploadService;
 import com.abona_erp.driver.app.data.remote.TokenService;
+import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
@@ -47,6 +49,7 @@ public class ApiManager implements Manager {
   private FCMService mFCMService;
   private ConfirmService mConfirmService;
   private ActivityService mActivityService;
+  private FileUploadService mFileUploadService;
   
   public FCMService getFCMApi() {
     if (mFCMService == null) {
@@ -89,6 +92,17 @@ public class ApiManager implements Manager {
         .create(ActivityService.class);
     }
     return mActivityService;
+  }
+  
+  public FileUploadService getFileUploadApi() {
+    if (mFileUploadService == null) {
+      mFileUploadService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+      + ":"
+      + TextSecurePreferences.getServerPort()
+      + "/api/uploader/")
+        .create(FileUploadService.class);
+    }
+    return mFileUploadService;
   }
   
   private Retrofit provideRetrofit(String url) {
@@ -145,6 +159,7 @@ public class ApiManager implements Manager {
     
       }
     });
+    httpClient.addInterceptor(new AccessTokenInterceptor());
   
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor logging = new HttpLoggingInterceptor();

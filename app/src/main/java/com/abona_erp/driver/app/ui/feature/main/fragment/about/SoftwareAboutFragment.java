@@ -13,7 +13,8 @@ import androidx.fragment.app.Fragment;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
-import com.abona_erp.driver.app.ui.event.BackEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 
 public class SoftwareAboutFragment extends Fragment {
@@ -53,7 +54,7 @@ public class SoftwareAboutFragment extends Fragment {
     mBtnBack.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        App.eventBus.post(new BackEvent());
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
       }
     });
     

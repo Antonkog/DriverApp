@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -16,10 +17,12 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
-import com.abona_erp.driver.app.ui.event.MapEvent;
-import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.PendingViewModel;
-import com.developer.kalert.KAlertDialog;
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.util.DialogSettings;
+import com.kongzue.dialog.v3.MessageDialog;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,20 +68,34 @@ public class PendingFragment extends Fragment {
     adapter.setOnItemListener(new NotifyViewAdapter.OnItemClickListener() {
       @Override
       public void onItemClick(Notify notify) {
-        App.eventBus.post(new TaskDetailEvent(notify));
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
       }
 
       @Override
       public void onMapClick(Notify notify) {
-        App.eventBus.post(new MapEvent(notify));
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
       }
       
       @Override
       public void onCameraClick(Notify notify) {
-        new KAlertDialog(getContext())
-          .setTitleText("Fotos zum Auftrag?")
-          .setContentText("Um Fotos machen zu können, muss der Task gestartet sein!")
+        MessageDialog.build((AppCompatActivity)getActivity())
+          .setStyle(DialogSettings.STYLE.STYLE_IOS)
+          .setTheme(DialogSettings.THEME.LIGHT)
+          .setTitle("Bilder zum Auftrag")
+          .setMessage("Um Fotos machen zu können, muss der Task gestartet sein!")
+          .setOkButton(getContext().getResources().getString(R.string.action_ok),
+            new OnDialogButtonClickListener() {
+              @Override
+              public boolean onClick(BaseDialog baseDialog, View v) {
+                return false;
+              }
+            })
           .show();
+      }
+      
+      @Override
+      public void onDocumentClick(Notify notify) {
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
       }
     });
 

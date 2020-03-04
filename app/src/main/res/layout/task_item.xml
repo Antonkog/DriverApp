@@ -861,6 +861,7 @@
           android:singleLine="true"
           android:textColor="@color/clrFont"
           android:textSize="16sp"
+          tools:text="Name 2"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -869,6 +870,7 @@
           android:layout_height="wrap_content"
           android:textColor="@color/clrFont"
           android:textSize="16sp"
+          tools:text="Heinrich-Blanc-Straße 30"
           />
 
         <LinearLayout
@@ -889,6 +891,7 @@
               android:layout_height="wrap_content"
               android:textColor="@color/clrFont"
               android:textSize="16sp"
+              tools:text="DE"
               />
 
             <com.abona_erp.driver.flag_kit.FlagKit
@@ -912,6 +915,7 @@
               android:layout_height="wrap_content"
               android:textColor="@color/clrFont"
               android:textSize="16sp"
+              tools:text="76646"
               />
 
           </LinearLayout>
@@ -929,6 +933,7 @@
               android:layout_height="wrap_content"
               android:textColor="@color/clrFont"
               android:textSize="16sp"
+              tools:text="Bruchsal"
               />
 
           </LinearLayout>
@@ -944,6 +949,7 @@
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
       android:layout_gravity="end"
+      android:layout_marginTop="@dimen/spacing_large"
       android:layout_marginStart="@dimen/spacing_medium"
       android:layout_marginLeft="@dimen/spacing_medium"
       android:layout_marginEnd="@dimen/spacing_medium"
@@ -951,13 +957,29 @@
       android:layout_marginBottom="@dimen/spacing_medium">
 
       <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_document"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_shape"
+        android:drawableStart="@drawable/ic_work"
+        android:drawablePadding="@dimen/spacing_medium"
+        android:textColor="#fff"
+        android:text="@string/document"
+        />
+
+      <View
+        android:layout_width="@dimen/spacing_medium"
+        android:layout_height="0dp"
+        />
+
+      <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_camera"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:drawableStart="@drawable/ic_camera"
-        android:drawablePadding="@dimen/spacing_small"
+        android:drawablePadding="@dimen/spacing_medium"
         android:textColor="#fff"
         android:text="@string/camera"
         />
@@ -973,10 +995,12 @@
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape"
         android:drawableStart="@android:drawable/ic_dialog_map"
-        android:drawablePadding="@dimen/spacing_small"
+        android:drawablePadding="@dimen/spacing_medium"
         android:textColor="#fff"
         android:text="@string/map"
         />
+
+
 
     </LinearLayout>
 

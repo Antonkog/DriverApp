@@ -40,7 +40,7 @@
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="#192530"
+        android:background="@color/clrFont"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/row_menu_tools"
         />
@@ -70,7 +70,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#192530"
+        android:background="#C3CFE2"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/row_image_view"
         />

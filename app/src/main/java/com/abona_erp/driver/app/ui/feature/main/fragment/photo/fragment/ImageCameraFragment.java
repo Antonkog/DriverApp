@@ -54,6 +54,10 @@ public class ImageCameraFragment extends Fragment
   private ViewGroup controlPanel;
   private long mCaptureTime;
   
+  private int mMandantID;
+  private int mOrderNo;
+  private int mTaskID;
+  
   private static boolean bFlash = false;
   private static boolean bInformation = false;
   private AppCompatImageView iv_capture_image;
@@ -79,6 +83,12 @@ public class ImageCameraFragment extends Fragment
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View root = inflater.inflate(R.layout.sub_fragment_image_camera_view, container, false);
     initComponents(root);
+    
+    if (getArguments() != null) {
+      mMandantID = getArguments().getInt("mandant_id");
+      mOrderNo = getArguments().getInt("order_no");
+      mTaskID = getArguments().getInt("task_id");
+    }
     return root;
   }
   
@@ -144,7 +154,7 @@ public class ImageCameraFragment extends Fragment
           
           File photoFile = null;
           try {
-            photoFile = saveImage(bitmap, "123");
+            photoFile = saveImage(bitmap, String.valueOf(mMandantID), String.valueOf(mOrderNo), String.valueOf(mTaskID));
           } catch (IOException ex) {
             ex.printStackTrace();
           }
@@ -170,10 +180,10 @@ public class ImageCameraFragment extends Fragment
     }
   }
   
-  private File saveImage(Bitmap bmp, String taskId) throws IOException {
+  private File saveImage(Bitmap bmp, String mandantId, String orderNo, String taskId) throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     bmp.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
-    File f = createImageFile(taskId);
+    File f = createImageFile(mandantId, orderNo, taskId);
   
     FileOutputStream fos = new FileOutputStream(f);
     fos.write(bytes.toByteArray());
@@ -181,13 +191,14 @@ public class ImageCameraFragment extends Fragment
     return f;
   }
   
-  private File createImageFile(String taskId) throws IOException {
+  private File createImageFile(String mandantId, String orderNo, String taskId) throws IOException {
     // Create an image file name
     String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss",
       Locale.getDefault()).format(new Date());
-    String mFileName = "JPEG_" + taskId + "_" + timeStamp + "_";
+    String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + ".jpg";
     File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    File mFile = File.createTempFile(mFileName, ".jpg", storageDir);
+    //File mFile = File.createTempFile(mFileName, null, storageDir);
+    File mFile = new File(storageDir, mFileName);
     return mFile;
   }
   

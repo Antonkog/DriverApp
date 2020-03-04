@@ -12,7 +12,6 @@ import com.abona_erp.driver.app.data.entity.Notify;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 @Dao

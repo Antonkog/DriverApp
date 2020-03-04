@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,13 +15,12 @@ import androidx.viewpager.widget.ViewPager;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
-import com.abona_erp.driver.app.ui.event.SoftwareAboutEvent;
-import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.TabsPagerAdapter;
 import com.abona_erp.driver.app.ui.widget.badges.Badge;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeSpan;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeType;
-import com.abona_erp.driver.app.util.AppUtils;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
@@ -102,7 +100,8 @@ public class MainFragment extends Fragment {
           case 0:
             break;
           case 1:
-            App.eventBus.post(new SoftwareAboutEvent());
+            //App.eventBus.post(new SoftwareAboutEvent());
+            App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_ABOUT), null));
             break;
         }
       }

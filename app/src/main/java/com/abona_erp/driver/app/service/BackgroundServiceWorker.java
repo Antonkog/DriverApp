@@ -32,13 +32,15 @@ import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.logging.Log;
-import com.abona_erp.driver.app.ui.event.DeviceRegistratedEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
+import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
@@ -100,30 +102,61 @@ public class BackgroundServiceWorker extends Service {
     this.mContext = appContext;
   }
   
+  private volatile static int delay = 3000;
+  public volatile static boolean allowRequest = true;
   public class Runner implements Runnable {
     @Override
     public void run() {
       Log.i(TAG, ">>>>>>> BACKGROUND SERVICE LISTENING... >>>>>>>");
   
-      if (!isDevicePermissionGranted()) {
-        Log.i(TAG, "******* DEVICE PERMISSION IS NOT GRANTED!!! *******");
-        mHandler.postDelayed(this, 1000 * 30);
-        return;
-      }
-      
-      if (!isDeviceRegistrated()) {
-        mHandler.postDelayed(this, 1000 * 30);
-        return;
-      }
-      
-      if (!isDeviceUpdateToken()) {
-        mHandler.postDelayed(this, 1000 * 30);
-        return;
-      }
-      
-      handleJobs();
-      
-      mHandler.postDelayed(this, 1000 * 30);
+      AsyncTask.execute(new Runnable() {
+        @Override
+        public void run() {
+          
+          if (!isDevicePermissionGranted()) {
+            Log.i(TAG, "******* DEVICE PERMISSION IS NOT GRANTED!!! *******");
+            allowRequest = true;
+            mHandler.postDelayed(this, delay);
+            return;
+          }
+  
+          if (!isDeviceRegistrated()) {
+            allowRequest = true;
+            mHandler.postDelayed(this, delay);
+            return;
+          }
+  
+          if (!isDeviceUpdateToken()) {
+            allowRequest = true;
+            mHandler.postDelayed(this, delay);
+            return;
+          }
+          
+          AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+              List<OfflineConfirmation> offlineConfirmations =
+                mOfflineConfirmationDAO.getAllOfflineConfirmations();
+              if (!allowRequest && offlineConfirmations.size() > 0) {
+                allowRequest = true;
+              }
+            }
+          });
+          
+          if (allowRequest) {
+            allowRequest = false;
+            Log.i(TAG, "allowRequest " + allowRequest);
+          } else {
+            Log.i(TAG, "allowRequest " + allowRequest);
+            mHandler.postDelayed(this, delay);
+            return;
+          }
+  
+          handleJobs();
+  
+          mHandler.postDelayed(this, delay);
+        }
+      });
     }
   }
   
@@ -168,6 +201,7 @@ public class BackgroundServiceWorker extends Service {
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
                   // SET ACTIVITY ITEM CHANGE:
                   ActivityItem activityItem = new ActivityItem();
+                  activityItem.setDeviceId(DeviceUtils.getUniqueIMEI(getApplicationContext()));
                   activityItem.setTaskId(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getTaskId());
                   activityItem.setMandantId(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getMandantId());
                   activityItem.setActivityId(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getActivityId());
@@ -188,7 +222,6 @@ public class BackgroundServiceWorker extends Service {
         
                       Date started = sdf.parse(_format);
                       activityItem.setStarted(started);
-        
         
                       String _endFormat = sdf.format(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getFinished());
                       Date finished = sdf.parse(_endFormat);
@@ -219,6 +252,7 @@ public class BackgroundServiceWorker extends Service {
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                      allowRequest = true;
                       if (response.isSuccessful()) {
                         if (response.body() != null && response.body().getIsSuccess()) {
                           
@@ -325,6 +359,7 @@ public class BackgroundServiceWorker extends Service {
       
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
+                      allowRequest = true;
                       Log.e(TAG, t.getMessage());
                     }
                   });
@@ -339,10 +374,11 @@ public class BackgroundServiceWorker extends Service {
                     confirmationItem.setConfirmationType(ConfirmationType.TASK_CONFIRMED_BY_USER);
                   }
     
-                  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                    Locale.getDefault());
-                  sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                  Date date = DateConverter.fromTimestamp(sdf.format(new Date()));
+                  //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                  //  Locale.getDefault());
+                  //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                  //Date date = DateConverter.fromTimestamp(sdf.format(new Date()));
+                  //Date date = DateConverter.fromTimestamp(App.getSdfUtc().format(new Date()));
                   confirmationItem.setTimeStampConfirmationUTC(/*date*/new Date());
                   confirmationItem.setMandantId(commItemDB.getTaskItem().getMandantId());
                   confirmationItem.setTaskId(commItemDB.getTaskItem().getTaskId());
@@ -353,6 +389,7 @@ public class BackgroundServiceWorker extends Service {
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                      allowRequest = true;
                       if (response.isSuccessful()) {
           
                         if (response.body().getIsException())
@@ -463,7 +500,7 @@ public class BackgroundServiceWorker extends Service {
       
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
-        
+                      allowRequest = true;
                     }
                   });
                 }
@@ -475,6 +512,7 @@ public class BackgroundServiceWorker extends Service {
                   @Override
                   public void run() {
                     mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                    allowRequest = true;
                   }
                 });
               }
@@ -512,6 +550,7 @@ public class BackgroundServiceWorker extends Service {
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
               public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                allowRequest = true;
                 if (response.isSuccessful()) {
                   if (response.body() != null && response.body().getIsSuccess()) {
                     Log.d(TAG, ">>>>>>> FCM DEVICE TOKEN UPDATED!!!");
@@ -531,6 +570,7 @@ public class BackgroundServiceWorker extends Service {
               @Override
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
                 Log.i(TAG, ">>>>>>> ERROR ON DEVICE UPDATE TOKEN!!!");
+                allowRequest = true;
               }
             });
           }
@@ -584,11 +624,12 @@ public class BackgroundServiceWorker extends Service {
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
               public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                allowRequest = true;
                 if (response.isSuccessful()) {
-                  if (response.body() != null && response.body().getIsSuccess()) {
+                  if (response.body() != null && response.body().getIsSuccess() && !response.body().getIsException()) {
                     Log.d(TAG, ">>>>>>> DEVICE REGISTRATION WAS SUCCESSFULLY!!!");
                     TextSecurePreferences.setDeviceRegistrated(getApplicationContext(), true);
-                    App.eventBus.post(new DeviceRegistratedEvent());
+                    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DEVICE_REGISTRATED), null));
                     App.eventBus.post(new RegistrationFinishedEvent());
                   } else {
                     App.eventBus.post(new RegistrationErrorEvent());
@@ -607,6 +648,7 @@ public class BackgroundServiceWorker extends Service {
               @Override
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
                 Log.d(TAG, ">>>>>>> ERROR ON DEVICE REGISTRATION!!!");
+                allowRequest = true;
               }
             });
           } else {
@@ -720,11 +762,12 @@ public class BackgroundServiceWorker extends Service {
         getClient().newCall(request).enqueue(new okhttp3.Callback() {
           @Override
           public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
-          
+            //allowRequest = true;
           }
           
           @Override
           public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
+            //allowRequest = true;
             if (response.isSuccessful()) {
               try {
                 String jsonData = response.body().string().toString();

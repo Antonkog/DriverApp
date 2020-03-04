@@ -3,6 +3,19 @@
   <string name="action_cancel">Anuluj</string>
   <string name="action_ok">OK</string>
   <string name="action_save">Zapisz</string>
+  <string name="action_upload">Przekazać plik</string>
+  <string name="action_delete">Usunąć</string>
+  <string name="action_warning">Ostrzeżenie</string>
+  <string name="action_start">Początek</string>
+  <string name="action_upload_photos">Załadować zdjęcia?</string>
+  <string name="action_upload_photos_message">Czy chcesz załadować zdjęcia?</string>
+  <string name="action_uploading_photos">Przesyłanie zdjęć&#8230;</string>
+  <string name="action_delete_photo">Usunąć zdjęcie?</string>
+  <string name="action_delete_photo_message">Czy jesteś pewien, że chcesz usunąć to zdjęcie?</string>
+  <string name="action_photo_no_longer_exists">Zdjęcie już nie istnieje!</string>
+  <string name="action_photo_damaged">Zdjęcie jest uszkodzone lub już nie istnieje!</string>
+  <string name="action_start_order">Rozpocząć zadanie</string>
+  <string name="action_start_task_msg">Czy chcesz rozpocząć zadanie?</string>
   <string name="menu_settings">Ustawienia</string>
   <string name="menu_about">O programie</string>
 
@@ -11,6 +24,7 @@
   <string name="search">Szukaj</string>
   <string name="map">Mapa</string>
   <string name="camera">kamera</string>
+  <string name="document">Dokument</string>
 
   <string name="registration_number">Brak pojazdu</string>
   <string name="task_status">Status zadania</string>
@@ -39,6 +53,11 @@
 
   <string name="current_location">Aktualna lokalizacja</string>
   <string name="destination_location">Miejsce docelowe</string>
+
+  <string name="pending">Otwarte\u0020</string>
+  <string name="running">W toku\u0020</string>
+  <string name="cmr">CMR\u0020</string>
+  <string name="completed">Gotowy\u0020</string>
 
   <string name="label_new">Nowy</string>
   <string name="label_updated">Zaktualizowano</string>

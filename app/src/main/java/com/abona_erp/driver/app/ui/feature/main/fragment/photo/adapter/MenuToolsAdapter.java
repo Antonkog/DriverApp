@@ -22,11 +22,11 @@ public class MenuToolsAdapter extends RecyclerView.Adapter<MenuToolsAdapter.View
   
   public MenuToolsAdapter(OnItemSelected onItemSelected) {
     mOnItemSelected = onItemSelected;
-    mToolList.add(new ToolModel("Save", R.drawable.ic_save, MenuToolType.SAVE));
+    //mToolList.add(new ToolModel("Save", R.drawable.ic_save, MenuToolType.SAVE));
     mToolList.add(new ToolModel("Camera", R.drawable.ic_camera, MenuToolType.CAMERA));
-    mToolList.add(new ToolModel("Gallery", R.drawable.ic_gallery, MenuToolType.GALLERY));
-    mToolList.add(new ToolModel("Tools", R.drawable.ic_tools, MenuToolType.TOOLS));
-    mToolList.add(new ToolModel("Settings", R.drawable.ic_settings, MenuToolType.SETTINGS));
+    //mToolList.add(new ToolModel("Gallery", R.drawable.ic_gallery, MenuToolType.GALLERY));
+    //mToolList.add(new ToolModel("Tools", R.drawable.ic_tools, MenuToolType.TOOLS));
+    //mToolList.add(new ToolModel("Settings", R.drawable.ic_settings, MenuToolType.SETTINGS));
   }
   
   public interface OnItemSelected {

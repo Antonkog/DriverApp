@@ -10,10 +10,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,14 +33,17 @@ import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
-import com.abona_erp.driver.app.ui.event.BackEvent;
-import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.adapter.ActivityStepAdapter;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.util.MiscUtil;
-import com.developer.kalert.KAlertDialog;
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.util.DialogSettings;
+import com.kongzue.dialog.v3.MessageDialog;
 import com.shuhart.stepview.StepView;
 
 import java.text.SimpleDateFormat;
@@ -84,11 +87,6 @@ public class DetailFragment extends Fragment {
   
   private StepView mDetailStepView;
   
-  private int mRunningCount;
-  private int mCMRCount;
-  private int mCompletedCount;
-  private int mRowTaskCount;
-  
   private DriverDatabase mDB = DriverDatabase.getDatabase();
   private OfflineConfirmationDAO mOfflineWorkDAO = mDB.offlineConfirmationDAO();
   
@@ -111,43 +109,6 @@ public class DetailFragment extends Fragment {
     
     mViewModel = ViewModelProviders.of(this)
       .get(MainFragmentViewModel.class);
-    
-    mViewModel.getAllRunningNotifications().observe(this, new Observer<List<Notify>>() {
-      @Override
-      public void onChanged(List<Notify> notifyList) {
-        mRunningCount = notifyList.size();
-        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-      }
-    });
-    
-    mViewModel.getAllCMRNotifications().observe(this, new Observer<List<Notify>>() {
-      @Override
-      public void onChanged(List<Notify> notifyList) {
-        mCMRCount = notifyList.size();
-        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-      }
-    });
-    /*
-    mViewModel.getAllCompletedNotifications().observe(this, new Observer<List<Notify>>() {
-      @Override
-      public void onChanged(List<Notify> notifyList) {
-        mCompletedCount = notifyList.size();
-        if (mCompletedCount > 0) {
-          App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-        } else {
-          App.eventBus.post(new TaskStatusEvent(0));
-        }
-      }
-    });
-    */
-    /*
-    mViewModel.getRowCount().observe(this, new Observer<Integer>() {
-      @Override
-      public void onChanged(Integer integer) {
-        mRowTaskCount = integer.intValue();
-        App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-      }
-    });*/
   }
   
   @Override
@@ -246,19 +207,7 @@ public class DetailFragment extends Fragment {
         }
       });
   }
-  /*
-  private int calculateTaskStatusPercentage() {
-    if (mRowTaskCount == 0) {
-      return 0;
-    }
-    else if (mRowTaskCount == mCompletedCount) {
-      return 100;
-    } else {
-      float percentage = ((100.0f / mRowTaskCount) * ((mRunningCount * 0.5f) + (mCMRCount * 0.9f) + mCompletedCount));
-      return (int)Math.round(percentage);
-    }
-  }
-  */
+
   private void applyButtonState() {
     
     if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
@@ -337,7 +286,7 @@ public class DetailFragment extends Fragment {
     mBtnBack.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        App.eventBus.post(new BackEvent());
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
       }
     });
     
@@ -387,7 +336,7 @@ public class DetailFragment extends Fragment {
             }
           }
         } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-          App.eventBus.post(new BackEvent());
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         }
       }
     });
@@ -438,7 +387,7 @@ public class DetailFragment extends Fragment {
               }
             });
   
-          App.eventBus.post(new BackEvent());
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
           
           mActivityList.clear();
@@ -463,87 +412,46 @@ public class DetailFragment extends Fragment {
             }
             
             if (!fFinished) {
-              new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
-                .setTitleText("Start Activity")
-                .setContentText("Möchten Sie den Task starten?")
-                .setCancelText(getContext().getResources().getString(R.string.action_cancel))
-                .setConfirmText("Task Starten")
-                .confirmButtonColor(R.drawable.btn_confirmation_ok)
-                .showCancelButton(true)
-                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                  @Override
-                  public void onClick(KAlertDialog sDialog) {
-                    
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // Überprüfen, ob der Task gestartet werden darf?
-                    //
-                    
-                    ////////////////////////////////////////////////////////////////////////////////
-                    
-                    mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                    mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                    mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                    mNotify.setStatus(50);
-                    mNotify.setData(App.getGsonUtc().toJson(mCommItem));
-                    mViewModel.update(mNotify);
-                    applyButtonState();
+              MessageDialog.build((AppCompatActivity)getContext())
+                .setStyle(DialogSettings.STYLE.STYLE_IOS)
+                .setTheme(DialogSettings.THEME.LIGHT)
+                .setTitle(getContext().getResources().getString(R.string.action_start_order))
+                .setMessage(getContext().getResources().getString(R.string.action_start_task_msg))
+                .setOkButton(getContext().getResources().getString(R.string.action_start),
+                  new OnDialogButtonClickListener() {
+                    @Override
+                    public boolean onClick(BaseDialog baseDialog, View v) {
+                      mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                      mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                      mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                      mNotify.setStatus(50);
+                      mNotify.setData(App.getGsonUtc().toJson(mCommItem));
+                      mViewModel.update(mNotify);
+                      applyButtonState();
   
-                    mActivityList.clear();
-                    if (mCommItem.getTaskItem().getActivities().size() > 0) {
-                      for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                        mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
-                          mCommItem.getTaskItem().getActionType(),
-                          mCommItem.getTaskItem().getActivities().get(j)));
+                      mActivityList.clear();
+                      if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                        for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                          mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                            mCommItem.getTaskItem().getActionType(),
+                            mCommItem.getTaskItem().getActivities().get(j)));
+                        }
+                        mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
+                          .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
                       }
-                      mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
-                        .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
-                    }
-  /*
-                    mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribeOn(Schedulers.io())
-                      .subscribe(new DisposableSingleObserver<LastActivity>() {
-                        @Override
-                        public void onSuccess(LastActivity lastActivity) {
-                          
-                          lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-                          lastActivity.setStatusType(2);
-        
-                          ArrayList<String> _list = lastActivity.getDetailList();
   
-                          SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                            Locale.getDefault());
-                          LastActivityDetails _detail = new LastActivityDetails();
-                          _detail.setDescription("CHANGED");
-                          _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
-                          _list.add(App.getGson().toJson(_detail));
-                          lastActivity.setDetailList(_list);
-        
-                          AsyncTask.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                              mViewModel.update(lastActivity);
-                            }
-                          });
-                        }
-      
-                        @Override
-                        public void onError(Throwable e) {
-        
-                        }
-                      });
-                    */
-                    setOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-                    sDialog.cancel();
-              }
-            })
-            .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
-              @Override
-              public void onClick(KAlertDialog sDialog) {
-                sDialog.cancel();
-              }
-            })
-            .show();
+                      setOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                      return false;
+                    }
+                  })
+                .setCancelButton(getContext().getResources().getString(R.string.action_cancel),
+                  new OnDialogButtonClickListener() {
+                    @Override
+                    public boolean onClick(BaseDialog baseDialog, View v) {
+                      return false;
+                    }
+                  })
+                .show();
             } else {
               mNotify.setStatus(100);
               mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
@@ -608,123 +516,6 @@ public class DetailFragment extends Fragment {
                 }
                 continue;
               }
-            }
-            
-            if (!fFinished) {
-              /*
-              new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
-                .setTitleText("Start Activity")
-                .setContentText("Möchten Sie den Task starten?")
-                .setCancelText("Abbrechen")
-                .setConfirmText("Task Starten")
-                .confirmButtonColor(R.drawable.btn_confirmation_ok)
-                .showCancelButton(true)
-                .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                  @Override
-                  public void onClick(KAlertDialog sDialog) {
-                    mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                    mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                    mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                    mNotify.setStatus(50);
-                    mNotify.setData(App.getGson().toJson(mCommItem));
-                    mViewModel.update(mNotify);
-                    applyButtonState();
-        
-                    mActivityList.clear();
-                    if (mCommItem.getTaskItem().getActivities().size() > 0) {
-                      for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                        mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
-                          mCommItem.getTaskItem().getActivities().get(j)));
-                      }
-                      mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
-                        .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
-                    }*/
-  /*
-                    mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribeOn(Schedulers.io())
-                      .subscribe(new DisposableSingleObserver<LastActivity>() {
-                        @Override
-                        public void onSuccess(LastActivity lastActivity) {
-                          
-                          lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-                          lastActivity.setStatusType(2);
-        
-                          ArrayList<String> _list = lastActivity.getDetailList();
-  
-                          SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                            Locale.getDefault());
-                          LastActivityDetails _detail = new LastActivityDetails();
-                          _detail.setDescription("CHANGED");
-                          _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
-                          _list.add(App.getGson().toJson(_detail));
-                          lastActivity.setDetailList(_list);
-        
-                          AsyncTask.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                              mViewModel.update(lastActivity);
-                            }
-                          });
-                        }
-      
-                        @Override
-                        public void onError(Throwable e) {
-        
-                        }
-                      });
-                    *//*
-                    setOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-                    sDialog.cancel();
-                  }
-                })
-                .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
-                  @Override
-                  public void onClick(KAlertDialog sDialog) {
-                    sDialog.cancel();
-                  }
-                })
-                .show();
-            } else {*//*
-              mNotify.setStatus(100);
-              mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-              mNotify.setData(App.getGson().toJson(mCommItem));
-              mViewModel.update(mNotify);
-              applyButtonState();
-  
-              mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new DisposableSingleObserver<LastActivity>() {
-                  @Override
-                  public void onSuccess(LastActivity lastActivity) {
-        
-                    lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-                    lastActivity.setStatusType(3);
-        
-                    ArrayList<String> _list = lastActivity.getDetailList();
-        
-                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                      Locale.getDefault());
-                    LastActivityDetails _detail = new LastActivityDetails();
-                    _detail.setDescription("FINISHED TASK");
-                    _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
-                    _list.add(App.getGson().toJson(_detail));
-                    lastActivity.setDetailList(_list);
-        
-                    AsyncTask.execute(new Runnable() {
-                      @Override
-                      public void run() {
-                        mViewModel.update(lastActivity);
-                      }
-                    });
-                  }
-      
-                  @Override
-                  public void onError(Throwable e) {
-        
-                  }
-                });*/
             }
           }
         
@@ -858,189 +649,9 @@ public class DetailFragment extends Fragment {
         
               }
             });
-          
-          App.eventBus.post(new BackEvent());
+  
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         }
-        
-/*
-        if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
-          mNotify.setStatus(100);
-          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-          mNotify.setData(App.getGson().toJson(mCommItem));
-          mViewModel.update(mNotify);
-  
-          LastActivity lastActivity = new LastActivity();
-          lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
-          lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
-          lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
-          lastActivity.setStatusType(9);
-          lastActivity.setCreatedAt(new Date());
-          mViewModel.insert(lastActivity);
-  
-          App.eventBus.post(new BackEvent());
-        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-  
-          new KAlertDialog(getContext(), KAlertDialog.SUCCESS_TYPE)
-            .setTitleText("Start Activity")
-            .setContentText("Möchten Sie den Task starten?")
-            .setCancelText("Abbrechen")
-            .setConfirmText("Task Starten")
-            .confirmButtonColor(R.drawable.btn_confirmation_ok)
-            .showCancelButton(true)
-            .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-              @Override
-              public void onClick(KAlertDialog sDialog) {
-                mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                mCommItem.getTaskItem().getActivities().get(0).setStarted(new Date());
-                mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                mNotify.setStatus(50);
-                mNotify.setData(App.getGson().toJson(mCommItem));
-                mViewModel.update(mNotify);
-                applyButtonState();*/
-  /*
-                DriverDatabase db = DriverDatabase.getDatabase();
-                OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
-                
-                OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
-                offlineConfirmation.setNotifyId((int)mNotify.getId());
-                offlineConfirmation.setConfirmType(ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-                AsyncTask.execute(new Runnable() {
-                  @Override
-                  public void run() {
-                    dao.insert(offlineConfirmation);
-                  }
-                });
-  *//*
-                LastActivity lastActivity = new LastActivity();
-                lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
-                lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
-                lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
-                lastActivity.setStatusType(1);
-                lastActivity.setDescription(getContext().getResources().getString(R.string.pending) + " -> " + getContext().getResources().getString(R.string.running));
-                lastActivity.setCreatedAt(new Date());
-                mViewModel.insert(lastActivity);
-                sDialog.cancel();
-  
-                mActivityList.clear();
-                if (mCommItem.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
-                  }
-                }
-                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
-              }
-            })
-            .setCancelClickListener(new KAlertDialog.KAlertClickListener() {
-              @Override
-              public void onClick(KAlertDialog sDialog) {
-                sDialog.cancel();
-              }
-            })
-            .show();
-          
-        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-          if (mCommItem.getTaskItem().getActivities().size() > 0) {
-            for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
-              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
-                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
-                  mNotify.setStatus(90);
-                  mCommItem.getTaskItem().setTaskStatus(TaskStatus.CMR);
-                  mNotify.setData(App.getGson().toJson(mCommItem));
-                  mViewModel.update(mNotify);
-                  applyButtonState();
-  
-                  LastActivity lastActivity = new LastActivity();
-                  lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
-                  lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
-                  lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
-                  lastActivity.setStatusType(1);
-                  lastActivity.setDescription(getContext().getResources().getString(R.string.running) + " -> " + getContext().getResources().getString(R.string.cmr));
-                  lastActivity.setCreatedAt(new Date());
-                  mViewModel.insert(lastActivity);
-                }
-                continue;
-              }
-              
-              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
-                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
-                mCommItem.getTaskItem().getActivities().get(i).setFinished(new Date());
-                mNotify.setData(App.getGson().toJson(mCommItem));
-                mViewModel.update(mNotify);
-                requestActivityChange(
-                  0,
-                  mCommItem.getTaskItem().getActivities().get(i).getMandantId(),
-                  mCommItem.getTaskItem().getActivities().get(i).getTaskId(),
-                  mCommItem.getTaskItem().getActivities().get(i).getActivityId(),
-                  mCommItem.getTaskItem().getActivities().get(i).getName(),
-                  mCommItem.getTaskItem().getActivities().get(i).getDescription(),
-                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getStarted()),
-                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getFinished()),
-                  mCommItem.getTaskItem().getActivities().get(i).getStatus().ordinal(),
-                  mCommItem.getTaskItem().getActivities().get(i).getSequence()
-                );
-  
-                mActivityList.clear();
-                if (mCommItem.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
-                  }
-                }
-                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
-  
-                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
-                  mBtnNextActivity.setText("FINISHED");
-                }
-                break;
-              }
-              
-              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
-                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
-                mCommItem.getTaskItem().getActivities().get(i).setStarted(new Date());
-                mNotify.setData(App.getGson().toJson(mCommItem));
-                mViewModel.update(mNotify);
-                requestActivityChange(
-                  0,
-                  mCommItem.getTaskItem().getActivities().get(i).getMandantId(),
-                  mCommItem.getTaskItem().getActivities().get(i).getTaskId(),
-                  mCommItem.getTaskItem().getActivities().get(i).getActivityId(),
-                  mCommItem.getTaskItem().getActivities().get(i).getName(),
-                  mCommItem.getTaskItem().getActivities().get(i).getDescription(),
-                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getStarted()),
-                  mSdf.format(mCommItem.getTaskItem().getActivities().get(i).getFinished()),
-                  mCommItem.getTaskItem().getActivities().get(i).getStatus().ordinal(),
-                  mCommItem.getTaskItem().getActivities().get(i).getSequence()
-                );
-                
-                mActivityList.clear();
-                if (mCommItem.getTaskItem().getActivities().size() > 0) {
-                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
-                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(), mCommItem.getTaskItem().getActivities().get(j)));
-                  }
-                }
-                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
-                break;
-              }
-            }
-          }
-        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
-          mNotify.setStatus(100);
-          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-          mNotify.setData(App.getGson().toJson(mCommItem));
-          mViewModel.update(mNotify);
-          applyButtonState();
-  
-          LastActivity lastActivity = new LastActivity();
-          lastActivity.setMandantOid(mCommItem.getTaskItem().getMandantId());
-          lastActivity.setTaskOid(mCommItem.getTaskItem().getTaskId());
-          lastActivity.setOrderNo(mCommItem.getTaskItem().getOrderNo());
-          lastActivity.setStatusType(1);
-          lastActivity.setDescription(getContext().getResources().getString(R.string.cmr) + " -> " + getContext().getResources().getString(R.string.completed));
-          lastActivity.setCreatedAt(new Date());
-          mViewModel.insert(lastActivity);
-        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-          mViewModel.delete(mNotify);
-          App.eventBus.post(new BackEvent());
-        }*/
       }
     });
     

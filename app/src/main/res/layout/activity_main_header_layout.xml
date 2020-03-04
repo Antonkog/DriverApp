@@ -83,6 +83,59 @@
 
   </RelativeLayout>
 
+  <RelativeLayout
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content">
+
+  <RelativeLayout
+    android:id="@+id/process_rel_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/badge_process_icon"
+      android:layout_width="65dp"
+      android:layout_height="65dp"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/ic_publish_24px"
+      android:clickable="false"
+      android:focusable="false"
+      android:tint="@color/clrIcon"
+      />
+
+  </RelativeLayout>
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:id="@+id/badge_process"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignRight="@id/process_rel_layout"
+    android:layout_alignEnd="@id/process_rel_layout"
+    android:background="@drawable/badge_item_count"
+    android:textColor="@color/clrWhite"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    />
+
+</RelativeLayout>
+
+  <RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/connectivity"
+      android:layout_width="65dp"
+      android:layout_height="65dp"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/ic_signal"
+      android:clickable="false"
+      android:focusable="false"
+      android:tint="@color/clrIcon"
+      />
+
+  </RelativeLayout>
+
   <View
     android:layout_width="8dp"
     android:layout_height="match_parent"

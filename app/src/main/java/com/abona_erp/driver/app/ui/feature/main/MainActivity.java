@@ -8,22 +8,40 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.telephony.CellInfo;
+import android.telephony.CellInfoCdma;
+import android.telephony.CellInfoGsm;
+import android.telephony.CellInfoLte;
+import android.telephony.CellInfoWcdma;
+import android.telephony.CellSignalStrengthCdma;
+import android.telephony.CellSignalStrengthGsm;
+import android.telephony.CellSignalStrengthLte;
+import android.telephony.CellSignalStrengthWcdma;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
@@ -47,38 +65,31 @@ import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.receiver.ConnectivityChangeReceiver;
 import com.abona_erp.driver.app.receiver.GeofenceBroadcastReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
-import com.abona_erp.driver.app.service.ServiceWorker;
 import com.abona_erp.driver.app.service.impl.GeofenceErrorMessages;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
-import com.abona_erp.driver.app.ui.event.BackEvent;
 import com.abona_erp.driver.app.ui.event.BaseEvent;
-import com.abona_erp.driver.app.ui.event.CameraEvent;
-import com.abona_erp.driver.app.ui.event.DeviceRegistratedEvent;
-import com.abona_erp.driver.app.ui.event.InfoEvent;
-import com.abona_erp.driver.app.ui.event.MapEvent;
+import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
-import com.abona_erp.driver.app.ui.event.SoftwareAboutEvent;
-import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.LastActivityAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.about.SoftwareAboutFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.document_viewer.DocumentViewerFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.abona_erp.driver.app.ui.widget.CircleTransform;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.PowerMenuUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
-import com.developer.kalert.KAlertDialog;
-//import com.devexpress.logify.alert.android.LogifyAlert;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
@@ -88,7 +99,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.protobuf.ByteString;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -96,20 +106,16 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.util.DialogSettings;
+import com.kongzue.dialog.v3.MessageDialog;
 import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
-import com.squareup.picasso.Picasso;
-import com.tree.rh.ctlib.CT;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.whispersystems.libsignal.util.Hex;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -161,6 +167,10 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   private PendingGeofenceTask mPendingGeofenceTask = PendingGeofenceTask.NONE;
   private ArrayList<Geofence> mGeofenceList;
   
+  private TelephonyManager mTelephonyManager;
+  private ConnectivityChangeReceiver connectivityChangeReceiver = null;
+  private SignalStrengthStateListener signalStrengthStateListener = null;
+  
   @Override
   public void onComplete(@NonNull Task<Void> task) {
     mPendingGeofenceTask = PendingGeofenceTask.NONE;
@@ -177,7 +187,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     new OnMenuItemClickListener<PowerMenuItem>() {
       @Override
       public void onItemClick(int position, PowerMenuItem item) {
-        loadFragment(SettingsFragment.newInstance());
+        loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS), null), SettingsFragment.newInstance());
         mProfileMenu.dismiss();
       }
     };
@@ -190,6 +200,10 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOGIFY
     //initializeLogify();
+    
+    connectivityChangeReceiver = new ConnectivityChangeReceiver();
+    signalStrengthStateListener = new SignalStrengthStateListener();
+    mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
   
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // GET A NEW OR EXISTING VIEWMODEL FROM THE VIEWMODELPROVIDER.
@@ -299,41 +313,28 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
           .subscribe(new DisposableSingleObserver<Notify>() {
             @Override
             public void onSuccess(Notify notify) {
-              App.eventBus.post(new TaskDetailEvent(notify));
+              App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
             }
   
             @Override
             public void onError(Throwable e) {
-              //Dialogs.showInfoDialog(getApplicationContext(), "Task Item", "Task existiert nicht mehr!");
-              App.eventBus.post(new InfoEvent());
+              App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK_NOT_FOUND), null));
             }
           });
       }
     });
     lvLastActivity.setAdapter(lastActivityAdapter);
-
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     
     mHandler = new Handler();
     
-    /*
-    SimpleDateFormat form = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
-      Locale.getDefault());
-    form.setTimeZone(TimeZone.getTimeZone("UTC"));
-    Log.i(TAG, Locale.getDefault().toString());
-    Date currentDate = AppUtils.getCurrentDateTime();
-    Log.i(TAG, currentDate.toString());
-    Log.i(TAG, form.format(currentDate));
-    Log.i(TAG, form.format(AppUtils.getCurrentDateTimeUtc()));
-    Log.i(TAG, "*********************************************************************");
-*/
     mMainViewModel.getNotReadNotificationCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
         if (integer == null)
           return;
-        int value = integer.intValue();
+        int value = integer;
         if (value <= 0) {
           ((AsapTextView) findViewById(R.id.badge_notification)).setVisibility(View.GONE);
           ((AppCompatImageButton) findViewById(R.id.badge_notification_icon))
@@ -348,6 +349,23 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
           } else {
             ((AsapTextView) findViewById(R.id.badge_notification)).setText("99+");
           }
+        }
+      }
+    });
+    
+    mMainViewModel.getAllOfflineConfirmations().observe(this, new Observer<List<OfflineConfirmation>>() {
+      @Override
+      public void onChanged(List<OfflineConfirmation> offlineConfirmations) {
+        int count = offlineConfirmations.size();
+        if (count > 0) {
+          ((AsapTextView)findViewById(R.id.badge_process)).setVisibility(View.VISIBLE);
+          if (count <= 99) {
+            ((AsapTextView)findViewById(R.id.badge_process)).setText(String.valueOf(count));
+          } else {
+            ((AsapTextView)findViewById(R.id.badge_process)).setText("99+");
+          }
+        } else {
+          ((AsapTextView)findViewById(R.id.badge_process)).setVisibility(View.GONE);
         }
       }
     });
@@ -456,7 +474,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     }
     
     TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), true);
-  
+  /*
     ServiceWorker serviceWorker = new ServiceWorker(getApplicationContext());
     Intent mServiceWorkerIntent = new Intent(getApplicationContext(), serviceWorker.getClass());
     if (!isMyServiceRunning(serviceWorker.getClass())) {
@@ -465,7 +483,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     } else {
       Log.i(TAG, "******* SERVICE WORKER IS ALREADY RUNNING *******");
     }
-    
+    */
     initFirstTimeRun();
     
     super.onActivityResult(requestCode, resultCode, data);
@@ -542,11 +560,24 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     notificationManager.notify(notificationId, mBuilder.build());
   }
   
+  private static boolean mConnected;
   @Subscribe
-  public void onMessageEvent(DeviceRegistratedEvent event) {
-    loadMainFragment(MainFragment.newInstance());
+  public void onMessageEvent(ConnectivityEvent event) {
+    AppCompatImageButton connectivity = (AppCompatImageButton)findViewById(R.id.connectivity);
+    if (event.getConnectivityStatus() == 0) {
+      mConnected = false;
+      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_no_signal));
+      connectivity.setColorFilter(getApplicationContext().getResources().getColor(R.color.clrAbona));
+    } else if (event.getConnectivityStatus() == 1) {
+      mConnected = true;
+      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal));
+    } else if (event.getConnectivityStatus() == 2) {
+      mConnected = true;
+      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal_wifi_24px));
+      ((AppCompatImageButton)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
+    }
   }
-  
+
   @Subscribe
   public void onMessageEvent(TaskStatusEvent event) {
     if (event.getPercentage() < 0)
@@ -560,66 +591,106 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrAbona));
     }
   }
-
-  @Subscribe
-  public void onMessageEvent(MapEvent event) {
-    loadMapFragment(MapFragment.newInstance(), event);
-  }
   
   @Subscribe
-  public void onMessageEvent(CameraEvent event) {
-    loadCameraFragment(PhotoFragment.newInstance(), event);
-  }
-  
-  @Subscribe
-  public void onMessageEvent(TaskDetailEvent event) {
-  
-    Notify notify = event.getNotify();
-    if (!notify.getRead()) {
-      notify.setRead(true);
-      mMainViewModel.update(notify);
-      
-      DriverDatabase db = DriverDatabase.getDatabase();
-      OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
-      
-      OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
-      offlineConfirmation.setNotifyId((int)notify.getId());
-      offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          dao.insert(offlineConfirmation);
+  public void onMessageEvent(PageEvent event) {
+    switch (event.getPageItem().pageItem) {
+      case PageItemDescriptor.PAGE_BACK:
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment mainFragment = fm.findFragmentByTag("main");
+        
+        if (fm.getBackStackEntryCount() > 1) {
+          fm.popBackStackImmediate();
         }
-      });
+        break;
+        
+      case PageItemDescriptor.PAGE_TASK:
+        Notify notify = event.getNotify();
+        if (!notify.getRead()) {
+          notify.setRead(true);
+          mMainViewModel.update(notify);
+  
+          DriverDatabase db = DriverDatabase.getDatabase();
+          OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+  
+          OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+          offlineConfirmation.setNotifyId((int)notify.getId());
+          offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
+          AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+              dao.insert(offlineConfirmation);
+            }
+          });
+        }
+        loadFragment(event, DetailFragment.newInstance());
+        break;
+        
+      case PageItemDescriptor.PAGE_MAP:
+        loadFragment(event, MapFragment.newInstance());
+        break;
+        
+      case PageItemDescriptor.PAGE_CAMERA:
+        loadFragment(event, PhotoFragment.newInstance());
+        break;
+        
+      case PageItemDescriptor.PAGE_DOCUMENT:
+        loadFragment(event, DocumentViewerFragment.newInstance());
+        break;
+        
+      case PageItemDescriptor.PAGE_ABOUT:
+        loadFragment(event, SoftwareAboutFragment.newInstance());
+        break;
+        
+      case PageItemDescriptor.PAGE_TASK_NOT_FOUND:
+        MessageDialog.build((AppCompatActivity)MainActivity.this)
+          .setStyle(DialogSettings.STYLE.STYLE_IOS)
+          .setTheme(DialogSettings.THEME.LIGHT)
+          .setTitle("Not Found")
+          .setMessage("Task existiert nicht mehr!")
+          .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
+            new OnDialogButtonClickListener() {
+              @Override
+              public boolean onClick(BaseDialog baseDialog, View v) {
+                return false;
+              }
+            })
+          .show();
+        break;
+        
+      case PageItemDescriptor.PAGE_DEVICE_REGISTRATED:
+        loadMainFragment(MainFragment.newInstance());
+        
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        SpannableString deviceID = new SpannableString(DeviceUtils.getUniqueIMEI(getBaseContext()));
+        StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
+        deviceID.setSpan(boldSpan, 0 , deviceID.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        
+        builder.append("Device registration was successfully!\n\nRegistration Number\n");
+        builder.append(deviceID);
+
+        /*
+        final StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
+        final SpannableStringBuilder sb = new SpannableStringBuilder("Device registration was successfully!\n\nRegistration Number\n" + DeviceUtils.getUniqueIMEI(getBaseContext()));
+        sb.setSpan(boldSpan, "Device registration was successfully!\n\nRegistration Number\n".length(), DeviceUtils.getUniqueIMEI(getBaseContext()).length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        */
+        MessageDialog.build((AppCompatActivity)MainActivity.this)
+          .setStyle(DialogSettings.STYLE.STYLE_IOS)
+          .setTheme(DialogSettings.THEME.LIGHT)
+          .setTitle("Successful Registrated")
+          .setMessage(builder.toString())
+          .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
+            new OnDialogButtonClickListener() {
+              @Override
+              public boolean onClick(BaseDialog baseDialog, View v) {
+                return false;
+              }
+            })
+          .show();
+        break;
     }
-    
-    loadActivityFragment(DetailFragment.newInstance(), event);
   }
-  
-  @Subscribe
-  public void onMessageEvent(SoftwareAboutEvent event) {
-    loadSoftwareAboutFragment(SoftwareAboutFragment.newInstance());
-  }
-  
-  @Subscribe
-  public void onMessageEvent(InfoEvent event) {
-    new KAlertDialog(this, KAlertDialog.WARNING_TYPE)
-      .setTitleText("NOT FOUND")
-      .setContentText("Task existiert nicht mehr!")
-      .setConfirmText("OK")
-      .show();
-  }
-  
-  @Subscribe
-  public void onMessageEvent(BackEvent event) {
-    FragmentManager fragments = getSupportFragmentManager();
-    Fragment mainFrag = fragments.findFragmentByTag("main");
-    
-    if (fragments.getBackStackEntryCount() > 1) {
-      fragments.popBackStackImmediate();
-    }
-  }
-  
+
   @Subscribe
   public void onMessageEvent(VehicleRegistrationEvent event) {
     runOnUiThread(new Runnable() {
@@ -697,7 +768,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     return data;
   }
 
-  private static long back_pressed;
+  //private static long back_pressed;
   @Override
   public void onBackPressed() {
     FragmentManager fragments = getSupportFragmentManager();
@@ -706,19 +777,27 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     if (fragments.getBackStackEntryCount() > 1) {
       fragments.popBackStackImmediate();
     } else {
-      if (back_pressed + 2000 > System.currentTimeMillis()) {
-        super.onBackPressed();
-      } else {
-        new CT.Builder(getBaseContext(), "Press once again to exit!")
-          .image(R.drawable.ic_info)
-          .borderWidth(4)
-          .backCol(getResources().getColor(R.color.clrFont))
-          .textCol(Color.WHITE)
-          .borderCol(getResources().getColor(R.color.clrAbona))
-          .radius(20, 20, 20, 20)
-          .show();
-        back_pressed = System.currentTimeMillis();
-      }
+      MessageDialog.build((AppCompatActivity) MainActivity.this)
+        .setStyle(DialogSettings.STYLE.STYLE_IOS)
+        .setTheme(DialogSettings.THEME.LIGHT)
+        .setTitle("Exit")
+        .setMessage("Do you want to quit ABONA Driver App?")
+        .setOkButton("Quit", new OnDialogButtonClickListener() {
+          @Override
+          public boolean onClick(BaseDialog baseDialog, View v) {
+            MainActivity.super.onBackPressed();
+            finish();
+            return false;
+          }
+        })
+        .setCancelButton(getApplicationContext().getResources().getString(R.string.action_cancel),
+          new OnDialogButtonClickListener() {
+            @Override
+            public boolean onClick(BaseDialog baseDialog, View v) {
+              return false;
+            }
+          })
+        .show();
     }
   }
   
@@ -726,13 +805,34 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   protected void onStart() {
     super.onStart();
     App.eventBus.register(this);
+    registerReceiver(connectivityChangeReceiver,
+      new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     
     performPendingGeofenceTask();
   }
   
   @Override
+  protected void onResume() {
+    super.onResume();
+    mTelephonyManager.listen(signalStrengthStateListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+    
+    ((AsapTextView)findViewById(R.id.tv_vehicle_client_name))
+      .setText(TextSecurePreferences.getClientName(getBaseContext()));
+    ((AsapTextView)findViewById(R.id.tv_vehicle_registration_number))
+      .setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
+  }
+  
+  @Override
+  protected void onPause() {
+    super.onPause();
+    mTelephonyManager.listen(signalStrengthStateListener, PhoneStateListener.LISTEN_NONE);
+  }
+  
+  @Override
   protected void onStop() {
     super.onStop();
+    
+    unregisterReceiver(connectivityChangeReceiver);
     App.eventBus.unregister(this);
   }
   
@@ -802,81 +902,42 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       .commit();
   }
   
-  private void loadFragment(Fragment fragment) {
-    getSupportFragmentManager()
-      .beginTransaction()
-      .replace(R.id.main_container, fragment)
-      .addToBackStack(null)
-      .commit();
-  }
-  
-  private void loadCameraFragment(Fragment fragment, CameraEvent event) {
-    if (event == null)
-      return;
-  
-    Bundle bundle = new Bundle();
-    bundle.putInt("oid", event.getNotify().getId());
-    fragment.setArguments(bundle);
-  
-    getSupportFragmentManager()
-      .beginTransaction()
-      .replace(R.id.main_container, fragment)
-      .addToBackStack(null)
-      .commit();
-  }
-  
-  private void loadSoftwareAboutFragment(Fragment fragment) {
-    getSupportFragmentManager()
-      .beginTransaction()
-      .replace(R.id.main_container, fragment)
-      .addToBackStack(null)
-      .commit();
-  }
-  
-  private void loadActivityFragment(Fragment fragment, TaskDetailEvent event) {
-    if (event == null)
-      return;
+  private void loadFragment(PageEvent pageEvent, Fragment fragment) {
     
     Bundle bundle = new Bundle();
-    bundle.putInt("oid", event.getNotify().getId());
-    fragment.setArguments(bundle);
     
+    switch (pageEvent.getPageItem().pageItem) {
+      case PageItemDescriptor.PAGE_TASK:
+      case PageItemDescriptor.PAGE_CAMERA:
+      case PageItemDescriptor.PAGE_DOCUMENT:
+        bundle.putInt("oid", pageEvent.getNotify().getId());
+        fragment.setArguments(bundle);
+        break;
+        
+      case PageItemDescriptor.PAGE_MAP:
+        if (mCommItem != null) mCommItem = null;
+        String json = pageEvent.getNotify().getData();
+        mCommItem = App.getGson().fromJson(json, CommItem.class);
+  
+        if (mCommItem.getTaskItem().getAddress().getLongitude() == null)
+          return;
+        if (mCommItem.getTaskItem().getAddress().getLatitude() == null)
+          return;
+        
+        bundle.putDouble("longitude", mCommItem.getTaskItem().getAddress().getLongitude());
+        bundle.putDouble("latitude", mCommItem.getTaskItem().getAddress().getLatitude());
+        bundle.putString("name", mCommItem.getTaskItem().getKundenName());
+        fragment.setArguments(bundle);
+        break;
+    }
+
     getSupportFragmentManager()
       .beginTransaction()
       .replace(R.id.main_container, fragment)
       .addToBackStack(null)
       .commit();
   }
-  
-  private void loadMapFragment(Fragment fragment, MapEvent event) {
-    
-    if (event == null)
-      return;
-    
-    if (mCommItem != null)
-      mCommItem = null;
-    mCommItem = new CommItem();
-    String json = event.getNotify().getData();
-    mCommItem = App.getGson().fromJson(json, CommItem.class);
-    
-    if (mCommItem.getTaskItem().getAddress().getLongitude() == null)
-      return;
-    if (mCommItem.getTaskItem().getAddress().getLatitude() == null)
-      return;
-    
-    Bundle bundle = new Bundle();
-    bundle.putDouble("longitude", mCommItem.getTaskItem().getAddress().getLongitude());
-    bundle.putDouble("latitude", mCommItem.getTaskItem().getAddress().getLatitude());
-    bundle.putString("name", mCommItem.getTaskItem().getKundenName());
-    fragment.setArguments(bundle);
-    
-    getSupportFragmentManager()
-      .beginTransaction()
-      .replace(R.id.main_container, fragment)
-      .addToBackStack(null)
-      .commit();
-  }
-  
+
   private void initFirstTimeRun() {
     Log.i(TAG, "initFirstTimeRun() called!");
   
@@ -935,7 +996,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
           if (report.areAllPermissionsGranted()) {
             Log.d(TAG, "areAllPermissionsGranted() called!");
             TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), true);
-            
+            /*
             ServiceWorker serviceWorker = new ServiceWorker(getApplicationContext());
             Intent mServiceWorkerIntent = new Intent(getApplicationContext(), serviceWorker.getClass());
             if (!isMyServiceRunning(serviceWorker.getClass())) {
@@ -944,7 +1005,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
             } else {
               Log.i(TAG, "******* SERVICE WORKER IS ALREADY RUNNING *******");
             }
-            
+            */
             initFirstTimeRun();
           } else {
             Log.d(TAG, "!!!areAllPermissionsGranted() called!");
@@ -1083,5 +1144,92 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         App.eventBus.removeStickyEvent(event);
       }
     }, delayMillis);
+  }
+  
+  private class SignalStrengthStateListener extends PhoneStateListener {
+    
+    @Override
+    public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+      super.onSignalStrengthsChanged(signalStrength);
+      
+      int level = 0;
+      
+      if (isAirplaneModeOn(getApplicationContext())) {
+        MessageDialog.build(MainActivity.this)
+          .setStyle(DialogSettings.STYLE.STYLE_IOS)
+          .setTheme(DialogSettings.THEME.LIGHT)
+          .setTitle("Warnung")
+          .setMessage("Bei Flugzeugmodus ist die Funktion der ABONA Driver App eingeschränkt!")
+          .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
+            new OnDialogButtonClickListener() {
+              @Override
+              public boolean onClick(BaseDialog baseDialog, View v) {
+                ((AppCompatImageButton)findViewById(R.id.connectivity))
+                  .setColorFilter(getApplicationContext().getResources()
+                    .getColor(R.color.clrAbona));
+                return false;
+              }
+            })
+          .show();
+        return;
+      }
+      
+      List<CellInfo> infos = null;
+      try {
+        infos = mTelephonyManager.getAllCellInfo();
+      } catch (SecurityException e) {
+        Log.e(TAG, e.toString());
+      }
+      
+      if (infos == null) {
+        return;
+      }
+      
+      if (!mConnected) {
+        ((AppCompatImageButton)findViewById(R.id.connectivity))
+          .setColorFilter(getApplicationContext().getResources()
+            .getColor(R.color.clrAbona));
+        return;
+      }
+      
+      for (final CellInfo info : infos) {
+        if (info instanceof CellInfoWcdma) {
+          final CellSignalStrengthWcdma wcdma = ((CellInfoWcdma) info).getCellSignalStrength();
+          
+          if (level < wcdma.getLevel()) {
+            level = wcdma.getLevel();
+          }
+        } else if (info instanceof CellInfoGsm) {
+          final CellSignalStrengthGsm gsm = ((CellInfoGsm) info).getCellSignalStrength();
+          
+          if (level < gsm.getLevel()) {
+            level = gsm.getLevel();
+          }
+        } else if (info instanceof CellInfoCdma) {
+          final CellSignalStrengthCdma cdma = ((CellInfoCdma) info).getCellSignalStrength();
+          
+          if (level < cdma.getLevel()) {
+            level = cdma.getLevel();
+          }
+        } else if (info instanceof CellInfoLte) {
+          final CellSignalStrengthLte lte = ((CellInfoLte) info).getCellSignalStrength();
+          
+          if (level < lte.getLevel()) {
+            level = lte.getLevel();
+          }
+        }
+      }
+      
+      if (level <= 1) {
+        ((AppCompatImageButton)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#d35400"));
+      } else {
+        ((AppCompatImageButton)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
+      }
+    }
+  }
+  
+  private static boolean isAirplaneModeOn(Context context) {
+    return Settings.Global.getInt(context.getContentResolver(),
+      Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
   }
 }

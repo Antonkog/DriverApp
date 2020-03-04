@@ -4,6 +4,19 @@
   <string name="action_cancel">Abbrechen</string>
   <string name="action_ok">OK</string>
   <string name="action_save">Speichern</string>
+  <string name="action_upload">Hochladen</string>
+  <string name="action_delete">Löschen</string>
+  <string name="action_warning">Warnung</string>
+  <string name="action_start">Starten</string>
+  <string name="action_upload_photos">Fotos Hochladen?</string>
+  <string name="action_upload_photos_message">Möchten Sie die Fotos hochladen?</string>
+  <string name="action_uploading_photos">Fotos werden hochgeladen&#8230;</string>
+  <string name="action_delete_photo">Foto löschen?</string>
+  <string name="action_delete_photo_message">Möchten Sie dieses Foto wirklich löschen?</string>
+  <string name="action_photo_no_longer_exists">Foto existiert nicht mehr!</string>
+  <string name="action_photo_damaged">Foto beschädigt oder existiert nicht mehr!</string>
+  <string name="action_start_order">Auftrag starten</string>
+  <string name="action_start_task_msg">Möchten Sie den Task starten?</string>
   <string name="menu_settings">Einstellungen</string>
   <string name="menu_about">Über</string>
 
@@ -12,6 +25,7 @@
   <string name="search">Suche</string>
   <string name="map">Karte</string>
   <string name="camera">Kamera</string>
+  <string name="document">Dokument</string>
 
   <string name="registration_number">Kein Fahrzeug</string>
   <string name="task_status">Task Status</string>

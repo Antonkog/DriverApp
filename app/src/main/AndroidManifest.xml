@@ -92,7 +92,7 @@
 
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
-      android:resource="@drawable/ic_notifications"
+      android:resource="@drawable/ic_app_icon_driver"
       />
 
     <meta-data
@@ -102,19 +102,6 @@
     <!-- FCM Notifications -->
 
     <!-- WORKER SERVICE -->
-    <service
-      android:name=".service.ServiceWorker"
-      android:enabled="true"
-      android:exported="false">
-    </service>
-    <receiver
-      android:name=".receiver.WorkerRestartBroadcastReceiver"
-      android:process=":remote">
-      <intent-filter>
-        <action android:name="restart0"/>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-      </intent-filter>
-    </receiver>
     <!-- WORKER SERVICE -->
 
     <!-- GEOFENCING -->
@@ -159,6 +146,13 @@
       android:label="RestartServiceWhenStopped">
       <intent-filter>
         <action android:name="com.abona_erp.driver.app.RestartBackgroundServiceWorker" />
+      </intent-filter>
+    </receiver>
+
+    <receiver android:name=".receiver.ConnectivityChangeReceiver">
+      <intent-filter>
+        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+        <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
       </intent-filter>
     </receiver>
 

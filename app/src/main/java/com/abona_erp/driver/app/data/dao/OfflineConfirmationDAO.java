@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.data.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -16,6 +17,9 @@ public interface OfflineConfirmationDAO {
   
   @Query("SELECT * FROM offline_confirmation ORDER BY id ASC")
   List<OfflineConfirmation> getAllOfflineConfirmations();
+  
+  @Query("SELECT * FROM offline_confirmation ORDER BY id ASC")
+  LiveData<List<OfflineConfirmation>> getAllLiveDataConfirmations();
   
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   long insert(OfflineConfirmation offlineConfirmation);

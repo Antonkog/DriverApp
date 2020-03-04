@@ -43,6 +43,10 @@ public class ActivityItem {
   @Expose
   private int sequence;
   
+  @SerializedName("DeviceId")
+  @Expose
+  private String deviceId;
+  
   public int getMandantId() {
     return mandantId;
   }
@@ -113,5 +117,13 @@ public class ActivityItem {
   
   public void setSequence(int sequence) {
     this.sequence = sequence;
+  }
+  
+  public String getDeviceId() {
+    return deviceId;
+  }
+  
+  public void setDeviceId(String deviceInstanceId) {
+    this.deviceId = deviceInstanceId;
   }
 }

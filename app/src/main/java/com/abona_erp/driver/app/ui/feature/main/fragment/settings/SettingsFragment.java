@@ -1,6 +1,5 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.settings;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -27,15 +26,20 @@ import androidx.lifecycle.ViewModelProviders;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
-import com.abona_erp.driver.app.logging.Log;
-import com.abona_erp.driver.app.ui.event.BackEvent;
-import com.abona_erp.driver.app.ui.feature.main.MainActivity;
+import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
+import com.abona_erp.driver.app.data.entity.DeviceProfile;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
+import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
+import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.base.ThreadUtils;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.Date;
+import java.util.List;
 
 public class SettingsFragment extends Fragment {
   
@@ -46,11 +50,19 @@ public class SettingsFragment extends Fragment {
   private TextInputEditText mTeServerPort;
   private TextInputEditText mTeIpAddress;
   
+  private AsapTextView mDeviceId;
+  private AsapTextView mDeviceModel;
+  private AsapTextView mDeviceManufacturer;
+  private AsapTextView mDeviceSerial;
+  private AsapTextView mDeviceCreated;
+  private AsapTextView mDeviceUpdated;
+  
   private AppCompatImageButton mBtnBack;
   
   private MainViewModel mainViewModel;
   
   private DriverDatabase mDb = DriverDatabase.getDatabase();
+  private DeviceProfileDAO mDeviceDao = mDb.deviceProfileDAO();
   
   public SettingsFragment() {
     // Required empty public constructor.
@@ -80,11 +92,61 @@ public class SettingsFragment extends Fragment {
   }
   
   private void initComponents(@NonNull View root) {
+    
     mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_settings_back);
     mBtnBack.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        App.eventBus.post(new BackEvent());
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+      }
+    });
+    
+    mDeviceId = (AsapTextView)root.findViewById(R.id.tv_device_id);
+    mDeviceModel = (AsapTextView)root.findViewById(R.id.tv_device_model);
+    mDeviceManufacturer = (AsapTextView)root.findViewById(R.id.tv_device_manufacturer);
+    mDeviceSerial = (AsapTextView)root.findViewById(R.id.tv_device_serial);
+    mDeviceCreated = (AsapTextView)root.findViewById(R.id.tv_device_created);
+    mDeviceUpdated = (AsapTextView)root.findViewById(R.id.tv_device_updated);
+    
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        List<DeviceProfile> deviceProfiles = mDeviceDao.getDeviceProfiles();
+        if (deviceProfiles.size() > 0) {
+          DeviceProfile devProf = deviceProfiles.get(0);
+    
+          if (devProf.getDeviceId() != null) {
+            mDeviceId.setText(devProf.getDeviceId());
+          } else {
+            mDeviceId.setText("<Error By Device>");
+          }
+    
+          if (devProf.getDeviceModel() != null) {
+            mDeviceModel.setText(devProf.getDeviceModel());
+          } else {
+            mDeviceModel.setText("<Unknown Device Model>");
+          }
+          
+          if (devProf.getDeviceManufacturer() != null) {
+            mDeviceManufacturer.setText(devProf.getDeviceManufacturer());
+          } else {
+            mDeviceManufacturer.setText("<Unknown Manufacturer>");
+          }
+          
+          if (devProf.getDeviceSerial() != null) {
+            mDeviceSerial.setText(devProf.getDeviceSerial());
+          } else {
+            mDeviceSerial.setText("<Unknown Serial>");
+          }
+          
+          if (devProf.getCreatedAt() != null) {
+            mDeviceCreated.setText(devProf.getCreatedAt());
+          }
+          
+          if (devProf.getModifiedAt() != null) {
+            mDeviceUpdated.setText(devProf.getModifiedAt());
+          }
+        }
       }
     });
     

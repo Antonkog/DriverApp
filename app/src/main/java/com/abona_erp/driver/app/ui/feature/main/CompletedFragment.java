@@ -21,8 +21,7 @@ import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
-import com.abona_erp.driver.app.ui.event.MapEvent;
-import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -73,16 +72,22 @@ public class CompletedFragment extends Fragment {
     adapter.setOnItemListener(new NotifyViewAdapter.OnItemClickListener() {
       @Override
       public void onItemClick(Notify notify) {
-        App.eventBus.post(new TaskDetailEvent(notify));
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
       }
 
       @Override
       public void onMapClick(Notify notify) {
-        App.eventBus.post(new MapEvent(notify));
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
       }
       
       @Override
       public void onCameraClick(Notify notify) {
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_CAMERA), notify));
+      }
+      
+      @Override
+      public void onDocumentClick(Notify notify) {
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
       }
     });
 

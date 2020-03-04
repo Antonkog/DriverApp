@@ -16,8 +16,7 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
-import com.abona_erp.driver.app.ui.event.MapEvent;
-import com.abona_erp.driver.app.ui.event.TaskDetailEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.view_model.CMRViewModel;
 
 import java.util.Collections;
@@ -63,16 +62,22 @@ public class CMRFragment extends Fragment {
     adapter.setOnItemListener(new NotifyViewAdapter.OnItemClickListener() {
       @Override
       public void onItemClick(Notify notify) {
-        App.eventBus.post(new TaskDetailEvent(notify));
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
       }
 
       @Override
       public void onMapClick(Notify notify) {
-        App.eventBus.post(new MapEvent(notify));
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
       }
       
       @Override
       public void onCameraClick(Notify notify) {
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_CAMERA), notify));
+      }
+      
+      @Override
+      public void onDocumentClick(Notify notify) {
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
       }
     });
 

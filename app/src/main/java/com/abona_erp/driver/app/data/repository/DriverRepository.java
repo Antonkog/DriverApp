@@ -46,6 +46,9 @@ public class DriverRepository {
   private DeviceProfileDAO mDeviceProfileDAO;
   //private List<DeviceProfile> mAllDeviceProfiles;
   
+  private OfflineConfirmationDAO mOfflineConfirmationDAO;
+  private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmation;
+  
   public DriverRepository(Application application) {
     DriverDatabase db = DriverDatabase.getDatabase();
     mNotifyDao = db.notifyDao();
@@ -62,6 +65,13 @@ public class DriverRepository {
     // Device Profile:
     mDeviceProfileDAO = db.deviceProfileDAO();
     //mAllDeviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
+    
+    mOfflineConfirmationDAO = db.offlineConfirmationDAO();
+    mAllOfflineConfirmation = mOfflineConfirmationDAO.getAllLiveDataConfirmations();
+  }
+  
+  public LiveData<List<OfflineConfirmation>> getAllLiveDataConfirmations() {
+    return mAllOfflineConfirmation;
   }
   
   public LiveData<List<Notify>> getAllPendingNotifications() {

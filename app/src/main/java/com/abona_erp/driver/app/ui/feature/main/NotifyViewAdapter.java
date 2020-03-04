@@ -3,6 +3,8 @@ package com.abona_erp.driver.app.ui.feature.main;
 import android.content.Context;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
+import android.text.Spannable;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -11,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
@@ -23,8 +27,12 @@ import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
+import com.abona_erp.driver.app.ui.widget.badges.Badge;
+import com.abona_erp.driver.app.ui.widget.badges.BadgeSpan;
+import com.abona_erp.driver.app.ui.widget.badges.BadgeType;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.flag_kit.FlagKit;
@@ -34,8 +42,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.ViewHolder> {
   
@@ -49,10 +59,17 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
   
   private CommItem mCommItem = null;
   
+  private Map<Integer, Integer> badgeValues = new HashMap<>();
+  private Map<Integer, Integer> uploadedDocumentBadgeValues = new HashMap<>();
+  
+  BadgeSpan badgeSpan;
+  Badge badge;
+  
   public interface OnItemClickListener {
     void onItemClick(Notify notify);
     void onMapClick(Notify notify);
     void onCameraClick(Notify notify);
+    void onDocumentClick(Notify notify);
   }
   
   public NotifyViewAdapter(Context ctx) {
@@ -268,6 +285,58 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         holder.livLabel.setLabelBackgroundColor(context.getResources().getColor(R.color.clrLabelDeleted));
       }
     }
+  
+    List<String> photos = notify.getPhotoUrls();
+    int photoBadge = 0;
+    int uploadedPhoto = 0;
+    if (photos.size() > 0) {
+      for (int i = 0; i < photos.size(); i++) {
+        UploadItem uploadItem = App.getGson().fromJson(photos.get(i), UploadItem.class);
+        if (uploadItem != null) {
+          if (uploadItem.getUploaded()) {
+            uploadedPhoto++;
+            continue;
+          }
+        
+          photoBadge++;
+        }
+      }
+    }
+    if (photoBadge > 0) {
+      badgeSpan = new BadgeSpan(context.getResources().getColor(R.color.clrAbona), context.getResources().getColor(R.color.clrWhite), 25);
+      badge = new Badge(photoBadge, badgeSpan);
+      if (badge != null && badge.isActual()) {
+        String badgeText = badge.getBadgeText();
+        String badgeTitle = context.getResources().getString(R.string.camera);
+      
+        holder.btnCamera.setText(badgeTitle + " " + badgeText, AppCompatButton.BufferType.SPANNABLE);
+      
+        Spannable spannable = (Spannable) holder.btnCamera.getText();
+        spannable.setSpan(badge.getSpan(), badgeTitle.length()+1, badgeTitle.length()+1 + badgeText.length(),
+          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.btnCamera.setText(spannable);
+      
+        badgeValues.put(0, badge.getNumber());
+      }
+    }
+    if (uploadedPhoto > 0) {
+      BadgeSpan uploadBadgeSpan = new BadgeSpan(context.getResources().getColor(R.color.clrAbona),
+        context.getResources().getColor(R.color.clrWhite), 25);
+      Badge uploadBadge = new Badge(uploadedPhoto, uploadBadgeSpan);
+      if (uploadBadge != null && uploadBadge.isActual()) {
+        String badgeText = uploadBadge.getBadgeText();
+        String badgeTitle = context.getResources().getString(R.string.document);
+        
+        holder.btnDocument.setText(badgeTitle + " " + badgeText, AppCompatButton.BufferType.SPANNABLE);
+        
+        Spannable spannable = (Spannable) holder.btnDocument.getText();
+        spannable.setSpan(uploadBadge.getSpan(), badgeTitle.length()+1, badgeTitle.length()+1 + badgeText.length(),
+          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.btnDocument.setText(spannable);
+  
+        uploadedDocumentBadgeValues.put(0, uploadBadge.getNumber());
+      }
+    }
   }
   
   public void setOnItemListener(OnItemClickListener listener) {
@@ -298,6 +367,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     AsapTextView tvCity;
     AppCompatButton btnMap;
     AppCompatButton btnCamera;
+    AppCompatButton btnDocument;
     
     LabelImageView livLabel;
     FlagKit ivFlagKit;
@@ -342,6 +412,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       tvCity = (AsapTextView) view.findViewById(R.id.tv_city);
       btnMap = (AppCompatButton) view.findViewById(R.id.btn_map);
       btnCamera = (AppCompatButton) view.findViewById(R.id.btn_camera);
+      btnDocument = (AppCompatButton) view.findViewById(R.id.btn_document);
       livLabel = (LabelImageView) view.findViewById(R.id.liv_label);
       ivWarning = (AppCompatImageView) view.findViewById(R.id.iv_warning_icon);
       llHeaderBackground = (LinearLayout) view.findViewById(R.id.ll_header_background);
@@ -365,7 +436,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
       this.dueInMillis = dueInMillis;
     }
     
-    public void bind(Notify notify,/* Date finishDate,*/ final OnItemClickListener listener) {
+    public void bind(Notify notify, final OnItemClickListener listener) {
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -386,13 +457,13 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
           listener.onCameraClick(notify);
         }
       });
-      /*
-      handler.removeCallbacks(dueInCounter);
-      dueInCounter.tv_DueIn = tvDueIn;
-      dueInCounter.iv_Warning = ivWarning;
-      dueInCounter.ll_Background = llHeaderBackground;
-      dueInCounter.endDate = finishDate;
-      handler.postDelayed(dueInCounter, 100);*/
+      
+      btnDocument.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          listener.onDocumentClick(notify);
+        }
+      });
     }
   
     public void enableDueInTimer(boolean enable, Date finishDate) {

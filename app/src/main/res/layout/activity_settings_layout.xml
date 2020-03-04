@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
@@ -178,6 +180,164 @@
             android:layout_gravity="end"
             android:text="Save"
             />
+
+        </LinearLayout>
+
+        <!-- Profile Item -->
+        <LinearLayout
+          android:orientation="vertical"
+          android:layout_marginTop="@dimen/spacing_large"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="12sp"
+              android:text="Device ID:"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_device_id"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="14sp"
+              android:textStyle="bold"
+              android:textColor="@color/clrFont"
+              tools:text="353685106713903"
+              />
+
+          </LinearLayout>
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="12sp"
+              android:text="Model:"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_device_model"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="14sp"
+              android:textStyle="bold"
+              android:textColor="@color/clrFont"
+              tools:text="SM-T585"
+              />
+
+          </LinearLayout>
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="12sp"
+              android:text="Manufacturer:"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_device_manufacturer"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="14sp"
+              android:textStyle="bold"
+              android:textColor="@color/clrFont"
+              tools:text="samsung"
+              />
+
+          </LinearLayout>
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="12sp"
+              android:text="Serial:"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_device_serial"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="14sp"
+              android:textStyle="bold"
+              android:textColor="@color/clrFont"
+              tools:text="33003a48f8b5a5c1"
+              />
+
+          </LinearLayout>
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="12sp"
+              android:text="Created:"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_device_created"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="14sp"
+              android:textStyle="bold"
+              android:textColor="@color/clrFont"
+              tools:text="2020-02-07T07:57:52.172Z"
+              />
+
+          </LinearLayout>
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="12sp"
+              android:text="Updated:"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_device_updated"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="14sp"
+              android:textStyle="bold"
+              android:textColor="@color/clrFont"
+              tools:text="2020-02-07T07:57:52.172Z"
+              />
+
+          </LinearLayout>
 
         </LinearLayout>
 

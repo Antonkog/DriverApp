@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public class MainViewModel extends AndroidViewModel {
   private LiveData<List<Notify>> mAllCMRNotifications;
   private LiveData<List<Notify>> mAllCompletedNotifications;
   
+  private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmations;
+  
   //private List<DeviceProfile> mAllDeviceProfiles;
 
   public MainViewModel(Application application) {
@@ -41,7 +44,13 @@ public class MainViewModel extends AndroidViewModel {
     mAllCMRNotifications = mRepository.getAllCMRNotifications();
     mAllCompletedNotifications = mRepository.getAllCompletedNotifications();
     
+    mAllOfflineConfirmations = mRepository.getAllLiveDataConfirmations();
+    
     //mAllDeviceProfiles = mRepository.getAllDeviceProfiles();
+  }
+  
+  LiveData<List<OfflineConfirmation>> getAllOfflineConfirmations() {
+    return mAllOfflineConfirmations;
   }
 
   LiveData<Integer> getNotReadNotificationCount() {
