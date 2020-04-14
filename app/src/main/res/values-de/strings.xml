@@ -8,6 +8,10 @@
   <string name="action_delete">Löschen</string>
   <string name="action_warning">Warnung</string>
   <string name="action_start">Starten</string>
+  <string name="action_open">Öffnen</string>
+  <string name="action_download">Herunterladen</string>
+  <string name="action_exit">Beenden</string>
+  <string name="action_quit">Verlassen</string>
   <string name="action_upload_photos">Fotos Hochladen?</string>
   <string name="action_upload_photos_message">Möchten Sie die Fotos hochladen?</string>
   <string name="action_uploading_photos">Fotos werden hochgeladen&#8230;</string>
@@ -41,6 +45,12 @@
   <string name="reference_2">Referenz 2</string>
   <string name="description">Beschreibung</string>
   <string name="address">Anschrift</string>
+
+  <string name="new_document">Neues Dokument!</string>
+  <string name="new_document_message">Sie haben ein neues Dokument erhalten.</string>
+  <string name="exit_message">Möchten Sie die ABONA Driver App beenden?</string>
+  <string name="order_documents">Bilder zum Auftrag</string>
+  <string name="order_documents_message">Zuerst Auftrag starten!</string>
 
   <string name="action_type_pick_up">Ladestelle</string>
   <string name="action_type_drop_off">Abladestelle</string>

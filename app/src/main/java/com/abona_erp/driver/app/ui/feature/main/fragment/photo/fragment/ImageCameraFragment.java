@@ -32,6 +32,7 @@ import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.controls.Flash;
+import com.otaliastudios.cameraview.controls.Hdr;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -207,6 +208,10 @@ public class ImageCameraFragment extends Fragment
     camera = (CameraView)root.findViewById(R.id.camera);
     camera.setLifecycleOwner(this);
     camera.addCameraListener(new Listener());
+    
+    camera.setAutoFocusResetDelay(0);
+    camera.setHdr(Hdr.OFF);
+    camera.setFlash(Flash.OFF);
     
     iv_capture_image = (AppCompatImageView)root.findViewById(R.id.iv_capture_image);
     iv_capture_image.setOnClickListener(new View.OnClickListener() {

@@ -28,6 +28,7 @@ import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
+import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -461,6 +462,8 @@ public class PhotoFragment extends Fragment
                                 //if (response.body() != null && response.body().getFileName() != null) {
                                 //  Log.i("*****", response.body().getFileName());
                                 //}
+                                
+                                App.eventBus.post(new DocumentEvent(mNotify.getMandantId(), mNotify.getOrderNo()));
                               } else {
         
                                 switch (response.code()) {

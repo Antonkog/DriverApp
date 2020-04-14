@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
@@ -36,10 +37,12 @@ import com.abona_erp.driver.app.ui.widget.badges.BadgeType;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.flag_kit.FlagKit;
+import com.google.gson.Gson;
 import com.lid.lib.LabelImageView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -319,22 +322,41 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         badgeValues.put(0, badge.getNumber());
       }
     }
-    if (uploadedPhoto > 0) {
-      BadgeSpan uploadBadgeSpan = new BadgeSpan(context.getResources().getColor(R.color.clrAbona),
-        context.getResources().getColor(R.color.clrWhite), 25);
-      Badge uploadBadge = new Badge(uploadedPhoto, uploadBadgeSpan);
-      if (uploadBadge != null && uploadBadge.isActual()) {
-        String badgeText = uploadBadge.getBadgeText();
-        String badgeTitle = context.getResources().getString(R.string.document);
-        
-        holder.btnDocument.setText(badgeTitle + " " + badgeText, AppCompatButton.BufferType.SPANNABLE);
-        
-        Spannable spannable = (Spannable) holder.btnDocument.getText();
-        spannable.setSpan(uploadBadge.getSpan(), badgeTitle.length()+1, badgeTitle.length()+1 + badgeText.length(),
-          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        holder.btnDocument.setText(spannable);
   
-        uploadedDocumentBadgeValues.put(0, uploadBadge.getNumber());
+    ArrayList<String> documents = new ArrayList<>();
+    documents = notify.getDocumentUrls();
+    if (documents != null) {
+      if (documents.size() <= 0)
+        return;
+      Gson gson = new Gson();
+      AppFileInterchangeItem[] appFileInterchangeItems = gson.fromJson(documents.get(0), AppFileInterchangeItem[].class);
+      if (appFileInterchangeItems != null) {
+        if (appFileInterchangeItems.length > 0) {
+          
+          int count = 0;
+          for (int i = 0; i < appFileInterchangeItems.length; i++) {
+            if (appFileInterchangeItems[i].getTaskId() == 0 || appFileInterchangeItems[i].getTaskId() == notify.getTaskId()) {
+              count++;
+            }
+          }
+          if (count <= 0) return;
+          BadgeSpan uploadBadgeSpan = new BadgeSpan(context.getResources().getColor(R.color.clrAbona),
+            context.getResources().getColor(R.color.clrWhite), 25);
+          Badge uploadBadge = new Badge(count, uploadBadgeSpan);
+          if (uploadBadge != null && uploadBadge.isActual()) {
+            String badgeText = uploadBadge.getBadgeText();
+            String badgeTitle = context.getResources().getString(R.string.document);
+  
+            holder.btnDocument.setText(badgeTitle + " " + badgeText, AppCompatButton.BufferType.SPANNABLE);
+  
+            Spannable spannable = (Spannable) holder.btnDocument.getText();
+            spannable.setSpan(uploadBadge.getSpan(), badgeTitle.length()+1, badgeTitle.length()+1 + badgeText.length(),
+              Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            holder.btnDocument.setText(spannable);
+  
+            uploadedDocumentBadgeValues.put(0, uploadBadge.getNumber());
+          }
+        }
       }
     }
   }

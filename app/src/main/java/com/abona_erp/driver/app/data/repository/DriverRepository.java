@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class DriverRepository {
@@ -90,12 +91,20 @@ public class DriverRepository {
     return mAllCompletedNotifications;
   }
   
+  public Single<List<Notify>> getAllTasksByOrderNo(int mandantId, int orderNo) {
+    return mNotifyDao.getAllTasksByMandantAndOrderNo(mandantId, orderNo);
+  }
+  
   public Single<Notify> getNotifyById(int id) {
     return mNotifyDao.loadNotifyById(id);
   }
   
   public Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
     return mNotifyDao.loadNotifyByTaskMandantId(mandantId, taskId);
+  }
+  
+  public Single<Notify> getNotifyByMandantIdAndOrderNo(int mandantId, int orderNo) {
+    return mNotifyDao.loadNotifyByMandantIdAndOrderNo(mandantId, orderNo);
   }
   
   public Single<LastActivity> getLastActivityByTaskClientId(int taskId, int clientId) {

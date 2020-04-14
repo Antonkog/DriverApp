@@ -317,7 +317,7 @@ public class BackgroundServiceWorker extends Service {
                               public void run() {
                                 mNotifyDAO.updateNotify(notify);
                                 mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                                AppUtils.playNotificationTone();
+                                //AppUtils.playNotificationTone();
                               }
                             });
               
@@ -459,7 +459,7 @@ public class BackgroundServiceWorker extends Service {
                               @Override
                               public void run() {
                                 mNotifyDAO.updateNotify(notify);
-                                AppUtils.playNotificationTone();
+                                //AppUtils.playNotificationTone();
                               }
                             });
               

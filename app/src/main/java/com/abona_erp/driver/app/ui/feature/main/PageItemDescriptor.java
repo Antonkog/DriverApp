@@ -20,6 +20,7 @@ public class PageItemDescriptor {
     PAGE_SETTINGS,
     PAGE_TASK_NOT_FOUND,
     PAGE_DEVICE_REGISTRATED,
+    PAGE_NEW_DOCUMENTS,
   })
   public @interface PageItemDef {}
   
@@ -32,6 +33,7 @@ public class PageItemDescriptor {
   public static final int PAGE_SETTINGS           = 6;
   public static final int PAGE_TASK_NOT_FOUND     = 7;
   public static final int PAGE_DEVICE_REGISTRATED = 8;
+  public static final int PAGE_NEW_DOCUMENTS      = 9;
   
   public PageItemDescriptor(@PageItemDef int pageItem) {
     this.pageItem = pageItem;

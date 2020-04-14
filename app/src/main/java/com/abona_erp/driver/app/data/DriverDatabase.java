@@ -4,6 +4,8 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.abona_erp.driver.app.data.converters.Converters;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
@@ -24,7 +26,7 @@ import com.abona_erp.driver.core.base.ContextUtils;
   LastActivity.class,
   DeviceProfile.class,
   OfflineConfirmation.class
-}, version = 1, exportSchema = false)
+}, version = 2, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class DriverDatabase extends RoomDatabase {
 
@@ -42,10 +44,19 @@ public abstract class DriverDatabase extends RoomDatabase {
         if (INSTANCE == null) {
           INSTANCE = Room.databaseBuilder(ContextUtils.getApplicationContext(),
             DriverDatabase.class, "abona_driver77")
+            .addMigrations(MIGRATION_1_2)
             .build();
         }
       }
     }
     return INSTANCE;
   }
+  
+  static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+    @Override
+    public void migrate(SupportSQLiteDatabase database) {
+      database.execSQL("ALTER TABLE taskItem "
+        + " ADD COLUMN document_urls TEXT");
+    }
+  };
 }

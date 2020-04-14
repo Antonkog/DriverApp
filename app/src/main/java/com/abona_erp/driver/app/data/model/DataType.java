@@ -14,11 +14,13 @@ import java.lang.reflect.Type;
 public enum DataType {
   
   TASK(0),
+  ALL_TASKS(1),
   ACTIVITY(20),
   UNDO_ACTIVITY(21),
   CONFIRMATION(40),
   DEVICE_PROFILE(60),
-  VEHICLE(80);
+  VEHICLE(80),
+  DOCUMENT(100);
   
   int dataType;
   

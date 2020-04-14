@@ -40,6 +40,9 @@ public class Notify {
   @ColumnInfo(name = "photo_urls")
   private ArrayList<String> photoUrls = new ArrayList<>();
   
+  @ColumnInfo(name = "document_urls")
+  private ArrayList<String> documentUrls = new ArrayList<>();
+  
   @ColumnInfo(name = "task_due_finish")
   @TypeConverters({DateConverter.class})
   private Date taskDueFinish;
@@ -130,6 +133,14 @@ public class Notify {
   
   public void setPhotoUrls(ArrayList<String> photoUrls) {
     this.photoUrls = photoUrls;
+  }
+  
+  public ArrayList<String> getDocumentUrls() {
+    return documentUrls;
+  }
+  
+  public void setDocumentUrls(ArrayList<String> documentUrls) {
+    this.documentUrls = documentUrls;
   }
   
   public Date getCreatedAt() {

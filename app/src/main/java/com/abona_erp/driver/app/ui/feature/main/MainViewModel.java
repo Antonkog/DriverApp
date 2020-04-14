@@ -13,6 +13,7 @@ import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class MainViewModel extends AndroidViewModel {
@@ -27,6 +28,7 @@ public class MainViewModel extends AndroidViewModel {
   private LiveData<List<Notify>> mAllRunningNotifications;
   private LiveData<List<Notify>> mAllCMRNotifications;
   private LiveData<List<Notify>> mAllCompletedNotifications;
+  private LiveData<List<Notify>> mAllTasksByMandantAndOrderNo;
   
   private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmations;
   
@@ -79,6 +81,10 @@ public class MainViewModel extends AndroidViewModel {
 
   LiveData<List<Notify>> getAllCompletedNotifications() {
     return mAllCompletedNotifications;
+  }
+  
+  Single<List<Notify>> getAllTasksByMandantAndOrderNo(int mandantID, int orderNo) {
+    return mRepository.getAllTasksByOrderNo(mandantID, orderNo);
   }
 
   void insert(LastActivity lastActivity) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
   <!--<external-path name="external_files" path="."/>-->
+  <root-path name="root" path="." />
   <external-path
     name="driver_images"
     path="Android/data/com.abona_erp.driver.app/files/Pictures"

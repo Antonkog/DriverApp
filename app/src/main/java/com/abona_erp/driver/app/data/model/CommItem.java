@@ -37,6 +37,10 @@ public class CommItem {
   @Expose
   private PercentItem percentItem;
   
+  @SerializedName("DocumentItem")
+  @Expose
+  private DocumentItem documentItem;
+  
   // ------------------------------------------------------------------------
   // GETTER & SETTER
   
@@ -102,5 +106,13 @@ public class CommItem {
   
   public void setPercentItem(PercentItem percentItem) {
     this.percentItem = percentItem;
+  }
+  
+  public DocumentItem getDocumentItem() {
+    return documentItem;
+  }
+  
+  public void setDocumentItem(DocumentItem documentItem) {
+    this.documentItem = documentItem;
   }
 }

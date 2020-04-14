@@ -24,6 +24,7 @@ import com.abona_erp.driver.app.util.gson.IntegerJsonDeserializer;
 import com.abona_erp.driver.app.util.gson.StringJsonDeserializer;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
+import com.devexpress.logify.alert.android.LogifyAlert;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -68,6 +69,11 @@ public class App extends BaseApp {
     
     spManager.init(this);
     apiManager.init(this);
+  
+    LogifyAlert client = LogifyAlert.getInstance();
+    client.setApiKey("5B357B2806714B8598C6127F537CD389");
+    client.setContext(this.getApplicationContext());
+    client.startExceptionsHandling();
   }
   
   public static Gson createGson() {

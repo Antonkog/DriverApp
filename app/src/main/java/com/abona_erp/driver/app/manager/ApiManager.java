@@ -8,6 +8,8 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.data.remote.ActivityService;
 import com.abona_erp.driver.app.data.remote.ConfirmService;
+import com.abona_erp.driver.app.data.remote.DocumentService;
+import com.abona_erp.driver.app.data.remote.FileDownloadService;
 import com.abona_erp.driver.app.data.remote.FCMService;
 import com.abona_erp.driver.app.data.remote.FileUploadService;
 import com.abona_erp.driver.app.data.remote.TokenService;
@@ -16,10 +18,6 @@ import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterce
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
-import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
 import java.io.File;
 import java.security.cert.CertificateException;
@@ -50,6 +48,8 @@ public class ApiManager implements Manager {
   private ConfirmService mConfirmService;
   private ActivityService mActivityService;
   private FileUploadService mFileUploadService;
+  private DocumentService mDocumentService;
+  private FileDownloadService mFileDownloadService;
   
   public FCMService getFCMApi() {
     if (mFCMService == null) {
@@ -103,6 +103,28 @@ public class ApiManager implements Manager {
         .create(FileUploadService.class);
     }
     return mFileUploadService;
+  }
+  
+  public DocumentService getDocumentApi() {
+    if (mDocumentService == null) {
+      mDocumentService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+      + ":"
+      + TextSecurePreferences.getServerPort()
+      + "/api/uploader/")
+        .create(DocumentService.class);
+    }
+    return mDocumentService;
+  }
+  
+  public FileDownloadService getFileDownloadApi() {
+    if (mFileDownloadService == null) {
+      mFileDownloadService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
+        + ":"
+        + TextSecurePreferences.getServerPort()
+        + "/api/uploader/")
+        .create(FileDownloadService.class);
+    }
+    return mFileDownloadService;
   }
   
   private Retrofit provideRetrofit(String url) {

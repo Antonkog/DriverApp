@@ -51,7 +51,8 @@
     android:networkSecurityConfig="@xml/network_security_config"
     android:largeHeap="true"
     android:theme="@style/AppTheme"
-    tools:ignore="GoogleAppIndexingWarning">
+    tools:ignore="GoogleAppIndexingWarning"
+    tools:replace="android:usesCleartextTraffic">
 
     <meta-data
       android:name="com.google.android.maps.v2.API_KEY"
@@ -65,7 +66,7 @@
 
     <activity android:name=".ui.feature.main.MainActivity"
       android:launchMode="singleTask"
-      android:screenOrientation="landscape">
+      android:screenOrientation="sensorLandscape">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 

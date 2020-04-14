@@ -81,8 +81,8 @@ public class PendingFragment extends Fragment {
         MessageDialog.build((AppCompatActivity)getActivity())
           .setStyle(DialogSettings.STYLE.STYLE_IOS)
           .setTheme(DialogSettings.THEME.LIGHT)
-          .setTitle("Bilder zum Auftrag")
-          .setMessage("Um Fotos machen zu können, muss der Task gestartet sein!")
+          .setTitle(App.getInstance().getApplicationContext().getResources().getString(R.string.order_documents))
+          .setMessage(App.getInstance().getApplicationContext().getResources().getString(R.string.order_documents_message))
           .setOkButton(getContext().getResources().getString(R.string.action_ok),
             new OnDialogButtonClickListener() {
               @Override

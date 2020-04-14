@@ -12,6 +12,7 @@ import com.abona_erp.driver.app.data.entity.Notify;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 @Dao
@@ -31,11 +32,17 @@ public interface NotifyDao {
   @Query("SELECT * FROM taskItem WHERE status = 100 ORDER BY task_due_finish AND order_no AND task_id ASC")
   LiveData<List<Notify>> getAllCompletedNotifications();
   
+  @Query("SELECT * FROM taskItem WHERE mandant_id = :mandant_id AND order_no = :order_no")
+  Single<List<Notify>> getAllTasksByMandantAndOrderNo(int mandant_id, int order_no);
+  
   @Query("SELECT * FROM taskItem WHERE id = :id LIMIT 1")
   Single<Notify> loadNotifyById(int id);
   
   @Query("SELECT * FROM taskItem WHERE mandant_id = :mandantId AND task_id = :taskId LIMIT 1")
   Single<Notify> loadNotifyByTaskMandantId(int mandantId, int taskId);
+  
+  @Query("SELECT * FROM taskItem WHERE mandant_id = :mandantId AND order_no = :orderNo LIMIT 1")
+  Single<Notify> loadNotifyByMandantIdAndOrderNo(int mandantId, int orderNo);
   
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   long insertNotify(Notify notify);

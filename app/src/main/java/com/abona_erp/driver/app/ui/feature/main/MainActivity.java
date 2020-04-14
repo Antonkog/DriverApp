@@ -48,6 +48,7 @@ import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -63,6 +64,7 @@ import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.receiver.ConnectivityChangeReceiver;
@@ -72,6 +74,7 @@ import com.abona_erp.driver.app.service.impl.GeofenceErrorMessages;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.BaseEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
+import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
@@ -86,10 +89,13 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.PowerMenuUtils;
+import com.abona_erp.driver.app.util.RingtoneUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
+import com.devexpress.logify.alert.android.LogifyAlert;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
@@ -99,6 +105,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.gson.Gson;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -130,6 +137,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends BaseActivity implements OnCompleteListener<Void> {
   
@@ -199,7 +209,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOGIFY
-    //initializeLogify();
+    initializeLogify();
     
     connectivityChangeReceiver = new ConnectivityChangeReceiver();
     signalStrengthStateListener = new SignalStrengthStateListener();
@@ -279,7 +289,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     mVehicleRegistrationNumber.setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
     mMainPieView = (PieView)findViewById(R.id.mainPieView);
     mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrAbona));
     mMainPieView.setInnerBackgroundColor(getResources().getColor(R.color.clrFont));
@@ -674,19 +684,51 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         final SpannableStringBuilder sb = new SpannableStringBuilder("Device registration was successfully!\n\nRegistration Number\n" + DeviceUtils.getUniqueIMEI(getBaseContext()));
         sb.setSpan(boldSpan, "Device registration was successfully!\n\nRegistration Number\n".length(), DeviceUtils.getUniqueIMEI(getBaseContext()).length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         */
-        MessageDialog.build((AppCompatActivity)MainActivity.this)
-          .setStyle(DialogSettings.STYLE.STYLE_IOS)
-          .setTheme(DialogSettings.THEME.LIGHT)
-          .setTitle("Successful Registrated")
-          .setMessage(builder.toString())
-          .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
-            new OnDialogButtonClickListener() {
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-                return false;
-              }
-            })
-          .show();
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            MessageDialog.build((AppCompatActivity)MainActivity.this)
+              .setStyle(DialogSettings.STYLE.STYLE_IOS)
+              .setTheme(DialogSettings.THEME.LIGHT)
+              .setTitle("Successful Registrated")
+              .setMessage(builder.toString())
+              .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
+                new OnDialogButtonClickListener() {
+                  @Override
+                  public boolean onClick(BaseDialog baseDialog, View v) {
+                    return false;
+                  }
+                })
+              .show();
+          }
+        });
+        break;
+        
+      case PageItemDescriptor.PAGE_NEW_DOCUMENTS:
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            Notify notify = event.getNotify();
+            
+            MessageDialog.build((AppCompatActivity) MainActivity.this)
+              .setStyle(DialogSettings.STYLE.STYLE_IOS)
+              .setTheme(DialogSettings.THEME.LIGHT)
+              .setTitle(getApplicationContext().getResources().getString(R.string.new_document))
+              .setMessage(getApplicationContext().getResources().getString(R.string.new_document_message)
+                + "\n"
+                + getApplicationContext().getResources().getString(R.string.order_no)
+                + ": "
+                + AppUtils.parseOrderNo(notify.getOrderNo()))
+              .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
+                new OnDialogButtonClickListener() {
+                  @Override
+                  public boolean onClick(BaseDialog baseDialog, View v) {
+                    return false;
+                  }
+                })
+              .show();
+          }
+        });
         break;
     }
   }
@@ -743,6 +785,83 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     });
   }
   
+  @Subscribe
+  public void onMessageEvent(DocumentEvent event) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        
+        // -----------------------------------------------------------------------------------------
+        // BEGIN: GET DOCUMENTS
+  
+        Call<ArrayList<AppFileInterchangeItem>> call = App.apiManager.getDocumentApi()
+          .getDocuments(event.getMandantID(), event.getOrderNo(),
+            DeviceUtils.getUniqueIMEI(getApplicationContext()));
+        
+        call.enqueue(new Callback<ArrayList<AppFileInterchangeItem>>() {
+          @Override
+          public void onResponse(Call<ArrayList<AppFileInterchangeItem>> call, Response<ArrayList<AppFileInterchangeItem>> response) {
+            
+            if (response.isSuccessful()) {
+              if (response.body() != null) {
+  
+                Gson gson = new Gson();
+                String raw = gson.toJson(response.body());
+                
+                final List<AppFileInterchangeItem> appFileInterchangeItems;
+                appFileInterchangeItems = gson.fromJson(response.body().toString(), ArrayList.class);
+                if (appFileInterchangeItems != null) {
+                  if (appFileInterchangeItems.size() > 0) {
+                    
+                    mMainViewModel.getAllTasksByMandantAndOrderNo(event.getMandantID(), event.getOrderNo())
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(new DisposableSingleObserver<List<Notify>>() {
+                        @Override
+                        public void onSuccess(List<Notify> notifies) {
+                          if (notifies.size() > 0) {
+                            for (int i = 0; i < notifies.size(); i++) {
+                              ArrayList<String> _list = new ArrayList<>();
+                              _list.add(raw);
+                              notifies.get(i).setDocumentUrls(_list);
+                              mMainViewModel.update(notifies.get(i));
+                            }
+                          }
+                        }
+  
+                        @Override
+                        public void onError(Throwable e) {
+    
+                        }
+                      });
+                    
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(getApplicationContext().getResources().getString(R.string.new_document_message));
+                    sb.append("\n" + getApplicationContext().getResources().getString(R.string.order_no));
+                    sb.append(": " + AppUtils.parseOrderNo(event.getOrderNo()));
+                    
+                    messageBox_Ok(getApplicationContext().getResources().getString(R.string.new_document), sb.toString());
+                    
+                  }
+                }
+              }
+            }
+          }
+  
+          @Override
+          public void onFailure(Call<ArrayList<AppFileInterchangeItem>> call, Throwable t) {
+    
+          }
+        });
+  
+        new RingtoneUtils().playNotificationTone();
+        
+        // END: GET DOCUMENTS
+        // -----------------------------------------------------------------------------------------
+      }
+    });
+  }
+  
   public static byte[] hexStringToByteArray(String input) {
     int len = input.length();
     
@@ -777,27 +896,33 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     if (fragments.getBackStackEntryCount() > 1) {
       fragments.popBackStackImmediate();
     } else {
-      MessageDialog.build((AppCompatActivity) MainActivity.this)
-        .setStyle(DialogSettings.STYLE.STYLE_IOS)
-        .setTheme(DialogSettings.THEME.LIGHT)
-        .setTitle("Exit")
-        .setMessage("Do you want to quit ABONA Driver App?")
-        .setOkButton("Quit", new OnDialogButtonClickListener() {
-          @Override
-          public boolean onClick(BaseDialog baseDialog, View v) {
-            MainActivity.super.onBackPressed();
-            finish();
-            return false;
-          }
-        })
-        .setCancelButton(getApplicationContext().getResources().getString(R.string.action_cancel),
-          new OnDialogButtonClickListener() {
-            @Override
-            public boolean onClick(BaseDialog baseDialog, View v) {
-              return false;
-            }
-          })
-        .show();
+      runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          MessageDialog.build((AppCompatActivity) MainActivity.this)
+            .setStyle(DialogSettings.STYLE.STYLE_IOS)
+            .setTheme(DialogSettings.THEME.LIGHT)
+            .setTitle(getApplicationContext().getResources().getString(R.string.action_exit))
+            .setMessage(getApplicationContext().getResources().getString(R.string.exit_message))
+            .setOkButton(getApplicationContext().getResources().getString(R.string.action_quit),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  MainActivity.super.onBackPressed();
+                  finish();
+                  return false;
+                }
+              })
+            .setCancelButton(getApplicationContext().getResources().getString(R.string.action_cancel),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  return false;
+                }
+              })
+            .show();
+        }
+      });
     }
   }
   
@@ -1120,10 +1245,10 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   
   private void initializeLogify() {
     // Initialize the Logify Alert client.
-    //LogifyAlert client = LogifyAlert.getInstance();
-    //client.setApiKey("5B357B2806714B8598C6127F537CD389");
-    //client.setContext(this.getApplicationContext());
-    //client.startExceptionsHandling();
+    LogifyAlert client = LogifyAlert.getInstance();
+    client.setApiKey("5B357B2806714B8598C6127F537CD389");
+    client.setContext(this.getApplicationContext());
+    client.startExceptionsHandling();
   }
   
   public void removeStickyEvent(final Class<?> eventType) {
@@ -1231,5 +1356,26 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   private static boolean isAirplaneModeOn(Context context) {
     return Settings.Global.getInt(context.getContentResolver(),
       Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+  }
+  
+  private void messageBox_Ok(String title, String message) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        MessageDialog.build((AppCompatActivity) MainActivity.this)
+          .setStyle(DialogSettings.STYLE.STYLE_IOS)
+          .setTheme(DialogSettings.THEME.LIGHT)
+          .setTitle(title)
+          .setMessage(message)
+          .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
+            new OnDialogButtonClickListener() {
+              @Override
+              public boolean onClick(BaseDialog baseDialog, View v) {
+                return false;
+              }
+            })
+          .show();
+      }
+    });
   }
 }
