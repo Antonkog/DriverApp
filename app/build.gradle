@@ -6,7 +6,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion Versions.androidCompileSdkVersion
-
+    lintOptions {
+	checkReleaseBuilds false
+        abortOnError false
+    }
     defaultConfig {
         applicationId Packages.name
         minSdkVersion Versions.androidMinSdkVersion
@@ -56,7 +59,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // Set signing config if keystore variables are set.
             if (keystore_password && key_alias && key_password) {
-                signingConfig signingConfigs.debug
+                signingConfig signingConfigs.release
             } else {
                 logger.error("You need to define KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD to enable debug and release signing!")
             }
