@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/main_menu_background">
+
+  <ImageView
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:padding="35dp"
+    android:src="@drawable/app_icon_drive_192px"
+    app:layout_constraintLeft_toLeftOf="@id/guideline_v_33"
+    app:layout_constraintRight_toRightOf="@id/guideline_v_66"
+    app:layout_constraintBottom_toBottomOf="@id/guideline_h_33"
+    app:layout_constraintTop_toTopOf="parent"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:id="@+id/title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Driver App"
+    android:textSize="32sp"
+    android:textColor="@color/grey_80"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="@id/guideline_h_33"
+    app:layout_constraintBottom_toBottomOf="@id/guideline_h_33"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="ABONA Deutschland GmbH"
+    android:textSize="18sp"
+    android:textColor="@color/grey_40"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/title"
+    />
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:hint="Client ID"
+    android:layout_marginTop="60dp"
+    app:layout_constraintWidth_percent="0.60"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toBottomOf="@id/guideline_h_66"
+    app:layout_constraintTop_toTopOf="@id/guideline_h_33"
+    app:startIconDrawable="@drawable/ic_key"
+    app:startIconContentDescription="client id"
+    app:endIconMode="clear_text">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      />
+
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <androidx.appcompat.widget.AppCompatButton
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_shape"
+    android:text="Let's Start"
+    android:textColor="#fff"
+    app:layout_constraintLeft_toLeftOf="@id/guideline_v_33"
+    app:layout_constraintRight_toRightOf="@id/guideline_v_66"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintTop_toTopOf="@id/guideline_h_66"
+    />
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_v_33"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.33333"
+    />
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_v_66"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.66666"
+    />
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_h_33"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_percent="0.33333"
+    />
+
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_h_66"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_percent="0.66666"
+    />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
