@@ -5,17 +5,48 @@ import dependencies.Versions
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion Versions.androidCompileSdkVersion
+logger.quiet("Build variable Major:$System.env.Major")    
     lintOptions {
-	checkReleaseBuilds false
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
         abortOnError false
     }
+/* Set the build version first */
+	Properties properties = new Properties()
+	def propertiesFile = project.rootProject.file('local.properties')
+	if (propertiesFile.exists()) {
+		 properties.load(propertiesFile.newDataInputStream())
+	}
+
+	def localbuildMajor = properties.getProperty('Major') 
+	def systemEnvbuildMajor = System.getenv('Major')
+	ext."build.Major" = localbuildMajor != null ? localbuildMajor : systemEnvbuildMajor
+
+	def localbuildMinor = properties.getProperty('Minor') 
+	def systemEnvbuildMinor = System.getenv('Minor')
+	ext."build.Minor" = localbuildMinor != null ? localbuildMinor : systemEnvbuildMinor
+
+	def localbuildRevision = properties.getProperty('Revision') 
+	def systemEnvbuildRevision = System.getenv('Revision')
+	ext."build.Revision" = localbuildRevision != null ? localbuildRevision : systemEnvbuildRevision
+
+	def localbuildOffset = properties.getProperty('Offset') 
+	def systemEnvbuildOffset = System.getenv('Offset')
+	ext."build.Offset" = localbuildOffset != null ? localbuildOffset : systemEnvbuildOffset
+        def Versions=new Versions(ext."build.Major",ext."build.Minor",ext."build.Revision",ext."build.Offset")
+	logger.quiet("Configured versions Name:$Versions.androidVersionName Code:$Versions.androidVersionCode") 
+  
+    compileSdkVersion Versions.androidCompileSdkVersion
+
     defaultConfig {
         applicationId Packages.name
         minSdkVersion Versions.androidMinSdkVersion
         targetSdkVersion 29
+
         versionCode Versions.androidVersionCode
         versionName Versions.androidVersionName
+	logger.quiet("Using versions for building name:$versionName code:$versionCode") 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -26,7 +57,8 @@ android {
 
         buildConfigField "long", "BUILD_TIMESTAMP", getLastCommitTimestamp() + "L"
         buildConfigField "String[]", "LANGUAGES", "new String[]{\"en_US\",\"de_DE\",\"ru_RU\",\"pl_PL\"}"
-        buildConfigField "int", "CANONICAL_VERSION_CODE", "$Versions.androidVersionCode"
+        buildConfigField "int", "CANONICAL_VERSION_CODE", "$versionCode"
+        setProperty("archivesBaseName", applicationId +  "-$versionName" + "(versionCode)")
     }
 
     // Load keystore properties if file exists.
@@ -53,6 +85,7 @@ android {
             keyPassword key_password
         }
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -64,6 +97,14 @@ android {
                 logger.error("You need to define KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD to enable debug and release signing!")
             }
         }
+	archives {
+            // Set signing config if keystore variables are set.
+            if (keystore_password && key_alias && key_password) {
+                signingConfig signingConfigs.release
+            } else {
+                logger.error("You need to define KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD to enable debug and release signing!")
+            }
+	}
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -164,3 +205,4 @@ def getLastCommitTimestamp() {
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply from: "../artifacts.gradle"

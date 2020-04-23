@@ -1,14 +1,33 @@
 package dependencies
 
-private object Versions {
+class Versions(val major: String,val minor:String,val rev:String,val offset:String) {
     val androidCompileSdkVersion = 29
     val androidMinSdkVersion = 23
 
-    private val versionMajor = 1
-    private val versionMinor = 1    // Release gerade Zahlen im PlayStore
-    private val versionPatch = 8
-    private val versionOffset = 0
-    val androidVersionCode = (versionMajor * 10000 + versionMinor * 100 + versionPatch) * 100 + versionOffset
+    public var versionMajor = 1//envrMajor
+    public var versionMinor = 1    // Release gerade Zahlen im PlayStore
+    public var versionRevision = 8
+    public var versionOffset = 0
+    public var androidVersionCode = getVersionCode(this.versionMajor,this.versionMinor,this.versionRevision,this.versionOffset)
+    public var androidVersionName = getVersionName(this.versionMajor,this.versionMinor,this.versionRevision)
+    fun getVersionCode(major: Int, minor:Int, rev:Int, offset:Int):Int {
+       return (major * 10000 + minor * 100 + rev) * 100 + offset
+    }
+    fun getVersionCode(major: String, minor:String, rev:String, offset:String):Int {
+       return getVersionCode(major.toInt(),minor.toInt(),rev.toInt(),offset.toInt())
+    }
 
-    val androidVersionName = "$versionMajor.$versionMinor.$versionPatch"
+    fun getVersionName(major: Int, minor:Int, rev:Int):String{
+	return "$versionMajor.$versionMinor.$versionRevision"
+    }
+
+    init {
+    	this.versionMajor=major.toInt()
+     	this.versionMinor=minor.toInt()
+	this.versionRevision=rev.toInt()
+	this.versionOffset=offset.toInt()
+	androidVersionCode=this.getVersionCode(major,minor,rev,offset)
+        androidVersionName=this.getVersionName(this.versionMajor,this.versionMinor,this.versionRevision)	
+    }
+
 }
