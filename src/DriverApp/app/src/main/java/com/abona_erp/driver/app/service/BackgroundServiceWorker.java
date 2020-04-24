@@ -584,12 +584,12 @@ public class BackgroundServiceWorker extends Service {
   }
   
   private boolean isDeviceRegistrated() {
-    if (!TextSecurePreferences.isDeviceFirstTimeRun(ContextUtils.getApplicationContext())) {
+    if (!TextSecurePreferences.isDeviceFirstTimeRun()) {
       Log.i(TAG, ">>>>>>> DEVICE FIRST TIME RUN NOT FINISHED - WAITING...");
       return false;
     }
     
-    if (TextSecurePreferences.isDeviceRegistrated(ContextUtils.getApplicationContext())) {
+    if (TextSecurePreferences.isDeviceRegistrated()) {
       return true;
     } else {
       
@@ -628,7 +628,7 @@ public class BackgroundServiceWorker extends Service {
                 if (response.isSuccessful()) {
                   if (response.body() != null && response.body().getIsSuccess() && !response.body().getIsException()) {
                     Log.d(TAG, ">>>>>>> DEVICE REGISTRATION WAS SUCCESSFULLY!!!");
-                    TextSecurePreferences.setDeviceRegistrated(getApplicationContext(), true);
+                    TextSecurePreferences.setDeviceRegistrated(true);
                     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DEVICE_REGISTRATED), null));
                     App.eventBus.post(new RegistrationFinishedEvent());
                   } else {
@@ -662,7 +662,7 @@ public class BackgroundServiceWorker extends Service {
   }
   
   private boolean isDevicePermissionGranted() {
-    return TextSecurePreferences.isDevicePermissionsGranted(ContextUtils.getApplicationContext());
+    return TextSecurePreferences.isDevicePermissionsGranted();
   }
   
   @Override
@@ -747,7 +747,7 @@ public class BackgroundServiceWorker extends Service {
     RequestBody body = RequestBody.create(mediaType, "grant_type=password&username=manyvehicles%40abona-erp.com&password=1234qwerQWER%2C.-");
     
     Request request = new Request.Builder()
-      .url(TextSecurePreferences.getServerIpAddress() + ":" + TextSecurePreferences.getServerPort() + "/authentication")
+      .url(TextSecurePreferences.getEndpoint() + "authentication")
       .post(body)
       .addHeader("Content-Type", "application/x-www-form-urlencoded")
       .addHeader("Accept-Encoding", "gzip, deflate")

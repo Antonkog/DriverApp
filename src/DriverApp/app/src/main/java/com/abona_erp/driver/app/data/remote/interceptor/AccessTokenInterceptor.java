@@ -46,7 +46,7 @@ public class AccessTokenInterceptor implements Interceptor {
     RequestBody body = RequestBody.create(mediaType, "grant_type=password&username=manyvehicles%40abona-erp.com&password=1234qwerQWER%2C.-");
   
     Request request = new Request.Builder()
-      .url(TextSecurePreferences.getServerIpAddress() + ":" + TextSecurePreferences.getServerPort() + "/authentication")
+      .url(TextSecurePreferences.getEndpoint() + "authentication")
       .post(body)
       .addHeader("Content-Type", "application/x-www-form-urlencoded")
       .addHeader("Accept-Encoding", "gzip, deflate")

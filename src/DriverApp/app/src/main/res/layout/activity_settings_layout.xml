@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:orientation="vertical"
   android:layout_width="match_parent"
@@ -23,6 +24,16 @@
       android:background="?attr/selectableItemBackgroundBorderless"
       android:src="@drawable/ic_arrow_back"
       android:tint="@color/clrFont"
+      />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_toEndOf="@id/btn_settings_back"
+      android:text="@string/menu_settings"
+      android:textSize="28sp"
+      android:textColor="@color/grey_80"
       />
 
   </RelativeLayout>
@@ -95,93 +106,10 @@
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/spacing_large"
+        android:layout_marginStart="@dimen/spacing_large"
+        android:layout_marginEnd="@dimen/spacing_large"
+        android:layout_marginBottom="@dimen/spacing_large"
         android:layout_weight="1">
-
-        <LinearLayout
-          android:orientation="vertical"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content">
-
-          <com.abona_erp.driver.app.ui.widget.AsapTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:text="REST-API Configuration"
-            />
-
-          <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.textfield.TextInputLayout
-              android:theme="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-              android:layout_width="0dp"
-              android:layout_height="wrap_content"
-              android:layout_weight="1"
-              android:layout_marginStart="@dimen/spacing_medium"
-              android:layout_marginTop="@dimen/spacing_medium"
-              android:layout_marginEnd="@dimen/spacing_medium">
-
-              <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/te_ip_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="https://"
-                />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <View
-              android:layout_width="@dimen/spacing_medium"
-              android:layout_height="0dp"
-              />
-
-            <com.abona_erp.driver.app.ui.widget.AsapTextView
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="bottom"
-              android:layout_marginBottom="4dp"
-              android:textSize="12sp"
-              android:text=":"
-              />
-
-            <View
-              android:layout_width="@dimen/spacing_medium"
-              android:layout_height="0dp"
-              />
-
-            <com.google.android.material.textfield.TextInputLayout
-              android:layout_width="80dp"
-              android:layout_height="wrap_content"
-              android:layout_marginStart="@dimen/spacing_medium"
-              android:layout_marginTop="@dimen/spacing_medium"
-              android:layout_marginEnd="@dimen/spacing_medium">
-
-              <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/te_server_port"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:textSize="12sp"
-                android:hint="Port"
-                />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-          </LinearLayout>
-
-          <Button
-            android:id="@+id/btn_settings_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="Save"
-            />
-
-        </LinearLayout>
 
         <!-- Profile Item -->
         <LinearLayout
@@ -338,6 +266,29 @@
               />
 
           </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1"
+          android:gravity="bottom"
+          android:layout_marginTop="@dimen/spacing_medium">
+
+          <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_settings_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:drawableStart="@drawable/ic_reset"
+            android:drawablePadding="@dimen/spacing_medium"
+            android:paddingStart="@dimen/spacing_large"
+            android:paddingEnd="@dimen/spacing_large"
+            android:text="Device Reset"
+            app:backgroundTint="#ffaa00"
+            />
 
         </LinearLayout>
 

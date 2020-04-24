@@ -23,6 +23,13 @@
   <string name="action_start_task_msg">Möchten Sie den Task starten?</string>
   <string name="menu_settings">Einstellungen</string>
   <string name="menu_about">Über</string>
+  <string name="action_lets_start">Lasst uns beginnen</string>
+  <string name="action_security_code">Sicherheitscode</string>
+  <string name="action_security_code_message">Geben Sie den Sicherheitscode ein.</string>
+  <string name="action_error">Fehlermeldung</string>
+  <string name="action_warning_notice">Warnhinweis</string>
+  <string name="client_id_is_not_active">Client-ID ist nicht aktive!</string>
+  <string name="no_internet">Kein Internet!</string>
 
   <string name="yes">Ja</string>
   <string name="no">Nein</string>

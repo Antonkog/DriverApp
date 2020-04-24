@@ -19,10 +19,10 @@
     />
 
   <com.abona_erp.driver.app.ui.widget.AsapTextView
-    android:id="@+id/title"
+    android:id="@+id/tv_title"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Driver App"
+    android:text="@string/app_name"
     android:textSize="32sp"
     android:textColor="@color/grey_80"
     app:layout_constraintLeft_toLeftOf="parent"
@@ -32,14 +32,15 @@
     />
 
   <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:id="@+id/tv_company"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="ABONA Deutschland GmbH"
+    android:text="@string/app_company"
     android:textSize="18sp"
     android:textColor="@color/grey_40"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/title"
+    app:layout_constraintTop_toBottomOf="@id/tv_title"
     />
 
   <com.google.android.material.textfield.TextInputLayout
@@ -57,17 +58,21 @@
     app:endIconMode="clear_text">
 
     <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/client_id"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:inputType="numberPassword"
+      android:maxLength="10"
       />
 
   </com.google.android.material.textfield.TextInputLayout>
 
   <androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/btn_login"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:background="@drawable/button_shape"
-    android:text="Let's Start"
+    android:text="@string/action_lets_start"
     android:textColor="#fff"
     app:layout_constraintLeft_toLeftOf="@id/guideline_v_33"
     app:layout_constraintRight_toRightOf="@id/guideline_v_66"

@@ -2,6 +2,7 @@
 <network-security-config>
   <domain-config cleartextTrafficPermitted="false">
     <domain includeSubdomains="true">https://213.144.11.162:5000/</domain>
+    <domain includeSubdomains="true">https://93.189.159.10:5000/</domain>
     <trust-anchors>
       <certificates src="@raw/driver"/>
       <certificates src="system"/>

@@ -5,9 +5,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Selection;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -15,10 +17,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -29,6 +34,7 @@ import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
@@ -37,6 +43,12 @@ import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapp
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.base.ThreadUtils;
 import com.google.android.material.textfield.TextInputEditText;
+import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.util.DialogSettings;
+import com.kongzue.dialog.util.InputInfo;
+import com.kongzue.dialog.util.TextInfo;
+import com.kongzue.dialog.v3.InputDialog;
 
 import java.util.Date;
 import java.util.List;
@@ -47,8 +59,8 @@ public class SettingsFragment extends Fragment {
   
   private LinearLayout mLlLanguage;
   private Button mBtnSave;
-  private TextInputEditText mTeServerPort;
-  private TextInputEditText mTeIpAddress;
+  //private TextInputEditText mTeServerPort;
+  //private TextInputEditText mTeIpAddress;
   
   private AsapTextView mDeviceId;
   private AsapTextView mDeviceModel;
@@ -206,82 +218,100 @@ public class SettingsFragment extends Fragment {
       }
     });
     
-    mTeIpAddress = (TextInputEditText)root.findViewById(R.id.te_ip_address);
-    mTeIpAddress.setText(/*"https://" +*/ TextSecurePreferences.getServerIpAddress());
-    Selection.setSelection(new SpannableString("https://")/*mTeIpAddress.getText()*/, /*mTeIpAddress.getText().length()*/8);
-    mTeIpAddress.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    //mTeIpAddress = (TextInputEditText)root.findViewById(R.id.te_ip_address);
+    //mTeIpAddress.setText(/*"https://" +*/ TextSecurePreferences.getServerIpAddress());
+    //Selection.setSelection(new SpannableString("https://")/*mTeIpAddress.getText()*/, /*mTeIpAddress.getText().length()*/8);
+    //mTeIpAddress.addTextChangedListener(new TextWatcher() {
+    //  @Override
+    //  public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    //
+    //  }
+    //
+    //  @Override
+    //  public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    //
+    //  }
+    //
+    //  @Override
+    //  public void afterTextChanged(Editable editable) {
+    //    if (!editable.toString().startsWith("https://")) {
+    //      mTeIpAddress.setText("https://");
+    //      Selection.setSelection(mTeIpAddress.getText(), mTeIpAddress.getText().length());
+    //    }
+    //  }
+    //});
     
-      }
-  
-      @Override
-      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-    
-      }
-  
-      @Override
-      public void afterTextChanged(Editable editable) {
-        if (!editable.toString().startsWith("https://")) {
-          mTeIpAddress.setText("https://");
-          Selection.setSelection(mTeIpAddress.getText(), mTeIpAddress.getText().length());
-        }
-      }
-    });
-    
-    mTeServerPort = (TextInputEditText)root.findViewById(R.id.te_server_port);
-    mTeServerPort.setText(String.valueOf(TextSecurePreferences.getServerPort()));
+    //mTeServerPort = (TextInputEditText)root.findViewById(R.id.te_server_port);
+    //mTeServerPort.setText(String.valueOf(TextSecurePreferences.getServerPort()));
     
     mBtnSave = (Button)root.findViewById(R.id.btn_settings_save);
     mBtnSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         
-        // DEVICE RESET BEGIN
-        AsyncTask.execute(new Runnable() {
-          @Override
-          public void run() {
-            mDb.lastActivityDAO().deleteAll();
-            mDb.notifyDao().deleteAll();
-            mDb.offlineConfirmationDAO().deleteAll();
+        InputDialog.build((AppCompatActivity)getContext())
+          .setStyle(DialogSettings.STYLE.STYLE_IOS)
+          .setTheme(DialogSettings.THEME.LIGHT)
+          .setTitle(getContext().getResources().getString(R.string.action_security_code))
+          .setMessage(getContext().getResources().getString(R.string.action_security_code_message))
+          .setInputInfo(new InputInfo()
+            .setMAX_LENGTH(4)
+            .setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
+            .setTextInfo(new TextInfo()
+              .setFontColor(Color.RED))
+          )
+          .setOkButton(getContext().getResources().getString(R.string.action_ok))
+          .setOnOkButtonClickListener(new OnInputDialogButtonClickListener() {
+            @Override
+            public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
+              if (inputStr.equals("0000")) {
+                // DEVICE RESET BEGIN
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    mDb.lastActivityDAO().deleteAll();
+                    mDb.notifyDao().deleteAll();
+                    mDb.offlineConfirmationDAO().deleteAll();
+      
+                    TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
+                    TextSecurePreferences.setDeviceFirstTimeRun(false);
+                    TextSecurePreferences.setLoginPageEnable(true);
+                  }
+                });
+                // DEVICE RESET END
   
-            TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
-            TextSecurePreferences.setDeviceFirstTimeRun(getContext().getApplicationContext(), false);
-          }
-        });
-        // DEVICE RESET END
-        
-        String ip_address = mTeIpAddress.getText().toString();
-        TextSecurePreferences.setServerIpAddress(ip_address);
-        
-        int server_port = Integer.valueOf(mTeServerPort.getText().toString());
-        TextSecurePreferences.setServerPort(server_port);
-        
-        TextSecurePreferences.setDeviceFirstTimeRun(ContextUtils.getApplicationContext(), false);
-        TextSecurePreferences.setDeviceRegistrated(ContextUtils.getApplicationContext(), false);
-        ThreadUtils.postOnUiThreadDelayed(new Runnable() {
-          @Override
-          public void run() {
-            
-            Intent restartIntent = getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
-            PendingIntent intent = PendingIntent.getActivity(getContext(), 0 , restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            AlarmManager manager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
-            manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, intent);
-            getActivity().finish();
-            Runtime.getRuntime().exit(0);
-          }
-        }, 1000);
-        
-  /*
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getContext().startActivity(intent);
-        if (getContext() instanceof Activity) {
-          ((Activity)getContext()).finish();
-        }
-        Runtime.getRuntime().exit(0);
-       
-   */
+                //String ip_address = mTeIpAddress.getText().toString();
+                //TextSecurePreferences.setServerIpAddress(ip_address);
+  
+                //int server_port = Integer.valueOf(mTeServerPort.getText().toString());
+                //TextSecurePreferences.setServerPort(server_port);
+  
+                TextSecurePreferences.setDeviceFirstTimeRun(false);
+                TextSecurePreferences.setDeviceRegistrated(false);
+                ThreadUtils.postOnUiThreadDelayed(new Runnable() {
+                  @Override
+                  public void run() {
+      
+                    Intent restartIntent = getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
+                    PendingIntent intent = PendingIntent.getActivity(getContext(), 0 , restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    AlarmManager manager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
+                    manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, intent);
+                    getActivity().finish();
+                    Runtime.getRuntime().exit(0);
+                  }
+                }, 1000);
+              }
+              return false;
+            }
+          })
+          .setCancelButton(getContext().getResources().getString(R.string.action_cancel))
+          .setOnCancelButtonClickListener(new OnInputDialogButtonClickListener() {
+            @Override
+            public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
+              return false;
+            }
+          })
+          .show();
       }
     });
   }

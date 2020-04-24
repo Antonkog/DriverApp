@@ -23,6 +23,13 @@
   <string name="action_start_task_msg">Вы хотите начать задание?</string>
   <string name="menu_settings">Параметры</string>
   <string name="menu_about">О программе</string>
+  <string name="action_lets_start">Давайте начнем</string>
+  <string name="action_security_code">Код безопасности</string>
+  <string name="action_security_code_message">Введите защитный код</string>
+  <string name="action_error">Сообщение об ошибке</string>
+  <string name="action_warning_notice">Предупреждение</string>
+  <string name="client_id_is_not_active">Идентификатор клиента не активен!</string>
+  <string name="no_internet">Без интернета!</string>
 
   <string name="yes">Да</string>
   <string name="no">Нет</string>
@@ -54,7 +61,7 @@
 
   <string name="action_type_pick_up">Загрузка</string>
   <string name="action_type_drop_off">разгрузка</string>
-  <string name="action_type_tractor_swap">Своп трактора</string>
+  <string name="action_type_tractor_swap">Изменение тягача</string>
   <string name="action_type_general">генеральный</string>
   <string name="action_type_delay">задержка</string>
   <string name="action_type_unknown">неизвестный</string>

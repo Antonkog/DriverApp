@@ -66,7 +66,8 @@
 
     <activity android:name=".ui.feature.main.MainActivity"
       android:launchMode="singleTask"
-      android:screenOrientation="sensorLandscape">
+      android:screenOrientation="sensorLandscape"
+      tools:ignore="LockedOrientationActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
@@ -74,6 +75,13 @@
         <!--<category android:name="android.intent.category.HOME"/>
         <category android:name="android.intent.category.DEFAULT"/>-->
       </intent-filter>
+    </activity>
+
+    <activity android:name=".ui.feature.login.LoginActivity"
+      android:launchMode="singleTask"
+      android:noHistory="true"
+      android:screenOrientation="sensorPortrait"
+      tools:ignore="LockedOrientationActivity">
     </activity>
 
     <!-- FCM Notifications -->

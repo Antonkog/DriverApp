@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/flag-kit" />
-            <option value="$PROJECT_DIR$/imagegallery" />
             <option value="$PROJECT_DIR$/photolib" />
           </set>
         </option>

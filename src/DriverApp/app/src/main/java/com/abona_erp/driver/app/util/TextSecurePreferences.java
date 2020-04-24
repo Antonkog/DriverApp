@@ -16,6 +16,7 @@ public class TextSecurePreferences {
   private static final String TAG = TextSecurePreferences.class.getSimpleName();
   
   private static final String PREF_FIRST_TIME_RUN              = "pref_first_time_run";
+  private static final String PREF_LOGIN                       = "pref_login";
   private static final String PREF_PERMISSION                  = "pref_permission";
   private static final String PREF_GCM_REGISTRATION_ID         = "pref_gcm_registration_id";
   private static final String PREF_GCM_REGISTRATION_ID_UPDATE  = "pref_gcm_registration_id_update";
@@ -29,13 +30,8 @@ public class TextSecurePreferences {
   private static final String PREF_VEHICLE_REGISTRATION_NUMBER = "pref_vehicle_registration_number";
   private static final String PREF_TASK_PERCENTAGE             = "pref_task_percentage";
   
-  private static final String PREF_SERVER_IP_ADDRESS           = "pref_server_ip_address";
-  private static final String PREF_SERVER_PORT                 = "pref_server_port";
-  
-  
-  
-  
-
+  private static final String PREF_ENDPOINT                    = "pref_endpoint";
+  private static final String PREF_CLIENT_ID                   = "pref_client_id";
   
   
   
@@ -55,29 +51,54 @@ public class TextSecurePreferences {
   
 
 
-  
-  public static boolean isDeviceRegistrated(Context context) {
-    return getBooleanPreference(context, PREF_DEVICE_REGISTRATED, false);
+  public static boolean enableLoginPage() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_LOGIN, true);
   }
   
-  public static void setDeviceRegistrated(Context context, boolean success) {
-    setBooleanPreference(context, PREF_DEVICE_REGISTRATED, success);
+  public static void setLoginPageEnable(boolean enable) {
+    setBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_LOGIN, enable);
   }
   
-  public static boolean isDevicePermissionsGranted(Context context) {
-    return getBooleanPreference(context, PREF_PERMISSION, false);
+  public static String getClientID() {
+    return getStringPreference(ContextUtils.getApplicationContext(),
+      PREF_CLIENT_ID, "");
   }
   
-  public static void setDevicePermissionsGranted(Context context, boolean granted) {
-    setBooleanPreference(context, PREF_PERMISSION, granted);
+  public static void setClientID(String clientID) {
+    setStringPreference(ContextUtils.getApplicationContext(),
+      PREF_CLIENT_ID, clientID);
   }
   
-  public static boolean isDeviceFirstTimeRun(Context context) {
-    return getBooleanPreference(context, PREF_FIRST_TIME_RUN, false);
+  public static boolean isDeviceRegistrated() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_DEVICE_REGISTRATED, false);
   }
   
-  public static void setDeviceFirstTimeRun(Context context, boolean firstTimeRun) {
-    setBooleanPreference(context, PREF_FIRST_TIME_RUN, firstTimeRun);
+  public static void setDeviceRegistrated(boolean success) {
+    setBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_DEVICE_REGISTRATED, success);
+  }
+  
+  public static boolean isDevicePermissionsGranted() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_PERMISSION, false);
+  }
+  
+  public static void setDevicePermissionsGranted(boolean granted) {
+    setBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_PERMISSION, granted);
+  }
+  
+  public static boolean isDeviceFirstTimeRun() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_FIRST_TIME_RUN, false);
+  }
+  
+  public static void setDeviceFirstTimeRun(boolean firstTimeRun) {
+    setBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_FIRST_TIME_RUN, firstTimeRun);
   }
   
   public static boolean isFcmDisabled(Context context) {
@@ -185,23 +206,13 @@ public class TextSecurePreferences {
     setIntegerPrefrence(context, PREF_TASK_PERCENTAGE, taskPercentage);
   }
   
-  public static String getServerIpAddress() {
+  public static String getEndpoint() {
     return getStringPreference(ContextUtils.getApplicationContext(),
-      PREF_SERVER_IP_ADDRESS, /*"https://93.189.159.10"*/"https://213.144.11.162");
+      PREF_ENDPOINT, "https://213.144.11.162/s" /*https://93.189.159.10/*/);
   }
   
-  public static void setServerIpAddress(String ipAddress) {
-    setStringPreference(ContextUtils.getApplicationContext(), PREF_SERVER_IP_ADDRESS, ipAddress);
-  }
-  
-  public static int getServerPort() {
-    return getIntegerPreference(ContextUtils.getApplicationContext(),
-      PREF_SERVER_PORT, 5000);
-  }
-  
-  public static void setServerPort(int port) {
-    setIntegerPrefrence(ContextUtils.getApplicationContext(),
-      PREF_SERVER_PORT, port);
+  public static void setEndpoint(String endpoint) {
+    setStringPreference(ContextUtils.getApplicationContext(), PREF_ENDPOINT, endpoint);
   }
   
   public static void setBooleanPreference(Context context, String key, boolean value) {

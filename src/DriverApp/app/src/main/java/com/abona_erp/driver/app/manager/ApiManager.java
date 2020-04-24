@@ -53,9 +53,9 @@ public class ApiManager implements Manager {
   
   public FCMService getFCMApi() {
     if (mFCMService == null) {
-      mFCMService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
-        + ":"
-        + TextSecurePreferences.getServerPort() + "/api/device/")
+      mFCMService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+        + "api/device/")
         .create(FCMService.class);
     }
     return mFCMService;
@@ -63,10 +63,7 @@ public class ApiManager implements Manager {
   
   public TokenService getTokenApi() {
     if (mTokenService == null) {
-      mTokenService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
-        + ":"
-        + TextSecurePreferences.getServerPort()
-        + "/")
+      mTokenService = provideRetrofit(TextSecurePreferences.getEndpoint())
         .create(TokenService.class);
     }
     return mTokenService;
@@ -74,10 +71,9 @@ public class ApiManager implements Manager {
   
   public ConfirmService getConfirmApi() {
     if (mConfirmService == null) {
-      mConfirmService = provideRetrofitUtc(TextSecurePreferences.getServerIpAddress()
-        + ":"
-        + TextSecurePreferences.getServerPort()
-        + "/api/confirmation/")
+      mConfirmService = provideRetrofitUtc(
+        TextSecurePreferences.getEndpoint()
+        + "api/confirmation/")
         .create(ConfirmService.class);
     }
     return mConfirmService;
@@ -85,10 +81,9 @@ public class ApiManager implements Manager {
   
   public ActivityService getActivityApi() {
     if (mActivityService == null) {
-      mActivityService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
-        + ":"
-        + TextSecurePreferences.getServerPort()
-        + "/api/activity/")
+      mActivityService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+        + "api/activity/")
         .create(ActivityService.class);
     }
     return mActivityService;
@@ -96,10 +91,9 @@ public class ApiManager implements Manager {
   
   public FileUploadService getFileUploadApi() {
     if (mFileUploadService == null) {
-      mFileUploadService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
-      + ":"
-      + TextSecurePreferences.getServerPort()
-      + "/api/uploader/")
+      mFileUploadService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+      + "api/uploader/")
         .create(FileUploadService.class);
     }
     return mFileUploadService;
@@ -107,10 +101,9 @@ public class ApiManager implements Manager {
   
   public DocumentService getDocumentApi() {
     if (mDocumentService == null) {
-      mDocumentService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
-      + ":"
-      + TextSecurePreferences.getServerPort()
-      + "/api/uploader/")
+      mDocumentService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+      + "api/uploader/")
         .create(DocumentService.class);
     }
     return mDocumentService;
@@ -118,10 +111,9 @@ public class ApiManager implements Manager {
   
   public FileDownloadService getFileDownloadApi() {
     if (mFileDownloadService == null) {
-      mFileDownloadService = provideRetrofit(TextSecurePreferences.getServerIpAddress()
-        + ":"
-        + TextSecurePreferences.getServerPort()
-        + "/api/uploader/")
+      mFileDownloadService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+        + "api/uploader/")
         .create(FileDownloadService.class);
     }
     return mFileDownloadService;
@@ -132,7 +124,6 @@ public class ApiManager implements Manager {
     return new Retrofit.Builder()
       .baseUrl(url)
       .client(provideOkHttpClient())
-      //.addConverterFactory(GsonConverterFactory.create(App.getGson()))
       .addConverterFactory(GsonConverterFactory.create(App.getGson()))
       .build();
   }
@@ -142,7 +133,6 @@ public class ApiManager implements Manager {
     return new Retrofit.Builder()
       .baseUrl(url)
       .client(provideOkHttpClient())
-      //.addConverterFactory(GsonConverterFactory.create(App.getGson()))
       .addConverterFactory(GsonConverterFactory.create(App.getGsonUtc()))
       .build();
   }

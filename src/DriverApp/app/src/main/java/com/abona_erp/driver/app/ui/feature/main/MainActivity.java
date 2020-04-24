@@ -79,6 +79,7 @@ import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
+import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.adapter.LastActivityAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
@@ -207,6 +208,13 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     
+    if (TextSecurePreferences.enableLoginPage()) {
+      Intent intent = new Intent(this, LoginActivity.class);
+      startActivity(intent);
+      finish();
+      return;
+    }
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOGIFY
     initializeLogify();
@@ -258,7 +266,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
             || !TextSecurePreferences.getFcmToken(getBaseContext()).equals(task.getResult().getToken())) {
             TextSecurePreferences.setFcmToken(getBaseContext(), task.getResult().getToken());
             Log.d("MainActivity","Firebase registration Token=" + task.getResult().getToken());
-            if (TextSecurePreferences.isDeviceFirstTimeRun(getBaseContext())) {
+            if (TextSecurePreferences.isDeviceFirstTimeRun()) {
               AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -408,7 +416,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       }
     });
 
-    if (!TextSecurePreferences.isDeviceRegistrated(getBaseContext())) {
+    if (!TextSecurePreferences.isDeviceRegistrated()) {
       loadMainFragment(DeviceNotRegistratedFragment.newInstance());
     } else {
       loadMainFragment(MainFragment.newInstance());
@@ -447,43 +455,43 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       
       if (!hasPermissions(Manifest.permission.READ_PHONE_STATE)) {
         Log.i(TAG, "onActivityResult() called! - No READ_PHONE_STATE permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+        TextSecurePreferences.setDevicePermissionsGranted(false);
         showPermissionErrorMessageAndFinish(getResources().getString(R.string.need_permissions), "No READ_PHONE_STATE permission...");
         return;
       }
       if (!hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
         Log.i(TAG, "onActivityResult() called! - No ACCESS_FINE_LOCATION permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+        TextSecurePreferences.setDevicePermissionsGranted(false);
         showPermissionErrorMessageAndFinish(getResources().getString(R.string.need_permissions), "No ACCESS_FINE_LOCATION permission...");
         return;
       }
       if (!hasPermissions(Manifest.permission.CAMERA)) {
         Log.i(TAG, "onActivityResult() called! - No CAMERA permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+        TextSecurePreferences.setDevicePermissionsGranted(false);
         showPermissionErrorMessageAndFinish(getResources().getString(R.string.need_permissions), "No CAMERA permission...");
         return;
       }
       if (!hasPermissions(Manifest.permission.RECORD_AUDIO)) {
         Log.i(TAG, "onActivityResult() called! - No RECORD_AUDIO permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+        TextSecurePreferences.setDevicePermissionsGranted(false);
         showPermissionErrorMessageAndFinish(getResources().getString(R.string.need_permissions), "No RECORD_AUDIO permission...");
         return;
       }
       if (!hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
         Log.i(TAG, "onActivityResult() called! - No WRITE_EXTERNAL_STORAGE permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+        TextSecurePreferences.setDevicePermissionsGranted(false);
         showPermissionErrorMessageAndFinish(getResources().getString(R.string.need_permissions), "No WRITE_EXTERNAL_STORAGE permission...");
         return;
       }
       if (!hasPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
         Log.i(TAG, "onActivityResult() called! - No READ_EXTERNAL_STORAGE permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+        TextSecurePreferences.setDevicePermissionsGranted(false);
         showPermissionErrorMessageAndFinish(getResources().getString(R.string.need_permissions), "No READ_EXTERNAL_STORAGE permission...");
         return;
       }
     }
     
-    TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), true);
+    TextSecurePreferences.setDevicePermissionsGranted(true);
   /*
     ServiceWorker serviceWorker = new ServiceWorker(getApplicationContext());
     Intent mServiceWorkerIntent = new Intent(getApplicationContext(), serviceWorker.getClass());
@@ -1066,7 +1074,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   private void initFirstTimeRun() {
     Log.i(TAG, "initFirstTimeRun() called!");
   
-    if (!TextSecurePreferences.isDeviceFirstTimeRun(getBaseContext())) {
+    if (!TextSecurePreferences.isDeviceFirstTimeRun()) {
       TextSecurePreferences.setFCMSenderID(getBaseContext(), "724562515953");
     
       DeviceProfile deviceProfile = new DeviceProfile();
@@ -1097,7 +1105,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       
       mMainViewModel.insert(deviceProfile);
      
-      TextSecurePreferences.setDeviceFirstTimeRun(getBaseContext(), true);
+      TextSecurePreferences.setDeviceFirstTimeRun(true);
     }
   }
   
@@ -1120,7 +1128,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
           // check if all permissions are granted:
           if (report.areAllPermissionsGranted()) {
             Log.d(TAG, "areAllPermissionsGranted() called!");
-            TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), true);
+            TextSecurePreferences.setDevicePermissionsGranted(true);
             /*
             ServiceWorker serviceWorker = new ServiceWorker(getApplicationContext());
             Intent mServiceWorkerIntent = new Intent(getApplicationContext(), serviceWorker.getClass());
@@ -1134,14 +1142,14 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
             initFirstTimeRun();
           } else {
             Log.d(TAG, "!!!areAllPermissionsGranted() called!");
-            TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+            TextSecurePreferences.setDevicePermissionsGranted(false);
             showSettingsDialog();
           }
           
           // check for permanent denial of any permission.
           if (report.isAnyPermissionPermanentlyDenied()) {
             Log.d(TAG, "isAnyPermissionPermanentlyDenied() called!");
-            TextSecurePreferences.setDevicePermissionsGranted(getBaseContext(), false);
+            TextSecurePreferences.setDevicePermissionsGranted(false);
             showSettingsDialog();
           }
         }
