@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Flag-Kit</string>
-    <declare-styleable name="FlagKit">
-    <attr format="string" name="countryCode"/>
-  </declare-styleable>
-</resources>
