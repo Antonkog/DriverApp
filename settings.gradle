@@ -1,0 +1,7 @@
+include ':app', ':core', ':flag-kit', ':photolib'
+rootProject.name='Driver App'
+//includeBuild './app'
+project(':app').projectDir = new File(settingsDir, './src/DriverApp/app')
+project(':core').projectDir = new File(settingsDir, './src/DriverApp/core')
+project(':photolib').projectDir = new File(settingsDir, './src/DriverApp/photolib')
+project(':flag-kit').projectDir = new File(settingsDir, './src/DriverApp/flag-kit')
