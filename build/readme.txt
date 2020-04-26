@@ -1,1 +1,0 @@
-Releases and change logs
