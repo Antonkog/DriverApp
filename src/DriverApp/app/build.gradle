@@ -58,7 +58,7 @@ logger.quiet("Build variable Major:$System.env.Major")
         buildConfigField "long", "BUILD_TIMESTAMP", getLastCommitTimestamp() + "L"
         buildConfigField "String[]", "LANGUAGES", "new String[]{\"en_US\",\"de_DE\",\"ru_RU\",\"pl_PL\"}"
         buildConfigField "int", "CANONICAL_VERSION_CODE", "$versionCode"
-        setProperty("archivesBaseName", applicationId +  "-$versionName" + "(versionCode)")
+        setProperty("archivesBaseName", applicationId +  "-$versionName" + "($versionCode)")
     }
 
     // Load keystore properties if file exists.
