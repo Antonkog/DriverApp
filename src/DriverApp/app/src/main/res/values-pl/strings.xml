@@ -20,6 +20,7 @@
   <string name="action_photo_damaged">Zdjęcie jest uszkodzone lub już nie istnieje!</string>
   <string name="action_start_order">Rozpocząć zadanie</string>
   <string name="action_start_task_msg">Czy chcesz rozpocząć zadanie?</string>
+  <string name="menu_protocol">Protokół</string>
   <string name="menu_settings">Ustawienia</string>
   <string name="menu_about">O programie</string>
   <string name="action_lets_start">Zaczynajmy</string>

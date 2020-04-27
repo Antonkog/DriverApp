@@ -77,6 +77,7 @@ import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
+import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
@@ -87,6 +88,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.about.SoftwareAboutFrag
 import com.abona_erp.driver.app.ui.feature.main.fragment.document_viewer.DocumentViewerFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.protocol.ProtocolFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
@@ -686,30 +688,8 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         
         builder.append("Device registration was successfully!\n\nRegistration Number\n");
         builder.append(deviceID);
-
-        /*
-        final StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
-        final SpannableStringBuilder sb = new SpannableStringBuilder("Device registration was successfully!\n\nRegistration Number\n" + DeviceUtils.getUniqueIMEI(getBaseContext()));
-        sb.setSpan(boldSpan, "Device registration was successfully!\n\nRegistration Number\n".length(), DeviceUtils.getUniqueIMEI(getBaseContext()).length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        */
-        runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            MessageDialog.build((AppCompatActivity)MainActivity.this)
-              .setStyle(DialogSettings.STYLE.STYLE_IOS)
-              .setTheme(DialogSettings.THEME.LIGHT)
-              .setTitle("Successful Registrated")
-              .setMessage(builder.toString())
-              .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
-                new OnDialogButtonClickListener() {
-                  @Override
-                  public boolean onClick(BaseDialog baseDialog, View v) {
-                    return false;
-                  }
-                })
-              .show();
-          }
-        });
+        
+        messageBox_Ok("Successful Registrated", builder.toString());
         break;
         
       case PageItemDescriptor.PAGE_NEW_DOCUMENTS:
@@ -791,6 +771,12 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         }
       }
     });
+  }
+  
+  @Subscribe
+  public void onMessageEvent(ProtocolEvent event) {
+    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_PROTOCOL),
+      null), ProtocolFragment.newInstance());
   }
   
   @Subscribe

@@ -24,6 +24,10 @@ public class Header {
   @Expose
   private DataType dataType;
   
+  @SerializedName("DeviceId")
+  @Expose
+  private String deviceId;
+  
   public Date getTimestampSenderUTC() {
     return timestampSenderUTC;
   }
@@ -46,5 +50,13 @@ public class Header {
   
   public void setDataType(DataType dataType) {
     this.dataType = dataType;
+  }
+  
+  public String getDeviceId() {
+    return deviceId;
+  }
+  
+  public void setDeviceId(String deviceId) {
+    this.deviceId = deviceId;
   }
 }

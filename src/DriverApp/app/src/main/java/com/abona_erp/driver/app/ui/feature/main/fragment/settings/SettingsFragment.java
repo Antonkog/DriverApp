@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -34,6 +35,7 @@ import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -59,6 +61,7 @@ public class SettingsFragment extends Fragment {
   
   private LinearLayout mLlLanguage;
   private Button mBtnSave;
+  private AppCompatButton mBtnProtocol;
   //private TextInputEditText mTeServerPort;
   //private TextInputEditText mTeIpAddress;
   
@@ -312,6 +315,14 @@ public class SettingsFragment extends Fragment {
             }
           })
           .show();
+      }
+    });
+    
+    mBtnProtocol = (AppCompatButton)root.findViewById(R.id.btn_protocol);
+    mBtnProtocol.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        App.eventBus.post(new ProtocolEvent());
       }
     });
   }

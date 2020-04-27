@@ -194,6 +194,7 @@ public class BackgroundServiceWorker extends Service {
                 } else {
                   header.setDataType(DataType.CONFIRMATION);
                 }
+                header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
                 header.setTimestampSenderUTC(/*commItemDB.getHeader().getTimestampSenderUTC()*/new Date());
                 Log.i(TAG, "***************************** " + commItemDB.getHeader().getTimestampSenderUTC());
                 commItemReq.setHeader(header);
@@ -539,6 +540,7 @@ public class BackgroundServiceWorker extends Service {
             CommItem commItem = new CommItem();
             Header header = new Header();
             header.setDataType(DataType.DEVICE_PROFILE);
+            header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             commItem.setHeader(header);
   
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
@@ -606,6 +608,7 @@ public class BackgroundServiceWorker extends Service {
             CommItem commItem = new CommItem();
             Header header = new Header();
             header.setDataType(DataType.DEVICE_PROFILE);
+            header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             commItem.setHeader(header);
   
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();

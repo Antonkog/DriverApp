@@ -21,6 +21,7 @@
   <string name="action_photo_damaged">Фото повреждено или больше не существует!</string>
   <string name="action_start_order">Начать задание</string>
   <string name="action_start_task_msg">Вы хотите начать задание?</string>
+  <string name="menu_protocol">Протокол</string>
   <string name="menu_settings">Параметры</string>
   <string name="menu_about">О программе</string>
   <string name="action_lets_start">Давайте начнем</string>

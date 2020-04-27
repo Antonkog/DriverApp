@@ -18,12 +18,12 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_centerVertical="true"
-      android:layout_marginLeft="@dimen/spacing_large"
+      android:layout_marginStart="@dimen/spacing_large"
       android:layout_marginEnd="@dimen/spacing_large"
       android:padding="@dimen/spacing_large"
-      android:background="?attr/selectableItemBackgroundBorderless"
+      android:backgroundTint="@color/clrAbona"
       android:src="@drawable/ic_arrow_back"
-      android:tint="@color/clrFont"
+      android:tint="@color/white"
       />
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -47,7 +47,8 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:weightSum="2.0"
-      android:layout_alignParentBottom="true">
+      android:layout_alignParentBottom="true"
+      android:baselineAligned="false">
 
       <LinearLayout
         android:orientation="vertical"
@@ -96,7 +97,7 @@
             android:rotation="90"
             android:tint="@color/clrFont"
             android:src="@drawable/ic_arrow_right"
-            />
+            android:contentDescription="TODO" />
 
         </LinearLayout>
 
@@ -270,25 +271,57 @@
         </LinearLayout>
 
         <LinearLayout
-          android:orientation="vertical"
+          android:orientation="horizontal"
           android:layout_width="match_parent"
           android:layout_height="0dp"
           android:layout_weight="1"
           android:gravity="bottom"
           android:layout_marginTop="@dimen/spacing_medium">
 
-          <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_settings_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:drawableStart="@drawable/ic_reset"
-            android:drawablePadding="@dimen/spacing_medium"
-            android:paddingStart="@dimen/spacing_large"
-            android:paddingEnd="@dimen/spacing_large"
-            android:text="Device Reset"
-            app:backgroundTint="#ffaa00"
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+          </LinearLayout>
+
+          <Space
+            android:layout_width="@dimen/spacing_medium"
+            android:layout_height="0dp"
             />
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatButton
+              android:id="@+id/btn_protocol"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end"
+              android:drawableStart="@drawable/ic_protocol"
+              android:drawableTint="@color/clrIcon"
+              android:drawablePadding="@dimen/spacing_medium"
+              android:text="Protocol"
+              app:backgroundTint="#b2bec3"
+              />
+
+            <androidx.appcompat.widget.AppCompatButton
+              android:id="@+id/btn_settings_save"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end"
+              android:drawableStart="@drawable/ic_reset"
+              android:drawableTint="@color/clrIcon"
+              android:drawablePadding="@dimen/spacing_medium"
+              android:text="Device Reset"
+              app:backgroundTint="#ffaa00"
+              />
+
+          </LinearLayout>
 
         </LinearLayout>
 
