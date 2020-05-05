@@ -208,7 +208,7 @@ public class TextSecurePreferences {
   
   public static String getEndpoint() {
     return getStringPreference(ContextUtils.getApplicationContext(),
-      PREF_ENDPOINT, "https://213.144.11.162/s" /*https://93.189.159.10/*/);
+      PREF_ENDPOINT, "https://213.144.11.162/" /*https://93.189.159.10/*/);
   }
   
   public static void setEndpoint(String endpoint) {

@@ -40,6 +40,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageCam
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageEditFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageGalleryFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageSettingsFragment;
+import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.photolib.PhotoEditorView;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
@@ -56,18 +57,12 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -390,6 +385,7 @@ public class PhotoFragment extends Fragment
       public void onClick(View view) {
         
         if (mNotify != null && mNotify.getPhotoUrls() != null) {
+          
           boolean uploadFiles = false;
           for (int i = 0; i < mPhotoUrls.size(); i++) {
             UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
@@ -465,16 +461,15 @@ public class PhotoFragment extends Fragment
                                 
                                 App.eventBus.post(new DocumentEvent(mNotify.getMandantId(), mNotify.getOrderNo()));
                               } else {
+  
+                                WaitDialog.dismiss(1000);
+                                App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         
                                 switch (response.code()) {
                                   case 401:
                                     handleAccessToken();
                                     break;
                                   default:
-                                    if (j == mPhotoUrls.size()-1) {
-                                      WaitDialog.dismiss(1000);
-                                      App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-                                    }
                                     break;
                                 }
                               }
@@ -494,8 +489,6 @@ public class PhotoFragment extends Fragment
                     } else {
                       WaitDialog.dismiss(500);
                     }
-                    
-                    //App.eventBus.post(new BackEvent());
                     return false;
                   }
                 })
@@ -524,12 +517,7 @@ public class PhotoFragment extends Fragment
       LinearLayoutManager.VERTICAL, false);
     mRvMenu.setLayoutManager(llmMenu);
     mRvMenu.setAdapter(mMenuToolsAdapter);
-/*
-    LinearLayoutManager llmTools = new LinearLayoutManager(getContext(),
-      LinearLayoutManager.HORIZONTAL, false);
-    mRvTools.setLayoutManager(llmTools);
-    mRvTools.setAdapter(mEditingToolsAdapter);
- */
+
     LinearLayoutManager llmGallery = new LinearLayoutManager(getContext(),
       LinearLayoutManager.HORIZONTAL, false);
     mRvGalleryView.setLayoutManager(llmGallery);
@@ -537,100 +525,27 @@ public class PhotoFragment extends Fragment
   }
   
   private void handleAccessToken() {
-    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-    RequestBody body = RequestBody.create(mediaType, "grant_type=password&username=manyvehicles%40abona-erp.com&password=1234qwerQWER%2C.-");
-    
-    Request request = new Request.Builder()
-      .url(TextSecurePreferences.getEndpoint() + "authentication")
-      .post(body)
-      .addHeader("Content-Type", "application/x-www-form-urlencoded")
-      .addHeader("Accept-Encoding", "gzip, deflate")
-      .addHeader("Content-Length", "84")
-      .addHeader("Connection", "keep-alive")
-      .addHeader("cache-control", "no-cache")
-      .build();
-    AsyncTask.execute(new Runnable() {
+    App.apiManager.provideAuthClient().newCall(App.apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
       @Override
-      public void run() {
-        
-        getClient().newCall(request).enqueue(new okhttp3.Callback() {
-          @Override
-          public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
-          
-          }
-          
-          @Override
-          public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
-            if (response.isSuccessful()) {
-              try {
-                String jsonData = response.body().string().toString();
-                JSONObject jobject = new JSONObject(jsonData);
-                //Log.i(TAG, "ACCESS_TOKEN " + jobject.getString("access_token"));
-                String access_token = jobject.getString("access_token");
-                if (!TextUtils.isEmpty(access_token)) {
-                  TextSecurePreferences.setAccessToken(getContext(), access_token);
-                }
-              } catch (NullPointerException e) {
-                e.printStackTrace();
-              } catch (JSONException e) {
-                e.printStackTrace();
-              }
+      public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
+      
+      }
+    
+      @Override
+      public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
+        if (response.isSuccessful()) {
+          try {
+            String jsonData = response.body().string().toString();
+            JSONObject jobject = new JSONObject(jsonData);
+            String access_token = jobject.getString("access_token");
+            if (!TextUtils.isEmpty(access_token)) {
+              TextSecurePreferences.setAccessToken(getContext(), access_token);
             }
+          } catch (Exception e) {
+            e.printStackTrace();
           }
-        });
+        }
       }
     });
-  }
-  
-  OkHttpClient mClient = null;
-  private OkHttpClient getClient() {
-    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-    
-    if (mClient == null) {
-      synchronized (BackgroundServiceWorker.class) {
-        if (mClient == null) {
-          mClient = new OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .hostnameVerifier(new HostnameVerifier() {
-              @Override
-              public boolean verify(String s, SSLSession sslSession) {
-                return true;
-              }
-            })
-            .sslSocketFactory(getSslSocket())
-            .addInterceptor(logging)
-            .build();
-        }
-      }
-    }
-    return mClient;
-  }
-  
-  private SSLSocketFactory getSslSocket() {
-    try {
-      SSLContext sslContext = SSLContext.getInstance("TLS");
-      X509TrustManager tm = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-        
-        }
-        
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-        
-        }
-        
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-          return new X509Certificate[0];
-        }
-      };
-      sslContext.init(null, new TrustManager[]{tm}, null);
-      return sslContext.getSocketFactory();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 }

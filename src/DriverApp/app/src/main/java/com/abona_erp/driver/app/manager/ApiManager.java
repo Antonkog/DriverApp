@@ -12,12 +12,15 @@ import com.abona_erp.driver.app.data.remote.DocumentService;
 import com.abona_erp.driver.app.data.remote.FileDownloadService;
 import com.abona_erp.driver.app.data.remote.FCMService;
 import com.abona_erp.driver.app.data.remote.FileUploadService;
+import com.abona_erp.driver.app.data.remote.RemoteConstants;
 import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
+import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.io.File;
 import java.security.cert.CertificateException;
@@ -32,7 +35,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -50,6 +56,22 @@ public class ApiManager implements Manager {
   private FileUploadService mFileUploadService;
   private DocumentService mDocumentService;
   private FileDownloadService mFileDownloadService;
+  
+  static OkHttpClient.Builder apiClientBuilder;
+  static OkHttpClient.Builder authClientBuilder;
+  static Request.Builder      authRequestBuilder;
+  
+  public static OkHttpClient provideAuthClient() {
+    return makeAuthClientBuilder().build();
+  }
+  
+  public static OkHttpClient provideApiClient() {
+    return makeApiClientBuilder().build();
+  }
+  
+  public static Request provideAuthRequest() {
+    return makeAuthRequestBuilder().build();
+  }
   
   public FCMService getFCMApi() {
     if (mFCMService == null) {
@@ -180,7 +202,7 @@ public class ApiManager implements Manager {
     }
   
     httpClient.cache(getCache());
-    httpClient.sslSocketFactory(getSslSocket());
+    httpClient.sslSocketFactory(ClientSSLSocketFactory.getSocketFactory());
     httpClient.hostnameVerifier(new HostnameVerifier() {
       @Override
       public boolean verify(String s, SSLSession sslSession) {
@@ -191,31 +213,102 @@ public class ApiManager implements Manager {
     return httpClient.build();
   }
   
-  private SSLSocketFactory getSslSocket() {
-    try {
-      SSLContext sslContext = SSLContext.getInstance("TLS");
-      X509TrustManager tm = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-    
-        }
-  
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-    
-        }
-  
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-          return new X509Certificate[0];
-        }
-      };
-      sslContext.init(null, new TrustManager[]{tm}, null);
-      return sslContext.getSocketFactory();
-    } catch (Exception e) {
-      e.printStackTrace();
+  static Request.Builder makeAuthRequestBuilder() {
+    if (authRequestBuilder == null) {
+      MediaType mediaType = MediaType.parse(RemoteConstants.MEDIA_TYPE_X_WWW_FORM_URLENCODED);
+      RequestBody requestBody = RequestBody.create(mediaType, RemoteConstants.ENDPOINT_AUTH);
+      
+      authRequestBuilder = new Request.Builder()
+        .url(TextSecurePreferences.getEndpoint() + "authentication")
+        .post(requestBody)
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .addHeader("Accept-Encoding", "gzip, deflate")
+        .addHeader("Connection", "keep-alive")
+        .addHeader("cache-control", "no-cache");
     }
-    return null;
+    return authRequestBuilder;
+  }
+  
+  static OkHttpClient.Builder makeApiClientBuilder() {
+    if (apiClientBuilder == null) {
+      apiClientBuilder = new OkHttpClient.Builder()
+        .hostnameVerifier(new HostnameVerifier() {
+          @Override
+          public boolean verify(String s, SSLSession sslSession) {
+            return true;
+          }
+        })
+        .sslSocketFactory(ClientSSLSocketFactory.getSocketFactory())
+        .followRedirects(true)
+        .followSslRedirects(true)
+        .retryOnConnectionFailure(true)
+        .cache(null)
+        .connectTimeout(RemoteConstants.TIME_OUT_API, TimeUnit.SECONDS)
+        .writeTimeout(RemoteConstants.TIME_OUT_API, TimeUnit.SECONDS)
+        .readTimeout(RemoteConstants.TIME_OUT_API, TimeUnit.SECONDS);
+  
+      String versionName = BuildConfig.VERSION_NAME;
+      try {
+        PackageInfo pi = ContextUtils.getApplicationContext()
+          .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
+        versionName = pi.versionName;
+      } catch (PackageManager.NameNotFoundException ignore) {}
+      apiClientBuilder.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", versionName));
+      apiClientBuilder.addInterceptor(new RequestInterceptor());
+      apiClientBuilder.addInterceptor(new NetworkConnectionInterceptor() {
+        @Override
+        public boolean isInternetAvailable() {
+          return true;
+        }
+  
+        @Override
+        public void onInternetUnavailable() {
+    
+        }
+  
+        @Override
+        public void onCacheUnavailable() {
+    
+        }
+      });
+      apiClientBuilder.addInterceptor(new AccessTokenInterceptor());
+  
+      if (BuildConfig.DEBUG) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        apiClientBuilder.addInterceptor(logging);
+      }
+    }
+    return apiClientBuilder;
+  }
+  
+  static OkHttpClient.Builder makeAuthClientBuilder() {
+    if (authClientBuilder == null) {
+      authClientBuilder = new OkHttpClient.Builder()
+        .hostnameVerifier(new HostnameVerifier() {
+          @Override
+          public boolean verify(String s, SSLSession sslSession) {
+            return true;
+          }
+        })
+        .sslSocketFactory(ClientSSLSocketFactory.getSocketFactory())
+        .followRedirects(true)
+        .followSslRedirects(true)
+        .retryOnConnectionFailure(true)
+        .cache(null)
+        .connectTimeout(RemoteConstants.TIME_OUT_API, TimeUnit.SECONDS)
+        .writeTimeout(RemoteConstants.TIME_OUT_API, TimeUnit.SECONDS)
+        .readTimeout(RemoteConstants.TIME_OUT_API, TimeUnit.SECONDS);
+  
+      String versionName = BuildConfig.VERSION_NAME;
+      try {
+        PackageInfo pi = ContextUtils.getApplicationContext()
+          .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
+        versionName = pi.versionName;
+      } catch (PackageManager.NameNotFoundException ignore) {}
+      authClientBuilder.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", versionName));
+    }
+    return authClientBuilder;
   }
   
   private Cache getCache() {

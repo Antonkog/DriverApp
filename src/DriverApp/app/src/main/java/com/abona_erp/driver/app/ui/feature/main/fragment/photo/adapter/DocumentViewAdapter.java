@@ -25,8 +25,11 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.core.base.ContextUtils;
 import com.google.gson.Gson;
 import com.pnikosis.materialishprogress.ProgressWheel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,11 +39,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,32 +81,22 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
     Log.d(TAG, "onBindViewHolder");
     
-    /*
-    if (appFileInterchangeItems == null)
-      return;
-    if (appFileInterchangeItems.length == 0)
-      return;
-     */
-    
     holder.setIsRecyclable(false);
-    if (_items.get(position).getFileName() != null/*appFileInterchangeItems[position].getFileName() != null*/) {
-      //holder.tv_document_link.setText(appFileInterchangeItems[position].getFileName());
+    if (_items.get(position).getFileName() != null) {
       holder.tv_document_link.setText(_items.get(position).getFileName());
     }
-    if (_items.get(position).getAddedUser() != null/*appFileInterchangeItems[position].getAddedUser() != null*/) {
-      //holder.tv_document_user.setText(appFileInterchangeItems[position].getAddedUser());
+    if (_items.get(position).getAddedUser() != null) {
       holder.tv_document_user.setText(_items.get(position).getAddedUser());
     }
-    if (_items.get(position).getAddedDate() != null/*appFileInterchangeItems[position].getAddedDate() != null*/) {
+    if (_items.get(position).getAddedDate() != null) {
       synchronized (DocumentViewAdapter.this) {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        //holder.tv_document_created.setText(sdf.format(appFileInterchangeItems[position].getAddedDate()));
         holder.tv_document_created.setText(sdf.format(_items.get(position).getAddedDate()));
       }
     }
   
-    if (isFileExists(mMandantID, mOrderNo, _items.get(position).getFileName()/*appFileInterchangeItems[position].getFileName()*/)) {
+    if (isFileExists(mMandantID, mOrderNo, _items.get(position).getFileName())) {
       holder.btn_document_download.setText(mContext.getResources().getString(R.string.action_open));
     } else {
       holder.btn_document_download.setText(mContext.getResources().getString(R.string.action_download));
@@ -112,12 +105,12 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       @Override
       public void onClick(View view) {
         
-        if (isFileExists(mMandantID, mOrderNo, _items.get(position).getFileName()/*appFileInterchangeItems[position].getFileName()*/)) {
+        if (isFileExists(mMandantID, mOrderNo, _items.get(position).getFileName())) {
   
           File file = new File(Environment
             .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             .getAbsolutePath() + APP_FOLDER + mMandantID + PATH_SLASH + mOrderNo,
-            _items.get(position).getFileName()/*appFileInterchangeItems[position].getFileName()*/);
+            _items.get(position).getFileName());
           
           MimeTypeMap mime = MimeTypeMap.getSingleton();
           String ext = file.getName().substring(file.getName().lastIndexOf(".") + 1);
@@ -151,9 +144,9 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
           holder.progressWheel.setVisibility(View.VISIBLE);
   
           try {
-            URL url = new URL(_items.get(position).getLinkToFile()/*appFileInterchangeItems[position].getLinkToFile()*/);
-            String id = url.toString().substring(url.toString().lastIndexOf('=') + 1);
-            fileDownload(id, _items.get(position).getFileName()/*appFileInterchangeItems[position].getFileName()*/, position);
+            //URL url = new URL(_items.get(position).getLinkToFile());
+            Log.i(TAG, "URL: " + _items.get(position).getLinkToFile());
+            fileDownload(_items.get(position).getLinkToFile(), _items.get(position).getFileName(), position);
           } catch (Exception e) {
             Log.e(TAG, e.getMessage());
           }
@@ -180,6 +173,8 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       mOrderNo = String.valueOf(orderNo);
       
       notifyDataSetChanged();
+    } else {
+      Log.i(TAG, "No items...");
     }
   }
   
@@ -193,14 +188,6 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
     } else {
       return 0;
     }
-
-    /*
-    if (appFileInterchangeItems != null) {
-      return appFileInterchangeItems.length;
-    } else {
-      return 0;
-    }
-     */
   }
   
   class ViewHolder extends RecyclerView.ViewHolder {
@@ -223,24 +210,24 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
   }
   
   private void fileDownload(String id, String filename, int position) {
-    Call<ResponseBody> call = App.apiManager.getFileDownloadApi()
-      .downloadFile(id);
-    call.enqueue(new Callback<ResponseBody>() {
+  
+    Request req = new Request.Builder().url(id).build();
+    App.apiManager.provideApiClient().newCall(req).enqueue(new okhttp3.Callback() {
       @Override
-      public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-        if (response.isSuccessful()) {
-          Toast.makeText(mContext, "Downloading...", Toast.LENGTH_SHORT).show();
-          
-          fileDownloadTask = new FileDownloadTask(filename, position);
-          fileDownloadTask.execute(response.body());
-        } else {
-          Log.d(TAG, "Connection failed! " + response.errorBody());
-        }
+      public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
+        Log.d(TAG, "error");
       }
   
       @Override
-      public void onFailure(Call<ResponseBody> call, Throwable t) {
-        Log.d(TAG, "error");
+      public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
+        if (response.isSuccessful()) {
+//          Toast.makeText(ContextUtils.getApplicationContext(), "Downloading...", Toast.LENGTH_SHORT).show();
+    
+          fileDownloadTask = new FileDownloadTask(filename, position);
+          fileDownloadTask.execute(response.body());
+        } else {
+          Log.d(TAG, "Connection failed! " + response.message());
+        }
       }
     });
   }

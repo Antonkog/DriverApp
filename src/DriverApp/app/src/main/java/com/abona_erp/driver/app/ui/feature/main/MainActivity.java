@@ -48,7 +48,6 @@ import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -144,7 +143,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends BaseActivity implements OnCompleteListener<Void> {
+public class MainActivity extends BaseActivity /*implements OnCompleteListener<Void>*/ {
   
   private static final String TAG = MainActivity.class.getSimpleName();
   
@@ -175,15 +174,16 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
   }
   
   // Provides access to the Geofencing API.
+  /*
   private GeofencingClient mGeofencingClient;
   private PendingIntent mGeofencePendingIntent;
   private PendingGeofenceTask mPendingGeofenceTask = PendingGeofenceTask.NONE;
   private ArrayList<Geofence> mGeofenceList;
-  
+  */
   private TelephonyManager mTelephonyManager;
   private ConnectivityChangeReceiver connectivityChangeReceiver = null;
   private SignalStrengthStateListener signalStrengthStateListener = null;
-  
+  /*
   @Override
   public void onComplete(@NonNull Task<Void> task) {
     mPendingGeofenceTask = PendingGeofenceTask.NONE;
@@ -195,12 +195,13 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       Log.w("*****", errorMessage);
     }
   }
-  
+  */
   private OnMenuItemClickListener<PowerMenuItem> onProfileItemClickListener =
     new OnMenuItemClickListener<PowerMenuItem>() {
       @Override
       public void onItemClick(int position, PowerMenuItem item) {
-        loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS), null), SettingsFragment.newInstance());
+        loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS),
+          null), SettingsFragment.newInstance());
         mProfileMenu.dismiss();
       }
     };
@@ -241,28 +242,8 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         public void onComplete(@NonNull Task<InstanceIdResult> task) {
           if (!task.isSuccessful()) {
             return;
-          }/*
-          if (TextSecurePreferences.isDeviceFirstTimeRun(getBaseContext())) {
-            AsyncTask.execute(new Runnable() {
-              @Override
-              public void run() {
-                DriverDatabase db = DriverDatabase.getDatabase();
-                DeviceProfileDAO dao = db.deviceProfileDAO();
-                List<DeviceProfile> deviceProfiles = dao.getDeviceProfiles();
-                if (deviceProfiles.size() > 0) {
-                  TextSecurePreferences.setFcmTokenUpdate(getBaseContext(), true);
-                  DateFormat dfUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                    Locale.getDefault());
-                  dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
-                  Date currentTimestamp = new Date();
-                  TextSecurePreferences.setFcmTokenLastSetTime(getBaseContext(), dfUtc.format(currentTimestamp));
+          }
           
-                  deviceProfiles.get(0).setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
-                  mMainViewModel.update(deviceProfiles.get(0));
-                }
-              }
-            });
-          }*/
           if (TextUtils.isEmpty(TextSecurePreferences.getFcmToken(getBaseContext()))
             || TextSecurePreferences.getFcmToken(getBaseContext()).length() <= 0
             || !TextSecurePreferences.getFcmToken(getBaseContext()).equals(task.getResult().getToken())) {
@@ -389,27 +370,6 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         }
       }
     });
-    /*
-    mMainViewModel.getRowCount().observe(MainActivity.this, new Observer<Integer>() {
-      @Override
-      public void onChanged(Integer integer) {
-        if (integer == null)
-          return;
-        if (integer == 0) {
-          mMainViewModel.getAllLastActivityItems().observe(MainActivity.this, new Observer<List<LastActivity>>() {
-            @Override
-            public void onChanged(List<LastActivity> lastActivities) {
-              if (lastActivities.size() > 0) {
-                for (int i = 0; i < lastActivities.size(); i++) {
-                  mMainViewModel.delete(lastActivities.get(i));
-                }
-              }
-            }
-          });
-        }
-      }
-    });
-     */
 
     mMainViewModel.getAllLastActivityItems().observe(this, new Observer<List<LastActivity>>() {
       @Override
@@ -424,6 +384,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       loadMainFragment(MainFragment.newInstance());
     }
     
+    /*
     // Empty list for storing geofences.
     mGeofenceList = new ArrayList<>();
     mGeofencePendingIntent = null;
@@ -431,6 +392,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     mGeofencingClient = LocationServices.getGeofencingClient(this);
     
     addGeofencesButtonHandler(null);
+     */
     startBackgroundWorkerService();
     
     App.eventBus.post(new TaskStatusEvent(TextSecurePreferences.getTaskPercentage(getBaseContext())));
@@ -520,7 +482,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     Log.i(TAG, "isMyServiceRunning?" + "false");
     return false;
   }
-  
+  /*
   private void populateGeofenceList() {
     for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet()) {
       
@@ -549,7 +511,8 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         .build());
     }
   }
-  
+  */
+  /*
   public void showNotification(Context context, String title, String body, Intent intent) {
     NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     
@@ -579,7 +542,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     
     notificationManager.notify(notificationId, mBuilder.build());
   }
-  
+  */
   private static boolean mConnected;
   @Subscribe
   public void onMessageEvent(ConnectivityEvent event) {
@@ -663,19 +626,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
         break;
         
       case PageItemDescriptor.PAGE_TASK_NOT_FOUND:
-        MessageDialog.build((AppCompatActivity)MainActivity.this)
-          .setStyle(DialogSettings.STYLE.STYLE_IOS)
-          .setTheme(DialogSettings.THEME.LIGHT)
-          .setTitle("Not Found")
-          .setMessage("Task existiert nicht mehr!")
-          .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
-            new OnDialogButtonClickListener() {
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-                return false;
-              }
-            })
-          .show();
+        messageBox_Ok("Not Found", "Task existiert nicht mehr!");
         break;
         
       case PageItemDescriptor.PAGE_DEVICE_REGISTRATED:
@@ -927,7 +878,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     registerReceiver(connectivityChangeReceiver,
       new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     
-    performPendingGeofenceTask();
+    //performPendingGeofenceTask();
   }
   
   @Override
@@ -954,7 +905,7 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     unregisterReceiver(connectivityChangeReceiver);
     App.eventBus.unregister(this);
   }
-  
+  /*
   private GeofencingRequest getGeofencingRequest() {
     GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
     
@@ -969,26 +920,31 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     // Return a GeofencingRequest.
     return builder.build();
   }
-  
+  */
+  /*
   public void addGeofencesButtonHandler(View view) {
     addGeofences();
   }
-  
+  */
+  /*
   @SuppressWarnings("MissingPermission")
   private void addGeofences() {
     mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
       .addOnCompleteListener(this);
   }
-  
+  */
+  /*
   public void removeGeofencesButtonHandler(View view) {
     removeGeofences();
   }
-  
+  */
+  /*
   @SuppressWarnings("MissingPermission")
   private void removeGeofences() {
     mGeofencingClient.removeGeofences(getGeofencePendingIntent()).addOnCompleteListener(this);
   }
-  
+  */
+  /*
   private PendingIntent getGeofencePendingIntent() {
     // Reuse the PendingIntent if we already have it.
     if (mGeofencePendingIntent != null) {
@@ -1000,7 +956,8 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
     mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     return mGeofencePendingIntent;
   }
-  
+  */
+  /*
   private void performPendingGeofenceTask() {
     if (mPendingGeofenceTask == PendingGeofenceTask.ADD) {
       addGeofences();
@@ -1008,11 +965,12 @@ public class MainActivity extends BaseActivity implements OnCompleteListener<Voi
       removeGeofences();
     }
   }
-  
+  */
   private void loadMainFragment(Fragment fragment) {
     
     FragmentManager fragmentManager = getSupportFragmentManager();
-    fragmentManager.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    fragmentManager.popBackStack(BACK_STACK_ROOT_TAG,
+      FragmentManager.POP_BACK_STACK_INCLUSIVE);
     
     // Add the new fragment:
     fragmentManager.beginTransaction()

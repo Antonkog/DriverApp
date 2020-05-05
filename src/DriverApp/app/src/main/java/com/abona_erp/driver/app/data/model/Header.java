@@ -23,7 +23,7 @@ public class Header {
   @SerializedName("DataType")
   @Expose
   private DataType dataType;
-  
+ 
   @SerializedName("DeviceId")
   @Expose
   private String deviceId;

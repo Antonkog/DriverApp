@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -37,7 +38,7 @@ public class DocumentViewerFragment extends Fragment {
   
   private int               mOid;
   private Notify            mNotify;
-  private ArrayList<String> mDocuments = new ArrayList<>();
+  //private ArrayList<String> mDocuments = new ArrayList<>();
   
   private RecyclerView mListView;
   
@@ -90,12 +91,13 @@ public class DocumentViewerFragment extends Fragment {
               if (notify == null) return;
               mNotify = notify;
               
-              mDocuments = mNotify.getDocumentUrls();
-              mDocumentAdapter.setDocumentItems(mDocuments,
-                notify.getMandantId(), notify.getOrderNo(), notify.getTaskId());
-              
-              mTvTaskId.setText(String.valueOf(notify.getTaskId()));
-              mTvOrderNo.setText(AppUtils.parseOrderNo(notify.getOrderNo()));
+              if (mNotify.getDocumentUrls().size() > 0) {
+                mDocumentAdapter.setDocumentItems(mNotify.getDocumentUrls(),
+                  mNotify.getMandantId(), mNotify.getOrderNo(), mNotify.getTaskId());
+              }
+  
+              mTvTaskId.setText(String.valueOf(mNotify.getTaskId()));
+              mTvOrderNo.setText(AppUtils.parseOrderNo(mNotify.getOrderNo()));
             }
   
             @Override
