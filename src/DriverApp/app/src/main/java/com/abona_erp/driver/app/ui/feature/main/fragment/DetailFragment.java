@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.adapter.ActivityStepAdapter;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.util.MiscUtil;
@@ -46,8 +48,10 @@ import com.kongzue.dialog.util.DialogSettings;
 import com.kongzue.dialog.v3.MessageDialog;
 import com.shuhart.stepview.StepView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -85,10 +89,13 @@ public class DetailFragment extends Fragment {
   
   private SimpleDateFormat mSdf;
   
-  private StepView mDetailStepView;
+  //private StepView mDetailStepView;
+  private ProgressBar pbActivityStep;
   
   private DriverDatabase mDB = DriverDatabase.getDatabase();
   private OfflineConfirmationDAO mOfflineWorkDAO = mDB.offlineConfirmationDAO();
+  
+  private boolean isPreviousTaskFinished = false;
   
   public DetailFragment() {
     // Required empty public constructor.
@@ -212,15 +219,15 @@ public class DetailFragment extends Fragment {
     
     if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
       mBtnNextActivity.setVisibility(View.VISIBLE);
-      mBtnNextActivity.setText("CLOSE");
+      mBtnNextActivity.setText(getContext().getResources().getString(R.string.action_close));
       mBtnBackActivity.setVisibility(View.GONE);
     } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-      mDetailStepView.go(0, true);
+      //mDetailStepView.go(0, true);
       mBtnBackActivity.setVisibility(View.GONE);
       mBtnNextActivity.setVisibility(View.VISIBLE);
-      mBtnNextActivity.setText("START ACTIVITY");
+      mBtnNextActivity.setText(getContext().getResources().getString(R.string.action_start_activity));
     } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-      mDetailStepView.go(1, true);
+      //mDetailStepView.go(1, true);
       if (TextSecurePreferences.getActivityBackEnable(getContext())) {
         mBtnBackActivity.setVisibility(View.VISIBLE);
       } else {
@@ -230,22 +237,50 @@ public class DetailFragment extends Fragment {
     
       int activityCount = mCommItem.getTaskItem().getActivities().size();
       if (mCommItem.getTaskItem().getActivities().get(activityCount-1).getStatus().equals(ActivityStatus.FINISHED)) {
-        mBtnNextActivity.setText("FINISHED");
+        mBtnNextActivity.setText(getContext().getResources().getString(R.string.action_finished));
       } else {
-        mBtnNextActivity.setText("NEXT");
+        mBtnNextActivity.setText(getContext().getResources().getString(R.string.action_next));
       }
     } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
-      mDetailStepView.go(2, true);
+      //mDetailStepView.go(2, true);
       mBtnBackActivity.setVisibility(View.GONE);
       mBtnNextActivity.setVisibility(View.VISIBLE);
       mBtnNextActivity.setText("CMR FINISHED");
     } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-      mDetailStepView.go(3, false);
-      mDetailStepView.done(true);
+      //mDetailStepView.go(3, false);
+      //mDetailStepView.done(true);
       mBtnBackActivity.setVisibility(View.VISIBLE);
-      mBtnBackActivity.setText("ClOSE");
+      mBtnBackActivity.setText(getContext().getResources().getString(R.string.action_close));
       mBtnNextActivity.setVisibility(View.GONE);
       mBtnNextActivity.setText("DELETE");
+    }
+    
+    int size = mCommItem.getTaskItem().getActivities().size();
+    if (size > 0) {
+      pbActivityStep.setVisibility(View.VISIBLE);
+      ProgressBarDrawable progStep = new ProgressBarDrawable(size);
+      pbActivityStep.setProgressDrawable(progStep);
+      
+      int count = 0;
+      for (int i = 0; i < size; i++) {
+        if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
+          count++;
+        }
+        if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+          count += 2;
+          continue;
+        }
+      }
+      if (count == 0) {
+        pbActivityStep.setProgress(0);
+      } else if (count == size * 2) {
+        pbActivityStep.setProgress(100);
+      } else {
+        pbActivityStep.setProgress(Math.round((100.0f / (size*2)) * count));
+      }
+    } else {
+      pbActivityStep.setProgress(0);
+      pbActivityStep.setVisibility(View.GONE);
     }
   }
   
@@ -274,6 +309,8 @@ public class DetailFragment extends Fragment {
     mRlBgActionType = (RelativeLayout)root.findViewById(R.id.rl_bg_action_type);
     mTvActionType = (AsapTextView)root.findViewById(R.id.tv_action_type);
   
+    pbActivityStep = (ProgressBar)root.findViewById(R.id.pb_activity_step);
+    /*
     mDetailStepView = (StepView)root.findViewById(R.id.detail_step_view);
     List<String> steps = new ArrayList<>();
     steps.add(getContext().getResources().getString(R.string.pending));
@@ -281,6 +318,7 @@ public class DetailFragment extends Fragment {
     steps.add(getContext().getResources().getString(R.string.cmr));
     steps.add(getContext().getResources().getString(R.string.completed));
     mDetailStepView.setSteps(steps);
+     */
     
     mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_detail_back);
     mBtnBack.setOnClickListener(new View.OnClickListener() {
@@ -405,13 +443,62 @@ public class DetailFragment extends Fragment {
               if (mCommItem.getTaskItem().getActivities().get(j).getStatus().equals(ActivityStatus.FINISHED)) {
                 if (j == mCommItem.getTaskItem().getActivities().size()-1) {
                   fFinished = true;
-                  mBtnNextActivity.setText("FINISHED");
+                  mBtnNextActivity.setText(getContext().getResources().getString(R.string.action_finished));
                 }
                 continue;
               }
             }
             
             if (!fFinished) {
+              // -----------------------------------------------------------------------------------
+              // Check is Previous Task available?
+              if (mCommItem.getTaskItem().getPreviousTaskId() != null && mCommItem.getTaskItem().getPreviousTaskId() > 0) {
+                mViewModel.getNotifyByTaskId(mCommItem.getTaskItem().getPreviousTaskId()).observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new DisposableSingleObserver<Notify>() {
+                    @Override
+                    public void onSuccess(Notify notify) {
+                      CommItem item = new CommItem();
+                      item  = App.getGsonUtc().fromJson(notify.getData(), CommItem.class);
+                      if (item != null) {
+                        if (!item.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+                          AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                              MessageDialog.build((AppCompatActivity)getContext())
+                                .setStyle(DialogSettings.STYLE.STYLE_IOS)
+                                .setTheme(DialogSettings.THEME.LIGHT)
+                                .setTitle(getContext().getResources().getString(R.string.action_warning_notice))
+                                .setMessage(getContext().getResources().getString(R.string.action_previous_task_message))
+                                .setOkButton(getContext().getResources().getString(R.string.action_ok),
+                                  new OnDialogButtonClickListener() {
+                                    @Override
+                                    public boolean onClick(BaseDialog baseDialog, View v) {
+                                      isPreviousTaskFinished = false;
+                                      return false;
+                                    }
+                                  })
+                                .show();
+                            }
+                          });
+                        } else {
+                          isPreviousTaskFinished = true;
+                        }
+                      }
+                    }
+  
+                    @Override
+                    public void onError(Throwable e) {
+                      isPreviousTaskFinished = true;
+                    }
+                  });
+              } else {
+                isPreviousTaskFinished = true;
+              }
+              if (!isPreviousTaskFinished) {
+                return;
+              }
+              // -----------------------------------------------------------------------------------
               MessageDialog.build((AppCompatActivity)getContext())
                 .setStyle(DialogSettings.STYLE.STYLE_IOS)
                 .setTheme(DialogSettings.THEME.LIGHT)
@@ -421,6 +508,7 @@ public class DetailFragment extends Fragment {
                   new OnDialogButtonClickListener() {
                     @Override
                     public boolean onClick(BaseDialog baseDialog, View v) {
+                      isPreviousTaskFinished = false;
                       mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
                       mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
                       mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
@@ -523,8 +611,8 @@ public class DetailFragment extends Fragment {
             for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
               if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
                 if (i == mCommItem.getTaskItem().getActivities().size()-1) {
-                  mNotify.setStatus(90);
-                  mCommItem.getTaskItem().setTaskStatus(TaskStatus.CMR);
+                  mNotify.setStatus(100);
+                  mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
                   mNotify.setData(App.getGsonUtc().toJson(mCommItem));
                   mViewModel.update(mNotify);
                   applyButtonState();
@@ -652,6 +740,8 @@ public class DetailFragment extends Fragment {
   
           App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         }
+  
+        applyButtonState();
       }
     });
     

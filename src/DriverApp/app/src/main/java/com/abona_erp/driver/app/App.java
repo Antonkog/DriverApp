@@ -9,6 +9,11 @@ import android.os.StrictMode;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
+import com.abona_erp.driver.app.data.dao.LogDAO;
+import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.manager.ApiManager;
 import com.abona_erp.driver.app.manager.SharedPrefManager;

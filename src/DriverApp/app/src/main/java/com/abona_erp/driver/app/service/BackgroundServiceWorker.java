@@ -39,6 +39,7 @@ import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
 import com.abona_erp.driver.app.util.DateConverter;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -808,39 +809,12 @@ public class BackgroundServiceWorker extends Service {
                 return true;
               }
             })
-            .sslSocketFactory(getSslSocket())
+            .sslSocketFactory(ClientSSLSocketFactory.getSocketFactory())
             .addInterceptor(logging)
             .build();
         }
       }
     }
     return mClient;
-  }
-  
-  private SSLSocketFactory getSslSocket() {
-    try {
-      SSLContext sslContext = SSLContext.getInstance("TLS");
-      X509TrustManager tm = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-        
-        }
-        
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-        
-        }
-        
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-          return new X509Certificate[0];
-        }
-      };
-      sslContext.init(null, new TrustManager[]{tm}, null);
-      return sslContext.getSocketFactory();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 }

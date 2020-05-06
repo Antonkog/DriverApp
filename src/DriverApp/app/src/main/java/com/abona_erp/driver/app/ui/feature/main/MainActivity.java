@@ -66,6 +66,7 @@ import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.receiver.ConnectivityChangeReceiver;
 import com.abona_erp.driver.app.receiver.GeofenceBroadcastReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
@@ -139,6 +140,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -165,6 +167,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   
   private PowerMenu mProfileMenu;
   private AppCompatImageButton mMainPopupMenu;
+  private AppCompatImageButton mBtnGetAllTasks;
 
   // VIEW MODEL:
   private MainViewModel mMainViewModel;
@@ -299,7 +302,33 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         mProfileMenu.showAsAnchorRightTop(mMainPopupMenu);
       }
     });
-
+    /*
+    mBtnGetAllTasks = (AppCompatImageButton)findViewById(R.id.btn_get_all_task);
+    mBtnGetAllTasks.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Call<ResultOfAction> call = App.apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+        call.enqueue(new Callback<ResultOfAction>() {
+          @Override
+          public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+            if (response.isSuccessful()) {
+              Log.i(">>>>>>>>>>", response.body().toString());
+              if (response.body().getAllTask().size() > 0) {
+                Log.i(">>>>>>>>>>", "GET ALL TASKS " + response.body().getAllTask().size());
+              }
+            } else {
+            
+            }
+          }
+  
+          @Override
+          public void onFailure(Call<ResultOfAction> call, Throwable t) {
+    
+          }
+        });
+      }
+    });
+*/
     lvLastActivity = (RecyclerView)findViewById(R.id.lv_last_activity);
     LinearLayoutManager recyclerLayoutManager =
       new LinearLayoutManager(getApplicationContext(),

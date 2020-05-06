@@ -3,7 +3,6 @@ package com.abona_erp.driver.app.ui.feature.main;
 import android.content.Context;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -30,8 +29,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
   
   @StringRes
   private static final int[] tabTitles = new int[] {
-    R.string.running,
     R.string.pending,
+    R.string.running,
     R.string.cmr,
     R.string.completed
   };
@@ -49,9 +48,9 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
   public Fragment getItem(int position) {
     switch (position) {
       case 0:
-        return RunningFragment.newInstance();
-      case 1:
         return PendingFragment.newInstance();
+      case 1:
+        return RunningFragment.newInstance();
       case 2:
         return CMRFragment.newInstance();
       case 3:

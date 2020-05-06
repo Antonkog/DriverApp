@@ -21,7 +21,7 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
     android:orientation="vertical">
-
+<!--
     <com.google.android.material.textfield.TextInputLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -44,8 +44,23 @@
         />
 
     </com.google.android.material.textfield.TextInputLayout>
-
+-->
   </LinearLayout>
+
+  <RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+<!--
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/btn_get_all_task"
+      android:layout_width="65dp"
+      android:layout_height="65dp"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/ic_autorenew_24px"
+      android:tint="@color/clrIcon"
+      />
+-->
+  </RelativeLayout>
 
   <RelativeLayout
     android:layout_width="wrap_content"

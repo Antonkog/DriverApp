@@ -9,10 +9,12 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
+import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
+import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.CommItem;
@@ -50,6 +52,9 @@ public class DriverRepository {
   private OfflineConfirmationDAO mOfflineConfirmationDAO;
   private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmation;
   
+  private LogDAO mLogDAO;
+  private LiveData<List<LogItem>> mAllLogs;
+  
   public DriverRepository(Application application) {
     DriverDatabase db = DriverDatabase.getDatabase();
     mNotifyDao = db.notifyDao();
@@ -69,6 +74,13 @@ public class DriverRepository {
     
     mOfflineConfirmationDAO = db.offlineConfirmationDAO();
     mAllOfflineConfirmation = mOfflineConfirmationDAO.getAllLiveDataConfirmations();
+    
+    mLogDAO = db.logDAO();
+    mAllLogs = mLogDAO.getAllLogs();
+  }
+  
+  public LiveData<List<LogItem>> getAllLogs() {
+    return mAllLogs;
   }
   
   public LiveData<List<OfflineConfirmation>> getAllLiveDataConfirmations() {
@@ -97,6 +109,10 @@ public class DriverRepository {
   
   public Single<Notify> getNotifyById(int id) {
     return mNotifyDao.loadNotifyById(id);
+  }
+  
+  public Single<Notify> getNotifyByTaskId(int taskId) {
+    return mNotifyDao.loadNotifyByTaskId(taskId);
   }
   
   public Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
@@ -171,6 +187,15 @@ public class DriverRepository {
   //}
   // DEVICE PROFILE:
   // -----------------------------------------------------------------------------------------------
+  
+  public long insert(LogItem item) {
+    new insertLogAsyncTask(mLogDAO).execute(item);
+    return 0;
+  }
+  
+  public void deleteAllLogs() {
+    new deleteAllLogsAsyncTask(mLogDAO).execute();
+  }
 
   private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
 
@@ -373,6 +398,36 @@ public class DriverRepository {
     @Override
     protected Void doInBackground(final DeviceProfile... params) {
       mDAO.update(params[0]);
+      return null;
+    }
+  }
+  
+  static class insertLogAsyncTask extends AsyncTask<LogItem, Void, Void> {
+    
+    private LogDAO _dao;
+    
+    insertLogAsyncTask(LogDAO dao) {
+      this._dao = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(final LogItem... params) {
+      _dao.insert(params[0]);
+      return null;
+    }
+  }
+  
+  static class deleteAllLogsAsyncTask extends AsyncTask<Void, Void, Void> {
+    
+    private LogDAO _dao;
+    
+    deleteAllLogsAsyncTask(LogDAO dao) {
+      this._dao = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(Void... params) {
+      _dao.deleteAll();
       return null;
     }
   }

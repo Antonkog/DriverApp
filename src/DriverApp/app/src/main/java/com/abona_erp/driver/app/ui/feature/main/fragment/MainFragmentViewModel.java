@@ -55,6 +55,10 @@ public class MainFragmentViewModel extends AndroidViewModel {
     return mRowCount;
   }
   
+  Single<Notify> getNotifyByTaskId(int taskId) {
+    return mRepository.getNotifyByTaskId(taskId);
+  }
+  
   public Single<Notify> getNotifyById(int id) {
     return mRepository.getNotifyById(id);
   }

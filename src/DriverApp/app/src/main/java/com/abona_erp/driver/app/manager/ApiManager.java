@@ -13,6 +13,7 @@ import com.abona_erp.driver.app.data.remote.FileDownloadService;
 import com.abona_erp.driver.app.data.remote.FCMService;
 import com.abona_erp.driver.app.data.remote.FileUploadService;
 import com.abona_erp.driver.app.data.remote.RemoteConstants;
+import com.abona_erp.driver.app.data.remote.TaskService;
 import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
@@ -56,6 +57,7 @@ public class ApiManager implements Manager {
   private FileUploadService mFileUploadService;
   private DocumentService mDocumentService;
   private FileDownloadService mFileDownloadService;
+  private TaskService mTaskService;
   
   static OkHttpClient.Builder apiClientBuilder;
   static OkHttpClient.Builder authClientBuilder;
@@ -71,6 +73,16 @@ public class ApiManager implements Manager {
   
   public static Request provideAuthRequest() {
     return makeAuthRequestBuilder().build();
+  }
+  
+  public TaskService getTaskApi() {
+    if (mTaskService == null) {
+      mTaskService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+        + "api/device/")
+        .create(TaskService.class);
+    }
+    return mTaskService;
   }
   
   public FCMService getFCMApi() {

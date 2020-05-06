@@ -18,8 +18,12 @@ import androidx.core.app.TaskStackBuilder;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
+import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
+import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.util.ServiceUtil;
@@ -51,6 +55,9 @@ public class FcmService extends FirebaseMessagingService {
   private static Timer mTimer = new Timer();
   private static LinkedList<RemoteMessage> mNotifyData = new LinkedList<>();
   
+  private DriverDatabase mDB = DriverDatabase.getDatabase();
+  private LogDAO         mLogDAO = mDB.logDAO();
+  
   public void onCreate() {
     super.onCreate();
     mTimer.scheduleAtFixedRate(new workerTask(), 0, 1000);
@@ -61,6 +68,7 @@ public class FcmService extends FirebaseMessagingService {
     
     Log.d(TAG, "++ FCM Message... latency (" + (System.currentTimeMillis() - message.getSentTime()) + " ms)");
     mNotifyData.add(message);
+    addLog(LogLevel.INFO, LogType.FCM, "FCM Firebase Notification", message.getData().toString());
   }
   
   @Override
@@ -71,8 +79,8 @@ public class FcmService extends FirebaseMessagingService {
       return;
     
     TextSecurePreferences.setFcmToken(getApplicationContext(), token);
-    DriverDatabase db = DriverDatabase.getDatabase();
-    DeviceProfileDAO dao = db.deviceProfileDAO();
+    //DriverDatabase db = DriverDatabase.getDatabase();
+    DeviceProfileDAO dao = mDB.deviceProfileDAO();
     List<DeviceProfile> deviceProfiles = dao.getDeviceProfiles();
     if (deviceProfiles.size() > 0) {
       TextSecurePreferences.setFcmTokenUpdate(getApplicationContext(), true);
@@ -165,6 +173,18 @@ public class FcmService extends FirebaseMessagingService {
     String savedSenderID = TextSecurePreferences
       .getFCMSenderID(getApplicationContext());
     return from.equals(savedSenderID);
+  }
+  
+  private void addLog(LogLevel level, LogType type, String title, String message) {
+    LogItem item = new LogItem();
+    item.setLevel(level);
+    item.setType(type);
+    item.setTitle(title);
+    item.setMessage(message);
+    item.setCreatedAt(new Date());
+    if (mLogDAO != null) {
+      mLogDAO.insert(item);
+    }
   }
   
   private static int counter = 0;

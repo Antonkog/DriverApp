@@ -31,6 +31,11 @@
   <string name="action_warning_notice">Warnhinweis</string>
   <string name="client_id_is_not_active">Client-ID ist nicht aktive!</string>
   <string name="no_internet">Kein Internet!</string>
+  <string name="action_next">Nächster Schritt</string>
+  <string name="action_finished">Fertig</string>
+  <string name="action_start_activity">Starten</string>
+  <string name="action_close">Schließen</string>
+  <string name="action_previous_task_message">Sie müssen zuerst die vorherige Aufgabe erledigen!</string>
 
   <string name="yes">Ja</string>
   <string name="no">Nein</string>

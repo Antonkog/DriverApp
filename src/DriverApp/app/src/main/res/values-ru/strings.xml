@@ -31,6 +31,11 @@
   <string name="action_warning_notice">Предупреждение</string>
   <string name="client_id_is_not_active">Идентификатор клиента не активен!</string>
   <string name="no_internet">Без интернета!</string>
+  <string name="action_next">Следующий шаг</string>
+  <string name="action_finished">Законченный</string>
+  <string name="action_start_activity">Начало</string>
+  <string name="action_close">близко</string>
+  <string name="action_previous_task_message">Вы должны выполнить предыдущее задание первым!</string>
 
   <string name="yes">Да</string>
   <string name="no">Нет</string>

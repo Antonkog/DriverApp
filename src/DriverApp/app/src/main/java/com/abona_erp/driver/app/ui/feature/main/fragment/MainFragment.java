@@ -27,15 +27,15 @@ import java.util.List;
 
 public class MainFragment extends Fragment {
   
+  private static final int TAB_INDEX_PENDING   = 0;
+  private static final int TAB_INDEX_RUNNING   = 1;
+  private static final int TAB_INDEX_CMR       = 2;
+  private static final int TAB_INDEX_COMPLETED = 3;
+  
   private TabLayout mMainTab;
   private TabLayout mMainBottomTab;
   private ViewPager mViewPager;
   private TabsPagerAdapter mPagerAdapter;
-  
-  private int mRunningCount;
-  private int mCMRCount;
-  private int mCompletedCount;
-  private int mRowTaskCount;
   
   private MainFragmentViewModel mainViewModel;
   
@@ -100,7 +100,6 @@ public class MainFragment extends Fragment {
           case 0:
             break;
           case 1:
-            //App.eventBus.post(new SoftwareAboutEvent());
             App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_ABOUT), null));
             break;
         }
@@ -122,102 +121,71 @@ public class MainFragment extends Fragment {
       .get(MainFragmentViewModel.class);
     
     mainViewModel.getAllPendingNotifications()
-      .observe(this, new Observer<List<Notify>>() {
+      .observe(getViewLifecycleOwner(), new Observer<List<Notify>>() {
       
       @Override
       public void onChanged(List<Notify> notifyList) {
-        TabLayout.Tab tab = mMainTab.getTabAt(1);
+        TabLayout.Tab tab = mMainTab.getTabAt(TAB_INDEX_PENDING);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
           BadgeSpan badgeSpan = getBadgeSpanByType(BadgeType.BRIGHT);
           Badge badge = new Badge(notifyList.size(), badgeSpan);
-          setTabBadge(1, badge);
+          setTabBadge(TAB_INDEX_PENDING, badge);
         } else {
-          setTabBadge(1, null);
+          setTabBadge(TAB_INDEX_PENDING, null);
         }
       }
     });
     
     mainViewModel.getAllRunningNotifications()
-      .observe(this, new Observer<List<Notify>>() {
+      .observe(getViewLifecycleOwner(), new Observer<List<Notify>>() {
       @Override
       public void onChanged(List<Notify> notifyList) {
-        mRunningCount = notifyList.size();
-        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-        TabLayout.Tab tab = mMainTab.getTabAt(0);
+        TabLayout.Tab tab = mMainTab.getTabAt(TAB_INDEX_RUNNING);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
           BadgeSpan badgeSpan = getBadgeSpanByType(BadgeType.BRIGHT);
           Badge badge = new Badge(notifyList.size(), badgeSpan);
-          setTabBadge(0, badge);
+          setTabBadge(TAB_INDEX_RUNNING, badge);
         } else {
-          setTabBadge(0, null);
+          setTabBadge(TAB_INDEX_RUNNING, null);
         }
       }
     });
     
-    mainViewModel.getAllCMRNotifications().observe(this,
+    mainViewModel.getAllCMRNotifications().observe(getViewLifecycleOwner(),
       new Observer<List<Notify>>() {
       @Override
       public void onChanged(List<Notify> notifyList) {
-        mCMRCount = notifyList.size();
-        //App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-        TabLayout.Tab tab = mMainTab.getTabAt(2);
+        TabLayout.Tab tab = mMainTab.getTabAt(TAB_INDEX_CMR);
         tab.setCustomView(null);
         if (notifyList.size() > 0) {
           BadgeSpan badgeSpan = getBadgeSpanByType(BadgeType.BRIGHT);
           Badge badge = new Badge(notifyList.size(), badgeSpan);
-          setTabBadge(2, badge);
+          setTabBadge(TAB_INDEX_CMR, badge);
         } else {
-          setTabBadge(2, null);
+          setTabBadge(TAB_INDEX_CMR, null);
         }
       }
     });
     
-    mainViewModel.getAllCompletedNotifications().observe(this,
+    mainViewModel.getAllCompletedNotifications().observe(getViewLifecycleOwner(),
       new Observer<List<Notify>>() {
         @Override
         public void onChanged(List<Notify> notifyList) {
-          mCompletedCount = notifyList.size();
-          /*
-          if (mCompletedCount > 0) {
-            App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-          } else {
-            App.eventBus.post(new TaskStatusEvent(0));
-          }*/
-          TabLayout.Tab tab = mMainTab.getTabAt(3);
+          TabLayout.Tab tab = mMainTab.getTabAt(TAB_INDEX_COMPLETED);
           tab.setCustomView(null);
           if (notifyList.size() > 0) {
             BadgeSpan badgeSpan = getBadgeSpanByType(BadgeType.BRIGHT);
             Badge badge = new Badge(notifyList.size(), badgeSpan);
-            setTabBadge(3, badge);
+            setTabBadge(TAB_INDEX_COMPLETED, badge);
           } else {
-            setTabBadge(3, null);
+            setTabBadge(TAB_INDEX_COMPLETED, null);
           }
         }
       });
-  /*
-    mainViewModel.getRowCount().observe(this, new Observer<Integer>() {
-      @Override
-      public void onChanged(Integer integer) {
-        mRowTaskCount = integer.intValue();
-        App.eventBus.post(new TaskStatusEvent(calculateTaskStatusPercentage()));
-      }
-    });*/
   }
-  /*
-  private int calculateTaskStatusPercentage() {
-    if (mRowTaskCount == 0) {
-      return 0;
-    }
-    else if (mRowTaskCount == mCompletedCount) {
-      return 100;
-    } else {
-      float percentage = ((100.0f / mRowTaskCount) * ((mRunningCount * 0.5f) + (mCMRCount * 0.9f) + mCompletedCount));
-      return (int)Math.round(percentage);
-    }
-  }
-*/
+
   private void setTabBadge(int tabIndex, Badge badge) {
     TabLayout.Tab tab = mMainTab.getTabAt(tabIndex);
     tab.setCustomView(mPagerAdapter.getTabView(tabIndex, badge));
