@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
+import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
@@ -85,6 +86,14 @@ public class MainViewModel extends AndroidViewModel {
   
   Single<List<Notify>> getAllTasksByMandantAndOrderNo(int mandantID, int orderNo) {
     return mRepository.getAllTasksByOrderNo(mandantID, orderNo);
+  }
+  
+  void insert(LogItem item) {
+    mRepository.insert(item);
+  }
+  
+  void insert(Notify notify) {
+    mRepository.insert(notify);
   }
 
   void insert(LastActivity lastActivity) {

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.TaskActionType;
@@ -233,27 +234,21 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
         holder.tvPercentStatus.setVisibility(View.VISIBLE);
         ProgressBarDrawable progStep = new ProgressBarDrawable(size);
         holder.pbActivityStep.setProgressDrawable(progStep);
+        
         int count = 0;
         for (int i = 0; i < size; i++) {
-          String valid_until = "01/01/0001";
-          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-          Date strDate = null;
-          try {
-            strDate = sdf.parse(valid_until);
-          } catch (ParseException e) {
-            e.printStackTrace();
-          }
-          if (mCommItem.getTaskItem().getActivities().get(i).getStarted() != null && mCommItem.getTaskItem().getActivities().get(i).getStarted().after(strDate)) {
+          if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
             count++;
-            holder.tvPercentStatus.setText(mCommItem.getTaskItem().getActivities().get(i).getName());
           }
-          if (mCommItem.getTaskItem().getActivities().get(i).getFinished() != null && mCommItem.getTaskItem().getActivities().get(i).getFinished().after(strDate))
-            count++;
+          if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+            count += 2;
+            continue;
+          }
         }
-        if (count <= 0) {
+        if (count == 0) {
           holder.pbActivityStep.setProgress(0);
           holder.tvPercent.setText("0 %");
-        } else if (count >= size*2) {
+        } else if (count == size * 2) {
           holder.pbActivityStep.setProgress(100);
           holder.tvPercent.setText("100 %");
         } else {

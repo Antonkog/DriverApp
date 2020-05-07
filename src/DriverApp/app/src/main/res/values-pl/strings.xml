@@ -35,6 +35,9 @@
   <string name="action_start_activity">Start</string>
   <string name="action_close">Blisko</string>
   <string name="action_previous_task_message">Najpierw musisz wykonać poprzednie zadanie!</string>
+  <string name="action_update">Aktualizacja</string>
+  <string name="action_update_message">Aktualizacja zakończona!</string>
+  <string name="action_exception_on_rest_api">Błąd w interfejsie API REST!</string>
 
   <string name="yes">Tak</string>
   <string name="no">Nie</string>

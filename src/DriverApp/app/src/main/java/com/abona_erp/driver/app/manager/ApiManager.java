@@ -221,6 +221,7 @@ public class ApiManager implements Manager {
         return true;
       }
     });
+    httpClient.retryOnConnectionFailure(true);
   
     return httpClient.build();
   }

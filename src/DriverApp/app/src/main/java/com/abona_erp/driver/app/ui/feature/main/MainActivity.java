@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -57,16 +58,21 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
+import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
+import com.abona_erp.driver.app.data.model.TaskItem;
+import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.receiver.ConnectivityChangeReceiver;
 import com.abona_erp.driver.app.receiver.GeofenceBroadcastReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
@@ -125,7 +131,10 @@ import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -302,33 +311,45 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         mProfileMenu.showAsAnchorRightTop(mMainPopupMenu);
       }
     });
-    /*
+    
     mBtnGetAllTasks = (AppCompatImageButton)findViewById(R.id.btn_get_all_task);
     mBtnGetAllTasks.setOnClickListener(new View.OnClickListener() {
+      
       @Override
       public void onClick(View view) {
+        
+        mBtnGetAllTasks.setEnabled(false);
+        
         Call<ResultOfAction> call = App.apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         call.enqueue(new Callback<ResultOfAction>() {
           @Override
           public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
-            if (response.isSuccessful()) {
-              Log.i(">>>>>>>>>>", response.body().toString());
-              if (response.body().getAllTask().size() > 0) {
-                Log.i(">>>>>>>>>>", "GET ALL TASKS " + response.body().getAllTask().size());
-              }
+            if (response.isSuccessful() && response.body() != null) {
+              handleGetAllTasks(response.body());
             } else {
-            
+              
+              switch (response.code()) {
+                case 401:
+                  handleAccessToken();
+                  break;
+                default:
+                  // TODO: Log
+                  break;
+              }
+  
+              mBtnGetAllTasks.setEnabled(true);
             }
           }
   
           @Override
           public void onFailure(Call<ResultOfAction> call, Throwable t) {
-    
+            // TODO: Wahrscheinlich kein Internet!
+            mBtnGetAllTasks.setEnabled(true);
           }
         });
       }
     });
-*/
+
     lvLastActivity = (RecyclerView)findViewById(R.id.lv_last_activity);
     LinearLayoutManager recyclerLayoutManager =
       new LinearLayoutManager(getApplicationContext(),
@@ -934,6 +955,147 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     unregisterReceiver(connectivityChangeReceiver);
     App.eventBus.unregister(this);
   }
+  
+  private void handleGetAllTasks(ResultOfAction resultOfAction) {
+    if (resultOfAction == null) {
+      mBtnGetAllTasks.setEnabled(true);
+      return;
+    }
+    
+    try {
+      if (resultOfAction.getIsSuccess() && !resultOfAction.getIsException()) {
+        if (resultOfAction.getAllTask() != null && resultOfAction.getAllTask().size() > 0) {
+          for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
+            
+            TaskItem taskItem = resultOfAction.getAllTask().get(i);
+            if (taskItem.getMandantId() == null) continue;
+            int mandantId = taskItem.getMandantId();
+            
+            if (taskItem.getTaskId() == null) continue;
+            int taskId = taskItem.getTaskId();
+            
+            mMainViewModel.getNotifyByMandantTaskId(mandantId, taskId)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribeOn(Schedulers.io())
+              .subscribe(new DisposableSingleObserver<Notify>() {
+                @Override
+                public void onSuccess(Notify notify) {
+                  
+                  CommItem commItem = new CommItem();
+                  commItem = App.getGsonUtc().fromJson(notify.getData(), CommItem.class);
+                  if (commItem != null) {
+                    commItem.setTaskItem(taskItem);
+                    
+                    notify.setRead(false);
+                    notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
+                    notify.setData(App.getGsonUtc().toJson(commItem));
+                    notify.setModifiedAt(AppUtils.getCurrentDateTime());
+  
+                    if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
+                      notify.setStatus(0);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
+                      notify.setStatus(50);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.CMR)) {
+                      notify.setStatus(90);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.FINISHED)) {
+                      notify.setStatus(100);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
+                      notify.setStatus(51);
+                    }
+                    
+                    mMainViewModel.update(notify);
+                  }
+                }
+  
+                @Override
+                public void onError(Throwable e) {
+                  
+                  CommItem commItem = new CommItem();
+                  commItem.setTaskItem(taskItem);
+                  
+                  // Nicht vorhanden:
+                  Notify notify = new Notify();
+                  notify.setMandantId(mandantId);
+                  notify.setTaskId(taskId);
+                  notify.setRead(false);
+                  notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
+                  notify.setOrderNo(taskItem.getOrderNo());
+                  notify.setCreatedAt(AppUtils.getCurrentDateTime());
+                  notify.setModifiedAt(AppUtils.getCurrentDateTime());
+                  notify.setData(App.getGsonUtc().toJson(commItem));
+                  
+                  if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
+                    notify.setStatus(0);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
+                    notify.setStatus(50);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.CMR)) {
+                    notify.setStatus(90);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.FINISHED)) {
+                    notify.setStatus(100);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
+                    notify.setStatus(51);
+                  }
+                  
+                  mMainViewModel.insert(notify);
+                }
+              });
+          }
+          // Aktualisiert:
+          mBtnGetAllTasks.setEnabled(true);
+          messageBox_Ok(
+            getApplicationContext().getResources()
+              .getString(R.string.action_update),
+            getApplicationContext().getResources()
+              .getString(R.string.action_update_message));
+        } else {
+          // Kein Update vorhanden:
+          mBtnGetAllTasks.setEnabled(true);
+          messageBox_Ok(
+            getApplicationContext().getResources()
+              .getString(R.string.action_update),
+            getApplicationContext().getResources()
+              .getString(R.string.action_update_message));
+        }
+      } else if (resultOfAction.getIsException()) {
+        // Exception from REST-API
+        mBtnGetAllTasks.setEnabled(true);
+        messageBox_Ok(getApplicationContext().getResources().getString(R.string.action_warning_notice),
+          getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
+        addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", resultOfAction.getText());
+      } else {
+        // Unknown Error
+        mBtnGetAllTasks.setEnabled(true);
+        addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", "Unknown Error!");
+      }
+    } catch (Exception e) {
+      mBtnGetAllTasks.setEnabled(true);
+      addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", e.getMessage());
+    }
+  }
+  
+  private void handleAccessToken() {
+    App.apiManager.provideAuthClient().newCall(App.apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
+      @Override
+      public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
+      }
+  
+      @Override
+      public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
+        if (response.isSuccessful()) {
+          try {
+            String jsonData = response.body().string().toString();
+            JSONObject jobject = new JSONObject(jsonData);
+            String access_token = jobject.getString("access_token");
+            if (!TextUtils.isEmpty(access_token)) {
+              TextSecurePreferences.setAccessToken(getApplicationContext(), access_token);
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    });
+  }
   /*
   private GeofencingRequest getGeofencingRequest() {
     GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
@@ -1222,6 +1384,16 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         }
       });
     builder.show();
+  }
+  
+  private void addLog(LogLevel level, LogType type, String title, String message) {
+    LogItem item = new LogItem();
+    item.setLevel(level);
+    item.setType(type);
+    item.setTitle(title);
+    item.setMessage(message);
+    item.setCreatedAt(new Date());
+    mMainViewModel.insert(item);
   }
   
   private void initializeLogify() {

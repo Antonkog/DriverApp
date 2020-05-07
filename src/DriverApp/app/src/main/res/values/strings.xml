@@ -91,6 +91,9 @@
   <string name="action_start_activity">Start</string>
   <string name="action_close">Close</string>
   <string name="action_previous_task_message">You have to complete the previous task first!</string>
+  <string name="action_update">Update</string>
+  <string name="action_update_message">Update completed!</string>
+  <string name="action_exception_on_rest_api">Exception on REST-API!</string>
 
   <string name="yes">Yes</string>
   <string name="no">No</string>

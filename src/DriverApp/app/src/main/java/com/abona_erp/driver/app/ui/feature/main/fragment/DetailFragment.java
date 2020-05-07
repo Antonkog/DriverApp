@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.feature.main.fragment;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -96,6 +99,8 @@ public class DetailFragment extends Fragment {
   private OfflineConfirmationDAO mOfflineWorkDAO = mDB.offlineConfirmationDAO();
   
   private boolean isPreviousTaskFinished = false;
+  
+  private static long mLastClickTime;
   
   public DetailFragment() {
     // Required empty public constructor.
@@ -383,6 +388,10 @@ public class DetailFragment extends Fragment {
     mBtnNextActivity.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        
+        if (disableButtonTwoSecs()) return;
+        
+        
         applyButtonState();
         
         if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
@@ -769,5 +778,13 @@ public class DetailFragment extends Fragment {
         mOfflineWorkDAO.insert(offlineConfirmation);
       }
     });
+  }
+  
+  public static boolean disableButtonTwoSecs() {
+    if (SystemClock.elapsedRealtime() - mLastClickTime < 2000) {
+      return true;
+    }
+    mLastClickTime = SystemClock.elapsedRealtime();
+    return false;
   }
 }

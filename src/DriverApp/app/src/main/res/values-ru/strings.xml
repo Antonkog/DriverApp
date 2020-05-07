@@ -36,6 +36,9 @@
   <string name="action_start_activity">Начало</string>
   <string name="action_close">близко</string>
   <string name="action_previous_task_message">Вы должны выполнить предыдущее задание первым!</string>
+  <string name="action_update">Обновить</string>
+  <string name="action_update_message">Обновление завершено!</string>
+  <string name="action_exception_on_rest_api">Ошибка на REST-API!</string>
 
   <string name="yes">Да</string>
   <string name="no">Нет</string>

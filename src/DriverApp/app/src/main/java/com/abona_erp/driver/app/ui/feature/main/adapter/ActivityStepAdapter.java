@@ -76,7 +76,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
     mSdfIn = new SimpleDateFormat(DATE_FORMAT_IN, Locale.getDefault());
     mSdfOut = new SimpleDateFormat(DATE_FORMAT_OUT, Locale.getDefault());
     try {
-      mDateMin = mSdfIn.parse("0001-01-01 01:00:00");
+      mDateMin = mSdfIn.parse("1970-01-01 01:00:00");
     } catch (ParseException e) {
       Log.e(TAG, e.getMessage());
     }
@@ -151,7 +151,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
           .getDrawable(R.drawable.status_pending_bg));
 */
         if (current.getActivityItem().getStarted() != null) {
-          if (current.getActivityItem().getStarted().compareTo(mDateMin) == 0) {
+          if (current.getActivityItem().getStarted().compareTo(mDateMin) < 0) {
             holder.tv_activity_step_started.setText(NOT_SET_TIMESTAMP_GLYPH);
           } else {
             holder.tv_activity_step_started.setText(mSdfOut.format(current.getActivityItem().getStarted()));
@@ -160,7 +160,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
           holder.tv_activity_step_started.setText(NOT_SET_TIMESTAMP_GLYPH);
         }
         if (current.getActivityItem().getFinished() != null) {
-          if (current.getActivityItem().getFinished().compareTo(mDateMin) == 0) {
+          if (current.getActivityItem().getFinished().compareTo(mDateMin) < 0) {
             holder.tv_activity_step_finished.setText(NOT_SET_TIMESTAMP_GLYPH);
           } else {
             holder.tv_activity_step_finished.setText(mSdfOut.format(current.getActivityItem().getFinished()));
