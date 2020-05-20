@@ -12,6 +12,10 @@ public class TaskItem {
   @Expose
   private Integer mandantId;
   
+  @SerializedName("MandantName")
+  @Expose
+  private String mandantName;
+  
   @SerializedName("TaskId")
   @Expose
   private Integer taskId;
@@ -72,9 +76,9 @@ public class TaskItem {
   @Expose
   private String referenceIdCustomer2;
   
-  @SerializedName("Address")
+  @SerializedName("PalletsAmount")
   @Expose
-  private AddressItem address;
+  private Integer palletsAmount;
   
   @SerializedName("TaskDueDateStart")
   @Expose
@@ -88,17 +92,41 @@ public class TaskItem {
   @Expose
   private TaskStatus status;
   
-  @SerializedName("PalletsAmount")
+  @SerializedName("OrderDetails")
   @Expose
-  private int palletsAmount;
+  private OrderDetails orderDetails;
+  
+  @SerializedName("TaskDetails")
+  @Expose
+  private TaskDetails taskDetails;
+  
+  @SerializedName("Address")
+  @Expose
+  private AddressItem address;
+  
+  @SerializedName("SwapInfoItem")
+  @Expose
+  private SwapInfoItem swapInfoItem;
+  
+  @SerializedName("PalletExchange")
+  @Expose
+  private PalletExchange palletExchange;
+  
+  @SerializedName("DangerousGoods")
+  @Expose
+  private DangerousGoods dangerousGoods;
   
   @SerializedName("Activities")
   @Expose
   List<ActivityItem> activities;
   
-  @SerializedName("SwapInfoItem")
+  @SerializedName("Contacts")
   @Expose
-  private SwapInfoItem swapInfoItem;
+  List<ContactItem> contacts;
+  
+  @SerializedName("Notes")
+  @Expose
+  List<NotesItem> notes;
   
   // ------------------------------------------------------------------------
   // GETTER & SETTER
@@ -109,6 +137,14 @@ public class TaskItem {
   
   public void setMandantId(Integer mandantId) {
     this.mandantId = mandantId;
+  }
+  
+  public String getMandantName() {
+    return mandantName;
+  }
+  
+  public void setMandantName(String mandantName) {
+    this.mandantName = mandantName;
   }
   
   public Integer getTaskId() {
@@ -285,5 +321,53 @@ public class TaskItem {
   
   public void setSwapInfoItem(SwapInfoItem swapInfoItem) {
     this.swapInfoItem = swapInfoItem;
+  }
+  
+  public OrderDetails getOrderDetails() {
+    return orderDetails;
+  }
+  
+  public void setOrderDetails(OrderDetails orderDetails) {
+    this.orderDetails = orderDetails;
+  }
+  
+  public TaskDetails getTaskDetails() {
+    return taskDetails;
+  }
+  
+  public void setTaskDetails(TaskDetails taskDetails) {
+    this.taskDetails = taskDetails;
+  }
+  
+  public PalletExchange getPalletExchange() {
+    return palletExchange;
+  }
+  
+  public void setPalletExchange(PalletExchange palletExchange) {
+    this.palletExchange = palletExchange;
+  }
+  
+  public DangerousGoods getDangerousGoods() {
+    return dangerousGoods;
+  }
+  
+  public void setDangerousGoods(DangerousGoods dangerousGoods) {
+    this.dangerousGoods = dangerousGoods;
+  }
+  
+  public List<ContactItem> getContacts() {
+    return contacts;
+  }
+  
+  public void setContacts(List<ContactItem> contacts) {
+    this.contacts = contacts;
+  }
+  
+  public List<NotesItem> getNotes() {
+    return notes;
+  }
+  
+  public void setNotes(List<NotesItem> notes) {
+    this.notes = notes;
   }
 }

@@ -116,6 +116,26 @@
   <string name="reference_2">Reference 2</string>
   <string name="description">Description</string>
   <string name="address">Address</string>
+  <string name="contact">Contact</string>
+  <string name="contacts_available">Contacts available</string>
+  <string name="notes">Notes</string>
+  <plurals name="numberOfNotesAvailable">
+    <item quantity="one">%d comment available</item>
+    <item quantity="other">%d comments available</item>
+  </plurals>
+  <string name="dpl">DPL</string>
+  <string name="number_of_paletts">Number of pallets</string>
+  <string name="un_no">UN-No.</string>
+  <string name="adr_class" translatable="false">ADR Class</string>
+  <string name="client">Client</string>
+  <string name="geo_data">Geodata</string>
+  <string name="name">Name</string>
+  <string name="loading_order">Loading order</string>
+  <string name="contact_type_persecutor">Persecutor</string>
+  <string name="contact_type_second_persecutor">2. Persecutor</string>
+  <string name="contact_type_customer">Customer</string>
+  <string name="dangerous_goods">Dangerous Goods</string>
+  <string name="palette_exchange">Palette Exchange</string>
 
   <string name="new_document">New Document!</string>
   <string name="new_document_message">You have got a new Document received.</string>

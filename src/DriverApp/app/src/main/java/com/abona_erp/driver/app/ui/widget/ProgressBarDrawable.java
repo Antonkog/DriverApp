@@ -17,7 +17,7 @@ public class ProgressBarDrawable extends Drawable {
   private int parts = 10;
   
   private Paint paint = null;
-  private int fillColor = Color.parseColor("#27ae60");
+  private int fillColor = Color.parseColor("#4cd137");
   private int emptyColor = Color.parseColor("#999999");
   private int separatorColor = Color.parseColor("#F5F7FA");
   private RectF rectFill = null;

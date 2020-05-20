@@ -49,8 +49,9 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     switch (position) {
       case 0:
         return PendingFragment.newInstance();
-      case 1:
+      case 1: {
         return RunningFragment.newInstance();
+      }
       case 2:
         return CMRFragment.newInstance();
       case 3:

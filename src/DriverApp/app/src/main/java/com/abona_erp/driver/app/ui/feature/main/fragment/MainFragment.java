@@ -1,6 +1,5 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment;
 
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +11,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
-import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
-import com.abona_erp.driver.app.ui.event.PageEvent;
-import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.TabsPagerAdapter;
 import com.abona_erp.driver.app.ui.widget.badges.Badge;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeSpan;
@@ -33,7 +29,6 @@ public class MainFragment extends Fragment {
   private static final int TAB_INDEX_COMPLETED = 3;
   
   private TabLayout mMainTab;
-  private TabLayout mMainBottomTab;
   private ViewPager mViewPager;
   private TabsPagerAdapter mPagerAdapter;
   
@@ -82,41 +77,6 @@ public class MainFragment extends Fragment {
       tab.setCustomView(mPagerAdapter.getTabView(i, null));
     }
     
-    mMainBottomTab = (TabLayout)root.findViewById(R.id.main_bottom_tab);
-    mMainBottomTab.addTab(mMainBottomTab.newTab().setIcon(R.drawable.ic_home), 0);
-    mMainBottomTab.addTab(mMainBottomTab.newTab().setIcon(R.drawable.ic_info_24px), 1);
-    
-    // set icon color pre-selected:
-    mMainBottomTab.getTabAt(0).getIcon().setColorFilter(getResources().getColor(R.color.clrAbona), PorterDuff.Mode.SRC_IN);
-    mMainBottomTab.getTabAt(1).getIcon().setColorFilter(getResources().getColor(R.color.grey_60), PorterDuff.Mode.SRC_IN);
-    
-    mMainBottomTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-      @Override
-      public void onTabSelected(TabLayout.Tab tab) {
-        tab.getIcon().setColorFilter(getResources().getColor(R.color.clrAbona),
-          PorterDuff.Mode.SRC_IN);
-        
-        switch (tab.getPosition()) {
-          case 0:
-            break;
-          case 1:
-            App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_ABOUT), null));
-            break;
-        }
-      }
-  
-      @Override
-      public void onTabUnselected(TabLayout.Tab tab) {
-        tab.getIcon().setColorFilter(getResources().getColor(R.color.grey_60),
-          PorterDuff.Mode.SRC_IN);
-      }
-  
-      @Override
-      public void onTabReselected(TabLayout.Tab tab) {
-    
-      }
-    });
-  
     mainViewModel = ViewModelProviders.of(this)
       .get(MainFragmentViewModel.class);
     

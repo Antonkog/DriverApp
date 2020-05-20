@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingQuantity">
   <string name="action_cancel">Anuluj</string>
   <string name="action_ok">OK</string>
   <string name="action_save">Zapisz</string>
@@ -45,6 +45,25 @@
   <string name="map">Mapa</string>
   <string name="camera">kamera</string>
   <string name="document">Dokument</string>
+  <string name="contact">Kontakt</string>
+  <string name="contacts_available">Dostępne kontakty</string>
+  <string name="notes">Notatki</string>
+  <plurals name="numberOfNotesAvailable">
+    <item quantity="one">%d komentarz dostępny</item>
+    <item quantity="other">%d komentarzy dostępnych</item>
+  </plurals>
+  <string name="dpl">DPL</string>
+  <string name="number_of_paletts">Liczba palet</string>
+  <string name="un_no">UN-No.</string>
+  <string name="client">Klient</string>
+  <string name="geo_data">Geodata</string>
+  <string name="name">Imię</string>
+  <string name="loading_order">Ładowanie zamówienia</string>
+  <string name="contact_type_persecutor">Prześladowca</string>
+  <string name="contact_type_second_persecutor">2. Prześladowca</string>
+  <string name="contact_type_customer">Odbiorca</string>
+  <string name="dangerous_goods">Niebezpieczne towary</string>
+  <string name="palette_exchange">Wymiana palet</string>
 
   <string name="registration_number">Brak pojazdu</string>
   <string name="task_status">Status zadania</string>

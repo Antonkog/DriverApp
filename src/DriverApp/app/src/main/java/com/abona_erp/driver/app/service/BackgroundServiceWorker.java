@@ -197,7 +197,7 @@ public class BackgroundServiceWorker extends Service {
                 }
                 header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
                 header.setTimestampSenderUTC(/*commItemDB.getHeader().getTimestampSenderUTC()*/new Date());
-                Log.i(TAG, "***************************** " + commItemDB.getHeader().getTimestampSenderUTC());
+//                Log.i(TAG, "***************************** " + commItemDB.getHeader().getTimestampSenderUTC());
                 commItemReq.setHeader(header);
   
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
