@@ -535,7 +535,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       // Load Data:
       if (commItem.getTaskItem().getTaskDetails() != null || commItem.getTaskItem().getDescription() != null) {
         // Waren:
-        if (commItem.getTaskItem().getTaskDetails().getDescription() != null) {
+        if (commItem.getTaskItem().getTaskDetails() != null && commItem.getTaskItem().getTaskDetails().getDescription() != null) {
           applyInfoReference(commItem.getTaskItem().getTaskDetails().getDescription());
         } else if (commItem.getTaskItem().getDescription() != null) {
           applyInfoReference(commItem.getTaskItem().getDescription());
@@ -544,7 +544,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
         }
         
         // Loading Order:
-        if (commItem.getTaskItem().getTaskDetails().getLoadingOrder() != null) {
+        if (commItem.getTaskItem().getTaskDetails() != null && commItem.getTaskItem().getTaskDetails().getLoadingOrder() != null) {
           applyLoadingOrder(commItem.getTaskItem().getTaskDetails().getLoadingOrder());
         } else {
           applyLoadingOrder(null);
