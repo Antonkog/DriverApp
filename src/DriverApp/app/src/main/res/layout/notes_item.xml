@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/ll_root_item"
+  android:orientation="horizontal"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <androidx.appcompat.widget.AppCompatImageView
+    android:id="@+id/iv_priority"
+    android:layout_width="@dimen/icon_size_24"
+    android:layout_height="@dimen/icon_size_24"
+    android:padding="5dp"
+    android:src="@drawable/ic_exclamation"
+    android:visibility="gone"
+    app:tint="@color/clrAbona"
+    />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+    android:id="@+id/tv_note"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:textSize="14sp"
+    android:textColor="@color/clrFont"
+    tools:text="Test"
+    />
+
+</LinearLayout>

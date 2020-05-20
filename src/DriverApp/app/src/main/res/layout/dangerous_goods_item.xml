@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/ll_root_item"
+  android:orientation="horizontal"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <androidx.appcompat.widget.AppCompatImageView
+    android:id="@+id/iv_dangerous_goods"
+    android:layout_width="144dp"
+    android:layout_height="144dp"
+    android:scaleType="centerCrop"
+    android:padding="5dp"
+    />
+
+  <Space
+    android:layout_width="15dp"
+    android:layout_height="0dp"
+    />
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/adr_class"
+      android:textSize="18sp"
+      />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_adr_class"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/clrFont"
+      android:textSize="24sp"
+      />
+
+  </LinearLayout>
+
+  <Space
+    android:layout_width="30dp"
+    android:layout_height="0dp"
+    />
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/un_no"
+      android:textSize="18sp"
+      />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_un_no"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/clrFont"
+      android:textSize="24sp"
+      />
+
+  </LinearLayout>
+
+</LinearLayout>

@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 @JsonAdapter(ConfirmationType.Serializer.class)
 public enum ConfirmationType {
   
+  RECEIVED(0),
   TASK_CONFIRMED_BY_DEVICE(1),
   TASK_CONFIRMED_BY_USER(2),
   TASK_CONFIRMED_BY_ABONA(3),

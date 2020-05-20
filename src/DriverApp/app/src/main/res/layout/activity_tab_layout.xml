@@ -2,92 +2,35 @@
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@drawable/main_menu_background">
 
-  <LinearLayout
+  <com.google.android.material.tabs.TabLayout
+    android:id="@+id/main_tab"
+    android:layout_width="wrap_content"
+    android:layout_height="36dp"
+    android:layout_marginTop="@dimen/spacing_medium"
+    android:layout_marginEnd="@dimen/spacing_medium"
+    android:layout_marginStart="@dimen/spacing_medium"
+    android:layout_marginBottom="@dimen/spacing_medium"
+    android:background="@drawable/tab_layout_background"
+    app:tabMode="scrollable"
+    app:tabBackground="@drawable/tab_layout_selector"
+    app:tabSelectedTextColor="@android:color/white"
+    app:tabPaddingStart="@dimen/spacing_large"
+    app:tabPaddingEnd="@dimen/spacing_large"
+    app:tabIndicatorHeight="0dp"
+    app:tabRippleColor="@null"
+    app:tabTextAppearance="@style/TabTextAppearance"
+    />
+
+  <androidx.viewpager.widget.ViewPager
+    android:id="@+id/view_pager"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <com.google.android.material.tabs.TabLayout
-      android:id="@+id/main_tab"
-      android:layout_width="wrap_content"
-      android:layout_height="36dp"
-      android:layout_marginTop="@dimen/spacing_medium"
-      android:layout_marginLeft="@dimen/spacing_medium"
-      android:layout_marginStart="@dimen/spacing_medium"
-      android:layout_marginBottom="@dimen/spacing_medium"
-      android:background="@drawable/tab_layout_background"
-      app:tabMode="scrollable"
-      app:tabBackground="@drawable/tab_layout_selector"
-      app:tabSelectedTextColor="@android:color/white"
-      app:tabPaddingStart="@dimen/spacing_large"
-      app:tabPaddingEnd="@dimen/spacing_large"
-      app:tabIndicatorHeight="0dp"
-      app:tabRippleColor="@null"
-      app:tabTextAppearance="@style/TabTextAppearance"
-      />
-
-    <View
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:layout_weight="1"
-      />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-      android:layout_width="@dimen/icon_size_24"
-      android:layout_height="@dimen/icon_size_24"
-      android:layout_gravity="center"
-      android:layout_marginRight="@dimen/spacing_large"
-      android:layout_marginEnd="@dimen/spacing_large"
-      android:tint="@color/colorPrimaryDark"
-      android:src="@drawable/ic_filter_outline"
-      android:background="?attr/selectableItemBackgroundBorderless"
-      />
-
-  </LinearLayout>
-
-  <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.viewpager.widget.ViewPager
-      android:id="@+id/view_pager"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_above="@id/bottom_navigation"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
-      />
-
-    <LinearLayout
-      android:id="@+id/bottom_navigation"
-      android:orientation="vertical"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true">
-
-      <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/spacing_medium"
-        android:background="@drawable/bg_gradient_soft"
-        />
-
-      <com.google.android.material.tabs.TabLayout
-        android:id="@+id/main_bottom_tab"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/main_menu_background"
-        app:theme="@style/Toolbar.Light"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:tabIndicatorHeight="0dp"
-        app:tabMode="fixed"
-        />
-
-    </LinearLayout>
-
-  </RelativeLayout>
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    />
 
 </LinearLayout>

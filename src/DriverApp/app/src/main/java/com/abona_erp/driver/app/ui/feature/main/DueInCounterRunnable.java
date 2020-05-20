@@ -59,14 +59,24 @@ public class DueInCounterRunnable implements Runnable {
     long days = hours / 24;
     String d = diff < 0 ? "- " : "";
     d += String.valueOf(Math.abs(days));
-    tv_DueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
+    if (tv_DueIn != null) {
+      tv_DueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
+    }
     
     if (diff < 0) {
-      iv_Warning.setVisibility(View.VISIBLE);
-      ll_Background.setBackground(context.getResources().getDrawable(R.drawable.warning_header_bg));
+      if (iv_Warning != null) {
+        iv_Warning.setVisibility(View.VISIBLE);
+      }
+      if (ll_Background != null) {
+        ll_Background.setBackground(context.getResources().getDrawable(R.drawable.warning_header_bg));
+      }
     } else {
-      iv_Warning.setVisibility(View.GONE);
-      ll_Background.setBackground(context.getResources().getDrawable(R.drawable.header_bg));
+      if (iv_Warning != null) {
+        iv_Warning.setVisibility(View.GONE);
+      }
+      if (ll_Background != null) {
+        ll_Background.setBackground(context.getResources().getDrawable(R.drawable.header_bg));
+      }
     }
     
     handler.postDelayed(this, 1000 * 60);

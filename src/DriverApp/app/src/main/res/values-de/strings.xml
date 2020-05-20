@@ -46,6 +46,25 @@
   <string name="map">Karte</string>
   <string name="camera">Kamera</string>
   <string name="document">Dokument</string>
+  <string name="contact">Kontakt</string>
+  <string name="contacts_available">Kontakte verfügbar</string>
+  <string name="notes">Bemerkungen</string>
+  <plurals name="numberOfNotesAvailable">
+    <item quantity="one">%d Bemerkung verfügbar</item>
+    <item quantity="other">%d Bemerkungen verfügbar</item>
+  </plurals>
+  <string name="dpl">DPL</string>
+  <string name="number_of_paletts">Anzahl der Paletten</string>
+  <string name="un_no">UN-No.</string>
+  <string name="client">Mandant</string>
+  <string name="geo_data">Geodaten</string>
+  <string name="name">Name</string>
+  <string name="loading_order">Ladereihenfolge</string>
+  <string name="contact_type_persecutor">Verfolger</string>
+  <string name="contact_type_second_persecutor">2. Verfolger</string>
+  <string name="contact_type_customer">Kunde</string>
+  <string name="dangerous_goods">Gefahrgut</string>
+  <string name="palette_exchange">Palettentausch</string>
 
   <string name="registration_number">Kein Fahrzeug</string>
   <string name="task_status">Task Status</string>

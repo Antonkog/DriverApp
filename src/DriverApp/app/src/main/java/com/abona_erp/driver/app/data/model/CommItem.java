@@ -25,9 +25,9 @@ public class CommItem {
   @Expose
   private DeviceProfileItem deviceProfileItem;
   
-  @SerializedName("TaskStatusInfo")
-  @Expose
-  private TaskStatusInfo taskStatusInfo;
+  //@SerializedName("TaskStatusInfo")
+  //@Expose
+  //private TaskStatusInfo taskStatusInfo;
   
   @SerializedName("VehicleItem")
   @Expose
@@ -83,7 +83,7 @@ public class CommItem {
   public void setDeviceProfileItem(DeviceProfileItem deviceProfileItem) {
     this.deviceProfileItem = deviceProfileItem;
   }
-  
+  /*
   public TaskStatusInfo getTaskStatusInfo() {
     return taskStatusInfo;
   }
@@ -91,7 +91,7 @@ public class CommItem {
   public void setTaskStatusInfo(TaskStatusInfo taskStatusInfo) {
     this.taskStatusInfo = taskStatusInfo;
   }
-  
+  */
   public VehicleItem getVehicleItem() {
     return vehicleItem;
   }

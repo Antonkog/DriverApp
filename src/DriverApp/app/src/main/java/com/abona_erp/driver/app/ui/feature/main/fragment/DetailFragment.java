@@ -42,6 +42,7 @@ import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
@@ -255,7 +256,7 @@ public class DetailFragment extends Fragment {
       //mDetailStepView.go(3, false);
       //mDetailStepView.done(true);
       mBtnBackActivity.setVisibility(View.VISIBLE);
-      mBtnBackActivity.setText(getContext().getResources().getString(R.string.action_close));
+      mBtnBackActivity.setText(ContextUtils.getApplicationContext().getResources().getString(R.string.action_close));
       mBtnNextActivity.setVisibility(View.GONE);
       mBtnNextActivity.setText("DELETE");
     }

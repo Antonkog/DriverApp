@@ -9,15 +9,15 @@ public class ActivityItem {
   
   @SerializedName("MandantId")
   @Expose
-  private int mandantId;
+  private Integer mandantId;
   
   @SerializedName("TaskId")
   @Expose
-  private int taskId;
+  private Integer taskId;
   
   @SerializedName("ActivityId")
   @Expose
-  private int activityId;
+  private Integer activityId;
   
   @SerializedName("Name")
   @Expose
@@ -41,33 +41,33 @@ public class ActivityItem {
   
   @SerializedName("Sequence")
   @Expose
-  private int sequence;
+  private Integer sequence;
   
   @SerializedName("DeviceId")
   @Expose
   private String deviceId;
   
-  public int getMandantId() {
+  public Integer getMandantId() {
     return mandantId;
   }
   
-  public void setMandantId(int mandantId) {
+  public void setMandantId(Integer mandantId) {
     this.mandantId = mandantId;
   }
   
-  public int getTaskId() {
+  public Integer getTaskId() {
     return taskId;
   }
   
-  public void setTaskId(int taskId) {
+  public void setTaskId(Integer taskId) {
     this.taskId = taskId;
   }
   
-  public int getActivityId() {
+  public Integer getActivityId() {
     return activityId;
   }
   
-  public void setActivityId(int activityId) {
+  public void setActivityId(Integer activityId) {
     this.activityId = activityId;
   }
   
@@ -111,11 +111,11 @@ public class ActivityItem {
     this.status = status;
   }
   
-  public int getSequence() {
+  public Integer getSequence() {
     return sequence;
   }
   
-  public void setSequence(int sequence) {
+  public void setSequence(Integer sequence) {
     this.sequence = sequence;
   }
   
