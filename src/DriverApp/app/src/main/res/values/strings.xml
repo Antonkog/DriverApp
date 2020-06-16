@@ -1,4 +1,11 @@
 <resources>
+
+  <string name="app_name" translatable="false">Driver App</string>
+  <string name="app_company" translatable="false">ABONA Deutschland GmbH</string>
+
+  <!-- This String is used in the User Agent -->
+  <string name="useragent_appname" translatable="false">ABONA Driver App</string>
+
   <string name="tab_text_pending" translatable="false">Pending\u0020</string>
   <string name="tab_text_running" translatable="false">Running\u0020</string>
   <string name="tab_text_cmr" translatable="false">CMR\u0020</string>
