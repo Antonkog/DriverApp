@@ -112,4 +112,7 @@
 
   <string name="preference_language">Język</string>
   <string name="preference_language_show">Polski</string>
+    <string name="order">Zamówienie</string>
+  <string name="action">Akcja</string>
+  <string name="timestamp">Czas</string>
 </resources>

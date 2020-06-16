@@ -10,6 +10,18 @@
     <item name="android:windowBackground">@drawable/splash_screen_theme</item>
   </style>
 
+  <style name="TaskStatusLabels" parent="AppTheme">
+    <item name="android:textSize">10sp</item>
+    <item name="android:textColor">@color/clrFont</item>
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_marginTop">@dimen/margin_std</item>
+  </style>
+
+  <style name="TaskStatusText" parent="TaskStatusLabels">
+  </style>
+
+
   <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
     <item name="android:textSize">14sp</item>
     <item name="android:textColor">#aaa</item>

@@ -17,4 +17,16 @@
   <dimen name="spacing_xxlarge">50dp</dimen>
   <dimen name="spacing_xxxlarge">55dp</dimen>
   <dimen name="appbar_padding_top">8dp</dimen>
+
+<!--  icon sizes-->
+  <dimen name="icon_size_X">24dp</dimen>
+  <dimen name="icon_size_XX">32dp</dimen>
+  <dimen name="icon_size_Xbg">40dp</dimen>
+  <dimen name="icon_size_XXX">48dp</dimen>
+  <dimen name="icon_size_XXXX">72dp</dimen>
+
+<!--  margins-->
+
+
+  <dimen name="margin_std">16dp</dimen>
 </resources>

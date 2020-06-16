@@ -8,6 +8,7 @@
   <color name="clrFont">#1F1C2C</color>
   <color name="clrWhite">#FFF</color>
   <color name="clrMainHeader">#F5F7FA</color>
+  <color name="orderMenuBG">#fafafa</color>
   <color name="clrIcon">#1F1C2C</color>
   <color name="clrTaskFinished">#10ac84</color>
 

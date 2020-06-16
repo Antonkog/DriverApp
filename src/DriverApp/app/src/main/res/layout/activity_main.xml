@@ -106,15 +106,14 @@
       />
 
     <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/lv_last_activity"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="1"
-      android:layout_marginTop="@dimen/spacing_small"
-      android:clipToPadding="false"
-      tools:listitem="@layout/item_last_activity"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
-      />
+        android:id="@+id/lv_last_activity"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_task_status" />
 
   </LinearLayout>
 

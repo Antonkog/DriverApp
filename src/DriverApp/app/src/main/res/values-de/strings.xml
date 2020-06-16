@@ -117,4 +117,7 @@
   <string name="label_deleted">GELÖSCHT</string>
   <string name="label_changed">GEÄNDERT</string>
   <string name="label_done">ERLEDIGT</string>
+    <string name="order">"Bestellung "</string>
+  <string name="action">"Aktion "</string>
+  <string name="timestamp">Zeitstempel</string>
 </resources>

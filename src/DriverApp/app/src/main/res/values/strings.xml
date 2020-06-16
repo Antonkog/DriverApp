@@ -1,37 +1,37 @@
 <resources>
-  <string name="tab_text_pending">Pending\u0020</string>
-  <string name="tab_text_running">Running\u0020</string>
-  <string name="tab_text_cmr">CMR\u0020</string>
-  <string name="tab_text_completed">Completed\u0020</string>
+  <string name="tab_text_pending" translatable="false">Pending\u0020</string>
+  <string name="tab_text_running" translatable="false">Running\u0020</string>
+  <string name="tab_text_cmr" translatable="false">CMR\u0020</string>
+  <string name="tab_text_completed" translatable="false">Completed\u0020</string>
 
   <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
-  <string name="notification_channel_id">default</string>
+  <string name="notification_channel_id" translatable="false">default</string>
 
   <!-- Error strings -->
-  <string name="geofence_not_available">Geofence service is not available now</string>
-  <string name="geofence_too_many_geofences">Your app has registered too many geofences</string>
-  <string name="geofence_too_many_pending_intents">
+  <string name="geofence_not_available" translatable="false">Geofence service is not available now</string>
+  <string name="geofence_too_many_geofences" translatable="false">Your app has registered too many geofences</string>
+  <string name="geofence_too_many_pending_intents" translatable="false">
         You have provided too many PendingIntents to the addGeofences() call
     </string>
-  <string name="unknown_geofence_error">
+  <string name="unknown_geofence_error" translatable="false">
         Unknown error: the Geofence service is not available now
     </string>
-  <string name="geofence_transition_invalid_type">
+  <string name="geofence_transition_invalid_type" translatable="false">
         Geofence transition error: invalid transition type %1$d
     </string>
 
   <!-- Transition type strings -->
-  <string name="geofence_transition_entered">Entered</string>
-  <string name="geofence_transition_exited">Exited</string>
-  <string name="unknown_geofence_transition">Unknown Transition</string>
+  <string name="geofence_transition_entered" translatable="false">Entered</string>
+  <string name="geofence_transition_exited" translatable="false">Exited</string>
+  <string name="unknown_geofence_transition" translatable="false">Unknown Transition</string>
 
-  <string name="geofence_transition_notification_text">
+  <string name="geofence_transition_notification_text" translatable="false">
         Click notification to return to app
     </string>
 
-  <string name="insufficient_permissions">Insufficient permissions.</string>
-  <string name="permission_rationale">Location permission is needed for core functionality</string>
-  <string name="permission_denied_explanation">Permission was denied, but is needed for core
+  <string name="insufficient_permissions" translatable="false">Insufficient permissions.</string>
+  <string name="permission_rationale" translatable="false">Location permission is needed for core functionality</string>
+  <string name="permission_denied_explanation" translatable="false">Permission was denied, but is needed for core
         functionality.</string>
 
 
@@ -48,8 +48,8 @@
   <string name="label_changed">CHANGED</string>
   <string name="label_done">DONE</string>
 
-  <string name="label_brush">Brush</string>
-  <string name="label_save">Save</string>
+  <string name="label_brush" translatable="false">Brush</string>
+  <string name="label_save" translatable="false">Save</string>
 
   <string name="lat" translatable="false">Lat</string>
   <string name="lng" translatable="false">Lng</string>
@@ -137,6 +137,11 @@
   <string name="dangerous_goods">Dangerous Goods</string>
   <string name="palette_exchange">Palette Exchange</string>
 
+
+  <string name="order">Order</string>
+  <string name="action">Action</string>
+  <string name="timestamp">Timestamp:</string>
+
   <string name="new_document">New Document!</string>
   <string name="new_document_message">You have got a new Document received.</string>
   <string name="exit_message">Do you want to quit ABONA Driver App?</string>
@@ -150,7 +155,7 @@
   <string name="action_type_delay">Delay</string>
   <string name="action_type_unknown">Unknown</string>
 
-  <string name="hint_ip_address">IP Address</string>
+  <string name="hint_ip_address" translatable="false">IP Address</string>
 
   <string name="need_permissions">Need Permissions!</string>
   <string name="permission_message_settings">This app needs permission to use this feature. You can grant them in app settings.</string>
