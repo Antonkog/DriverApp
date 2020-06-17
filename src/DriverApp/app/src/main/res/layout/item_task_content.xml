@@ -43,7 +43,7 @@
             android:layout_width="@dimen/icon_size_24"
             android:layout_height="@dimen/icon_size_24"
             android:layout_marginEnd="7dp"
-            app:tint="@color/grey_20"
+            app:tint="@color/grey_10"
             android:src="@drawable/ic_destination"
             />
 
@@ -65,7 +65,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/name"
                 />
 
@@ -93,7 +93,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="Waren"
                 />
 
@@ -121,7 +121,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/reference_1"
                 />
 
@@ -149,7 +149,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/client"
                 />
 
@@ -186,7 +186,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/geo_data"
                 />
 
@@ -214,7 +214,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/loading_order"
                 />
 
@@ -242,7 +242,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/reference_2"
                 />
 
@@ -311,7 +311,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/adr_class"
                 />
 
@@ -349,7 +349,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/un_no"
                 />
 
@@ -388,7 +388,7 @@
             android:layout_width="@dimen/icon_size_24"
             android:layout_height="@dimen/icon_size_24"
             android:layout_marginEnd="7dp"
-            app:tint="@color/grey_20"
+            app:tint="@color/grey_10"
             android:src="@drawable/ic_pallet"
             />
 
@@ -411,7 +411,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/number_of_paletts"
                 />
 
@@ -450,7 +450,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textSize="11sp"
-                android:textColor="@color/grey_20"
+                android:textColor="@color/grey_10"
                 android:text="@string/dpl"
                 />
 
@@ -489,7 +489,7 @@
             android:layout_width="@dimen/icon_size_24"
             android:layout_height="@dimen/icon_size_24"
             android:layout_marginEnd="7dp"
-            app:tint="@color/grey_20"
+            app:tint="@color/grey_10"
             android:src="@drawable/ic_message"
             />
 
@@ -506,7 +506,7 @@
               android:ellipsize="end"
               android:singleLine="true"
               android:textSize="11sp"
-              android:textColor="@color/grey_20"
+              android:textColor="@color/grey_10"
               android:text="@string/notes"
               />
 
@@ -543,7 +543,7 @@
             android:layout_width="@dimen/icon_size_24"
             android:layout_height="@dimen/icon_size_24"
             android:layout_marginEnd="7dp"
-            app:tint="@color/grey_20"
+            app:tint="@color/grey_10"
             android:src="@drawable/ic_phone_24px"
             />
 
@@ -560,7 +560,7 @@
               android:ellipsize="end"
               android:singleLine="true"
               android:textSize="11sp"
-              android:textColor="@color/grey_20"
+              android:textColor="@color/grey_10"
               android:text="@string/contact"
               />
 

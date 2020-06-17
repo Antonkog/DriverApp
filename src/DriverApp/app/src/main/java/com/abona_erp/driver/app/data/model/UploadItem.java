@@ -15,6 +15,10 @@ public class UploadItem {
   @Expose
   private boolean uploaded;
   
+  @SerializedName("DMSDocumentType")
+  @Expose
+  private DMSDocumentType documentType;
+  
   @SerializedName("CreatedAt")
   @Expose
   private Date createdAt;
@@ -37,6 +41,14 @@ public class UploadItem {
   
   public void setUploaded(boolean uploaded) {
     this.uploaded = uploaded;
+  }
+  
+  public DMSDocumentType getDocumentType() {
+    return documentType;
+  }
+  
+  public void setDocumentType(DMSDocumentType documentType) {
+    this.documentType = documentType;
   }
   
   public Date getCreatedAt() {

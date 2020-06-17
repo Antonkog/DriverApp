@@ -38,12 +38,32 @@
   <string name="action_update">Aktualizacja</string>
   <string name="action_update_message">Aktualizacja zakończona!</string>
   <string name="action_exception_on_rest_api">Błąd w interfejsie API REST!</string>
+  <string name="action_later">Później</string>
+
+  <string name="document_type">Typ dokumentu</string>
+  <string name="document_type_na">Nie (N/A)</string>
+  <string name="document_type_pod">Dowód dostawy (POD)</string>
+  <string name="document_type_cmr">CMR</string>
+  <string name="document_type_pn">Uwaga na paletach (PN)</string>
+  <string name="document_type_sc">Certyfikat bezpieczeństwa (SC)</string>
+  <string name="document_type_si">Obraz przesyłki (SI)</string>
+  <string name="document_type_dsi">Obraz uszkodzonej przesyłki (DSI)</string>
+  <string name="document_type_dvi">Obraz uszkodzonego pojazdu (DVI)</string>
+
+  <string name="editing_camera">Kamera</string>
+  <string name="editing_category">Kategoria</string>
+  <string name="editing_tools">Przybory</string>
+  <string name="editing_brush">Szczotka</string>
+  <string name="editing_text">Tekst</string>
+  <string name="editing_eraser">Wymazać</string>
+  <string name="editing_undo">Cofnij</string>
+  <string name="editing_redo">Przerobić</string>
 
   <string name="yes">Tak</string>
   <string name="no">Nie</string>
   <string name="search">Szukaj</string>
   <string name="map">Mapa</string>
-  <string name="camera">kamera</string>
+  <string name="camera">Kamera</string>
   <string name="document">Dokument</string>
   <string name="contact">Kontakt</string>
   <string name="contacts_available">Dostępne kontakty</string>

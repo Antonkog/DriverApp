@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <RadioGroup
+    android:id="@+id/rg_group_1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+      android:id="@+id/rb_na"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_na"
+      />
+
+    <RadioButton
+      android:id="@+id/rb_pod"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_pod"
+      />
+
+  </RadioGroup>
+
+  <RadioGroup
+    android:id="@+id/rg_group_2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+      android:id="@+id/rb_cmr"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_cmr"
+      />
+
+    <RadioButton
+      android:id="@+id/rb_pallets_note"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_pn"
+      />
+
+  </RadioGroup>
+
+  <RadioGroup
+    android:id="@+id/rg_group_3"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+      android:id="@+id/rb_safety_certificate"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_sc"
+      />
+
+    <RadioButton
+      android:id="@+id/rb_shipment_image"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_si"
+      />
+
+  </RadioGroup>
+
+  <RadioGroup
+    android:id="@+id/rg_group_4"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+      android:id="@+id/rb_damaged_shipment_image"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_dsi"
+      />
+
+    <RadioButton
+      android:id="@+id/rb_damaged_vehicle_image"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_dvi"
+      />
+
+  </RadioGroup>
+
+</LinearLayout>

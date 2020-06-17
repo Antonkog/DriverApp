@@ -1,8 +1,6 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,11 +9,9 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -23,10 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.R;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
-import com.abona_erp.driver.app.ui.feature.main.fragment.photo.Option;
-import com.abona_erp.driver.core.base.ContextUtils;
 import com.otaliastudios.cameraview.BitmapCallback;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
@@ -36,14 +29,10 @@ import com.otaliastudios.cameraview.controls.Hdr;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class ImageCameraFragment extends Fragment
@@ -65,7 +54,8 @@ public class ImageCameraFragment extends Fragment
   private AppCompatImageView iv_capture_flash;
   private AppCompatImageView iv_capture_information;
   
-  private String mCameraFilePath;
+  private static final String APP_FOLDER = "/DriverApp/";
+  private static final String PATH_SLASH = "/";
   
   public ImageCameraFragment() {
     // Required empty public constructor.
@@ -89,6 +79,17 @@ public class ImageCameraFragment extends Fragment
       mMandantID = getArguments().getInt("mandant_id");
       mOrderNo = getArguments().getInt("order_no");
       mTaskID = getArguments().getInt("task_id");
+  
+      File createFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        + File.separator
+        + "DriverApp"
+        + File.separator
+        + mMandantID
+        + File.separator
+        + mOrderNo);
+      if (!createFile.exists() && !createFile.isDirectory()) {
+        createFile.mkdirs();
+      }
     }
     return root;
   }
@@ -139,19 +140,11 @@ public class ImageCameraFragment extends Fragment
     public void onPictureTaken(@NonNull PictureResult result) {
       super.onPictureTaken(result);
       
-      // This can happen if picture was taken a gesture.
-      /*
-      long callbackTime = System.currentTimeMillis();
-      if (mCaptureTime == 0)
-        mCaptureTime = callbackTime - 300;
-      Log.d(TAG, "onPictureTaken called! Delay: ", callbackTime - mCaptureTime);
-       */
-  
-      Log.i(TAG, "**************************************************");
-      
-      result.toBitmap(1000, 1000, new BitmapCallback() {
+      result.toBitmap(1600, 1200, new BitmapCallback() {
         @Override
         public void onBitmapReady(@Nullable Bitmap bitmap) {
+          
+          if (bitmap == null) return;
           
           File photoFile = null;
           try {
@@ -160,7 +153,6 @@ public class ImageCameraFragment extends Fragment
             ex.printStackTrace();
           }
           if (photoFile != null) {
-            Log.i(TAG, "********************************************--");
             Uri photoURI = FileProvider.getUriForFile(getContext(),
               BuildConfig.APPLICATION_ID + ".provider",
               photoFile);
@@ -168,10 +160,8 @@ public class ImageCameraFragment extends Fragment
             try {
               MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
                 photoFile.getAbsolutePath(), photoFile.getName(), photoFile.getName());
-  
-              Log.i(TAG, photoURI.toString());
+              
               App.eventBus.post(new ImageEvent(photoFile.getAbsolutePath()));
-              //Log.i(TAG, photoFile.getAbsolutePath());
             } catch (IOException e) {
               e.printStackTrace();
             }
@@ -197,10 +187,11 @@ public class ImageCameraFragment extends Fragment
     String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss",
       Locale.getDefault()).format(new Date());
     String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + ".jpg";
-    File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    //File mFile = File.createTempFile(mFileName, null, storageDir);
-    File mFile = new File(storageDir, mFileName);
-    return mFile;
+    
+    File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+      + APP_FOLDER + mandantId + PATH_SLASH + orderNo, mFileName);
+    
+    return storageDir;
   }
   
   private void initComponents(@NonNull View root) {

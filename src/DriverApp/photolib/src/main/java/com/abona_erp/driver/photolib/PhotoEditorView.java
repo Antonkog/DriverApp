@@ -94,4 +94,8 @@ public class PhotoEditorView extends RelativeLayout {
   BrushDrawingView getBrushDrawingView() {
     return mBrushDrawingView;
   }
+  
+  void saveFilter(@NonNull final OnSaveBitmap onSaveBitmap) {
+    onSaveBitmap.onBitmapReady(mImgSource.getBitmap());
+  }
 }

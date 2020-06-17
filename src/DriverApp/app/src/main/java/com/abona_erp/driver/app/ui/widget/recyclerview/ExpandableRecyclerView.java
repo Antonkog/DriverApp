@@ -123,24 +123,26 @@ public class ExpandableRecyclerView extends RecyclerView {
         
         @Override
         public void onSingleClick(View v) {
-          currentPosition = holder.getLayoutPosition();
-          for (int index = 0; index < layoutManager.getChildCount(); ++index) {
-            if (index != (currentPosition - layoutManager.findFirstVisibleItemPosition())) {
-              final ExpandableItem currentExpandableItem =
-                layoutManager.getChildAt(index).findViewWithTag(ExpandableItem.TAG);
-              currentExpandableItem.hide();
+          try {
+            currentPosition = holder.getLayoutPosition();
+            for (int index = 0; index < layoutManager.getChildCount(); ++index) {
+              if (index != (currentPosition - layoutManager.findFirstVisibleItemPosition())) {
+                final ExpandableItem currentExpandableItem =
+                  layoutManager.getChildAt(index).findViewWithTag(ExpandableItem.TAG);
+                currentExpandableItem.hide();
+              }
             }
-          }
-          final ExpandableItem item = layoutManager
-            .getChildAt(currentPosition - layoutManager.findFirstVisibleItemPosition())
-            .findViewWithTag(ExpandableItem.TAG);
-          if (expandableItem.isOpened()) {
-            expandableItem.hide();
-          } else {
-            expandableItem.show();
-          }
-          
-          listener.onClick(v, holder.getAdapterPosition(), getItem(holder.getAdapterPosition()));
+            final ExpandableItem item = layoutManager
+              .getChildAt(currentPosition - layoutManager.findFirstVisibleItemPosition())
+              .findViewWithTag(ExpandableItem.TAG);
+            if (expandableItem.isOpened()) {
+              expandableItem.hide();
+            } else {
+              expandableItem.show();
+            }
+  
+            listener.onClick(v, holder.getAdapterPosition(), getItem(holder.getAdapterPosition()));
+          } catch (Exception e) { }
         }
   
         @Override

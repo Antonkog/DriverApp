@@ -1,8 +1,8 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.photo;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -21,28 +21,29 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
-import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.logging.Log;
-import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
+import com.abona_erp.driver.app.ui.event.EditingDeleteEvent;
+import com.abona_erp.driver.app.ui.event.EditingSaveEvent;
+import com.abona_erp.driver.app.ui.event.EditingToolsEvent;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.RefreshUiEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragmentViewModel;
-import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.EditingToolsAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.GalleryViewAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.MenuToolsAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageCameraFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageEditFragment;
-import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageGalleryFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageSettingsFragment;
-import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
+import com.abona_erp.driver.app.ui.widget.CustomDMSDocumentTypeDialog;
+import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
-import com.abona_erp.driver.photolib.PhotoEditorView;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
@@ -52,46 +53,37 @@ import com.kongzue.dialog.v3.WaitDialog;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PhotoFragment extends Fragment
-  implements EditingToolsAdapter.OnItemSelected,
-    MenuToolsAdapter.OnItemSelected,
-    GalleryListener {
+  implements MenuToolsAdapter.OnItemSelected,
+    GalleryListener, CustomDMSDocumentTypeDialog.OnSelectedTypeEventListener {
   
   private int mOid;
   private Notify mNotify;
   private ArrayList<String> mPhotoUrls = new ArrayList<>();
+  private int mPreviewIndex = -1;
   
-  private PhotoEditorView mPhotoEditorView;
+  private DMSDocumentType mDocumentType;
+  
   private RecyclerView mRvGalleryView;
-  private RecyclerView mRvTools;
   private RecyclerView mRvMenu;
   private MenuToolsAdapter mMenuToolsAdapter = new MenuToolsAdapter(this);
-  private EditingToolsAdapter mEditingToolsAdapter = new EditingToolsAdapter(this);
   private GalleryViewAdapter mGalleryViewAdapter = new GalleryViewAdapter(this);
   private AppCompatImageButton mBtnBack;
   
@@ -109,6 +101,7 @@ public class PhotoFragment extends Fragment
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
   
+    mDocumentType = DMSDocumentType.NA;
     mNotify = new Notify();
     
     mViewModel = ViewModelProviders.of(this)
@@ -128,58 +121,113 @@ public class PhotoFragment extends Fragment
     super.onViewCreated(view, savedInstanceState);
   
     loadFragment(ImageEditFragment.newInstance());
-    
-    if (getArguments() != null) {
-      mOid = getArguments().getInt("oid");
-      if (mOid > 0) {
-        mViewModel.getNotifyById(mOid).observeOn(AndroidSchedulers.mainThread())
-          .subscribeOn(Schedulers.io())
-          .subscribe(new DisposableSingleObserver<Notify>() {
-            
-            @Override
-            public void onSuccess(Notify notify) {
-              if (notify != null) {
-                mNotify = notify;
-              }
-              
-              mPhotoUrls = mNotify.getPhotoUrls();
-              if (mPhotoUrls.size() > 0) {
-                ImageEditFragment.newInstance().setBitmap(null);
-                for (int i = 0; i < mPhotoUrls.size(); i++) {
-                  UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
-                  if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
-    
-                    if (uploadItem.getUploaded()) continue;
-                    
-                    File file = new File(uploadItem.getUri());
-                    if (file.exists()) {
-                      Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
-                      ImageEditFragment.newInstance().setBitmap(preview);
-                      break;
-                    }
-                  }
-                }
-             
-                Log.d("PhotoFragment", "Task Bilder vorhanden!");
-                
-                mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
-              } else {
-                Log.d("PhotoFragment", "Kein Bild vorhanden!");
-              }
-            }
+    if (getArguments() == null) return;
+    mOid = getArguments().getInt("oid");
   
-            @Override
-            public void onError(Throwable e) {
-              Toast.makeText(getContext().getApplicationContext(),
-                "Fehler beim Laden!", Toast.LENGTH_LONG).show();
+    if (mOid > 0) {
+      mViewModel.getNotifyById(mOid).observeOn(AndroidSchedulers.mainThread())
+        .subscribeOn(Schedulers.io())
+        .subscribe(new DisposableSingleObserver<Notify>() {
+  
+          @Override
+          public void onSuccess(Notify notify) {
+            if (notify == null) return;
+            mNotify = notify;
+    
+            if (notify.getPhotoUrls() == null) return;
+            if (notify.getPhotoUrls().size() <= 0) return;
+  
+            mPhotoUrls.clear();
+            mPhotoUrls = mNotify.getPhotoUrls();
+            
+            ArrayList<String> notUploadedFiles = new ArrayList<String>();
+            boolean updateNow = false;
+            boolean deleteAll = true;
+            for (int i = 0; i < mPhotoUrls.size(); i++) {
+              UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
+              if (uploadItem.getUploaded()) continue;
+              deleteAll = false;
+              updateNow = true;
+              notUploadedFiles.add(App.getGson().toJson(uploadItem));
             }
-          });
-      }
+    
+            if (deleteAll) {
+              mPhotoUrls.clear();
+              mNotify.setPhotoUrls(mPhotoUrls);
+              mViewModel.update(mNotify);
+            }
+            if (updateNow) {
+              mPhotoUrls.clear();
+              mPhotoUrls = notUploadedFiles;
+              mNotify.setPhotoUrls(mPhotoUrls);
+              mViewModel.update(mNotify);
+            }
+            
+            
+            
+            //Log.i(">>>>>>>>>>", mPhotoUrls.toString());
+    
+            mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
+    
+            ImageEditFragment.newInstance().setBitmap(null, null);
+            for (int i = 0; i < mPhotoUrls.size(); i++) {
+              UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
+              if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
+  
+                if (uploadItem.getUploaded()) continue;
+  
+                File file = new File(uploadItem.getUri());
+                if (file.exists()) {
+                  mPreviewIndex = i;
+                  mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+                  if (uploadItem.getDocumentType() != null)
+                    mDocumentType = uploadItem.getDocumentType();
+                  Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
+                  ImageEditFragment.newInstance().setBitmap(preview, file);
+                  break;
+                }
+              }
+            }
+          }
+  
+          @Override
+          public void onError(Throwable e) {
+            Toast.makeText(getContext().getApplicationContext(),
+              "Fehler beim Laden!", Toast.LENGTH_LONG).show();
+          }
+        });
     }
   }
   
   @Override
   public void onGallerySelected(int position) {
+    if (!ImageEditFragment.newInstance().isCacheEmpty()) {
+      MessageDialog.build((AppCompatActivity)getActivity())
+        .setStyle(DialogSettings.STYLE.STYLE_IOS)
+        .setTheme(DialogSettings.THEME.LIGHT)
+        .setTitle("Änderungen")
+        .setMessage("Möchten Sie die Änderungen speichern?")
+        .setCancelable(false)
+        .setOkButton(getContext().getResources().getString(R.string.action_save),
+          new OnDialogButtonClickListener() {
+            @Override
+            public boolean onClick(BaseDialog baseDialog, View v) {
+              App.eventBus.post(new EditingSaveEvent());
+              return false;
+            }
+          })
+        .setCancelButton(getContext().getResources().getString(R.string.action_delete),
+          new OnDialogButtonClickListener() {
+            @Override
+            public boolean onClick(BaseDialog baseDialog, View v) {
+              App.eventBus.post(new EditingDeleteEvent());
+              return false;
+            }
+          })
+        .show();
+      
+      return;
+    }
     loadFragment(ImageEditFragment.newInstance());
     new Handler().postDelayed(new Runnable() {
       @Override
@@ -191,13 +239,20 @@ public class PhotoFragment extends Fragment
           if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
             File file = new File(uploadItem.getUri());
             if (file.exists()) {
+              mPreviewIndex = position;
+              mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+              mDocumentType = uploadItem.getDocumentType();
               Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
-              ImageEditFragment.newInstance().setBitmap(preview);
+              ImageEditFragment.newInstance().setBitmap(preview, file);
             } else {
-              ImageEditFragment.newInstance().setBitmap(null);
+              mPreviewIndex = -1;
+              mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+              ImageEditFragment.newInstance().setBitmap(null, null);
             }
           } else {
-            ImageEditFragment.newInstance().setBitmap(null);
+            mPreviewIndex = -1;
+            mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+            ImageEditFragment.newInstance().setBitmap(null, null);
           }
         }
       }
@@ -209,33 +264,57 @@ public class PhotoFragment extends Fragment
     switch (toolType) {
       case SAVE:
         break;
-      case CAMERA:
+      case CAMERA: {
+        if (!ImageEditFragment.newInstance().isCacheEmpty()) {
+          MessageDialog.build((AppCompatActivity)getActivity())
+            .setStyle(DialogSettings.STYLE.STYLE_IOS)
+            .setTheme(DialogSettings.THEME.LIGHT)
+            .setTitle("Änderungen")
+            .setMessage("Möchten Sie die Änderungen speichern?")
+            .setCancelable(false)
+            .setOkButton(getContext().getResources().getString(R.string.action_save),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  App.eventBus.post(new EditingSaveEvent());
+                  return false;
+                }
+              })
+            .setCancelButton(getContext().getResources().getString(R.string.action_delete),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  App.eventBus.post(new EditingDeleteEvent());
+                  return false;
+                }
+              })
+            .show();
+    
+          return;
+        }
+        mPreviewIndex = -1;
+        mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+        CustomDMSDocumentTypeDialog dialog = new CustomDMSDocumentTypeDialog((Activity)getContext(),
+          AppUtils.parseOrderNo(mNotify.getOrderNo()), mDocumentType, this);
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
         loadFragment(ImageCameraFragment.newInstance());
-        break;
-      case GALLERY:
-        loadFragment(ImageGalleryFragment.newInstance());
+      } break;
+      case CATEGORY:
+        CustomDMSDocumentTypeDialog dialog = new CustomDMSDocumentTypeDialog((Activity)getContext(),
+          AppUtils.parseOrderNo(mNotify.getOrderNo()), mDocumentType, this);
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
         break;
       case TOOLS:
-        //showOrHideTools();
+        App.eventBus.post(new EditingToolsEvent());
         break;
       case SETTINGS:
         loadFragment(ImageSettingsFragment.newInstance());
         break;
     }
   }
-  
-  @Override
-  public void onToolSelected(ToolType toolType) {
-    switch (toolType) {
-      case BRUSH:
-        break;
-      case TEXT:
-        break;
-      case ERASER:
-        break;
-    }
-  }
-  
+
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(ImageEvent event) {
     
@@ -243,76 +322,49 @@ public class PhotoFragment extends Fragment
       // -------------------------------------------------------------------------------------------
       // Delete Photo:
       //
-      if (event.getPosition() >= 0) {
-        UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls
-          .get(event.getPosition()), UploadItem.class);
-        
-        if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
-          File file = new File(uploadItem.getUri());
-          if (file.exists()) {
-            boolean check = file.delete();
-            Log.w(">>>>>>>", "File deleted: " + file.getAbsolutePath() + " " + check);
-            
-            mPhotoUrls.remove(event.getPosition());
-          } else {
-            mPhotoUrls.remove(event.getPosition());
-            MessageDialog.build((AppCompatActivity)getActivity())
-              .setStyle(DialogSettings.STYLE.STYLE_IOS)
-              .setTheme(DialogSettings.THEME.LIGHT)
-              .setTitle(getContext().getResources().getString(R.string.action_warning))
-              .setMessage(getContext().getResources().getString(R.string.action_photo_no_longer_exists))
-              .setOkButton(getContext().getResources().getString(R.string.action_ok),
-                new OnDialogButtonClickListener() {
-        
-                  @Override
-                  public boolean onClick(BaseDialog baseDialog, View v) {
-                    return false;
-                  }
-                })
-              .show();
-          }
-        } else {
-          mPhotoUrls.remove(event.getPosition());
-          MessageDialog.build((AppCompatActivity)getActivity())
-            .setStyle(DialogSettings.STYLE.STYLE_IOS)
-            .setTheme(DialogSettings.THEME.LIGHT)
-            .setTitle(getContext().getResources().getString(R.string.action_warning))
-            .setMessage(getContext().getResources().getString(R.string.action_photo_damaged))
-            .setOkButton(getContext().getResources().getString(R.string.action_ok),
-              new OnDialogButtonClickListener() {
-        
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-                  return false;
-                }
-              })
-            .show();
-        }
-      }
-  
-      mNotify.setPhotoUrls(mPhotoUrls);
-      mViewModel.update(mNotify);
-  
-      mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
-      mGalleryViewAdapter.notifyDataSetChanged();
+      int pos = event.getPosition();
+      if (pos < 0) return;
       
-      if (mPhotoUrls.size() > 0) {
-        UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(0),
-          UploadItem.class);
+      UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(pos), UploadItem.class);
+      if (uploadItem == null) return;
+      File file = new File(uploadItem.getUri());
+      if (file.exists()) {
         
-        if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
-          File file = new File(uploadItem.getUri());
-          if (file.exists()) {
-            Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
-            ImageEditFragment.newInstance().setBitmap(preview);
+        mPhotoUrls.remove(pos);
+        mNotify.setPhotoUrls(mPhotoUrls);
+        mViewModel.update(mNotify);
+        mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
+  
+        if (mPhotoUrls.size() > 0) {
+          UploadItem ui = App.getGson().fromJson(mPhotoUrls.get(0),
+            UploadItem.class);
+    
+          if (ui != null && ui.getUri() != null && !TextUtils.isEmpty(ui.getUri()) && ui.getUri().length() > 0) {
+            File f = new File(ui.getUri());
+            if (f.exists()) {
+              mPreviewIndex = 0;
+              mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+              if (uploadItem.getDocumentType() != null)
+                mDocumentType = uploadItem.getDocumentType();
+              Bitmap preview = BitmapFactory.decodeFile(f.getAbsolutePath());
+              ImageEditFragment.newInstance().setBitmap(preview, f);
+            } else {
+              mPreviewIndex = -1;
+              mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+              ImageEditFragment.newInstance().setBitmap(null, null);
+            }
           } else {
-            ImageEditFragment.newInstance().setBitmap(null);
+            mPreviewIndex = -1;
+            mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+            ImageEditFragment.newInstance().setBitmap(null, null);
           }
         } else {
-          ImageEditFragment.newInstance().setBitmap(null);
+          mPreviewIndex = -1;
+          mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
+          ImageEditFragment.newInstance().setBitmap(null, null);
         }
-      } else {
-        ImageEditFragment.newInstance().setBitmap(null);
+        
+        file.delete();
       }
 
     } else {
@@ -322,18 +374,11 @@ public class PhotoFragment extends Fragment
       UploadItem uploadItem = new UploadItem();
       uploadItem.setUri(event.getPhotoUrl());
       uploadItem.setUploaded(false);
+      uploadItem.setDocumentType(mDocumentType);
       Date currentTimestamp = new Date();
       uploadItem.setCreated(currentTimestamp);
       uploadItem.setModifiedAt(currentTimestamp);
       mPhotoUrls.add(App.getGson().toJson(uploadItem));
-      
-      if (BuildConfig.DEBUG) {
-        if (mPhotoUrls.size() > 0) {
-          for (int i = 0; i < mPhotoUrls.size(); i++) {
-            Log.i(">>>>>", mPhotoUrls.get(i));
-          }
-        }
-      }
   
       mNotify.setPhotoUrls(mPhotoUrls);
       mViewModel.update(mNotify);
@@ -354,11 +399,15 @@ public class PhotoFragment extends Fragment
     App.eventBus.unregister(this);
   }
   
-  private void showOrHideTools() {
-    if (mRvTools.getVisibility() == View.VISIBLE) {
-      mRvTools.setVisibility(View.GONE);
-    } else {
-      mRvTools.setVisibility(View.VISIBLE);
+  @Subscribe
+  public void onMessageEvent(RefreshUiEvent event) {
+    mGalleryViewAdapter.notifyDataSetChanged();
+    
+    UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(mPreviewIndex), UploadItem.class);
+    if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
+      File file = new File(uploadItem.getUri());
+      Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
+      ImageEditFragment.newInstance().setBitmap(preview, file);
     }
   }
   
@@ -384,133 +433,179 @@ public class PhotoFragment extends Fragment
       @Override
       public void onClick(View view) {
         
-        if (mNotify != null && mNotify.getPhotoUrls() != null) {
-          
-          boolean uploadFiles = false;
-          for (int i = 0; i < mPhotoUrls.size(); i++) {
-            UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
-            if (uploadItem.getUploaded() == false) {
-              uploadFiles = true;
-            }
-          }
-          if (uploadFiles) {
-            MessageDialog.build((AppCompatActivity) getContext())
-              .setStyle(DialogSettings.STYLE.STYLE_IOS)
-              .setTheme(DialogSettings.THEME.LIGHT)
-              .setTitle(getContext().getResources().getString(R.string.action_upload_photos))
-              .setMessage(getContext().getResources().getString(R.string.action_upload_photos_message))
-              .setOkButton(getContext().getResources().getString(R.string.action_upload),
-                new OnDialogButtonClickListener() {
-      
-                  @Override
-                  public boolean onClick(BaseDialog baseDialog, View v) {
-                    
-                    // Wait Dialog - for Uploading...
-                    WaitDialog.show((AppCompatActivity)getActivity(), getContext().getResources().getString(R.string.action_uploading_photos))
-                      .setTheme(DialogSettings.THEME.LIGHT);
-                    
-                    if (mPhotoUrls.size() > 0) {
-                      
-                      for (int i = 0; i < mPhotoUrls.size(); i++) {
-                        UploadItem uploadItem = App.getGson()
-                          .fromJson(mPhotoUrls.get(i), UploadItem.class);
-                        
-                        if (uploadItem.getUploaded()) continue;
-                        
-                        if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
-                          File file = new File(uploadItem.getUri());
-                          
-                          RequestBody requestFile = RequestBody
-                            .create(MediaType.parse("multipart/form-data"), file);
-                          
-                          MultipartBody.Part body =
-                            MultipartBody.Part.createFormData("",
-                              file.getName(), requestFile);
+        if (mNotify == null || mNotify.getPhotoUrls() == null) return;
   
-                          RequestBody mandantId = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(mNotify.getMandantId()));
-                          RequestBody orderNo = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(mNotify.getOrderNo()));
-                          RequestBody taskId = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(mNotify.getTaskId()));
-                          
-                          RequestBody driverNo = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(-1));
-  
-                          final int j = i;
-                          Call<UploadResult> call = App.apiManager.getFileUploadApi()
-                            .upload(mandantId,orderNo,taskId,driverNo, body);
-                          call.enqueue(new Callback<UploadResult>() {
-                            @Override
-                            public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
-      
-                              if (response.isSuccessful()) {
-                                uploadItem.setUploaded(true);
-                                mPhotoUrls.set(j, App.getGson().toJson(uploadItem));
-                                mNotify.setPhotoUrls(mPhotoUrls);
-                                mViewModel.update(mNotify);
-                                
-                                if (j >= mPhotoUrls.size()-1) {
-                                  WaitDialog.dismiss(1000);
-                                  App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-                                }
-        
-                                //if (response.body() != null && response.body().getFileName() != null) {
-                                //  Log.i("*****", response.body().getFileName());
-                                //}
-                                
-                                App.eventBus.post(new DocumentEvent(mNotify.getMandantId(), mNotify.getOrderNo()));
-                              } else {
-  
-                                WaitDialog.dismiss(1000);
-                                App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-        
-                                switch (response.code()) {
-                                  case 401:
-                                    handleAccessToken();
-                                    break;
-                                  default:
-                                    break;
-                                }
-                              }
-                            }
+        if (!ImageEditFragment.newInstance().isCacheEmpty()) {
+          MessageDialog.build((AppCompatActivity)getActivity())
+            .setStyle(DialogSettings.STYLE.STYLE_IOS)
+            .setTheme(DialogSettings.THEME.LIGHT)
+            .setTitle("Änderungen")
+            .setMessage("Möchten Sie die Änderungen speichern?")
+            .setCancelable(false)
+            .setOkButton(getContext().getResources().getString(R.string.action_save),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  App.eventBus.post(new EditingSaveEvent());
+                  return false;
+                }
+              })
+            .setCancelButton(getContext().getResources().getString(R.string.action_delete),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  App.eventBus.post(new EditingDeleteEvent());
+                  return false;
+                }
+              })
+            .show();
     
-                            @Override
-                            public void onFailure(Call<UploadResult> call, Throwable t) {
-                              if (j == mPhotoUrls.size()-1) {
+          return;
+        }
+        
+        int photoSize = mPhotoUrls.size();
+  
+        boolean uploadFiles = false;
+        for (int i = 0; i < photoSize; i++) {
+          UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
+          if (!uploadItem.getUploaded()) {
+            uploadFiles = true;
+          }
+        }
+        if (uploadFiles) {
+          MessageDialog.build((AppCompatActivity) getContext())
+            .setStyle(DialogSettings.STYLE.STYLE_IOS)
+            .setTheme(DialogSettings.THEME.LIGHT)
+            .setTitle(getContext().getResources().getString(R.string.action_upload_photos))
+            .setMessage(getContext().getResources().getString(R.string.action_upload_photos_message))
+            .setOkButton(getContext().getResources().getString(R.string.action_upload),
+              new OnDialogButtonClickListener() {
+          
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+            
+                  // Wait Dialog - for Uploading...
+                  WaitDialog.show((AppCompatActivity)getActivity(), getContext().getResources().getString(R.string.action_uploading_photos))
+                    .setTheme(DialogSettings.THEME.LIGHT);
+            
+                  if (photoSize > 0) {
+              
+                    for (int i = 0; i < photoSize; i++) {
+                      UploadItem uploadItem = App.getGson()
+                        .fromJson(mPhotoUrls.get(i), UploadItem.class);
+                
+                      if (uploadItem.getUploaded()) continue;
+                
+                      if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
+                        File file = new File(uploadItem.getUri());
+                  
+                        RequestBody requestFile = RequestBody
+                          .create(MediaType.parse("multipart/form-data"), file);
+                  
+                        MultipartBody.Part body =
+                          MultipartBody.Part.createFormData("",
+                            file.getName(), requestFile);
+                  
+                        RequestBody mandantId = RequestBody.create(MediaType
+                          .parse("multipart/form-data"), String.valueOf(mNotify.getMandantId()));
+                        RequestBody orderNo = RequestBody.create(MediaType
+                          .parse("multipart/form-data"), String.valueOf(mNotify.getOrderNo()));
+                        RequestBody taskId = RequestBody.create(MediaType
+                          .parse("multipart/form-data"), String.valueOf(mNotify.getTaskId()));
+                  
+                        RequestBody driverNo = RequestBody.create(MediaType
+                          .parse("multipart/form-data"), String.valueOf(-1));
+                        
+                        String dmsType = "0";
+                        if (uploadItem.getDocumentType().equals(DMSDocumentType.NA)) {
+                          dmsType = "0";
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.POD)) {
+                          dmsType = "24";
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.CMR)) {
+                          dmsType = "25";
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.PALLETS_NOTE)) {
+                          dmsType = "26";
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SAFETY_CERTIFICATE)) {
+                          dmsType = "27";
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SHIPMENT_IMAGE)) {
+                          dmsType = "28";
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_SHIPMENT_IMAGE)) {
+                          dmsType = "29";
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_VEHICLE_IMAGE)) {
+                          dmsType = "30";
+                        }
+                  
+                        RequestBody documentType = RequestBody.create(MediaType
+                          .parse("multipart/form-data"), dmsType);
+                  
+                        final int j = i;
+                        Call<UploadResult> call = App.apiManager.getFileUploadApi()
+                          .upload(mandantId,orderNo,taskId,driverNo,documentType, body);
+                        call.enqueue(new Callback<UploadResult>() {
+                          @Override
+                          public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
+                      
+                            if (response.isSuccessful()) {
+                              uploadItem.setUploaded(true);
+                              mPhotoUrls.set(j, App.getGson().toJson(uploadItem));
+                              mNotify.setPhotoUrls(mPhotoUrls);
+                              mViewModel.update(mNotify);
+                        
+                              if (j >= photoSize-1) {
                                 WaitDialog.dismiss(1000);
                                 App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
                               }
+                        
+                              App.eventBus.post(new DocumentEvent(mNotify.getMandantId(), mNotify.getOrderNo()));
+                            } else {
+                        
+                              WaitDialog.dismiss(1000);
+                              App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+                        
+                              switch (response.code()) {
+                                case 401:
+                                  handleAccessToken();
+                                  break;
+                                default:
+                                  break;
+                              }
                             }
-                          });
-                        }
+                          }
+                    
+                          @Override
+                          public void onFailure(Call<UploadResult> call, Throwable t) {
+                            if (j == photoSize-1) {
+                              WaitDialog.dismiss(1000);
+                              App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+                            }
+                          }
+                        });
                       }
- 
-                    } else {
-                      WaitDialog.dismiss(500);
                     }
-                    return false;
+              
+                  } else {
+                    WaitDialog.dismiss(500);
                   }
-                })
-              .setCancelButton(getContext().getString(R.string.action_cancel),
-                new OnDialogButtonClickListener() {
-      
-                  @Override
-                  public boolean onClick(BaseDialog baseDialog, View v) {
-                    return false;
-                  }
-                })
-              .show();
-          } else {
-            App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-          }
+                  return false;
+                }
+              })
+            .setCancelButton(getContext().getString(R.string.action_later),
+              new OnDialogButtonClickListener() {
+          
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+                  return false;
+                }
+              })
+            .show();
+        } else {
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         }
       }
     });
-
-    //mPhotoEditorView = (PhotoEditorView)root.findViewById(R.id.photoEditorView);
+    
     mRvGalleryView = (RecyclerView)root.findViewById(R.id.rvGalleryView);
-    //mRvTools = (RecyclerView)root.findViewById(R.id.rv_gallery_tools);
     mRvMenu = (RecyclerView)root.findViewById(R.id.rv_gallery_menu);
 
     LinearLayoutManager llmMenu = new LinearLayoutManager(getContext(),
@@ -547,5 +642,26 @@ public class PhotoFragment extends Fragment
         }
       }
     });
+  }
+  
+  @Override
+  public void selectedEvent(DMSDocumentType documentType) {
+    mDocumentType = documentType;
+    
+    if (mPreviewIndex != -1) {
+      UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(mPreviewIndex), UploadItem.class);
+      if (uploadItem == null) return;
+      if (uploadItem.getUploaded()) return;
+      
+      uploadItem.setDocumentType(mDocumentType);
+      uploadItem.setModifiedAt(new Date());
+      
+      mPhotoUrls.set(mPreviewIndex, App.getGson().toJson(uploadItem));
+      mNotify.setPhotoUrls(mPhotoUrls);
+      mViewModel.update(mNotify);
+      
+      mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
+      mGalleryViewAdapter.notifyDataSetChanged();
+    }
   }
 }

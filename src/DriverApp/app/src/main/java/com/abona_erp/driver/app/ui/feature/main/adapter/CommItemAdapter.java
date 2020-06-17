@@ -63,6 +63,7 @@ import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +80,8 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
     void onCameraClick(Notify notify);
     void onDocumentClick(Notify notify);
   }
+  
+  private CommItem mCommItem = null;
 
   private Resources _resources = ContextUtils.getApplicationContext().getResources();
   private Handler _handler = new Handler();
@@ -146,6 +149,8 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
 
   public CommItemAdapter(Context context, LinearLayoutManager layout, OnViewHolderClick listener) {
     super(context, layout, listener);
+    
+    mCommItem = new CommItem();
   }
   
   @Override
@@ -163,6 +168,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
     if (item != null) {
       CommItem commItem = App.getGsonUtc().fromJson(item.getData(), CommItem.class);
       if (commItem == null) return;
+      mCommItem = commItem;
       
       ExpandableItem expandableItem = (ExpandableItem)viewHolder.getView(R.id.expandable_item);
       
@@ -553,7 +559,10 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
         applyInfoReference(null);
         applyLoadingOrder(null);
       }
-      applyRefId1(commItem.getTaskItem().getReferenceIdCustomer1());
+      if (commItem.getTaskItem().getTaskDetails() != null && commItem.getTaskItem().getTaskDetails().getReferenceId1() != null) {
+        applyRefId1(commItem.getTaskItem().getTaskDetails().getReferenceId1()/*commItem.getTaskItem().getReferenceIdCustomer1()*/);
+      }
+      
       applyRefId2(commItem.getTaskItem().getReferenceIdCustomer2());
       applyDangerousGoods(commItem.getTaskItem().getDangerousGoods());
       applyPallets(commItem.getTaskItem().getPalletExchange());
@@ -847,7 +856,34 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       dueInCounter.endDate = finishDate;
       _handler.postDelayed(dueInCounter, 100);
     } else {
-    
+      _handler.removeCallbacks(dueInCounter);
+      
+      if (finishDate == null) return;
+      if (mCommItem == null || mCommItem.getTaskItem() == null || mCommItem.getTaskItem().getActivities() == null) return;
+      if (mCommItem.getTaskItem().getActivities().size() <= 0) return;
+      int lastIdx = mCommItem.getTaskItem().getActivities().size() - 1;
+      if (mCommItem.getTaskItem().getActivities().get(lastIdx).getFinished() == null) return;
+      Calendar endTaskCalendar = Calendar.getInstance();
+      endTaskCalendar.setTime(mCommItem.getTaskItem().getActivities().get(lastIdx).getFinished());
+      
+      Calendar finishCalendar = Calendar.getInstance();
+      finishCalendar.setTime(finishDate);
+  
+      long diff = (finishCalendar.getTimeInMillis() - endTaskCalendar.getTimeInMillis()) / 1000 / 60;
+      long hours = diff / 60;
+  
+      long days = hours / 24;
+      String d = diff < 0 ? "-" : "";
+      d += String.valueOf(Math.abs(days));
+      dueInCounter.tv_DueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
+  
+      if (diff < 0) {
+        dueInCounter.iv_Warning.setVisibility(View.VISIBLE);
+        //dueInCounter.ll_Background.setBackground(context.getResources().getDrawable(R.drawable.warning_header_bg));
+      } else {
+        dueInCounter.iv_Warning.setVisibility(View.GONE);
+        //dueInCounter.ll_Background.setBackground(context.getResources().getDrawable(R.drawable.header_bg));
+      }
     }
   }
   

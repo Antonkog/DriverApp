@@ -18,6 +18,7 @@ public interface FileUploadService {
     @Part("OrderNo") RequestBody orderNo,
     @Part("TaskId") RequestBody taskId,
     @Part("DriverNo") RequestBody driverNo,
+    @Part("DMSDocumentType") RequestBody documentType,
     @Part MultipartBody.Part file
   );
 }
