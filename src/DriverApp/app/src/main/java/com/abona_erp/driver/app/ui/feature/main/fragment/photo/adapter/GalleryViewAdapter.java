@@ -1,7 +1,6 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
@@ -29,14 +29,9 @@ import com.kongzue.dialog.util.DialogSettings;
 import com.kongzue.dialog.v3.MessageDialog;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.ViewHolder> {
   
@@ -44,9 +39,9 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
   
   private Context mContext;
   private GalleryListener mGalleryListener;
-  //private List<String> mList = new ArrayList<>();
-  //private Map<Integer, String> mPhotos = new HashMap<>();
   private SparseArray mPhotos = new SparseArray();
+  
+  private int mSelectedIndex = -1;
   
   public GalleryViewAdapter(GalleryListener galleryListener) {
     mGalleryListener = galleryListener;
@@ -62,15 +57,23 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
     return new ViewHolder(view);
   }
   
+  public void setSelectedIndex(int selectedIndex) {
+    mSelectedIndex = selectedIndex;
+    notifyDataSetChanged();
+  }
+  
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    Log.d(TAG, "onBindViewHolder()");
-    if (mPhotos == null)
-      return;
+    if (mPhotos == null) return;
+    
+    if (position == mSelectedIndex) {
+      holder.view_selected.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.selected));
+    } else {
+      holder.view_selected.setBackground(null);
+    }
   
     holder.setIsRecyclable(false);
     int key = mPhotos.keyAt(position);
-    Log.i(">>>>>>>", "KEY : " + key + " URI : " + mPhotos.get(key));
     
     UploadItem uploadItem = App.getGson().fromJson((String)mPhotos.get(key),
       UploadItem.class);
@@ -84,30 +87,25 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
       }
       File file = new File(uploadItem.getUri());
       if (file.exists()) {
+        StringBuilder builder = new StringBuilder();
         Bitmap thumbnail = BitmapFactory.decodeFile(file.getAbsolutePath());
         holder.iv_gallery_image_view.setImageBitmap(thumbnail);
         if (uploadItem.getModifiedAt() != null) {
-          SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMMM d, yyyy h:mm:ss",
+          SimpleDateFormat sdf = new SimpleDateFormat("dd.MM HH:mm:ss",
             Locale.getDefault());
-          holder.tv_gallery_file_info.setText(sdf.format(uploadItem.getModifiedAt()));
+          builder.append(sdf.format(uploadItem.getModifiedAt()));
+          builder.append("\n");
+          builder.append(getDocumentType(uploadItem.getDocumentType()));
+          holder.tv_gallery_file_info.setText(builder);
         }
       } else {
-        // TODO:
+        mPhotos.remove(key);
+        ImageEvent event = new ImageEvent(null);
+        event.setPosition(key);
+        App.eventBus.post(event);
       }
     } else {
       // TODO:
-    }
-  }
-  
-  private Bitmap getBitmapFromAsset(Context context, String strName) {
-    AssetManager assetManager = context.getAssets();
-    InputStream inputStream = null;
-    try {
-      inputStream = assetManager.open(strName);
-      return BitmapFactory.decodeStream(inputStream);
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
     }
   }
   
@@ -116,13 +114,14 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
     private final AppCompatImageView iv_gallery_image_view;
     private final AppCompatImageView iv_gallery_delete_image;
     private final AsapTextView tv_gallery_file_info;
+    private final View view_selected;
     
     private final ConstraintLayout cl_gallery_root;
     
-    private Bitmap mBitmap;
-    
     ViewHolder(View itemView) {
       super(itemView);
+      
+      view_selected = (View)itemView.findViewById(R.id.view_selected);
       
       iv_gallery_image_view = itemView.findViewById(R.id.iv_gallery_image_view);
       itemView.setOnClickListener(new View.OnClickListener() {
@@ -177,17 +176,21 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
   
   public void setPhotoItems(List<String> items) {
     
-    if (items.size() > 0) {
-      for (int i = 0; i < items.size(); i++) {
-        UploadItem uploadItem = App.getGson().fromJson(items.get(i), UploadItem.class);
-        if (!uploadItem.getUploaded()) {
-          Log.i(">>>>>>>", "PUT : " + String.valueOf(i) + " URI : " + uploadItem.getUri());
-          mPhotos.put(i, App.getGson().toJson(uploadItem));
-          //mList.add(items.get(i));
-        }
-      }
+    mPhotos.clear();
+    
+    int size = items.size();
+    if (size <= 0) {
       notifyDataSetChanged();
+      return;
     }
+    
+    for (int i = 0; i < size; i++) {
+      UploadItem ui = App.getGson().fromJson(items.get(i), UploadItem.class);
+      if (ui.getUploaded()) continue;
+      
+      mPhotos.put(i, App.getGson().toJson(ui));
+    }
+    notifyDataSetChanged();
   }
   
   // getItemCount() is called many times, and when it is first called,
@@ -199,6 +202,28 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
       return mPhotos.size();
     } else {
       return 0;
+    }
+  }
+  
+  private String getDocumentType(DMSDocumentType documentType) {
+    switch (documentType) {
+      case POD:
+        return "POD";
+      case CMR:
+        return "CMR";
+      case PALLETS_NOTE:
+        return "PN";
+      case SAFETY_CERTIFICATE:
+        return "SC";
+      case SHIPMENT_IMAGE:
+        return "SI";
+      case DAMAGED_SHIPMENT_IMAGE:
+        return "DSI";
+      case DAMAGED_VEHICLE_IMAGE:
+        return "DVI";
+      case NA:
+      default:
+        return "N/A";
     }
   }
 }

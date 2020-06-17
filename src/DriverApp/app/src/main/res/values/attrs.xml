@@ -16,4 +16,22 @@
     <attr name="layoutHeader" format="reference" />
     <attr name="layoutContent" format="reference" />
   </declare-styleable>
+
+  <declare-styleable name="ZoomView">
+    <attr name="zoomable" format="boolean" />
+    <attr name="translatable" format="boolean" />
+    <attr name="restrictBounds" format="boolean" />
+    <attr name="animateOnReset" format="boolean" />
+    <attr name="doubleTapToZoom" format="boolean" />
+    <attr name="doubleTapToZoomScaleFactor" format="float" />
+    <attr name="autoCenter" format="boolean" />
+    <attr name="minScale" format="float" />
+    <attr name="maxScale" format="float" />
+    <attr name="autoResetMode" format="enum">
+      <enum name="UNDER" value="0" />
+      <enum name="OVER" value="1" />
+      <enum name="ALWAYS" value="2" />
+      <enum name="NEVER" value="3" />
+    </attr>
+  </declare-styleable>
 </resources>

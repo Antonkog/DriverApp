@@ -39,6 +39,26 @@
   <string name="action_update">Обновить</string>
   <string name="action_update_message">Обновление завершено!</string>
   <string name="action_exception_on_rest_api">Ошибка на REST-API!</string>
+  <string name="action_later">Потом</string>
+
+  <string name="document_type">Тип документа</string>
+  <string name="document_type_na">Нет (N/A)</string>
+  <string name="document_type_pod">Доказательство доставки (POD)</string>
+  <string name="document_type_cmr">CMR</string>
+  <string name="document_type_pn">Поддоны Примечание (PN)</string>
+  <string name="document_type_sc">Сертификат безопасности (SC)</string>
+  <string name="document_type_si">Изображение отгрузки (SI)</string>
+  <string name="document_type_dsi">Изображение поврежденного груза (DSI)</string>
+  <string name="document_type_dvi">Изображение поврежденного автомобиля (DVI)</string>
+
+  <string name="editing_camera">Камера</string>
+  <string name="editing_category">Категория</string>
+  <string name="editing_tools">Инструменты</string>
+  <string name="editing_brush">Щетка</string>
+  <string name="editing_text">Текст</string>
+  <string name="editing_eraser">ластик</string>
+  <string name="editing_undo">назад</string>
+  <string name="editing_redo">Спереди</string>
 
   <string name="yes">Да</string>
   <string name="no">Нет</string>

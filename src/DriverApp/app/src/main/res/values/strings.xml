@@ -101,6 +101,26 @@
   <string name="action_update">Update</string>
   <string name="action_update_message">Update completed!</string>
   <string name="action_exception_on_rest_api">Exception on REST-API!</string>
+  <string name="action_later">Later</string>
+
+  <string name="document_type">Dokument Type</string>
+  <string name="document_type_na">No (N/A)</string>
+  <string name="document_type_pod">Proof of Delivery (POD)</string>
+  <string name="document_type_cmr">CMR</string>
+  <string name="document_type_pn">Pallets Note (PN)</string>
+  <string name="document_type_sc">Safety Certificate (SC)</string>
+  <string name="document_type_si">Shipment Image (SI)</string>
+  <string name="document_type_dsi">Damaged Shipment Image (DSI)</string>
+  <string name="document_type_dvi">Damaged Vehicle Image (DVI)</string>
+
+  <string name="editing_camera">Camera</string>
+  <string name="editing_category">Category</string>
+  <string name="editing_tools">Tools</string>
+  <string name="editing_brush">Brush</string>
+  <string name="editing_text">Text</string>
+  <string name="editing_eraser">Eraser</string>
+  <string name="editing_undo">Undo</string>
+  <string name="editing_redo">Redo</string>
 
   <string name="yes">Yes</string>
   <string name="no">No</string>

@@ -3,7 +3,6 @@ package com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.ToolType;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +23,11 @@ public class EditingToolsAdapter extends RecyclerView.Adapter<EditingToolsAdapte
   
   public EditingToolsAdapter(OnItemSelected onItemSelected) {
     mOnItemSelected = onItemSelected;
-    mToolList.add(new ToolModel("Brush", R.drawable.ic_brush, ToolType.BRUSH));
-    mToolList.add(new ToolModel("Text", R.drawable.ic_text, ToolType.TEXT));
-    mToolList.add(new ToolModel("Eraser", R.drawable.ic_eraser, ToolType.ERASER));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_brush), R.drawable.ic_brush, ToolType.BRUSH));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_text), R.drawable.ic_text, ToolType.TEXT));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_eraser), R.drawable.ic_eraser, ToolType.ERASER));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_undo), R.drawable.ic_undo, ToolType.UNDO));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_redo), R.drawable.ic_redo, ToolType.REDO));
   }
   
   public interface OnItemSelected {
