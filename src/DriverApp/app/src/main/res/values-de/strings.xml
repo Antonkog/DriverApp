@@ -39,6 +39,26 @@
   <string name="action_update">Aktualisieren</string>
   <string name="action_update_message">Aktualisierung abgeschlossen!</string>
   <string name="action_exception_on_rest_api">Fehler in der REST-API!</string>
+  <string name="action_later">Später</string>
+
+  <string name="document_type">Dokument Typ</string>
+  <string name="document_type_na">Keine (N/A)</string>
+  <string name="document_type_pod">Zustellnachweis (POD)</string>
+  <string name="document_type_cmr">CMR</string>
+  <string name="document_type_pn">Paletten Hinweis (PN)</string>
+  <string name="document_type_sc">Sicherheitszertifikat (SC)</string>
+  <string name="document_type_si">Versandbild (SI)</string>
+  <string name="document_type_dsi">Beschädigtes Versandbild (DSI)</string>
+  <string name="document_type_dvi">Beschädigtes Fahrzeugbild (DVI)</string>
+
+  <string name="editing_camera">Kamera</string>
+  <string name="editing_category">Kategorie</string>
+  <string name="editing_tools">Werkzeuge</string>
+  <string name="editing_brush">Pinsel</string>
+  <string name="editing_text">Text</string>
+  <string name="editing_eraser">Radierer</string>
+  <string name="editing_undo">Zurück</string>
+  <string name="editing_redo">Vor</string>
 
   <string name="yes">Ja</string>
   <string name="no">Nein</string>

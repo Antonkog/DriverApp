@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.MenuToolType;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +23,9 @@ public class MenuToolsAdapter extends RecyclerView.Adapter<MenuToolsAdapter.View
   
   public MenuToolsAdapter(OnItemSelected onItemSelected) {
     mOnItemSelected = onItemSelected;
-    //mToolList.add(new ToolModel("Save", R.drawable.ic_save, MenuToolType.SAVE));
-    mToolList.add(new ToolModel("Camera", R.drawable.ic_camera, MenuToolType.CAMERA));
-    //mToolList.add(new ToolModel("Gallery", R.drawable.ic_gallery, MenuToolType.GALLERY));
-    //mToolList.add(new ToolModel("Tools", R.drawable.ic_tools, MenuToolType.TOOLS));
-    //mToolList.add(new ToolModel("Settings", R.drawable.ic_settings, MenuToolType.SETTINGS));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_camera), R.drawable.ic_camera, MenuToolType.CAMERA));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_category), R.drawable.ic_work, MenuToolType.CATEGORY));
+    mToolList.add(new ToolModel(ContextUtils.getApplicationContext().getResources().getString(R.string.editing_tools), R.drawable.ic_tools, MenuToolType.TOOLS));
   }
   
   public interface OnItemSelected {

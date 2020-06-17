@@ -24,17 +24,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         />
-<!--
-      <com.abona_erp.driver.photolib.PhotoEditorView
-        android:id="@+id/photoEditorView"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@android:color/black"
-        android:padding="@dimen/spacing_medium"
-        app:photo_src="@drawable/hg"
-        />
--->
+
       <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_gallery_menu"
         android:orientation="vertical"
@@ -55,22 +45,11 @@
       android:layout_alignParentBottom="true">
 
       <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_gallery_tools"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:background="#C3CFE2"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/row_editing_tools"
-        />
-
-      <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGalleryView"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#C3CFE2"
+        android:background="@color/clrFont"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/row_image_view"
         />
