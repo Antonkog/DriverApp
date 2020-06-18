@@ -9,8 +9,8 @@ import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.data.remote.ActivityService;
 import com.abona_erp.driver.app.data.remote.ConfirmService;
 import com.abona_erp.driver.app.data.remote.DocumentService;
-import com.abona_erp.driver.app.data.remote.FileDownloadService;
 import com.abona_erp.driver.app.data.remote.FCMService;
+import com.abona_erp.driver.app.data.remote.FileDownloadService;
 import com.abona_erp.driver.app.data.remote.FileUploadService;
 import com.abona_erp.driver.app.data.remote.RemoteConstants;
 import com.abona_erp.driver.app.data.remote.TaskService;
@@ -24,16 +24,10 @@ import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.io.File;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
 import okhttp3.MediaType;
@@ -158,7 +152,7 @@ public class ApiManager implements Manager {
     return new Retrofit.Builder()
       .baseUrl(url)
       .client(provideOkHttpClient())
-      .addConverterFactory(GsonConverterFactory.create(App.getGson()))
+      .addConverterFactory(GsonConverterFactory.create(App.getInstance().gson))
       .build();
   }
   
@@ -167,7 +161,7 @@ public class ApiManager implements Manager {
     return new Retrofit.Builder()
       .baseUrl(url)
       .client(provideOkHttpClient())
-      .addConverterFactory(GsonConverterFactory.create(App.getGsonUtc()))
+      .addConverterFactory(GsonConverterFactory.create(App.getInstance().gsonUtc))
       .build();
   }
   

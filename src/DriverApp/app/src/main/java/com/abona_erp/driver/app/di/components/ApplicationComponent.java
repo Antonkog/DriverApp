@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.di.components;
 
 
+import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.di.modules.ActivityModule;
 import com.abona_erp.driver.app.di.modules.ApplicationModule;
@@ -23,6 +24,8 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     ActivityComponent provideActivityComponent(ActivityModule activityModule);
+
+    void inject(App app);// just for now - in future need to inject where we need.
 
     void inject(DriverRepository driverRepository);
     void inject(BackgroundServiceWorker backgroundServiceWorker);

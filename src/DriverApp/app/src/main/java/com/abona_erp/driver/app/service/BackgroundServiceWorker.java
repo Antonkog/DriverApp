@@ -51,8 +51,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,11 +61,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -185,7 +179,7 @@ public class BackgroundServiceWorker extends Service {
               public void onSuccess(Notify notify) {
                 Log.i(TAG, ">>>>>>> NOTIFY OID......: " + notify.getId());
   
-                CommItem commItemDB = App.getGson().fromJson(notify.getData(), CommItem.class);
+                CommItem commItemDB = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                 CommItem commItemReq = new CommItem();
   
                 // SET HEADER:
@@ -250,7 +244,7 @@ public class BackgroundServiceWorker extends Service {
                   activityItem.setSequence(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getSequence());
                   commItemReq.setActivityItem(activityItem);
     
-                  Call<ResultOfAction> call = App.apiManager.getActivityApi().activityChange(commItemReq);
+                  Call<ResultOfAction> call = App.getInstance().apiManager.getActivityApi().activityChange(commItemReq);
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
@@ -299,7 +293,7 @@ public class BackgroundServiceWorker extends Service {
                           }
             
                           if (response.body().getCommItem() != null) {
-                            notify.setData(App.getGson().toJson(response.body().getCommItem()));
+                            notify.setData(App.getInstance().gson.toJson(response.body().getCommItem()));
                             notify.setRead(false);
                             if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
                               notify.setStatus(0);
@@ -387,7 +381,7 @@ public class BackgroundServiceWorker extends Service {
                   confirmationItem.setTaskChangeId(commItemDB.getTaskItem().getTaskChangeId());
                   commItemReq.setConfirmationItem(confirmationItem);
     
-                  final Call<ResultOfAction> call = App.apiManager.getConfirmApi().confirm(commItemReq);
+                  final Call<ResultOfAction> call = App.getInstance().apiManager.getConfirmApi().confirm(commItemReq);
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
@@ -442,7 +436,7 @@ public class BackgroundServiceWorker extends Service {
             
                           if (response.body().getCommItem() != null) {
               
-                            notify.setData(App.getGson().toJson(response.body().getCommItem()));
+                            notify.setData(App.getInstance().gson.toJson(response.body().getCommItem()));
                             notify.setRead(false);
                             if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
                               notify.setStatus(0);
@@ -549,7 +543,7 @@ public class BackgroundServiceWorker extends Service {
             deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
             commItem.setDeviceProfileItem(deviceProfileItem);
   
-            Call<ResultOfAction> call = App.apiManager.getFCMApi().deviceProfile(commItem);
+            Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
               public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
@@ -624,7 +618,7 @@ public class BackgroundServiceWorker extends Service {
             deviceProfileItem.setVersionName(deviceProfiles.get(0).getVersionName());
             commItem.setDeviceProfileItem(deviceProfileItem);
   
-            Call<ResultOfAction> call = App.apiManager.getFCMApi().deviceProfile(commItem);
+            Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
               public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
@@ -726,7 +720,7 @@ public class BackgroundServiceWorker extends Service {
     if (description != null && !TextUtils.isEmpty(description)) {
       _detail.setDescription(description);
     }
-    _list.add(App.getGson().toJson(_detail));
+    _list.add(App.getInstance().gson.toJson(_detail));
     lastActivity.setDetailList(_list);
     
     if (confirmationStatus != -1) {

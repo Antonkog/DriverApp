@@ -101,7 +101,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     String raw = notify.getData();
     if (raw == null || TextUtils.isEmpty(raw))
       return;
-    mCommItem = App.getGson().fromJson(raw, CommItem.class);
+    mCommItem = App.getInstance().gson.fromJson(raw, CommItem.class);
   
     holder.setIsRecyclable(false);
     
@@ -289,7 +289,7 @@ public class NotifyViewAdapter extends RecyclerView.Adapter<NotifyViewAdapter.Vi
     int uploadedPhoto = 0;
     if (photos.size() > 0) {
       for (int i = 0; i < photos.size(); i++) {
-        UploadItem uploadItem = App.getGson().fromJson(photos.get(i), UploadItem.class);
+        UploadItem uploadItem = App.getInstance().gson.fromJson(photos.get(i), UploadItem.class);
         if (uploadItem != null) {
           if (uploadItem.getUploaded()) {
             uploadedPhoto++;

@@ -321,7 +321,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         
         mBtnGetAllTasks.setEnabled(false);
         
-        Call<ResultOfAction> call = App.apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+        Call<ResultOfAction> call = App.getInstance().apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         call.enqueue(new Callback<ResultOfAction>() {
           @Override
           public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
@@ -790,7 +790,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         // -----------------------------------------------------------------------------------------
         // BEGIN: GET DOCUMENTS
   
-        Call<ArrayList<AppFileInterchangeItem>> call = App.apiManager.getDocumentApi()
+        Call<ArrayList<AppFileInterchangeItem>> call = App.getInstance().apiManager.getDocumentApi()
           .getDocuments(event.getMandantID(), event.getOrderNo(),
             DeviceUtils.getUniqueIMEI(getApplicationContext()));
         
@@ -983,13 +983,13 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                 public void onSuccess(Notify notify) {
                   
                   CommItem commItem = new CommItem();
-                  commItem = App.getGsonUtc().fromJson(notify.getData(), CommItem.class);
+                  commItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
                   if (commItem != null) {
                     commItem.setTaskItem(taskItem);
                     
                     notify.setRead(false);
                     notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
-                    notify.setData(App.getGsonUtc().toJson(commItem));
+                    notify.setData(App.getInstance().gsonUtc.toJson(commItem));
                     notify.setModifiedAt(AppUtils.getCurrentDateTime());
   
                     if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
@@ -1023,7 +1023,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                   notify.setOrderNo(taskItem.getOrderNo());
                   notify.setCreatedAt(AppUtils.getCurrentDateTime());
                   notify.setModifiedAt(AppUtils.getCurrentDateTime());
-                  notify.setData(App.getGsonUtc().toJson(commItem));
+                  notify.setData(App.getInstance().gsonUtc.toJson(commItem));
                   
                   if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
                     notify.setStatus(0);
@@ -1075,7 +1075,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   }
   
   private void handleAccessToken() {
-    App.apiManager.provideAuthClient().newCall(App.apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
+    App.getInstance().apiManager.provideAuthClient().newCall(App.getInstance().apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
       @Override
       public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
       }
@@ -1186,7 +1186,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       case PageItemDescriptor.PAGE_MAP:
         if (mCommItem != null) mCommItem = null;
         String json = pageEvent.getNotify().getData();
-        mCommItem = App.getGson().fromJson(json, CommItem.class);
+        mCommItem = App.getInstance().gson.fromJson(json, CommItem.class);
   
         if (mCommItem.getTaskItem().getAddress().getLongitude() == null)
           return;

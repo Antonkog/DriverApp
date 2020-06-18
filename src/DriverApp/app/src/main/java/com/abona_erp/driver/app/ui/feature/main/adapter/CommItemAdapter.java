@@ -166,7 +166,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   @Override
   protected void bindView(Notify item, ExpandableRecyclerView.Adapter.ViewHolder viewHolder) {
     if (item != null) {
-      CommItem commItem = App.getGsonUtc().fromJson(item.getData(), CommItem.class);
+      CommItem commItem = App.getInstance().gsonUtc.fromJson(item.getData(), CommItem.class);
       if (commItem == null) return;
       mCommItem = commItem;
       
@@ -575,7 +575,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       int uploadedPhoto = 0;
       if (photos.size() > 0) {
         for (int i = 0; i < photos.size(); i++) {
-          UploadItem uploadItem = App.getGson().fromJson(photos.get(i), UploadItem.class);
+          UploadItem uploadItem = App.getInstance().gson.fromJson(photos.get(i), UploadItem.class);
           if (uploadItem != null) {
             if (uploadItem.getUploaded()) {
               uploadedPhoto++;

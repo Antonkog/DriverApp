@@ -140,7 +140,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
         return;
       Log.i(TAG, raw);
       mCommItem = new CommItem();
-      mCommItem = App.getGsonUtc().fromJson(raw, CommItem.class);
+      mCommItem = App.getInstance().gsonUtc.fromJson(raw, CommItem.class);
       
       // CHECK VEHICLE REGISTRATION NUMBER:
       if (mCommItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
@@ -274,7 +274,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
                     SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
                       Locale.getDefault());
                     _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
-                    _list.add(App.getGson().toJson(_detail));
+                    _list.add(App.getInstance().gson.toJson(_detail));
                     lastActivity.setDetailList(_list);
                     if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING) || mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
                       lastActivity.setVisible(true);

@@ -98,7 +98,7 @@ public class ActivityWorkManager extends Worker {
     mCommItem.setActivityItem(activityItem);
   
     
-    Call<ResultOfAction> call = App.apiManager.getActivityApi().activityChange(mCommItem);
+    Call<ResultOfAction> call = App.getInstance().apiManager.getActivityApi().activityChange(mCommItem);
     call.enqueue(new Callback<ResultOfAction>() {
       @Override
       public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {

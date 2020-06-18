@@ -212,7 +212,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
   private void fileDownload(String id, String filename, int position) {
   
     Request req = new Request.Builder().url(id).build();
-    App.apiManager.provideApiClient().newCall(req).enqueue(new okhttp3.Callback() {
+    App.getInstance().apiManager.provideApiClient().newCall(req).enqueue(new okhttp3.Callback() {
       @Override
       public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
         Log.d(TAG, "error");

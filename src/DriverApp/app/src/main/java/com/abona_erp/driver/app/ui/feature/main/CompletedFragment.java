@@ -111,7 +111,7 @@ public class CompletedFragment extends Fragment implements ExpandableRecyclerVie
             for (int i = 0; i < notifies.size(); i++) {
               // Check older tasks:
               CommItem commItem = new CommItem();
-              commItem = App.getGsonUtc().fromJson(notifies.get(i).getData(), CommItem.class);
+              commItem = App.getInstance().gsonUtc.fromJson(notifies.get(i).getData(), CommItem.class);
               
               final int k = i;
               if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {

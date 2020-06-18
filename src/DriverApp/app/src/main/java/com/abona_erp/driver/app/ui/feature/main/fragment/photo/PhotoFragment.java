@@ -26,7 +26,6 @@ import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.EditingDeleteEvent;
 import com.abona_erp.driver.app.ui.event.EditingSaveEvent;
@@ -144,11 +143,11 @@ public class PhotoFragment extends Fragment
             boolean updateNow = false;
             boolean deleteAll = true;
             for (int i = 0; i < mPhotoUrls.size(); i++) {
-              UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
+              UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(i), UploadItem.class);
               if (uploadItem.getUploaded()) continue;
               deleteAll = false;
               updateNow = true;
-              notUploadedFiles.add(App.getGson().toJson(uploadItem));
+              notUploadedFiles.add(App.getInstance().gson.toJson(uploadItem));
             }
     
             if (deleteAll) {
@@ -171,7 +170,7 @@ public class PhotoFragment extends Fragment
     
             ImageEditFragment.newInstance().setBitmap(null, null);
             for (int i = 0; i < mPhotoUrls.size(); i++) {
-              UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
+              UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(i), UploadItem.class);
               if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
   
                 if (uploadItem.getUploaded()) continue;
@@ -233,7 +232,7 @@ public class PhotoFragment extends Fragment
       @Override
       public void run() {
         if (position >= 0) {
-          UploadItem uploadItem = App.getGson()
+          UploadItem uploadItem = App.getInstance().gson
             .fromJson(mPhotoUrls.get(position), UploadItem.class);
           
           if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
@@ -325,7 +324,7 @@ public class PhotoFragment extends Fragment
       int pos = event.getPosition();
       if (pos < 0) return;
       
-      UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(pos), UploadItem.class);
+      UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(pos), UploadItem.class);
       if (uploadItem == null) return;
       File file = new File(uploadItem.getUri());
       if (file.exists()) {
@@ -336,7 +335,7 @@ public class PhotoFragment extends Fragment
         mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
   
         if (mPhotoUrls.size() > 0) {
-          UploadItem ui = App.getGson().fromJson(mPhotoUrls.get(0),
+          UploadItem ui = App.getInstance().gson.fromJson(mPhotoUrls.get(0),
             UploadItem.class);
     
           if (ui != null && ui.getUri() != null && !TextUtils.isEmpty(ui.getUri()) && ui.getUri().length() > 0) {
@@ -378,7 +377,7 @@ public class PhotoFragment extends Fragment
       Date currentTimestamp = new Date();
       uploadItem.setCreated(currentTimestamp);
       uploadItem.setModifiedAt(currentTimestamp);
-      mPhotoUrls.add(App.getGson().toJson(uploadItem));
+      mPhotoUrls.add(App.getInstance().gson.toJson(uploadItem));
   
       mNotify.setPhotoUrls(mPhotoUrls);
       mViewModel.update(mNotify);
@@ -403,7 +402,7 @@ public class PhotoFragment extends Fragment
   public void onMessageEvent(RefreshUiEvent event) {
     mGalleryViewAdapter.notifyDataSetChanged();
     
-    UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(mPreviewIndex), UploadItem.class);
+    UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(mPreviewIndex), UploadItem.class);
     if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
       File file = new File(uploadItem.getUri());
       Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -467,7 +466,7 @@ public class PhotoFragment extends Fragment
   
         boolean uploadFiles = false;
         for (int i = 0; i < photoSize; i++) {
-          UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(i), UploadItem.class);
+          UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(i), UploadItem.class);
           if (!uploadItem.getUploaded()) {
             uploadFiles = true;
           }
@@ -491,7 +490,7 @@ public class PhotoFragment extends Fragment
                   if (photoSize > 0) {
               
                     for (int i = 0; i < photoSize; i++) {
-                      UploadItem uploadItem = App.getGson()
+                      UploadItem uploadItem = App.getInstance().gson
                         .fromJson(mPhotoUrls.get(i), UploadItem.class);
                 
                       if (uploadItem.getUploaded()) continue;
@@ -539,7 +538,7 @@ public class PhotoFragment extends Fragment
                           .parse("multipart/form-data"), dmsType);
                   
                         final int j = i;
-                        Call<UploadResult> call = App.apiManager.getFileUploadApi()
+                        Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
                           .upload(mandantId,orderNo,taskId,driverNo,documentType, body);
                         call.enqueue(new Callback<UploadResult>() {
                           @Override
@@ -547,7 +546,7 @@ public class PhotoFragment extends Fragment
                       
                             if (response.isSuccessful()) {
                               uploadItem.setUploaded(true);
-                              mPhotoUrls.set(j, App.getGson().toJson(uploadItem));
+                              mPhotoUrls.set(j, App.getInstance().gson.toJson(uploadItem));
                               mNotify.setPhotoUrls(mPhotoUrls);
                               mViewModel.update(mNotify);
                         
@@ -620,7 +619,7 @@ public class PhotoFragment extends Fragment
   }
   
   private void handleAccessToken() {
-    App.apiManager.provideAuthClient().newCall(App.apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
+    App.getInstance().apiManager.provideAuthClient().newCall(App.getInstance().apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
       @Override
       public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
       
@@ -649,14 +648,14 @@ public class PhotoFragment extends Fragment
     mDocumentType = documentType;
     
     if (mPreviewIndex != -1) {
-      UploadItem uploadItem = App.getGson().fromJson(mPhotoUrls.get(mPreviewIndex), UploadItem.class);
+      UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(mPreviewIndex), UploadItem.class);
       if (uploadItem == null) return;
       if (uploadItem.getUploaded()) return;
       
       uploadItem.setDocumentType(mDocumentType);
       uploadItem.setModifiedAt(new Date());
       
-      mPhotoUrls.set(mPreviewIndex, App.getGson().toJson(uploadItem));
+      mPhotoUrls.set(mPreviewIndex, App.getInstance().gson.toJson(uploadItem));
       mNotify.setPhotoUrls(mPhotoUrls);
       mViewModel.update(mNotify);
       

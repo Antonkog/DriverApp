@@ -75,7 +75,7 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
     holder.setIsRecyclable(false);
     int key = mPhotos.keyAt(position);
     
-    UploadItem uploadItem = App.getGson().fromJson((String)mPhotos.get(key),
+    UploadItem uploadItem = App.getInstance().gson.fromJson((String)mPhotos.get(key),
       UploadItem.class);
 
     if (uploadItem != null && uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
@@ -185,10 +185,10 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
     }
     
     for (int i = 0; i < size; i++) {
-      UploadItem ui = App.getGson().fromJson(items.get(i), UploadItem.class);
+      UploadItem ui = App.getInstance().gson.fromJson(items.get(i), UploadItem.class);
       if (ui.getUploaded()) continue;
       
-      mPhotos.put(i, App.getGson().toJson(ui));
+      mPhotos.put(i, App.getInstance().gson.toJson(ui));
     }
     notifyDataSetChanged();
   }

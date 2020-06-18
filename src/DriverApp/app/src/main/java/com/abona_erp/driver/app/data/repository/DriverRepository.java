@@ -217,7 +217,7 @@ public class DriverRepository {
         offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal());
         dao.insert(offlineConfirmation);
         
-        CommItem commItem = App.getGson().fromJson(params[0].getData(), CommItem.class);
+        CommItem commItem = App.getInstance().gson.fromJson(params[0].getData(), CommItem.class);
         if (commItem != null) {
           /*
           if (commItem.getTaskItem().getActivities().size() > 0) {
@@ -267,7 +267,7 @@ public class DriverRepository {
             _detail.setDescription("NEU");
             _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
             ArrayList<String> _list = new ArrayList<>();
-            _list.add(App.getGson().toJson(_detail));
+            _list.add(App.getInstance().gson.toJson(_detail));
             lastActivity.setDetailList(_list);
           }
           mLastActivityDAO.insert(lastActivity);
