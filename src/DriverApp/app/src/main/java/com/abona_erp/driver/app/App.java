@@ -1,27 +1,16 @@
 package com.abona_erp.driver.app;
 
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.os.StrictMode;
 
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
-import com.abona_erp.driver.app.data.DriverDatabase;
-import com.abona_erp.driver.app.data.converters.LogLevel;
-import com.abona_erp.driver.app.data.converters.LogType;
-import com.abona_erp.driver.app.data.dao.LogDAO;
-import com.abona_erp.driver.app.data.entity.LogItem;
-import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.di.components.ApplicationComponent;
 import com.abona_erp.driver.app.manager.ApiManager;
 import com.abona_erp.driver.app.manager.SharedPrefManager;
-import com.abona_erp.driver.app.service.BackgroundServiceWorker;
-import com.abona_erp.driver.app.util.gson.BooleanJsonDeserializer;
-import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import com.abona_erp.driver.app.util.gson.BooleanJsonDeserializer;
+import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.abona_erp.driver.app.util.gson.FloatJsonDeserializer;
 import com.abona_erp.driver.app.util.gson.GmtDateTypeAdapter;
 import com.abona_erp.driver.app.util.gson.GmtDateUtcTypeAdapter;
@@ -30,7 +19,6 @@ import com.abona_erp.driver.app.util.gson.StringJsonDeserializer;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
 import com.devexpress.logify.alert.android.LogifyAlert;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -45,7 +33,8 @@ import java.util.TimeZone;
 public class App extends BaseApp {
   
   private static final String TAG = MiscUtil.getTag(App.class);
-  
+
+  private ApplicationComponent appComponent;
   protected static App sInstance;
   
   public static boolean isAppInForeground = false;
@@ -57,7 +46,10 @@ public class App extends BaseApp {
   public static final EventBus eventBus = EventBus.getDefault();
   public static final ApiManager apiManager = new ApiManager();
   public static final SharedPrefManager spManager = new SharedPrefManager();
-  
+
+  public ApplicationComponent getApplicationComponent() {
+    return appComponent;
+  }
   @Override
   protected void attachBaseContext(Context base) {
     super.attachBaseContext(DynamicLanguageContextWrapper.updateContext(base, TextSecurePreferences.getLanguage(base)));
