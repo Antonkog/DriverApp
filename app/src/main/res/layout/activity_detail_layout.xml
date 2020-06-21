@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/task_detail_view"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_detail_view">
+
+    <!-- HEADER -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#C3CFE2">
+
+        <!-- BACK BUTTON -->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_detail_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/spacing_large"
+            android:layout_marginEnd="@dimen/spacing_large"
+            android:padding="@dimen/spacing_large"
+            app:srcCompat="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/clrFont"
+            android:layout_marginRight="@dimen/spacing_large" />
+        <!--
+        <com.shuhart.stepview.StepView
+          android:id="@+id/detail_step_view"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="80dp"
+          android:layout_marginRight="80dp"
+          android:padding="@dimen/spacing_large"
+          android:layout_centerInParent="true"
+          app:sv_selectedCircleRadius="10dp"
+          app:sv_selectedCircleColor="@color/clrWhite"
+          app:sv_selectedTextColor="@color/clrFont"
+          app:sv_stepLineWidth="1dp"
+          app:sv_nextTextColor="@color/grey_40"
+          app:sv_nextStepLineColor="@color/grey_40"
+          app:sv_doneTextColor="@color/clrFont"
+          app:sv_animationType="None"
+          /> -->
+
+        <ProgressBar
+            android:id="@+id/pb_activity_step"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_toEndOf="@id/btn_detail_back"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/spacing_large"
+            android:max="100"
+            android:progress="10"
+            android:layout_toRightOf="@id/btn_detail_back"
+            android:layout_marginRight="@dimen/spacing_large" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_bg_action_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:background="@color/clrUnknown">
+
+        <TextView
+            android:id="@+id/tv_action_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_small"
+            android:layout_centerInParent="true"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/clrWhite"
+            tools:text="UNKNOWN" />
+    </RelativeLayout>
+
+    <!-- CONTENT -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:weightSum="2">
+
+        <!-- LEFT CONTENT -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <!-- ACTIVITY STEPPER -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lv_activity_step"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:listitem="@layout/step_activity" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/grey_20" />
+
+        <!-- RIGHT CONTENT -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/spacing_middle"
+            android:paddingRight="@dimen/spacing_middle"
+            android:layout_marginEnd="@dimen/spacing_middle"
+            android:layout_marginRight="@dimen/spacing_middle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_middle"
+                android:textSize="12sp"
+                android:textColor="@color/grey_40"
+                android:text="Kunde:" />
+
+            <TextView
+                android:id="@+id/tv_activity_step_customer_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/clrFont" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_middle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/grey_40"
+                        android:text="KD-Nr.:" />
+
+                    <TextView
+                        android:id="@+id/tv_activity_step_customer_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/clrFont" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/spacing_middle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/grey_40"
+                        android:text="Referenz 1 (Ladung):" />
+
+                    <TextView
+                        android:id="@+id/tv_activity_step_reference_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/clrFont" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/spacing_middle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/grey_40"
+                        android:text="Description (Waren):" />
+
+                    <TextView
+                        android:id="@+id/tv_activity_step_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/clrFont" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="@dimen/spacing_middle"
+                    android:layout_height="0dp" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/grey_40"
+                        android:text="Order-Nr.:" />
+
+                    <TextView
+                        android:id="@+id/tv_activity_step_order_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/clrFont" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/spacing_middle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/grey_40"
+                        android:text="Referenz 2:" />
+
+                    <TextView
+                        android:id="@+id/tv_activity_step_reference_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/clrFont" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- BOTTOM -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_detail_back_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_middle"
+                android:layout_marginRight="@dimen/spacing_middle"
+                android:background="@drawable/button_shape"
+                android:drawableLeft="@drawable/ic_arrow_back"
+                android:drawablePadding="@dimen/spacing_xmedium"
+                android:textColor="@color/clrWhite"
+                android:text="BACK" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_detail_next_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_middle"
+                android:layout_marginRight="@dimen/spacing_middle"
+                android:background="@drawable/button_shape"
+                android:drawableLeft="@drawable/ic_done"
+                android:drawablePadding="@dimen/spacing_xmedium"
+                android:textColor="#fff"
+                android:text="Start Activity" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

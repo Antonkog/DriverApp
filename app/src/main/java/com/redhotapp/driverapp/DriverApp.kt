@@ -17,6 +17,7 @@
 package com.redhotapp.driverapp
 
 import android.app.Application
+import androidx.multidex.MultiDexApplication
 import com.redhotapp.driverapp.data.source.TasksRepository
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -27,7 +28,7 @@ import timber.log.Timber.DebugTree
  *
  * Also, sets up Timber in the DEBUG BuildConfig. Read Timber's documentation for production setups.
  */
-class DriverApp : Application() {
+class DriverApp : MultiDexApplication() {
 
     // Depends on the flavor,
     val taskRepository: TasksRepository

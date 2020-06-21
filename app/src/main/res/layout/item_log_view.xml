@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/list_item_root"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_centerVertical="true"
+  android:background="#cccccc"
+  android:descendantFocusability="blocksDescendants"
+  android:gravity="center_vertical"
+  android:orientation="horizontal">
+
+  <TextView
+    android:id="@+id/tv_lvl"
+    android:layout_width="16dp"
+    android:layout_height="0dp"
+    android:background="@color/priority_debug"
+    android:gravity="center"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:textColor="@color/clrWhite"
+    android:textSize="12sp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="D"
+    />
+
+  <HorizontalScrollView
+    android:id="@+id/tag_container"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="5dp"
+    android:scrollbars="none"
+    app:layout_constraintLeft_toRightOf="@id/tv_lvl"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <TextView
+      android:id="@+id/tv_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="13sp"
+      android:textColor="@color/clrFont"
+      tools:text="FCM Firebase Notification"
+      />
+
+  </HorizontalScrollView>
+
+  <TextView
+    android:id="@+id/tv_message"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:textSize="12sp"
+    app:layout_constraintLeft_toRightOf="@id/tv_lvl"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/tag_container"
+    tools:text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+    />
+
+  <TextView
+    android:id="@+id/tv_date"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginBottom="5dp"
+    android:textSize="12sp"
+    android:textColor="@color/clrFont"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintHorizontal_chainStyle="packed"
+    app:layout_constraintLeft_toRightOf="@id/tv_lvl"
+    app:layout_constraintRight_toLeftOf="@id/tv_time"
+    app:layout_constraintTop_toBottomOf="@id/tv_message"
+    tools:text="06.05.2020"
+      android:layout_marginLeft="5dp" />
+
+  <TextView
+    android:id="@+id/tv_time"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginBottom="5dp"
+    android:textSize="12sp"
+    android:textColor="@color/clrFont"
+    app:layout_constraintBaseline_toBaselineOf="@id/tv_date"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintHorizontal_chainStyle="packed"
+    app:layout_constraintLeft_toRightOf="@id/tv_date"
+    app:layout_constraintRight_toLeftOf="@id/pid"
+    app:layout_constraintTop_toBottomOf="@id/tv_message"
+    tools:text="21:10:46.752 UTC"
+      android:layout_marginLeft="16dp" />
+
+  <TextView
+    android:id="@+id/pid"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginBottom="5dp"
+    android:textSize="12sp"
+    android:textColor="@color/clrFont"
+    app:layout_constraintBaseline_toBaselineOf="@id/tv_time"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintHorizontal_chainStyle="packed"
+    app:layout_constraintLeft_toRightOf="@id/tv_time"
+    app:layout_constraintRight_toLeftOf="@id/tid"
+    app:layout_constraintTop_toBottomOf="@id/tv_message"
+    tools:text="14557"
+      android:layout_marginLeft="16dp" />
+
+  <TextView
+    android:id="@+id/tid"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginBottom="5dp"
+    android:textSize="12sp"
+    android:textColor="@color/clrFont"
+    app:layout_constraintBaseline_toBaselineOf="@id/pid"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintHorizontal_chainStyle="packed"
+    app:layout_constraintLeft_toRightOf="@id/pid"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/tv_message"
+    tools:text="14557"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="5dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

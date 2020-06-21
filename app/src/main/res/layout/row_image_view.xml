@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_gallery_root"
+    android:layout_width="90dp"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_gallery_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/backgrounds/scenic" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_gallery_delete_image"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="@dimen/spacing_small"
+        app:srcCompat="@drawable/close_red"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_gallery_file_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#90000000"
+        android:gravity="center"
+        android:padding="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_gallery_image_view"
+        app:layout_constraintEnd_toEndOf="@+id/iv_gallery_image_view"
+        app:layout_constraintStart_toStartOf="@+id/iv_gallery_image_view"
+        tools:text="@tools:sample/full_names" />
+
+    <View
+        android:id="@+id/view_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@null" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/ll_root_item"
+  android:orientation="horizontal"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="end"
+      android:text="@string/number_of_paletts"
+      />
+
+    <TextView
+      android:id="@+id/tv_number_of_paletts"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="5dp"
+      android:textSize="14sp"
+      android:textColor="@color/clrFont"
+      tools:text="10"
+      />
+
+  </LinearLayout>
+
+  <Space
+    android:layout_width="30dp"
+    android:layout_height="0dp"
+    />
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="end"
+      android:text="@string/dpl"
+      />
+
+    <TextView
+      android:id="@+id/tv_dpl"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="5dp"
+      android:textSize="14sp"
+      android:textColor="@color/clrFont"
+      tools:text="yes"
+      />
+
+  </LinearLayout>
+
+</LinearLayout>

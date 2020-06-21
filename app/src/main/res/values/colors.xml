@@ -15,14 +15,104 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#FFFFF0</color>
-    <color name="colorPrimaryDark">#263238</color>
-    <color name="colorAccent">#2E7D32</color>
     <color name="colorTextPrimary">#000000</color>
     <color name="colorGrey">#757575</color>
 
     <drawable name="completedTaskBackground">#CCCCCC</drawable>
 
     <drawable name="touchFeedback">#CFD8DC</drawable>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#1F1C2C</color>
+    <color name="colorAccent">#D81B60</color>
 
+    <color name="clrAbona">#E30613</color>
+    <color name="clrFont">#1F1C2C</color>
+    <color name="clrWhite">#FFF</color>
+    <color name="clrMainHeader">#F5F7FA</color>
+    <color name="orderMenuBG">#fafafa</color>
+    <color name="clrIcon">#1F1C2C</color>
+    <color name="clrTaskFinished">#10ac84</color>
+
+    <color name="clrPickUp">#2980B9</color>
+    <color name="clrDropOff">#10ac84</color>
+    <color name="clrGeneral">#1F1C2C</color>
+    <color name="clrTractorSwap">#FFBF00</color>
+    <color name="clrDelay">#8e44ad</color>
+    <color name="clrUnknown">#1F1C2C</color>
+
+    <color name="clrLabelNew">#2980B9</color>
+    <color name="clrLabelUpdated">#8e44ad</color>
+    <color name="clrLabelDeleted">#E30613</color>
+    <color name="clrLabelChanged">#e67e22</color>
+
+    <color name="timeline_path_new_task">#27ae60</color>
+
+    <color name="clrListViewHeader">#C3CFE2</color>
+    <color name="clrWarningLight">#ff4757</color>
+    <color name="clrWarningDark">#ED4C67</color>
+    <color name="clrChanged">#2980b9</color>
+
+    <color name="list_selected_item_bg_light">#32000000</color>
+
+    <color name="priority_assert">#512DA8</color>
+    <color name="priority_debug">#1976D2</color>
+    <color name="priority_error">#D32F2F</color>
+    <color name="priority_fatal">#C2185B</color>
+    <color name="priority_info">#388E3C</color>
+    <color name="priority_silent">#616161</color>
+    <color name="priority_warning">#E65100</color>
+    <color name="priority_verbose">#546E7A</color>
+
+    <color name="red_color_picker">#D50000</color>
+    <color name="pink_color_picker">#e91e63</color>
+    <color name="purple_color_picker">#9c27b0</color>
+    <color name="deep_purple_color_picker">#673ab7</color>
+    <color name="indigo_color_picker">#3f51b5</color>
+    <color name="blue_color_picker">#2196f3</color>
+    <color name="light_blue_color_picker">#03a9f4</color>
+    <color name="cyan_color_picker">#00bcd4</color>
+    <color name="teal_color_picker">#009688</color>
+    <color name="green_color_picker">#4caf50</color>
+    <color name="light_green_color_picker">#8bc34a</color>
+    <color name="lime_color_picker">#cddc39</color>
+    <color name="yellow_color_picker">#ffeb3b</color>
+    <color name="amber_color_picker">#ffc107</color>
+    <color name="orange_color_picker">#ff9800</color>
+    <color name="deep_orange_color_picker">#ff5722</color>
+    <color name="brown_color_picker">#795548</color>
+    <color name="grey_color_picker">#9e9e9e</color>
+    <color name="blue_grey_color_picker">#607d8b</color>
+
+    <color name="badge_color">#F20000</color>
+
+    <color name="overlay_dark_10">#1A000000</color>
+    <color name="overlay_dark_20">#33000000</color>
+    <color name="overlay_dark_30">#4D000000</color>
+    <color name="overlay_dark_40">#66000000</color>
+    <color name="overlay_dark_50">#80000000</color>
+    <color name="overlay_dark_60">#99000000</color>
+    <color name="overlay_dark_70">#B3000000</color>
+    <color name="overlay_dark_80">#CC000000</color>
+    <color name="overlay_dark_90">#E6000000</color>
+
+    <color name="overlay_light_10">#1AFFFFFF</color>
+    <color name="overlay_light_20">#33FFFFFF</color>
+    <color name="overlay_light_30">#4DFFFFFF</color>
+    <color name="overlay_light_40">#66FFFFFF</color>
+    <color name="overlay_light_50">#8FFFFFF0</color>
+    <color name="overlay_light_60">#99FFFFFF</color>
+    <color name="overlay_light_70">#B3FFFFFF</color>
+    <color name="overlay_light_80">#CCFFFFFF</color>
+    <color name="overlay_light_90">#E6FFFFFF</color>
+
+    <color name="grey_3">#f7f7f7</color>
+    <color name="grey_5">#f2f2f2</color>
+    <color name="grey_10">#e6e6e6</color>
+    <color name="grey_20">#cccccc</color>
+    <color name="grey_40">#999999</color>
+    <color name="grey_60">#666666</color>
+    <color name="grey_80">#37474F</color>
+    <color name="grey_90">#263238</color>
+    <color name="grey_95">#1a1a1a</color>
+    <color name="grey_100_">#0d0d0d</color>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:layout_margin="@dimen/spacing_xmedium"
+  android:padding="@dimen/spacing_small">
+
+  <androidx.appcompat.widget.AppCompatImageView
+    android:id="@+id/iv_tool_icon"
+    android:layout_width="@dimen/editor_size"
+    android:layout_height="@dimen/editor_size"
+    android:layout_margin="@dimen/spacing_small"
+    android:layout_marginBottom="@dimen/spacing_xmedium"
+    android:tint="@color/clrFont"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toTopOf="@id/tv_tool"
+    tools:src="@drawable/ic_brush"
+    />
+
+  <TextView
+    android:id="@+id/tv_tool"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/spacing_small"
+    android:textColor="@color/clrFont"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/iv_tool_icon"
+    tools:text="@string/label_brush"
+    />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--
+      <include
+        android:id="@+id/take_picture_container"
+        layout="@layout/take_picture_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+    -->
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_capture_flash"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/spacing_xxxlarge"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:tint="@color/clrAbona"
+        app:srcCompat="@drawable/bd_ocr_light_off" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_capture_image"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_centerInParent="true"
+        android:tint="@color/clrAbona"
+        app:srcCompat="@drawable/bd_ocr_take_photo_normal"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_capture_information"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/spacing_xxxlarge"
+        android:clickable="true"
+        android:focusable="true"
+        android:tint="@color/clrAbona"
+        app:srcCompat="@drawable/ic_info" />
+
+</RelativeLayout>

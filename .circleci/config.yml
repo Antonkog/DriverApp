@@ -7,13 +7,6 @@ config_android:
     JAVA_TOOL_OPTIONS: "-Xmx1024m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dkotlin.incremental=false"
     TERM: dumb
-setup_ftl:
-  - run:
-      name: Authorize gcloud and set config defaults
-      command: |
-        echo $GCLOUD_SERVICE_KEY | base64 -di > ${HOME}/DriverApp-896dab6ef87f.json
-        sudo gcloud auth activate-service-account --key-file=${HOME}/DriverApp-896dab6ef87f.json
-        sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
 jobs:
   build_and_setup:
     docker:
@@ -47,46 +40,8 @@ jobs:
           root: .
           paths:
             - ./app/build
-  run_ftl:
-    docker:
-      - image: circleci/android:api-28
-    working_directory: ~/project
-    environment:
-      - JAVA_TOOL_OPTIONS: -Xmx1024m
-      - GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Dkotlin.incremental=false
-      - TERM: dumb
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Authorize gcloud and set config defaults
-          command: |
-            echo $GCLOUD_SERVICE_KEY | base64 -di > ${HOME}/DriverApp-896dab6ef87f.json
-            sudo gcloud auth activate-service-account --key-file=${HOME}/DriverApp-896dab6ef87f.json
-            sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-      - run:
-          name: Test with Firebase Test Lab
-          command: |
-            BUILD_DIR=build_${CIRCLE_BUILD_NUM}
-            sudo gcloud firebase test android run \
-              --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
-              --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --results-bucket cloud-test-${GOOGLE_PROJECT_ID}-blueprints \
-              --results-dir=${BUILD_DIR}
-      - run:
-          name: Download results
-          command: |
-            BUILD_DIR=build_${CIRCLE_BUILD_NUM}
-            sudo pip install -U crcmod
-            mkdir firebase_test_results
-            sudo gsutil -m mv -r -U `sudo gsutil ls gs://cloud-test-${GOOGLE_PROJECT_ID}-blueprints/${BUILD_DIR} | tail -1` firebase_test_results/ | true
-      - store_artifacts:
-          path: firebase_test_results
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build_and_setup
-      - run_ftl:
-          requires:
-            - build_and_setup

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_std"
+        android:paddingRight="@dimen/margin_std"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <View
+            android:id="@+id/item_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="#D3D3D3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="@dimen/icon_size_Xbg"
+            android:layout_height="@dimen/icon_size_Xbg"
+            android:background="@drawable/shape_round_solid"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_last_activity_icon"
+            android:layout_width="@dimen/icon_size_X"
+            android:layout_height="@dimen/icon_size_X"
+            app:layout_constraintBottom_toBottomOf="@+id/view"
+            app:layout_constraintEnd_toEndOf="@+id/view"
+            app:layout_constraintStart_toStartOf="@+id/view"
+            app:layout_constraintTop_toTopOf="@+id/view"
+            tools:src="@drawable/abona_ic_sm" />
+
+        <TextView
+            android:id="@+id/tv_last_activity_customer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/clrFont"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tv_last_activity_order_no"
+            app:layout_constraintStart_toEndOf="@+id/iv_last_activity_icon"
+            app:layout_constraintTop_toBottomOf="@+id/item_divider"
+            tools:text="DAIMLER AG"
+            android:layout_marginLeft="32dp" />
+
+        <TextView
+            android:id="@+id/tv_last_activity_order_no"
+            style="@style/TaskStatusText"
+            android:layout_marginTop="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_last_activity_customer"
+            app:layout_constraintTop_toBottomOf="@+id/tv_last_activity_customer"
+            tools:text="2020/15/13" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_last_activity_done_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:srcCompat="@drawable/ic_done_all"
+            android:tint="@color/grey_40"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_divider" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sub_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_std"
+        android:paddingRight="@dimen/margin_std"
+        app:layout_constraintEnd_toEndOf="@+id/header_content"
+        app:layout_constraintStart_toStartOf="@+id/header_content"
+        app:layout_constraintTop_toBottomOf="@id/header_content">
+
+
+        <TextView
+            android:id="@+id/action_label"
+            style="@style/TaskStatusLabels"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/action" />
+
+        <TextView
+            android:id="@+id/tv_last_activity_action_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="#fff"
+            android:textSize="10sp"
+            app:layout_constraintEnd_toStartOf="@+id/tv_last_activity_status_type"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@drawable/bg_action_type_pick_up"
+            tools:text="@string/label_new"
+            android:layout_marginRight="16dp" />
+
+
+        <TextView
+            android:id="@+id/tv_last_activity_status_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/status_pending_bg"
+            android:textColor="#fff"
+            android:textSize="10sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="UPDATED" />
+
+
+        <TextView
+            android:id="@+id/time_label"
+            style="@style/TaskStatusLabels"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/action_label"
+            android:text="@string/timestamp" />
+
+
+        <TextView
+            android:id="@+id/tv_last_activity_timestamp"
+            style="@style/TaskStatusText"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_last_activity_status_type"
+            tools:text="Do., 19 Dez. 2019 14:02:40" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
