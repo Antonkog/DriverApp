@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'com.google.firebase.crashlytics'
 
@@ -127,7 +127,18 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     kapt "com.android.databinding:compiler:$databinding"
+    //hilt for DI
+    implementation "com.google.dagger:hilt-android:$daggerHiltAndroidVersion"
+    implementation "com.google.dagger:hilt-android-testing:$daggerHiltAndroidVersion"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$daggerHiltAndroidVersion"
 
+    kapt "com.google.dagger:hilt-android-compiler:$daggerHiltAndroidVersion"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$daggerHiltAndroidVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+
+    kapt "androidx.hilt:hilt-compiler:$daggerHiltVersion"
+    implementation "androidx.hilt:hilt-common:$daggerHiltVersion"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$daggerHiltVersion"
     // Architecture Components
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"

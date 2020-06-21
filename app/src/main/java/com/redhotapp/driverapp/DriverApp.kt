@@ -19,6 +19,7 @@ package com.redhotapp.driverapp
 import android.app.Application
 import androidx.multidex.MultiDexApplication
 import com.redhotapp.driverapp.data.source.TasksRepository
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -28,6 +29,7 @@ import timber.log.Timber.DebugTree
  *
  * Also, sets up Timber in the DEBUG BuildConfig. Read Timber's documentation for production setups.
  */
+@HiltAndroidApp
 class DriverApp : MultiDexApplication() {
 
     // Depends on the flavor,
