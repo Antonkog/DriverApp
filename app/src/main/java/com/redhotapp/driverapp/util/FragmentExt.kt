@@ -20,10 +20,10 @@ package com.redhotapp.driverapp.util
  */
 
 import androidx.fragment.app.Fragment
-import com.redhotapp.driverapp.TodoApplication
+import com.redhotapp.driverapp.DriverApp
 import com.redhotapp.driverapp.ViewModelFactory
 
 fun Fragment.getViewModelFactory(): ViewModelFactory {
-    val repository = (requireContext().applicationContext as TodoApplication).taskRepository
+    val repository = (requireContext().applicationContext as DriverApp).taskRepository
     return ViewModelFactory(repository, this)
 }
