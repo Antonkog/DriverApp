@@ -26,7 +26,7 @@ import com.redhotapp.driverapp.data.Task
  * Note that exportSchema should be true in production databases.
  */
 @Database(entities = [Task::class], version = 1, exportSchema = false)
-abstract class ToDoDatabase : RoomDatabase() {
+abstract class DrDatabase : RoomDatabase() {
 
     abstract fun taskDao(): TasksDao
 }

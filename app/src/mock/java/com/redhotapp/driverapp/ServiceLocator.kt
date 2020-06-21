@@ -23,7 +23,7 @@ import com.redhotapp.driverapp.data.source.DefaultTasksRepository
 import com.redhotapp.driverapp.data.source.TasksDataSource
 import com.redhotapp.driverapp.data.source.TasksRepository
 import com.redhotapp.driverapp.data.source.local.TasksLocalDataSource
-import com.redhotapp.driverapp.data.source.local.ToDoDatabase
+import com.redhotapp.driverapp.data.source.local.DrDatabase
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -33,7 +33,7 @@ import kotlinx.coroutines.runBlocking
 object ServiceLocator {
 
     private val lock = Any()
-    private var database: ToDoDatabase? = null
+    private var drDatabase: DrDatabase? = null
     @Volatile
     var tasksRepository: TasksRepository? = null
         @VisibleForTesting set
@@ -51,16 +51,16 @@ object ServiceLocator {
     }
 
     private fun createTaskLocalDataSource(context: Context): TasksDataSource {
-        val database = database ?: createDataBase(context)
+        val database = drDatabase ?: createDataBase(context)
         return TasksLocalDataSource(database.taskDao())
     }
 
-    private fun createDataBase(context: Context): ToDoDatabase {
+    private fun createDataBase(context: Context): DrDatabase {
         val result = Room.databaseBuilder(
             context.applicationContext,
-            ToDoDatabase::class.java, "Tasks.db"
+            DrDatabase::class.java, "Tasks.db"
         ).build()
-        database = result
+        drDatabase = result
         return result
     }
 
@@ -71,11 +71,11 @@ object ServiceLocator {
                 FakeTasksRemoteDataSource.deleteAllTasks()
             }
             // Clear all data to avoid test pollution.
-            database?.apply {
+            drDatabase?.apply {
                 clearAllTables()
                 close()
             }
-            database = null
+            drDatabase = null
             tasksRepository = null
         }
     }

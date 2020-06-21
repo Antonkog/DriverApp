@@ -25,11 +25,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 /**
  * Default implementation of [TasksRepository]. Single entry point for managing tasks' data.
  */
-class DefaultTasksRepository(
+class DefaultTasksRepository @Inject constructor(
     private val tasksRemoteDataSource: TasksDataSource,
     private val tasksLocalDataSource: TasksDataSource,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO

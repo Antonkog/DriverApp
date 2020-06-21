@@ -45,7 +45,7 @@ import org.junit.runner.RunWith
 class TasksLocalDataSourceTest {
 
     private lateinit var localDataSource: TasksLocalDataSource
-    private lateinit var database: ToDoDatabase
+    private lateinit var drDatabase: DrDatabase
 
     // Set the main coroutines dispatcher for unit testing.
     @ExperimentalCoroutinesApi
@@ -59,19 +59,19 @@ class TasksLocalDataSourceTest {
     @Before
     fun setup() {
         // using an in-memory database for testing, since it doesn't survive killing the process
-        database = Room.inMemoryDatabaseBuilder(
+        drDatabase = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            ToDoDatabase::class.java
+            DrDatabase::class.java
         )
             .allowMainThreadQueries()
             .build()
 
-        localDataSource = TasksLocalDataSource(database.taskDao(), Dispatchers.Main)
+        localDataSource = TasksLocalDataSource(drDatabase.taskDao(), Dispatchers.Main)
     }
 
     @After
     fun cleanUp() {
-        database.close()
+        drDatabase.close()
     }
 
     @Test
