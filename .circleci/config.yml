@@ -11,8 +11,8 @@ setup_ftl:
   - run:
       name: Authorize gcloud and set config defaults
       command: |
-        echo $GCLOUD_SERVICE_KEY | base64 -di > ${HOME}/gcloud-service-key.json
-        sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+        echo $GCLOUD_SERVICE_KEY | base64 -di > ${HOME}/DriverApp-896dab6ef87f.json
+        sudo gcloud auth activate-service-account --key-file=${HOME}/DriverApp-896dab6ef87f.json
         sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
 jobs:
   build_and_setup:
@@ -61,8 +61,8 @@ jobs:
       - run:
           name: Authorize gcloud and set config defaults
           command: |
-            echo $GCLOUD_SERVICE_KEY | base64 -di > ${HOME}/gcloud-service-key.json
-            sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            echo $GCLOUD_SERVICE_KEY | base64 -di > ${HOME}/DriverApp-896dab6ef87f.json
+            sudo gcloud auth activate-service-account --key-file=${HOME}/DriverApp-896dab6ef87f.json
             sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
       - run:
           name: Test with Firebase Test Lab
