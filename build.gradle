@@ -2,6 +2,8 @@ buildscript {
     ext.kotlinVersion = '1.3.61'
     ext.navigationVersion = '2.2.0-rc02'
     ext.ktlintVersion = '0.33.0'
+    ext.gservices = '4.3.3'
+    ext.fbaseCrashlytics = '2.2.0'
     repositories {
         google()
         jcenter()
@@ -10,6 +12,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.5.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
+        classpath "com.google.gms:google-services:$gservices"
+        classpath "com.google.firebase:firebase-crashlytics-gradle:$fbaseCrashlytics"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -39,7 +43,7 @@ allprojects {
 ext {
     // Sdk and tools
     // Support library and architecture components support minSdk 14 and above.
-    minSdkVersion = 14
+    minSdkVersion = 16 //firebase need >=16
     targetSdkVersion = 28
     compileSdkVersion = 28
 
@@ -51,6 +55,8 @@ ext {
     androidXAnnotations = '1.1.0'
     androidXLegacySupport = '1.0.0'
     appCompatVersion = '1.1.0'
+    analyticsFirebase ='17.2.2'
+    crashlitycsFirebase ='17.1.0'
     archLifecycleVersion = '2.2.0-rc02'
     archTestingVersion = '2.1.0'
     cardVersion = '1.0.0'

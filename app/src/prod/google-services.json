@@ -1,0 +1,114 @@
+{
+  "project_info": {
+    "project_number": "761217846557",
+    "firebase_url": "https://driverapp-280909.firebaseio.com",
+    "project_id": "driverapp-280909",
+    "storage_bucket": "driverapp-280909.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761217846557:android:78346feaeac648d75625f4",
+        "android_client_info": {
+          "package_name": "com.redhotapp.driverapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "761217846557-d19df5qht7553ntt2fgv9gb3kd6n7g7m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe6X0SuL0LGSTMnkjCDSZJCshlgLQmZP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "761217846557-d19df5qht7553ntt2fgv9gb3kd6n7g7m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761217846557:android:553a58b5fb11db605625f4",
+        "android_client_info": {
+          "package_name": "com.redhotapp.driverapp.mock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "761217846557-go8g7r09r9heg3opif605c58fbejedu9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.redhotapp.driverapp.mock",
+            "certificate_hash": "5fc46aee27cc2bd629ff76bcb39ad1816214da2e"
+          }
+        },
+        {
+          "client_id": "761217846557-d19df5qht7553ntt2fgv9gb3kd6n7g7m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe6X0SuL0LGSTMnkjCDSZJCshlgLQmZP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "761217846557-d19df5qht7553ntt2fgv9gb3kd6n7g7m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761217846557:android:279699241a2ae4055625f4",
+        "android_client_info": {
+          "package_name": "com.redhotapp.driverapp.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "761217846557-0idd4n0289duaqfqek4ok1rm37276m6n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.redhotapp.driverapp.prod",
+            "certificate_hash": "5fc46aee27cc2bd629ff76bcb39ad1816214da2e"
+          }
+        },
+        {
+          "client_id": "761217846557-d19df5qht7553ntt2fgv9gb3kd6n7g7m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe6X0SuL0LGSTMnkjCDSZJCshlgLQmZP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "761217846557-d19df5qht7553ntt2fgv9gb3kd6n7g7m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
