@@ -1,235 +1,187 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:orientation="horizontal"
-  android:layout_width="match_parent"
-  android:layout_height="54dp"
-  android:background="@color/clrMainHeader">
-<!--
-  <androidx.appcompat.widget.AppCompatImageView
-    android:layout_width="@dimen/icon_size_48"
-    android:layout_height="@dimen/icon_size_48"
-    android:layout_marginStart="@dimen/spacing_medium"
-    android:layout_marginEnd="@dimen/spacing_medium"
-    android:layout_gravity="center"
-    android:src="@drawable/ic_app_icon_driver"
-    />
--->
-  <LinearLayout
-    android:layout_width="0dp"
-    android:layout_height="match_parent"
-    android:layout_weight="1"
-    android:orientation="vertical">
-<!--
-    <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/spacing_xsmall"
-      android:gravity="center"
-      app:hintEnabled="false">
-
-      <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/search"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_search"
-        android:drawablePadding="@dimen/spacing_middle"
-        android:focusable="false"
-        android:maxLines="1"
-        android:maxLength="40"
-        android:hint="@string/search"
-        android:textColorHint="@color/grey_60"
-        android:drawableTint="@color/clrIcon"
-        />
-
-    </com.google.android.material.textfield.TextInputLayout>
--->
-  </LinearLayout>
-
-  <RelativeLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_gravity="right"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatImageButton
-      android:id="@+id/btn_get_all_task"
-      android:layout_width="65dp"
-      android:layout_height="65dp"
-      android:layout_gravity="center_vertical"
-      android:src="@drawable/ic_autorenew_24px"
-      android:tint="@color/clrIcon"
-      />
-
-  </RelativeLayout>
-
-  <RelativeLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    </LinearLayout>
 
     <RelativeLayout
-      android:id="@+id/notification_rel_layout"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-      <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/badge_notification_icon"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_notifications_outline"
-        android:clickable="false"
-        android:focusable="false"
-        android:tint="@color/clrIcon"
-        />
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_get_all_task"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_autorenew_24px"
+            android:tint="@color/clrIcon" />
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/notification_rel_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/badge_notification_icon"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center_vertical"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/ic_notifications_outline"
+                android:tint="@color/clrIcon" />
+
+        </RelativeLayout>
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/badge_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/notification_rel_layout"
+            android:layout_alignRight="@id/notification_rel_layout"
+            android:background="@drawable/badge_item_count"
+            android:textColor="@color/clrWhite"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/process_rel_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/badge_process_icon"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center_vertical"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/ic_publish_24px"
+                android:tint="@color/clrIcon" />
+
+        </RelativeLayout>
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/badge_process"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/process_rel_layout"
+            android:layout_alignRight="@id/process_rel_layout"
+            android:background="@drawable/badge_item_count"
+            android:textColor="@color/clrWhite"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/connectivity"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center_vertical"
+            android:clickable="false"
+            android:focusable="false"
+            android:src="@drawable/ic_signal"
+            android:tint="@color/clrIcon" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="match_parent" />
+
     <com.abona_erp.driver.app.ui.widget.AsapTextView
-      android:id="@+id/badge_notification"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignRight="@id/notification_rel_layout"
-      android:layout_alignEnd="@id/notification_rel_layout"
-      android:background="@drawable/badge_item_count"
-      android:textColor="@color/clrWhite"
-      android:textSize="14sp"
-      android:textStyle="bold"
-      />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:text="1."
+        android:textColor="@color/grey_60"
+        android:visibility="gone"
+        tools:visibility="visible" />
+    <!--
+      <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="@dimen/icon_size_48"
+        android:layout_height="@dimen/icon_size_48"
+        android:src="@drawable/profile_mk"
+        android:layout_gravity="center_vertical"
+        app:civ_border_width="@dimen/spacing_xsmall"
+        app:civ_border_color="@color/clrIcon"
+        />
+    -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile1"
+        android:layout_width="@dimen/icon_size_48"
+        android:layout_height="@dimen/icon_size_48"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/user"
+        android:visibility="gone"
+        app:civ_border_color="@color/grey_60"
+        app:civ_border_width="@dimen/spacing_xsmall"
+        tools:visibility="visible" />
 
-  </RelativeLayout>
+    <View
+        android:layout_width="@dimen/spacing_middle"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
-  <RelativeLayout
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content">
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:text="2."
+        android:textColor="@color/grey_60"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
-  <RelativeLayout
-    android:id="@+id/process_rel_layout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile2"
+        android:layout_width="@dimen/icon_size_48"
+        android:layout_height="@dimen/icon_size_48"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/user"
+        android:visibility="gone"
+        app:civ_border_color="@color/grey_60"
+        app:civ_border_width="@dimen/spacing_xsmall"
+        tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-      android:id="@+id/badge_process_icon"
-      android:layout_width="65dp"
-      android:layout_height="65dp"
-      android:layout_gravity="center_vertical"
-      android:src="@drawable/ic_publish_24px"
-      android:clickable="false"
-      android:focusable="false"
-      android:tint="@color/clrIcon"
-      />
+        android:id="@+id/main_popup_menu"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_arrow_drop"
+        android:tint="@color/clrIcon" />
 
-  </RelativeLayout>
-
-  <com.abona_erp.driver.app.ui.widget.AsapTextView
-    android:id="@+id/badge_process"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignRight="@id/process_rel_layout"
-    android:layout_alignEnd="@id/process_rel_layout"
-    android:background="@drawable/badge_item_count"
-    android:textColor="@color/clrWhite"
-    android:textSize="14sp"
-    android:textStyle="bold"
-    />
-
-</RelativeLayout>
-
-  <RelativeLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-    <androidx.appcompat.widget.AppCompatImageButton
-      android:id="@+id/connectivity"
-      android:layout_width="65dp"
-      android:layout_height="65dp"
-      android:layout_gravity="center_vertical"
-      android:src="@drawable/ic_signal"
-      android:clickable="false"
-      android:focusable="false"
-      android:tint="@color/clrIcon"
-      />
-
-  </RelativeLayout>
-
-  <View
-    android:layout_width="8dp"
-    android:layout_height="match_parent"
-    />
-
-  <com.abona_erp.driver.app.ui.widget.AsapTextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:textColor="@color/grey_60"
-    android:text="1."
-    android:visibility="gone"
-    tools:visibility="visible"
-    />
-<!--
-  <de.hdodenhof.circleimageview.CircleImageView
-    android:layout_width="@dimen/icon_size_48"
-    android:layout_height="@dimen/icon_size_48"
-    android:src="@drawable/profile_mk"
-    android:layout_gravity="center_vertical"
-    app:civ_border_width="@dimen/spacing_xsmall"
-    app:civ_border_color="@color/clrIcon"
-    />
--->
-  <de.hdodenhof.circleimageview.CircleImageView
-    android:id="@+id/profile1"
-    android:layout_width="@dimen/icon_size_48"
-    android:layout_height="@dimen/icon_size_48"
-    android:src="@drawable/user"
-    android:layout_gravity="center_vertical"
-    app:civ_border_width="@dimen/spacing_xsmall"
-    app:civ_border_color="@color/grey_60"
-    android:visibility="gone"
-    tools:visibility="visible"
-    />
-
-  <View
-    android:layout_width="@dimen/spacing_middle"
-    android:layout_height="0dp"
-    android:visibility="gone"
-    tools:visibility="visible"
-    />
-
-  <com.abona_erp.driver.app.ui.widget.AsapTextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:textColor="@color/grey_60"
-    android:text="2."
-    android:visibility="gone"
-    tools:visibility="visible"
-    />
-
-  <de.hdodenhof.circleimageview.CircleImageView
-    android:id="@+id/profile2"
-    android:layout_width="@dimen/icon_size_48"
-    android:layout_height="@dimen/icon_size_48"
-    android:src="@drawable/user"
-    android:layout_gravity="center_vertical"
-    app:civ_border_width="@dimen/spacing_xsmall"
-    app:civ_border_color="@color/grey_60"
-    android:visibility="gone"
-    tools:visibility="visible"
-    />
-
-  <androidx.appcompat.widget.AppCompatImageButton
-    android:id="@+id/main_popup_menu"
-    android:layout_width="36dp"
-    android:layout_height="36dp"
-    android:src="@drawable/ic_arrow_drop"
-    android:tint="@color/clrIcon"
-    android:layout_gravity="center_vertical"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    />
-
-  <View
-    android:layout_width="@dimen/spacing_large"
-    android:layout_height="match_parent"
-    />
+    <View
+        android:layout_width="@dimen/spacing_large"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

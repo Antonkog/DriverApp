@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.LastActivity;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.core.base.ContextUtils;
@@ -175,7 +174,6 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
 
   public void onItemTap(NotifyTapEvent event) {
     LinkedList <LastActivity> refreshLisst = new LinkedList<>();
-    Log.e(this.getClass().getCanonicalName(), " onItemTap " + event.toString());
     for(LastActivity task : mLastActivityItems){ //todo refresh only one item
       if(task.getTaskId() == event.getTaskId()){
         refreshLisst.add(task.setSelectedAndReturn(event.isOpen()));
