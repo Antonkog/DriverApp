@@ -22,6 +22,7 @@ import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
 import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
+import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -32,7 +33,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class CompletedFragment extends Fragment implements ExpandableRecyclerView.Adapter.OnViewHolderClick<Notify> {
+public class CompletedFragment extends Fragment implements CommonItemClickListener<Notify> {
 
   CommItemAdapter adapter;
   private ExpandableRecyclerView listView;
@@ -60,28 +61,7 @@ public class CompletedFragment extends Fragment implements ExpandableRecyclerVie
     listView = (ExpandableRecyclerView) root.findViewById(R.id.rv_list);
     LinearLayoutManager llm = new LinearLayoutManager(getContext());
     listView.setLayoutManager(llm);
-    adapter = new CommItemAdapter(getContext(), llm, this);
-    adapter.setOnItemListener(new CommItemAdapter.OnItemClickListener() {
-      @Override
-      public void onItemClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
-      }
-  
-      @Override
-      public void onMapClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
-      }
-  
-      @Override
-      public void onCameraClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_CAMERA), notify));
-      }
-  
-      @Override
-      public void onDocumentClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
-      }
-    });
+    adapter = new CommItemAdapter(getContext(),this);
     listView.setAdapter(adapter);
     
     viewModel.getAllCompletedNotifications().observe(getViewLifecycleOwner(), new Observer<List<Notify>>() {
@@ -192,15 +172,40 @@ public class CompletedFragment extends Fragment implements ExpandableRecyclerVie
 
     return root;
   }
-  
+
   @Override
-  public void onClick(View view, int position, Notify item) {
+  public void onClick(View view, int position, Notify item, boolean selected) {
+    item.setCurrentlySelected(selected);
+    viewModel.update(item);
   }
-  
+
   @Override
   public void onDblClick(View view, int position, Notify item) {
     if (item != null) {
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), item));
     }
+  }
+  @Override
+  public void onProgressItemClick(Notify notify) {
+    viewModel.update(notify);
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
+  }
+
+  @Override
+  public void onMapClick(Notify notify) {
+    viewModel.update(notify);
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
+  }
+
+  @Override
+  public void onCameraClick(Notify notify) {
+    viewModel.update(notify);
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_CAMERA), notify));
+  }
+
+  @Override
+  public void onDocumentClick(Notify notify) {
+    viewModel.update(notify);
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
   }
 }

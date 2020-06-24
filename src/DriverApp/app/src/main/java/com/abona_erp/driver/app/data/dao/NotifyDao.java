@@ -12,7 +12,6 @@ import com.abona_erp.driver.app.data.entity.Notify;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 @Dao
@@ -20,6 +19,10 @@ public interface NotifyDao {
   
   //@Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish ASC")
   //@Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY task_due_finish AND order_no AND task_id ASC")
+  @Query("SELECT * FROM taskItem ORDER BY order_no AND task_id ASC")
+  LiveData<List<Notify>> getAllNotifications();
+
+
   @Query("SELECT * FROM taskItem WHERE status = 0 ORDER BY order_no AND task_id ASC")
   LiveData<List<Notify>> getAllPendingNotifications();
   

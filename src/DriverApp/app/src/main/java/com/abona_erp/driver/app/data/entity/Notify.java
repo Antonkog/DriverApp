@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.abona_erp.driver.app.util.BoolConverter;
 import com.abona_erp.driver.app.util.DateConverter;
 
 import java.util.ArrayList;
@@ -54,7 +55,19 @@ public class Notify {
   @ColumnInfo(name = "modified_at")
   @TypeConverters({DateConverter.class})
   private Date modifiedAt;
-  
+
+  @ColumnInfo(name = "currently_selected")
+  @TypeConverters({BoolConverter.class})
+  private boolean currentlySelected;
+
+  public boolean isCurrentlySelected() {
+    return currentlySelected;
+  }
+
+  public void setCurrentlySelected(boolean currentlySelected) {
+    this.currentlySelected = currentlySelected;
+  }
+
   public int getId() {
     return id;
   }
@@ -150,7 +163,27 @@ public class Notify {
   public void setCreatedAt(Date createdAt) {
     this.createdAt = createdAt;
   }
-  
+
+  @Override
+  public String toString() {
+    return "Notify{" +
+            "id=" + id +
+            ", data='" + data + '\'' +
+            ", read=" + read +
+            ", status=" + status +
+            ", orderNo=" + orderNo +
+            ", mandantId=" + mandantId +
+            ", taskId=" + taskId +
+            ", percentFinished=" + percentFinished +
+            ", photoUrls=" + photoUrls +
+            ", documentUrls=" + documentUrls +
+            ", taskDueFinish=" + taskDueFinish +
+            ", createdAt=" + createdAt +
+            ", modifiedAt=" + modifiedAt +
+            ", currentlySelected=" + currentlySelected +
+            '}';
+  }
+
   public Date getModifiedAt() {
     return modifiedAt;
   }

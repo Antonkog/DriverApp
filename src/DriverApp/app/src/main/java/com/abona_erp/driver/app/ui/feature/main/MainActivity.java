@@ -2,10 +2,6 @@ package com.abona_erp.driver.app.ui.feature.main;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +14,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoCdma;
@@ -44,12 +39,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -69,25 +61,24 @@ import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
-import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.receiver.ConnectivityChangeReceiver;
-import com.abona_erp.driver.app.receiver.GeofenceBroadcastReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
-import com.abona_erp.driver.app.service.impl.GeofenceErrorMessages;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
-import com.abona_erp.driver.app.ui.event.BaseEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
+import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
+import com.abona_erp.driver.app.ui.feature.main.adapter.LastActClickListener;
 import com.abona_erp.driver.app.ui.feature.main.adapter.LastActivityAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
@@ -106,11 +97,6 @@ import com.abona_erp.driver.app.util.RingtoneUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.devexpress.logify.alert.android.LogifyAlert;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingClient;
-import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -142,7 +128,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 
 import az.plainpie.PieView;
@@ -150,7 +135,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -162,16 +146,15 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   private final int REQUEST_APP_SETTINGS = 321;
   
   public static final String BACK_STACK_ROOT_TAG = "root_fragment";
-  
-  private Handler mHandler;
-  
+
   private CommItem mCommItem;
   
   private RecyclerView lvLastActivity;
+  private LastActivityAdapter lastActivityAdapter;
   private PieView mMainPieView;
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
-  
+
   private CircleImageView mProfile1;
   private CircleImageView mProfile2;
   
@@ -356,30 +339,19 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       new LinearLayoutManager(getApplicationContext(),
         RecyclerView.VERTICAL, false);
     lvLastActivity.setLayoutManager(recyclerLayoutManager);
-    LastActivityAdapter lastActivityAdapter = new LastActivityAdapter(getApplicationContext());
-    lastActivityAdapter.setOnItemListener(new LastActivityAdapter.OnItemClickListener() {
+     lastActivityAdapter = new LastActivityAdapter(getApplicationContext(), new LastActClickListener() {
       @Override
       public void onItemClick(int mandantID, int taskId) {
-        mMainViewModel.getNotifyByMandantTaskId(mandantID, taskId).observeOn(AndroidSchedulers.mainThread())
-          .subscribeOn(Schedulers.io())
-          .subscribe(new DisposableSingleObserver<Notify>() {
-            @Override
-            public void onSuccess(Notify notify) {
-              App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
-            }
-  
-            @Override
-            public void onError(Throwable e) {
-              App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK_NOT_FOUND), null));
-            }
-          });
+        mMainViewModel.getNotifyByTaskId(taskId).subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(current -> {
+                  current.setCurrentlySelected(!current.isCurrentlySelected());
+                  mMainViewModel.update(current);
+                });
       }
     });
+          ////////////////////////////////////////////////////////////////////////////////////////////////
     lvLastActivity.setAdapter(lastActivityAdapter);
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    mHandler = new Handler();
     
     mMainViewModel.getNotReadNotificationCount().observe(this, new Observer<Integer>() {
       @Override
@@ -610,6 +582,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal_wifi_24px));
       ((AppCompatImageButton)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
     }
+  }
+
+  @Subscribe
+  public void onMessageEvent(NotifyTapEvent event) {
+    lastActivityAdapter.onItemTap(event);
   }
 
   @Subscribe
@@ -1404,26 +1381,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     client.setContext(this.getApplicationContext());
     client.startExceptionsHandling();
   }
-  
-  public void removeStickyEvent(final Class<?> eventType) {
-    final int delayMillis = 100;
-    mHandler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        App.eventBus.removeStickyEvent(eventType);
-      }
-    }, delayMillis);
-  }
-  
-  protected <T extends BaseEvent> void removeStickyEvent(final T event) {
-    final int delayMillis = 100;
-    mHandler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        App.eventBus.removeStickyEvent(event);
-      }
-    }, delayMillis);
-  }
+
   
   private class SignalStrengthStateListener extends PhoneStateListener {
     

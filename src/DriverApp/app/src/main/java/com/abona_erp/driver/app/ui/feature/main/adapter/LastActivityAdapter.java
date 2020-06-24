@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.LastActivity;
-import com.abona_erp.driver.app.data.entity.TaskStatus;
+import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.core.base.ContextUtils;
 
@@ -53,16 +54,13 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
   }
 
   private final LayoutInflater mInflater;
-  private List<TaskStatus> mLastActivityItems;
-  private OnItemClickListener listener;
+  private List<LastActivity> mLastActivityItems;
+  private LastActClickListener listener;
   private Context mContext;
 
-  public interface OnItemClickListener {
-    void onItemClick(int mandantID, int taskId);
-  }
-
-  public LastActivityAdapter(Context ctx) {
+  public LastActivityAdapter(Context ctx, LastActClickListener listener) {
     mContext = ctx;
+    this.listener = listener;
     mInflater = LayoutInflater.from(ctx);
   }
 
@@ -76,15 +74,12 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
   @Override
   public void onBindViewHolder(LastActivityAdapter.ViewHolder holder, int position) {
     if (mLastActivityItems != null) {
-
-      LastActivity current = mLastActivityItems.get(position).getData();
-      bind(holder, position, current);
+      bind(holder, position, mLastActivityItems.get(position));
     }
   }
 
   private void bind(ViewHolder holder, int position, LastActivity current) {
-    holder.subItem.setVisibility(mLastActivityItems.get(position).isExpanded() ? View.VISIBLE : View.GONE);
-
+    holder.subItem.setVisibility(current.isCurrentlySelected()? View.VISIBLE : View.GONE);
     holder.tv_Customer.setText(current.getCustomer());
     holder.tv_OrderNo.setText(current.getOrderNo());
 
@@ -156,9 +151,9 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
     }
 
     holder.itemView.setOnClickListener(v -> {
-      boolean expanded = mLastActivityItems.get(position).isExpanded();
-      mLastActivityItems.get(position).setExpanded(!expanded);
+      current.setCurrentlySelected(!current.isCurrentlySelected());
       notifyItemChanged(position);
+      listener.onItemClick(mLastActivityItems.get(position).getId(), mLastActivityItems.get(position).getTaskId());
     });
 
     synchronized (this) {
@@ -172,16 +167,24 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
 //      }
   }
 
-  public void setOnItemListener(OnItemClickListener listener) {
-    this.listener = listener;
+  public void setLastActivityItems(List<LastActivity> items) {
+    mLastActivityItems = items;
+    notifyDataSetChanged();
   }
 
-  public void setLastActivityItems(List<LastActivity> items) {
-    List<TaskStatus> statuses = new LinkedList<>();
-    for(int i= 0; i < items.size(); i++){
-      statuses.add(new TaskStatus(items.get(i)));
+
+  public void onItemTap(NotifyTapEvent event) {
+    LinkedList <LastActivity> refreshLisst = new LinkedList<>();
+    Log.e(this.getClass().getCanonicalName(), " onItemTap " + event.toString());
+    for(LastActivity task : mLastActivityItems){ //todo refresh only one item
+      if(task.getTaskId() == event.getTaskId()){
+        refreshLisst.add(task.setSelectedAndReturn(event.isOpen()));
+      } else {
+        refreshLisst.add(task);
+      }
     }
-    mLastActivityItems = statuses;
+   mLastActivityItems.clear();
+    mLastActivityItems.addAll(refreshLisst);
     notifyDataSetChanged();
   }
 

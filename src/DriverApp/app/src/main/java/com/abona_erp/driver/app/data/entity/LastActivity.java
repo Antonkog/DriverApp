@@ -2,12 +2,11 @@ package com.abona_erp.driver.app.data.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
 import com.abona_erp.driver.app.data.converters.TimestampConverter;
-import com.abona_erp.driver.app.data.model.TaskActionType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,10 +17,29 @@ public class LastActivity implements Serializable {
 
   @PrimaryKey(autoGenerate = true)
   private int id;
-  
+
   @ColumnInfo(name = "task_id")
   private int taskId;
-  
+
+  @Override
+  public String toString() {
+    return "LastActivity{" +
+            "id=" + id +
+            ", taskId=" + taskId +
+            ", clientId=" + clientId +
+            ", customer='" + customer + '\'' +
+            ", orderNo='" + orderNo + '\'' +
+            ", detailList=" + detailList +
+            ", statusType=" + statusType +
+            ", confirmStatus=" + confirmStatus +
+            ", visible=" + visible +
+            ", taskActionType=" + taskActionType +
+            ", createdAt=" + createdAt +
+            ", modifiedAt=" + modifiedAt +
+            ", currentlySelected=" + currentlySelected +
+            '}';
+  }
+
   @ColumnInfo(name = "client_id")
   private int clientId;
   
@@ -54,6 +72,16 @@ public class LastActivity implements Serializable {
   @TypeConverters({TimestampConverter.class})
   private Date modifiedAt;
 
+  @Ignore
+  private boolean currentlySelected;
+
+  public boolean isCurrentlySelected() {
+    return currentlySelected;
+  }
+
+  public void setCurrentlySelected(boolean currentlySelected) {
+    this.currentlySelected = currentlySelected;
+  }
   // ------------------------------------------------------------------------
   // GETTER SETTER
   
@@ -104,7 +132,13 @@ public class LastActivity implements Serializable {
   public void setStatusType(int statusType) {
     this.statusType = statusType;
   }
-  
+
+  public LastActivity setSelectedAndReturn(boolean currentlySelected) {
+    this.currentlySelected = currentlySelected;
+    return this;
+  }
+
+
   public ArrayList<String> getDetailList() {
     return detailList;
   }
