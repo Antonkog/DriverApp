@@ -25,13 +25,12 @@ import java.util.Map;
 public class TabsPagerAdapter extends FragmentPagerAdapter {
   
   private static final String BADGE_MARGIN = " ";
-  private final int pageCount = 4;
+  private final int pageCount = 3;
   
   @StringRes
   private static final int[] tabTitles = new int[] {
     R.string.pending,
     R.string.running,
-    R.string.cmr,
     R.string.completed
   };
   
@@ -53,8 +52,6 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         return RunningFragment.newInstance();
       }
       case 2:
-        return CMRFragment.newInstance();
-      case 3:
         return CompletedFragment.newInstance();
       default:
         throw new IllegalArgumentException();

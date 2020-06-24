@@ -25,8 +25,7 @@ public class MainFragment extends Fragment {
   
   private static final int TAB_INDEX_PENDING   = 0;
   private static final int TAB_INDEX_RUNNING   = 1;
-  private static final int TAB_INDEX_CMR       = 2;
-  private static final int TAB_INDEX_COMPLETED = 3;
+  private static final int TAB_INDEX_COMPLETED = 2;
   
   private TabLayout mMainTab;
   private ViewPager mViewPager;
@@ -112,23 +111,7 @@ public class MainFragment extends Fragment {
         }
       }
     });
-    
-    mainViewModel.getAllCMRNotifications().observe(getViewLifecycleOwner(),
-      new Observer<List<Notify>>() {
-      @Override
-      public void onChanged(List<Notify> notifyList) {
-        TabLayout.Tab tab = mMainTab.getTabAt(TAB_INDEX_CMR);
-        tab.setCustomView(null);
-        if (notifyList.size() > 0) {
-          BadgeSpan badgeSpan = getBadgeSpanByType(BadgeType.BRIGHT);
-          Badge badge = new Badge(notifyList.size(), badgeSpan);
-          setTabBadge(TAB_INDEX_CMR, badge);
-        } else {
-          setTabBadge(TAB_INDEX_CMR, null);
-        }
-      }
-    });
-    
+
     mainViewModel.getAllCompletedNotifications().observe(getViewLifecycleOwner(),
       new Observer<List<Notify>>() {
         @Override
