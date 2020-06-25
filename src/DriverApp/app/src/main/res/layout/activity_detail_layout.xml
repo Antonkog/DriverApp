@@ -6,14 +6,12 @@
   android:id="@+id/task_detail_view"
   android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@drawable/bg_detail_view">
+  android:layout_height="match_parent">
 
   <!-- HEADER -->
   <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="#C3CFE2">
+    android:layout_height="?attr/actionBarSize">
 
     <!-- BACK BUTTON -->
     <androidx.appcompat.widget.AppCompatImageButton

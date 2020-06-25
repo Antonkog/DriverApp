@@ -55,9 +55,9 @@ public class ContactDataAdapter extends RecyclerView.Adapter<ContactDataAdapter.
     if (mDataset.get(i).getNumberType().equals(EnumNumberType.EMAIL)) {
       viewHolder.iv_number_type.setImageDrawable(ContextCompat.getDrawable(ContextUtils.getApplicationContext(), android.R.drawable.ic_dialog_email));
     } else if (mDataset.get(i).getNumberType().equals(EnumNumberType.MOBILE)) {
-      viewHolder.iv_number_type.setImageDrawable(ContextCompat.getDrawable(ContextUtils.getApplicationContext(), R.drawable.ic_phone_24px));
+      viewHolder.iv_number_type.setImageDrawable(ContextCompat.getDrawable(ContextUtils.getApplicationContext(), R.drawable.ic_phone_wh));
     } else if (mDataset.get(i).getNumberType().equals(EnumNumberType.PHONE)) {
-      viewHolder.iv_number_type.setImageDrawable(ContextCompat.getDrawable(ContextUtils.getApplicationContext(), R.drawable.ic_phone_24px));
+      viewHolder.iv_number_type.setImageDrawable(ContextCompat.getDrawable(ContextUtils.getApplicationContext(), R.drawable.ic_phone_wh));
     }
     
     if (mDataset.get(i).getContactType().equals(EnumContactType.VERFOLGER)) {

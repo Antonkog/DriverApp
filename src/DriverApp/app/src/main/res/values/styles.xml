@@ -8,6 +8,17 @@
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
+  <style name="MenuImage" parent="AppTheme">
+    <item name="android:layout_width">48dp</item>
+    <item name="android:layout_height">48dp</item>
+    <item name="android:layout_marginTop">@dimen/margin_sm</item>
+    <item name="android:layout_marginLeft">@dimen/margin_sm</item>
+    <item name="android:padding">4dp</item>
+    <item name="android:selectable">true</item>
+    <item name="android:clickable">true</item>
+  </style>
+
+
   <style name="TaskStatusLabels" parent="AppTheme">
     <item name="android:textSize">10sp</item>
     <item name="android:textColor">@color/clrFont</item>

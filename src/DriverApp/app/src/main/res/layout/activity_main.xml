@@ -52,15 +52,16 @@
 
   <az.plainpie.PieView
       android:id="@+id/mainPieView"
-      android:layout_width="50dp"
-      android:layout_height="50dp"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
       android:layout_gravity="left"
-      android:layout_marginTop="8dp"
+      android:layout_marginTop="@dimen/margin_sm"
       app:inner_pie_padding="8"
+      android:layout_margin="@dimen/margin_std"
       app:layout_constraintStart_toStartOf="@+id/main_container"
       app:layout_constraintTop_toTopOf="parent"
       app:percentage="75"
-      app:percentage_size="20" />
+      app:percentage_size="15" />
 
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -84,7 +85,6 @@
         android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/task_stat"
@@ -99,15 +99,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-  <FrameLayout
-      android:id="@+id/main_container"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.0"
-      app:layout_constraintStart_toEndOf="@id/lv_last_activity"
-      app:layout_constraintTop_toBottomOf="@id/menu_row"
-      app:layout_constraintVertical_bias="0.0" />
+    <FrameLayout
+        android:id="@+id/main_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margin_sm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/lv_last_activity"
+        app:layout_constraintTop_toBottomOf="@id/menu_row"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

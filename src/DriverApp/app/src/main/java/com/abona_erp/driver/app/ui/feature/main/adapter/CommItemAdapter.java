@@ -166,13 +166,13 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
     expandableItem.setOnClickListener(new DoubleClickListener() {
       @Override
       public void onSingleClick(View v) {
-        if (getListener() != null) getListener().onClick(v, holder.getAdapterPosition(), getItem(holder.getAdapterPosition()), !expandableItem.isOpened());
-        EventBus.getDefault().post(new NotifyTapEvent(!expandableItem.isOpened(), getItem(holder.getAdapterPosition()).getTaskId()));
+        if (getListener() != null) getListener().onClick(v, position, getItem(position), !expandableItem.isOpened());
+        EventBus.getDefault().post(new NotifyTapEvent(!expandableItem.isOpened(), getItem(position).getTaskId()));
       }
 
       @Override
       public void onDoubleClick(View v) {
-        if (getListener() != null)  getListener().onDblClick(v, holder.getAdapterPosition(), getItem(holder.getAdapterPosition()));
+        if (getListener() != null)  getListener().onDblClick(v, position, getItem(position));
       }
     });
   }

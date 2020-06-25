@@ -16,12 +16,10 @@ import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
+import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
 import com.abona_erp.driver.app.ui.feature.main.view_model.RunningViewModel;
 import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
-import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class RunningFragment extends Fragment implements CommonItemClickListener<Notify> {
@@ -71,23 +69,6 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
         @Override
         public void onChanged(List<Notify> notifies) {
           if (notifies == null) return;
-        
-          Collections.sort(notifies, new Comparator<Notify>() {
-            @Override
-            public int compare(Notify notify, Notify t1) {
-              if (notify == null || t1 == null) return 0;
-              return Integer.valueOf(notify.getOrderNo()).compareTo(t1.getOrderNo());
-            }
-          });
-        
-          Collections.sort(notifies, new Comparator<Notify>() {
-            @Override
-            public int compare(Notify notify, Notify t1) {
-              if (notify == null || t1 == null) return 0;
-              return Integer.valueOf(notify.getTaskId()).compareTo(t1.getTaskId());
-            }
-          });
-          
           adapter.setList(notifies);
           App.eventBus.post(new BadgeCountEvent(1, notifies.size()));
         }

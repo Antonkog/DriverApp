@@ -21,12 +21,10 @@ import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
-import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
+import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
 
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -68,23 +66,7 @@ public class CompletedFragment extends Fragment implements CommonItemClickListen
       @Override
       public void onChanged(List<Notify> notifies) {
         if (notifies == null) return;
-        
-        Collections.sort(notifies, new Comparator<Notify>() {
-          @Override
-          public int compare(Notify notify, Notify t1) {
-            if (notify == null || t1 == null) return 0;
-            return Integer.valueOf(notify.getOrderNo()).compareTo(t1.getOrderNo());
-          }
-        });
-        
-        Collections.sort(notifies, new Comparator<Notify>() {
-          @Override
-          public int compare(Notify notify, Notify t1) {
-            if (notify == null || t1 == null) return 0;
-            return Integer.valueOf(notify.getTaskId()).compareTo(t1.getTaskId());
-          }
-        });
-        
+
         synchronized (CompletedFragment.this) {
           if (notifies.size() > 0) {
             long now = System.currentTimeMillis() - (7200 * 60 * 1000);

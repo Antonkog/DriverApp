@@ -34,7 +34,6 @@
             android:layout_width="@dimen/icon_size_Xbg"
             android:layout_height="@dimen/icon_size_Xbg"
             android:layout_marginTop="8dp"
-            android:background="@drawable/shape_round_solid"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

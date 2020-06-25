@@ -135,7 +135,7 @@
           android:id="@+id/btn_contact_info"
           android:layout_width="48dp"
           android:layout_height="48dp"
-          android:src="@drawable/ic_phone_24px"
+          android:src="@drawable/ic_phone_wh"
           android:backgroundTint="@color/grey_40"
           android:visibility="gone"
           tools:visibility="visible"

@@ -34,6 +34,8 @@ import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -131,7 +133,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import az.plainpie.PieView;
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -154,13 +155,10 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   private PieView mMainPieView;
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
-
-  private CircleImageView mProfile1;
-  private CircleImageView mProfile2;
   
   private PowerMenu mProfileMenu;
-  private AppCompatImageButton mMainPopupMenu;
-  private AppCompatImageButton mBtnGetAllTasks;
+  private ImageView mMainPopupMenu;
+  private ImageView getAllTaskImage;
 
   // VIEW MODEL:
   private MainViewModel mMainViewModel;
@@ -283,10 +281,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     mMainPieView.setInnerText("0 %");
     mMainPieView.setPercentage(0);
     
-    mProfile1 = (CircleImageView)findViewById(R.id.profile1);
-    mProfile2 = (CircleImageView)findViewById(R.id.profile2);
-    
-    mMainPopupMenu = (AppCompatImageButton)findViewById(R.id.main_popup_menu);
+    mMainPopupMenu =findViewById(R.id.main_popup_menu);
     mProfileMenu = PowerMenuUtils.getProfilePowerMenu(this, this,
       onProfileItemClickListener);
     mMainPopupMenu.setOnClickListener(new View.OnClickListener() {
@@ -296,13 +291,13 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       }
     });
     
-    mBtnGetAllTasks = (AppCompatImageButton)findViewById(R.id.btn_get_all_task);
-    mBtnGetAllTasks.setOnClickListener(new View.OnClickListener() {
+    getAllTaskImage = findViewById(R.id.btn_get_all_task);
+    getAllTaskImage.setOnClickListener(new View.OnClickListener() {
       
       @Override
       public void onClick(View view) {
         
-        mBtnGetAllTasks.setEnabled(false);
+        getAllTaskImage.setEnabled(false);
         
         Call<ResultOfAction> call = App.getInstance().apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         call.enqueue(new Callback<ResultOfAction>() {
@@ -321,14 +316,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                   break;
               }
   
-              mBtnGetAllTasks.setEnabled(true);
+              getAllTaskImage.setEnabled(true);
             }
           }
   
           @Override
           public void onFailure(Call<ResultOfAction> call, Throwable t) {
             // TODO: Wahrscheinlich kein Internet!
-            mBtnGetAllTasks.setEnabled(true);
+            getAllTaskImage.setEnabled(true);
           }
         });
       }
@@ -360,18 +355,17 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
           return;
         int value = integer;
         if (value <= 0) {
-          ((AsapTextView) findViewById(R.id.badge_notification)).setVisibility(View.GONE);
-          ((AppCompatImageButton) findViewById(R.id.badge_notification_icon))
-            .setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_outline));
+          findViewById(R.id.badge_notification).setVisibility(View.GONE);
+          ((ImageView) findViewById(R.id.badge_notification_icon))
+            .setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_outline, null));
         } else {
-          ((AsapTextView) findViewById(R.id.badge_notification)).setVisibility(View.VISIBLE);
-          ((AppCompatImageButton) findViewById(R.id.badge_notification_icon))
-            .setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications));
-
+          findViewById(R.id.badge_notification).setVisibility(View.VISIBLE);
+          ((ImageView) findViewById(R.id.badge_notification_icon))
+            .setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications, null));
           if (value <= 99) {
-            ((AsapTextView) findViewById(R.id.badge_notification)).setText(String.valueOf(integer.intValue()));
+            ((TextView)findViewById(R.id.badge_notification)).setText(String.valueOf(integer.intValue()));
           } else {
-            ((AsapTextView) findViewById(R.id.badge_notification)).setText("99+");
+            ((TextView) findViewById(R.id.badge_notification)).setText("99+");
           }
         }
       }
@@ -382,14 +376,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       public void onChanged(List<OfflineConfirmation> offlineConfirmations) {
         int count = offlineConfirmations.size();
         if (count > 0) {
-          ((AsapTextView)findViewById(R.id.badge_process)).setVisibility(View.VISIBLE);
+          findViewById(R.id.badge_process).setVisibility(View.VISIBLE);
           if (count <= 99) {
-            ((AsapTextView)findViewById(R.id.badge_process)).setText(String.valueOf(count));
+            ((TextView)findViewById(R.id.badge_process)).setText(String.valueOf(count));
           } else {
-            ((AsapTextView)findViewById(R.id.badge_process)).setText("99+");
+            ((TextView)findViewById(R.id.badge_process)).setText("99+");
           }
         } else {
-          ((AsapTextView)findViewById(R.id.badge_process)).setVisibility(View.GONE);
+          findViewById(R.id.badge_process).setVisibility(View.GONE);
         }
       }
     });
@@ -569,25 +563,25 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   private static boolean mConnected;
   @Subscribe
   public void onMessageEvent(ConnectivityEvent event) {
-    AppCompatImageButton connectivity = (AppCompatImageButton)findViewById(R.id.connectivity);
+    ImageView connectivity = findViewById(R.id.connectivity);
     if (event.getConnectivityStatus() == 0) {
       mConnected = false;
-      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_no_signal));
-      connectivity.setColorFilter(getApplicationContext().getResources().getColor(R.color.clrAbona));
+      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_no_signal, null));
+      connectivity.setColorFilter(getApplicationContext().getResources().getColor(R.color.clrAbona, null));
     } else if (event.getConnectivityStatus() == 1) {
       mConnected = true;
-      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal));
+      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal, null));
     } else if (event.getConnectivityStatus() == 2) {
       mConnected = true;
-      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal_wifi_24px));
-      ((AppCompatImageButton)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
+      connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal_wifi, null));
+      ((ImageView)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
     }
   }
 
-  @Subscribe
-  public void onMessageEvent(NotifyTapEvent event) {
-    lastActivityAdapter.onItemTap(event);
-  }
+//  @Subscribe
+//  public void onMessageEvent(NotifyTapEvent event) {
+//    lastActivityAdapter.onItemTap(event);
+//  }
 
   @Subscribe
   public void onMessageEvent(TaskStatusEvent event) {
@@ -936,7 +930,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   
   private void handleGetAllTasks(ResultOfAction resultOfAction) {
     if (resultOfAction == null) {
-      mBtnGetAllTasks.setEnabled(true);
+      getAllTaskImage.setEnabled(true);
       return;
     }
     
@@ -1019,7 +1013,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               });
           }
           // Aktualisiert:
-          mBtnGetAllTasks.setEnabled(true);
+          getAllTaskImage.setEnabled(true);
           messageBox_Ok(
             getApplicationContext().getResources()
               .getString(R.string.action_update),
@@ -1027,7 +1021,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               .getString(R.string.action_update_message));
         } else {
           // Kein Update vorhanden:
-          mBtnGetAllTasks.setEnabled(true);
+          getAllTaskImage.setEnabled(true);
           messageBox_Ok(
             getApplicationContext().getResources()
               .getString(R.string.action_update),
@@ -1036,17 +1030,17 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         }
       } else if (resultOfAction.getIsException()) {
         // Exception from REST-API
-        mBtnGetAllTasks.setEnabled(true);
+        getAllTaskImage.setEnabled(true);
         messageBox_Ok(getApplicationContext().getResources().getString(R.string.action_warning_notice),
           getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
         addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", resultOfAction.getText());
       } else {
         // Unknown Error
-        mBtnGetAllTasks.setEnabled(true);
+        getAllTaskImage.setEnabled(true);
         addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", "Unknown Error!");
       }
     } catch (Exception e) {
-      mBtnGetAllTasks.setEnabled(true);
+      getAllTaskImage.setEnabled(true);
       addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", e.getMessage());
     }
   }
