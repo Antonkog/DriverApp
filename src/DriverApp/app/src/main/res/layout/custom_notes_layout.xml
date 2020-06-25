@@ -3,7 +3,6 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  android:background="@drawable/main_menu_background"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:gravity="center">
@@ -13,8 +12,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:gravity="center_vertical"
-    android:background="@drawable/main_menu_background">
+    android:gravity="center_vertical">
 
     <View
       android:id="@+id/vw_action_type"

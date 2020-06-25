@@ -1,143 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:orientation="horizontal"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@drawable/main_menu_background">
-
-  <LinearLayout
-    android:orientation="vertical"
-    android:layout_width="220dp"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_menu_background">
+    android:layout_marginStart="@dimen/margin_sm"
+    android:layout_marginEnd="@dimen/spacing_medium"
+    android:orientation="vertical">
 
-    <View
-      android:layout_width="0dp"
-      android:layout_height="@dimen/spacing_large"
-      />
 
-    <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:layout_marginStart="@dimen/spacing_medium"
-      android:layout_marginEnd="@dimen/spacing_medium">
-
-      <androidx.appcompat.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/appCompatImageView"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="left"
+        android:layout_marginTop="8dp"
         android:src="@drawable/ic_app_icon_driver"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-      <View
-        android:layout_width="@dimen/spacing_medium"
-        android:layout_height="0dp"
-        />
-
-      <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
-
-        <com.abona_erp.driver.app.ui.widget.AsapTextView
-          android:id="@+id/tv_vehicle_registration_number"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:text="@string/registration_number"
-          android:singleLine="true"
-          android:textStyle="bold"
-          android:textAllCaps="true"
-          android:textSize="18sp"
-          android:textColor="#1F1C2C"
-          />
-
-        <com.abona_erp.driver.app.ui.widget.AsapTextView
-          android:id="@+id/tv_vehicle_client_name"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:singleLine="true"
-          android:textSize="12sp"
-          tools:text="Hegelmann Express"
-          android:textColor="@color/grey_60"
-          />
-
-      </LinearLayout>
-
-    </LinearLayout>
-
-    <View
-      android:layout_width="0dp"
-      android:layout_height="@dimen/spacing_large"
-      />
-
-    <az.plainpie.PieView
-      xmlns:plainpie="http://schemas.android.com/apk/res-auto"
-      android:id="@+id/mainPieView"
-      android:layout_width="100dp"
-      android:layout_height="100dp"
-      android:layout_gravity="center"
-      plainpie:inner_pie_padding="10"
-      plainpie:percentage="75"
-      plainpie:percentage_size="20"
-      />
-
-    <View
-      android:layout_width="0dp"
-      android:layout_height="@dimen/spacing_small"
-      />
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_vehicle_registration_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginStart="8dp"
+        android:singleLine="true"
+        android:text="@string/registration_number"
+        android:textAllCaps="true"
+        android:textColor="#1F1C2C"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView"
+        app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+        app:layout_constraintTop_toTopOf="@+id/appCompatImageView" />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_vehicle_client_name"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:text="@string/task_status"
-      android:shadowColor="@android:color/black"
-      android:shadowDx="1"
-      android:shadowDy="1"
-      android:shadowRadius="1"
-      />
+      android:layout_gravity="left"
+      android:layout_marginTop="12dp"
+      android:ellipsize="marquee"
+      android:textColor="@color/grey_60"
+      android:textSize="12sp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/appCompatImageView"
+      tools:ignore="DuplicateIds"
+      tools:text="Hegeesvsvsv svslmann Express" />
+
+  <az.plainpie.PieView
+      android:id="@+id/mainPieView"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:layout_gravity="left"
+      android:layout_marginTop="@dimen/margin_sm"
+      app:inner_pie_padding="8"
+      android:layout_margin="@dimen/margin_std"
+      app:layout_constraintStart_toStartOf="@+id/main_container"
+      app:layout_constraintTop_toTopOf="parent"
+      app:percentage="75"
+      app:percentage_size="15" />
+
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/task_stat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="8dp"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:text="@string/task_status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_vehicle_client_name" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lv_last_activity"
-        android:layout_width="match_parent"
+        android:layout_width="180dp"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         android:layout_weight="1"
-        android:layout_marginTop="@dimen/spacing_small"
         android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/task_stat"
+        app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/item_task_status" />
 
-  </LinearLayout>
+    <include
+        android:id="@+id/menu_row"
+        layout="@layout/activity_main_header_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-  <View
-    android:layout_width="1dp"
-    android:layout_height="match_parent"
-    android:background="#1F1C2C"
-    />
+    <FrameLayout
+        android:id="@+id/main_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margin_sm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/lv_last_activity"
+        app:layout_constraintTop_toBottomOf="@id/menu_row"
+        app:layout_constraintVertical_bias="0.0" />
 
-  <LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <include layout="@layout/activity_main_header_layout" />
-
-    <View
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:background="#1F1C2C"
-      />
-
-    <include layout="@layout/activity_main_content" />
-
-  </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

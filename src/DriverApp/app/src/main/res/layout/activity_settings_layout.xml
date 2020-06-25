@@ -5,8 +5,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@drawable/main_menu_background">
+  android:layout_height="match_parent">
 
   <RelativeLayout
     android:layout_width="match_parent"
@@ -64,8 +63,7 @@
           android:layout_height="wrap_content"
           android:padding="@dimen/spacing_medium"
           android:clickable="true"
-          android:focusable="true"
-          android:background="@drawable/main_menu_background">
+          android:focusable="true">
 
           <LinearLayout
             android:orientation="vertical"

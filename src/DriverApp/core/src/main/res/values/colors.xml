@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="badge_color">#F20000</color>
+  <color name="color_selected">#E62196F3</color>
 
   <color name="overlay_dark_10">#1A000000</color>
   <color name="overlay_dark_20">#33000000</color>

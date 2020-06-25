@@ -14,7 +14,6 @@ import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class MainViewModel extends AndroidViewModel {
@@ -111,7 +110,11 @@ public class MainViewModel extends AndroidViewModel {
   Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
     return mRepository.getNotifyByMandantTaskId(mandantId, taskId);
   }
-  
+
+  Single<Notify> getNotifyByTaskId(int taskId) {
+      return mRepository.getNotifyByTaskId(taskId);
+  }
+
   Single<LastActivity> getLastActivityByTaskClientId(int taskId, int clientId) {
     return mRepository.getLastActivityByTaskClientId(taskId, clientId);
   }
