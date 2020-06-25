@@ -41,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -73,7 +74,6 @@ import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
-import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
@@ -574,7 +574,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     } else if (event.getConnectivityStatus() == 2) {
       mConnected = true;
       connectivity.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_signal_wifi, null));
-      ((ImageView)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
+      ((AppCompatImageView)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
     }
   }
 
@@ -1395,9 +1395,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             new OnDialogButtonClickListener() {
               @Override
               public boolean onClick(BaseDialog baseDialog, View v) {
-                ((AppCompatImageButton)findViewById(R.id.connectivity))
+                ((AppCompatImageView)findViewById(R.id.connectivity))
                   .setColorFilter(getApplicationContext().getResources()
-                    .getColor(R.color.clrAbona));
+                    .getColor(R.color.clrAbona,null));
                 return false;
               }
             })
@@ -1417,9 +1417,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       }
       
       if (!mConnected) {
-        ((AppCompatImageButton)findViewById(R.id.connectivity))
+        ((AppCompatImageView)findViewById(R.id.connectivity))
           .setColorFilter(getApplicationContext().getResources()
-            .getColor(R.color.clrAbona));
+            .getColor(R.color.clrAbona,null));
         return;
       }
       
@@ -1452,9 +1452,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       }
       
       if (level <= 1) {
-        ((AppCompatImageButton)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#d35400"));
+        ((AppCompatImageView)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#d35400"));
       } else {
-        ((AppCompatImageButton)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
+        ((AppCompatImageView)findViewById(R.id.connectivity)).setColorFilter(Color.parseColor("#009432"));
       }
     }
   }
