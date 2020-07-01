@@ -146,4 +146,5 @@
     <string name="order">"Заказ "</string>
   <string name="action">Действие</string>
   <string name="timestamp">Время</string>
+    <string name="airplane_warning">Функция приложения ABONA Driver ограничена в режиме полета</string>
 </resources>

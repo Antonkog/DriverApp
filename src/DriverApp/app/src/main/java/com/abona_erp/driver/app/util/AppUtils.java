@@ -8,9 +8,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.core.base.ContextUtils;
 
@@ -91,6 +92,21 @@ public class AppUtils {
       }
     }
     return "-";
+  }
+  public static boolean isNetworkConnected(Context context) {
+    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+    if (activeNetwork != null) {
+      // connected to the internet
+//      if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+//        // connected to wifi
+//      } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+//        // connected to mobile data
+//      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

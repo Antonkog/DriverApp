@@ -16,14 +16,13 @@ import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
+import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
 import com.abona_erp.driver.app.ui.feature.main.view_model.RunningViewModel;
 import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-public class RunningFragment extends Fragment implements ExpandableRecyclerView.Adapter.OnViewHolderClick<Notify> {
+public class RunningFragment extends Fragment implements CommonItemClickListener<Notify> {
   
   CommItemAdapter adapter;
   private ExpandableRecyclerView listView;
@@ -61,28 +60,8 @@ public class RunningFragment extends Fragment implements ExpandableRecyclerView.
     listView = (ExpandableRecyclerView)root.findViewById(R.id.rv_list);
     LinearLayoutManager llm = new LinearLayoutManager(getContext());
     listView.setLayoutManager(llm);
-    adapter = new CommItemAdapter(getContext(), llm, this);
-    adapter.setOnItemListener(new CommItemAdapter.OnItemClickListener() {
-      @Override
-      public void onItemClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
-      }
-  
-      @Override
-      public void onMapClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
-      }
-  
-      @Override
-      public void onCameraClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_CAMERA), notify));
-      }
-  
-      @Override
-      public void onDocumentClick(Notify notify) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
-      }
-    });
+    adapter = new CommItemAdapter(getContext(), this);
+
     listView.setAdapter(adapter);
   
     viewModel.getAllRunningNotifications().observe(getViewLifecycleOwner(),
@@ -90,23 +69,6 @@ public class RunningFragment extends Fragment implements ExpandableRecyclerView.
         @Override
         public void onChanged(List<Notify> notifies) {
           if (notifies == null) return;
-        
-          Collections.sort(notifies, new Comparator<Notify>() {
-            @Override
-            public int compare(Notify notify, Notify t1) {
-              if (notify == null || t1 == null) return 0;
-              return Integer.valueOf(notify.getOrderNo()).compareTo(t1.getOrderNo());
-            }
-          });
-        
-          Collections.sort(notifies, new Comparator<Notify>() {
-            @Override
-            public int compare(Notify notify, Notify t1) {
-              if (notify == null || t1 == null) return 0;
-              return Integer.valueOf(notify.getTaskId()).compareTo(t1.getTaskId());
-            }
-          });
-          
           adapter.setList(notifies);
           App.eventBus.post(new BadgeCountEvent(1, notifies.size()));
         }
@@ -116,13 +78,35 @@ public class RunningFragment extends Fragment implements ExpandableRecyclerView.
   }
   
   @Override
-  public void onClick(View view, int position, Notify item) {
+  public void onClick(View view, int position, Notify notify, boolean selected) {
+    notify.setCurrentlySelected(selected);
+    viewModel.update(notify);
   }
   
   @Override
-  public void onDblClick(View view, int position, Notify item) {
-    if (item != null) {
-      App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), item));
+  public void onDblClick(View view, int position, Notify notify) {
+    if (notify != null) {
+      viewModel.update(notify);
+      App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
     }
+  }
+  @Override
+  public void onProgressItemClick(Notify notify) {
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
+  }
+
+  @Override
+  public void onMapClick(Notify notify) {
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
+  }
+
+  @Override
+  public void onCameraClick(Notify notify) {
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_CAMERA), notify));
+  }
+
+  @Override
+  public void onDocumentClick(Notify notify) {
+    App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
   }
 }

@@ -5,8 +5,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@drawable/main_menu_background">
+  android:layout_height="match_parent">
 
   <LinearLayout
     android:id="@+id/header_content"
@@ -81,7 +80,7 @@
       android:layout_marginEnd="@dimen/spacing_middle"
       android:layout_gravity="bottom"
       android:layout_marginBottom="0dp"
-      android:src="@drawable/ic_autorenew_24px"
+      android:src="@drawable/ic_refresh"
       android:tint="@color/clrIcon"
       />
 
