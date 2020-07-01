@@ -1,14 +1,14 @@
 package com.abona_erp.driver.app.ui.event;
 
 public class ConnectivityEvent implements BaseEvent {
-  
-  private int mConnectivityStatus;
 
-  public ConnectivityEvent(final int connectivityStatus) {
-    this.mConnectivityStatus = connectivityStatus;
+  private boolean isConnected;
+
+  public boolean isConnected() {
+    return isConnected;
   }
-  
-  public int getConnectivityStatus() {
-    return mConnectivityStatus;
+
+  public ConnectivityEvent(boolean isConnected) {
+    this.isConnected = isConnected;
   }
 }

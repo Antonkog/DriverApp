@@ -140,4 +140,5 @@
     <string name="order">"Bestellung "</string>
   <string name="action">"Aktion "</string>
   <string name="timestamp">Zeitstempel</string>
+    <string name="airplane_warning">Bei Flugzeugmodus ist die Funktion der ABONA Driver App eingeschränkt</string>
 </resources>

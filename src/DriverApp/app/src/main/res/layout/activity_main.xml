@@ -50,19 +50,21 @@
       tools:ignore="DuplicateIds"
       tools:text="Hegeesvsvsv svslmann Express" />
 
-  <az.plainpie.PieView
-      android:id="@+id/mainPieView"
-      android:layout_width="48dp"
-      android:layout_height="48dp"
-      android:layout_gravity="left"
-      android:layout_marginTop="@dimen/margin_sm"
-      app:inner_pie_padding="8"
-      android:layout_margin="@dimen/margin_std"
-      app:layout_constraintStart_toStartOf="@+id/main_container"
-      app:layout_constraintTop_toTopOf="parent"
-      app:percentage="75"
-      app:percentage_size="15" />
 
+    <az.plainpie.PieView
+        android:id="@+id/mainPieView"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="left"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:inner_pie_padding="8"
+        app:layout_constraintBottom_toTopOf="@+id/main_container"
+        app:layout_constraintStart_toStartOf="@+id/main_container"
+        app:layout_constraintTop_toTopOf="parent"
+        app:percentage="75"
+        app:percentage_size="15" />
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:id="@+id/task_stat"
@@ -98,6 +100,16 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/top_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/color_normal"
+        android:layout_marginLeft="@dimen/margin_sm"
+        app:layout_constraintBottom_toTopOf="@+id/main_container"
+        app:layout_constraintEnd_toEndOf="@+id/main_container"
+        app:layout_constraintStart_toStartOf="@+id/main_container" />
 
     <FrameLayout
         android:id="@+id/main_container"

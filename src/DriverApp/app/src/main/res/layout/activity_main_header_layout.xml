@@ -1,62 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
     android:orientation="horizontal">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/btn_get_all_task"
+        android:id="@+id/connectivity_image"
         style="@style/MenuImage"
-        app:layout_constraintEnd_toStartOf="@+id/badge_notification_icon"
+        android:layout_gravity="center_vertical"
+        android:clickable="false"
+        android:tint="@color/clrAbona"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/refresh_image"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_signal" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/refresh_image"
+        style="@style/MenuImage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/badge_notification_image"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/connectivity_image"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/refresh_selector" />
 
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/connectivity"
+        android:id="@+id/settings_image"
         style="@style/MenuImage"
-        android:clickable="false"
-        android:layout_gravity="center_vertical"
-        app:layout_constraintEnd_toStartOf="@+id/main_popup_menu"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/badge_process_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_signal" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/main_popup_menu"
-        style="@style/MenuImage"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/ic_arrow_drop"
-        android:tint="@color/clrIcon"
+        android:layout_marginEnd="@dimen/margin_sm"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/connectivity"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/badge_process_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/settings_selector" />
 
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/badge_process_icon"
+        android:id="@+id/badge_process_image"
         style="@style/MenuImage"
         android:clickable="false"
-        app:layout_constraintEnd_toStartOf="@+id/connectivity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/settings_image"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/badge_notification_icon"
+        app:layout_constraintStart_toEndOf="@+id/badge_notification_image"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/publish_selector" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/badge_notification_icon"
+        android:id="@+id/badge_notification_image"
         style="@style/MenuImage"
         android:clickable="false"
-        app:layout_constraintEnd_toStartOf="@+id/badge_process_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/badge_process_image"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_get_all_task"
+        app:layout_constraintStart_toEndOf="@+id/refresh_image"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ring_selector" />
 
@@ -68,8 +73,8 @@
         android:textColor="@color/clrWhite"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/badge_notification_icon"
-        app:layout_constraintTop_toTopOf="@+id/badge_notification_icon" />
+        app:layout_constraintEnd_toEndOf="@+id/badge_notification_image"
+        app:layout_constraintTop_toTopOf="@+id/badge_notification_image" />
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:id="@+id/badge_process"
@@ -79,7 +84,7 @@
         android:textColor="@color/clrWhite"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/badge_process_icon"
-        app:layout_constraintTop_toTopOf="@+id/badge_process_icon" />
+        app:layout_constraintEnd_toEndOf="@+id/badge_process_image"
+        app:layout_constraintTop_toTopOf="@+id/badge_process_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
