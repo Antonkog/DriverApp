@@ -23,7 +23,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.redhotapp.driverapp.R
-import com.redhotapp.driverapp.databinding.StatisticsFragBinding
+import com.redhotapp.driverapp.databinding.FragmentStatisticsBinding
 import com.redhotapp.driverapp.util.getViewModelFactory
 import com.redhotapp.driverapp.util.setupRefreshLayout
 
@@ -32,7 +32,7 @@ import com.redhotapp.driverapp.util.setupRefreshLayout
  */
 class StatisticsFragment : Fragment() {
 
-    private lateinit var viewDataBinding: StatisticsFragBinding
+    private lateinit var viewDataBinding: FragmentStatisticsBinding
 
     private val viewModel by viewModels<StatisticsViewModel> { getViewModelFactory() }
 
@@ -42,7 +42,7 @@ class StatisticsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         viewDataBinding = DataBindingUtil.inflate(
-            inflater, R.layout.statistics_frag, container,
+            inflater, R.layout.fragment_statistics, container,
             false
         )
         return viewDataBinding.root

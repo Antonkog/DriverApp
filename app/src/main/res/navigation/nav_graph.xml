@@ -17,6 +17,7 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/tasks_fragment_dest">
 
@@ -24,61 +25,70 @@
         android:id="@+id/task_detail_fragment_dest"
         android:name="com.redhotapp.driverapp.taskdetail.TaskDetailFragment"
         android:label="Task Details">
-        <action
-            android:id="@+id/action_taskDetailFragment_to_addEditTaskFragment"
-            app:destination="@id/add_edit_task_fragment_dest" />
         <argument
             android:name="taskId"
             app:argType="string" />
         <action
-            android:id="@+id/action_taskDetailFragment_to_tasksFragment"
-            app:destination="@id/tasks_fragment_dest" />
-    </fragment>
-    <fragment
-        android:id="@+id/statistics_fragment_dest"
-        android:name="com.redhotapp.driverapp.statistics.StatisticsFragment"
-        android:label="@string/app_name">
+            android:id="@+id/action_task_detail_fragment_dest_to_documentFragment"
+            app:destination="@id/documentFragment" />
         <action
-            android:id="@+id/action_statisticsFragment_to_tasksFragment"
-            app:destination="@id/tasks_fragment_dest"
-            />
+            android:id="@+id/action_task_detail_fragment_dest_to_photoFragment"
+            app:destination="@id/photoFragment" />
+        <action
+            android:id="@+id/action_task_detail_fragment_dest_to_softwareFragment"
+            app:destination="@id/softwareFragment" />
+        <action
+            android:id="@+id/action_task_detail_fragment_dest_to_tasks_fragment_dest"
+            app:destination="@id/tasks_fragment_dest" />
     </fragment>
     <fragment
         android:id="@+id/tasks_fragment_dest"
         android:name="com.redhotapp.driverapp.tasks.TasksFragment"
         android:label="@string/app_name">
-        <action
-            android:id="@+id/action_tasksFragment_to_statisticsFragment"
-            app:destination="@id/statistics_fragment_dest" />
-        <action
-            android:id="@+id/action_tasksFragment_to_taskDetailFragment"
-            app:destination="@id/task_detail_fragment_dest" />
-        <action
-            android:id="@+id/action_tasksFragment_to_addEditTaskFragment"
-            app:destination="@id/add_edit_task_fragment_dest" />
         <argument
             android:name="userMessage"
             app:argType="integer"
             android:defaultValue="0" />
-    </fragment>
-    <fragment
-        android:id="@+id/add_edit_task_fragment_dest"
-        android:name="com.redhotapp.driverapp.addedittask.AddEditTaskFragment"
-        android:label="{title}">
-        <argument
-            android:name="taskId"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="title"
-            app:argType="string"
-            app:nullable="false" />
         <action
-            android:id="@+id/action_addEditTaskFragment_to_tasksFragment"
-            app:destination="@id/tasks_fragment_dest"
-            />
+            android:id="@+id/action_tasks_fragment_dest_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_tasks_fragment_dest_to_lastActivityFragment"
+            app:destination="@id/lastActivityFragment" />
+        <action
+            android:id="@+id/action_tasks_fragment_dest_to_task_detail_fragment_dest"
+            app:destination="@id/task_detail_fragment_dest" />
     </fragment>
     <argument
         android:name="userMessage"
         android:defaultValue="0" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.redhotapp.driverapp.login.LoginFragment"
+        android:label="login_fragment"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_tasks_fragment_dest"
+            app:destination="@id/tasks_fragment_dest" />
+    </fragment>
+    <fragment
+        android:id="@+id/lastActivityFragment"
+        android:name="com.redhotapp.driverapp.lastActivity.LastActivityFragment"
+        android:label="last_activity_fragment"
+        tools:layout="@layout/fragment_last_activity" />
+    <fragment
+        android:id="@+id/documentFragment"
+        android:name="com.redhotapp.driverapp.document.DocumentFragment"
+        android:label="document_fragment"
+        tools:layout="@layout/fragment_document" />
+    <fragment
+        android:id="@+id/photoFragment"
+        android:name="com.redhotapp.driverapp.photo.PhotoFragment"
+        android:label="photo_fragment"
+        tools:layout="@layout/fragment_photo" />
+    <fragment
+        android:id="@+id/softwareFragment"
+        android:name="com.redhotapp.driverapp.about.SoftwareFragment"
+        android:label="software_fragment"
+        tools:layout="@layout/fragment_software" />
 </navigation>

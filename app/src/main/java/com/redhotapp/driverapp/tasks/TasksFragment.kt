@@ -31,7 +31,7 @@ import androidx.navigation.fragment.navArgs
 import com.redhotapp.driverapp.EventObserver
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Task
-import com.redhotapp.driverapp.databinding.TasksFragBinding
+import com.redhotapp.driverapp.databinding.FragmentTasksBinding
 import com.redhotapp.driverapp.util.getViewModelFactory
 import com.redhotapp.driverapp.util.setupRefreshLayout
 import com.redhotapp.driverapp.util.setupSnackbar
@@ -48,7 +48,7 @@ class TasksFragment : Fragment() {
 
     private val args: TasksFragmentArgs by navArgs()
 
-    private lateinit var viewDataBinding: TasksFragBinding
+    private lateinit var viewDataBinding: FragmentTasksBinding
 
     private lateinit var listAdapter: TasksAdapter
 
@@ -57,7 +57,7 @@ class TasksFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewDataBinding = TasksFragBinding.inflate(inflater, container, false).apply {
+        viewDataBinding = FragmentTasksBinding.inflate(inflater, container, false).apply {
             viewmodel = viewModel
         }
         setHasOptionsMenu(true)
@@ -142,15 +142,13 @@ class TasksFragment : Fragment() {
 
     private fun navigateToAddNewTask() {
         val action = TasksFragmentDirections
-            .actionTasksFragmentToAddEditTaskFragment(
-                null,
-                resources.getString(R.string.add_task)
+            .actionTasksFragmentDestToLastActivityFragment(
             )
         findNavController().navigate(action)
     }
 
     private fun openTaskDetails(taskId: String) {
-        val action = TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(taskId)
+        val action = TasksFragmentDirections.actionTasksFragmentDestToLastActivityFragment()
         findNavController().navigate(action)
     }
 

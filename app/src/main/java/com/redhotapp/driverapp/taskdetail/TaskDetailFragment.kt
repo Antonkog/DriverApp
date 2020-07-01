@@ -28,8 +28,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.redhotapp.driverapp.EventObserver
 import com.redhotapp.driverapp.R
-import com.redhotapp.driverapp.databinding.TaskdetailFragBinding
-import com.redhotapp.driverapp.tasks.DELETE_RESULT_OK
+import com.redhotapp.driverapp.databinding.FragmentTaskDetailBinding
 import com.redhotapp.driverapp.util.getViewModelFactory
 import com.redhotapp.driverapp.util.setupRefreshLayout
 import com.redhotapp.driverapp.util.setupSnackbar
@@ -39,7 +38,7 @@ import com.google.android.material.snackbar.Snackbar
  * Main UI for the task detail screen.
  */
 class TaskDetailFragment : Fragment() {
-    private lateinit var viewDataBinding: TaskdetailFragBinding
+    private lateinit var viewDataBinding: FragmentTaskDetailBinding
 
     private val args: TaskDetailFragmentArgs by navArgs()
 
@@ -55,16 +54,13 @@ class TaskDetailFragment : Fragment() {
 
     private fun setupNavigation() {
         viewModel.deleteTaskEvent.observe(viewLifecycleOwner, EventObserver {
-            val action = TaskDetailFragmentDirections
-                .actionTaskDetailFragmentToTasksFragment(DELETE_RESULT_OK)
-            findNavController().navigate(action)
+//            val action =
+//            TaskDetailFragmentDirections
+//            findNavController().navigate(action)
         })
         viewModel.editTaskEvent.observe(viewLifecycleOwner, EventObserver {
             val action = TaskDetailFragmentDirections
-                .actionTaskDetailFragmentToAddEditTaskFragment(
-                    args.taskId,
-                    resources.getString(R.string.edit_task)
-                )
+                .actionTaskDetailFragmentDestToSoftwareFragment()
             findNavController().navigate(action)
         })
     }
@@ -80,8 +76,8 @@ class TaskDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.taskdetail_frag, container, false)
-        viewDataBinding = TaskdetailFragBinding.bind(view).apply {
+        val view = inflater.inflate(R.layout.fragment_task_detail, container, false)
+        viewDataBinding = FragmentTaskDetailBinding.bind(view).apply {
             viewmodel = viewModel
         }
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner

@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.redhotapp.driverapp.addedittask.AddEditTaskViewModel
 import com.redhotapp.driverapp.data.source.TasksRepository
+import com.redhotapp.driverapp.login.LoginViewModel
 import com.redhotapp.driverapp.statistics.StatisticsViewModel
 import com.redhotapp.driverapp.taskdetail.TaskDetailViewModel
 import com.redhotapp.driverapp.tasks.TasksViewModel
@@ -50,6 +51,8 @@ class ViewModelFactory constructor(
                 AddEditTaskViewModel(tasksRepository)
             isAssignableFrom(TasksViewModel::class.java) ->
                 TasksViewModel(tasksRepository, handle)
+            isAssignableFrom(LoginViewModel::class.java) ->
+                LoginViewModel(tasksRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

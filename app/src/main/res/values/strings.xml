@@ -33,6 +33,12 @@
     <string name="successfully_saved_task_message">Task saved</string>
     <string name="list_title">Task List</string>
     <string name="statistics_title">Statistics</string>
+    <string name="last_activity_title">Last Activity</string>
+    <string name="photo_title">Last Activity</string>
+    <string name="document_title">Last Activity</string>
+    <string name="map_title">Last Activity</string>
+    <string name="login_title">Login</string>
+    <string name="software_title">About Software</string>
     <string name="statistics_no_tasks">You have no tasks.</string>
     <string name="statistics_active_tasks">Active tasks: %.1f%%</string>
     <string name="statistics_completed_tasks">Completed tasks: %.1f%%</string>
@@ -100,8 +106,6 @@
     <string name="permission_rationale" translatable="false">Location permission is needed for core functionality</string>
     <string name="permission_denied_explanation" translatable="false">Permission was denied, but is needed for core
         functionality.</string>
-
-
 
 
     <string name="pending">Pending\u0020</string>
@@ -252,4 +256,13 @@
 
     <string name="preference_language">Language</string>
     <string name="preference_language_show">English</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>
