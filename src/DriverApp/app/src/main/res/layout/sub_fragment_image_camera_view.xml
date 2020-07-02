@@ -24,12 +24,13 @@
       android:background="@android:color/black"
       android:keepScreenOn="true"
       app:cameraExperimental="false"
+      app:cameraPictureSizeBiggest="true"
       app:cameraEngine="camera2"
       app:cameraPreview="glSurface"
       app:cameraPlaySounds="true"
       app:cameraGrid="draw3x3"
       app:cameraFlash="off"
-      app:cameraAudio="on"
+      app:cameraAudio="off"
       app:cameraFacing="back"
       app:cameraGestureTap="none"
       app:cameraGestureLongTap="none"
@@ -37,6 +38,8 @@
       app:cameraGestureScrollHorizontal="filterControl1"
       app:cameraGestureScrollVertical="exposureCorrection"
       app:cameraMode="picture"
+      app:cameraWhiteBalance="auto"
+      app:cameraUseDeviceOrientation="true"
       app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"/>
 
     <RelativeLayout

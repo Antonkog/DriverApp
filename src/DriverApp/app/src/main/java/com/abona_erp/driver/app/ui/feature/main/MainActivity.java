@@ -675,14 +675,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     
                         }
                       });
-                    
+                    /*
                     StringBuilder sb = new StringBuilder();
                     sb.append(getApplicationContext().getResources().getString(R.string.new_document_message));
                     sb.append("\n" + getApplicationContext().getResources().getString(R.string.order_no));
                     sb.append(": " + AppUtils.parseOrderNo(event.getOrderNo()));
                     
                     showOkDialog(getApplicationContext().getResources().getString(R.string.new_document), sb.toString());
-                    
+                    */
                   }
                 }
               }

@@ -195,4 +195,7 @@
   <string name="preference_language_show">English</string>
   <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
   <!-- MULTILANG -->
+
+  <string name="load_error" translatable="false">Failed to load the image!</string>
+  <string name="not_selected" translatable="false">Please choose an image for edit</string>
 </resources>

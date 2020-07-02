@@ -79,7 +79,8 @@
       </intent-filter>
     </activity>
 
-    <activity android:name=".ui.feature.login.LoginActivity"
+    <activity
+      android:name=".ui.feature.login.LoginActivity"
       android:launchMode="singleTask"
       android:noHistory="true"
       android:screenOrientation="sensorPortrait"

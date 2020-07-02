@@ -1,10 +1,15 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.photo;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +34,6 @@ import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.EditingDeleteEvent;
 import com.abona_erp.driver.app.ui.event.EditingSaveEvent;
-import com.abona_erp.driver.app.ui.event.EditingToolsEvent;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RefreshUiEvent;
@@ -54,7 +58,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,9 +75,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.Activity.RESULT_OK;
+
 public class PhotoFragment extends Fragment
   implements MenuToolsAdapter.OnItemSelected,
     GalleryListener, CustomDMSDocumentTypeDialog.OnSelectedTypeEventListener {
+  
+  public static final int ACTION_REQUEST_PHOTO_EDITOR = 777;
   
   private int mOid;
   private Notify mNotify;
@@ -85,6 +95,8 @@ public class PhotoFragment extends Fragment
   private MenuToolsAdapter mMenuToolsAdapter = new MenuToolsAdapter(this);
   private GalleryViewAdapter mGalleryViewAdapter = new GalleryViewAdapter(this);
   private AppCompatImageButton mBtnBack;
+  
+  private File mEditFile = null;
   
   private MainFragmentViewModel mViewModel;
   
@@ -163,8 +175,6 @@ public class PhotoFragment extends Fragment
             }
             
             
-            
-            //Log.i(">>>>>>>>>>", mPhotoUrls.toString());
     
             mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
     
@@ -199,34 +209,32 @@ public class PhotoFragment extends Fragment
   }
   
   @Override
-  public void onGallerySelected(int position) {
-    if (!ImageEditFragment.newInstance().isCacheEmpty()) {
-      MessageDialog.build((AppCompatActivity)getActivity())
-        .setStyle(DialogSettings.STYLE.STYLE_IOS)
-        .setTheme(DialogSettings.THEME.LIGHT)
-        .setTitle("Änderungen")
-        .setMessage("Möchten Sie die Änderungen speichern?")
-        .setCancelable(false)
-        .setOkButton(getContext().getResources().getString(R.string.action_save),
-          new OnDialogButtonClickListener() {
-            @Override
-            public boolean onClick(BaseDialog baseDialog, View v) {
-              App.eventBus.post(new EditingSaveEvent());
-              return false;
-            }
-          })
-        .setCancelButton(getContext().getResources().getString(R.string.action_delete),
-          new OnDialogButtonClickListener() {
-            @Override
-            public boolean onClick(BaseDialog baseDialog, View v) {
-              App.eventBus.post(new EditingDeleteEvent());
-              return false;
-            }
-          })
-        .show();
-      
-      return;
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    
+    if (resultCode == RESULT_OK) {
+      switch (requestCode) {
+        case ACTION_REQUEST_PHOTO_EDITOR:
+          handleEditorImage(data);
+          break;
+      }
     }
+  }
+  
+  private void handleEditorImage(Intent data){
+    if (data == null) return;
+    Uri editedImage = data.getData();
+    try {
+      Bitmap bmp = MediaStore.Images.Media.getBitmap(getContext()
+        .getContentResolver(), editedImage);
+      saveBitmap(bmp, mEditFile);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  @Override
+  public void onGallerySelected(int position) {
     loadFragment(ImageEditFragment.newInstance());
     new Handler().postDelayed(new Runnable() {
       @Override
@@ -264,33 +272,6 @@ public class PhotoFragment extends Fragment
       case SAVE:
         break;
       case CAMERA: {
-        if (!ImageEditFragment.newInstance().isCacheEmpty()) {
-          MessageDialog.build((AppCompatActivity)getActivity())
-            .setStyle(DialogSettings.STYLE.STYLE_IOS)
-            .setTheme(DialogSettings.THEME.LIGHT)
-            .setTitle("Änderungen")
-            .setMessage("Möchten Sie die Änderungen speichern?")
-            .setCancelable(false)
-            .setOkButton(getContext().getResources().getString(R.string.action_save),
-              new OnDialogButtonClickListener() {
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-                  App.eventBus.post(new EditingSaveEvent());
-                  return false;
-                }
-              })
-            .setCancelButton(getContext().getResources().getString(R.string.action_delete),
-              new OnDialogButtonClickListener() {
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-                  App.eventBus.post(new EditingDeleteEvent());
-                  return false;
-                }
-              })
-            .show();
-    
-          return;
-        }
         mPreviewIndex = -1;
         mGalleryViewAdapter.setSelectedIndex(mPreviewIndex);
         CustomDMSDocumentTypeDialog dialog = new CustomDMSDocumentTypeDialog((Activity)getContext(),
@@ -306,12 +287,32 @@ public class PhotoFragment extends Fragment
         dialog.setCanceledOnTouchOutside(false);
         break;
       case TOOLS:
-        App.eventBus.post(new EditingToolsEvent());
+
+        if (mPreviewIndex < 0) return;
+        UploadItem uploadItem = App.getInstance().gson
+          .fromJson(mPhotoUrls.get(mPreviewIndex), UploadItem.class);
+        if (mEditFile != null)
+          mEditFile = null;
+        mEditFile = new File(uploadItem.getUri());
+
+        Intent editIntent = new Intent(Intent.ACTION_EDIT);
+        Uri uri = getImageUri(getContext(), BitmapFactory.decodeFile(mEditFile.getAbsolutePath()));
+        editIntent.setDataAndType(uri, "image/*");
+        editIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivityForResult(Intent.createChooser(editIntent, null), 777);
         break;
       case SETTINGS:
         loadFragment(ImageSettingsFragment.newInstance());
         break;
     }
+  }
+  
+  private Uri getImageUri(Context context, Bitmap bitmap) {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+    String url = MediaStore.Images.Media.insertImage(context.getContentResolver(),
+      bitmap, "Title", null);
+    return Uri.parse(url);
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
@@ -433,34 +434,6 @@ public class PhotoFragment extends Fragment
       public void onClick(View view) {
         
         if (mNotify == null || mNotify.getPhotoUrls() == null) return;
-  
-        if (!ImageEditFragment.newInstance().isCacheEmpty()) {
-          MessageDialog.build((AppCompatActivity)getActivity())
-            .setStyle(DialogSettings.STYLE.STYLE_IOS)
-            .setTheme(DialogSettings.THEME.LIGHT)
-            .setTitle("Änderungen")
-            .setMessage("Möchten Sie die Änderungen speichern?")
-            .setCancelable(false)
-            .setOkButton(getContext().getResources().getString(R.string.action_save),
-              new OnDialogButtonClickListener() {
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-                  App.eventBus.post(new EditingSaveEvent());
-                  return false;
-                }
-              })
-            .setCancelButton(getContext().getResources().getString(R.string.action_delete),
-              new OnDialogButtonClickListener() {
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-                  App.eventBus.post(new EditingDeleteEvent());
-                  return false;
-                }
-              })
-            .show();
-    
-          return;
-        }
         
         int photoSize = mPhotoUrls.size();
   
@@ -661,6 +634,35 @@ public class PhotoFragment extends Fragment
       
       mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
       mGalleryViewAdapter.notifyDataSetChanged();
+    }
+  }
+
+  private void saveBitmap(Bitmap bitmap, File file) {
+    if (bitmap == null) return;
+    if (file == null) return;
+    
+    try {
+      FileOutputStream fos = null;
+      try {
+        fos = new FileOutputStream(file);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+      } catch (Exception e) {
+        e.printStackTrace();
+      } finally {
+        try {
+          if (fos != null) {
+            fos.flush();
+            fos.close();
+          }
+          
+          ImageEditFragment.newInstance().setBitmap(bitmap, file);
+          App.eventBus.post(new RefreshUiEvent());
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 }
