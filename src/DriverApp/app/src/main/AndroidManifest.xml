@@ -22,6 +22,8 @@
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
   <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+      tools:ignore="ProtectedPermissions" />
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
   <!--<uses-permission android:name="android.hardware.camera.autofocus" />-->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -162,13 +164,6 @@
       android:label="RestartServiceWhenStopped">
       <intent-filter>
         <action android:name="com.abona_erp.driver.app.RestartBackgroundServiceWorker" />
-      </intent-filter>
-    </receiver>
-
-    <receiver android:name=".receiver.ConnectivityChangeReceiver">
-      <intent-filter>
-        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-        <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
       </intent-filter>
     </receiver>
 

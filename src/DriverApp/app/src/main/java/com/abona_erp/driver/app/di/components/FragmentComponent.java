@@ -3,7 +3,6 @@ package com.abona_erp.driver.app.di.components;
 
 import com.abona_erp.driver.app.di.modules.FragmentModule;
 import com.abona_erp.driver.app.di.scopes.FragmentScope;
-import com.abona_erp.driver.app.ui.feature.main.CMRFragment;
 import com.abona_erp.driver.app.ui.feature.main.CompletedFragment;
 import com.abona_erp.driver.app.ui.feature.main.PendingFragment;
 import com.abona_erp.driver.app.ui.feature.main.RunningFragment;
@@ -30,7 +29,6 @@ public interface FragmentComponent {
     void inject(DetailFragment fragment);
     void inject(CompletedFragment fragment);
     void inject(MainFragment fragment);
-    void inject(CMRFragment fragment);
     void inject(RunningFragment fragment);
     void inject(PendingFragment fragment);
     void inject(SoftwareAboutFragment fragment);

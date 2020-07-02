@@ -185,13 +185,15 @@
   <string name="hint_ip_address" translatable="false">IP Address</string>
 
   <string name="need_permissions">Need Permissions!</string>
-  <string name="permission_message_settings">This app needs permission to use this feature. You can grant them in app settings.</string>
+
+  <string name="permission_message_settings">69/5000</string>
 
   <string name="current_location">Current Location</string>
   <string name="destination_location">Destination Location</string>
 
   <string name="preference_language">Language</string>
   <string name="preference_language_show">English</string>
+  <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
   <!-- MULTILANG -->
 
   <string name="load_error" translatable="false">Failed to load the image!</string>

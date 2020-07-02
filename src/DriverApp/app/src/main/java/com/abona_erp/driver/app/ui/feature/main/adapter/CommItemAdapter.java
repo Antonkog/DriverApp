@@ -13,13 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
@@ -38,7 +38,7 @@ import com.abona_erp.driver.app.data.model.PalletExchange;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.model.UploadItem;
-import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.DueInCounterRunnable;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -54,12 +54,15 @@ import com.abona_erp.driver.app.ui.widget.PaletteDataAdapter;
 import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.ui.widget.badges.Badge;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeSpan;
+import com.abona_erp.driver.app.ui.widget.recyclerview.DoubleClickListener;
 import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableItem;
 import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.flag_kit.FlagKit;
 import com.google.gson.Gson;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,16 +74,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
-  
-  private OnItemClickListener listener;
-  
-  public interface OnItemClickListener {
-    void onItemClick(Notify notify);
-    void onMapClick(Notify notify);
-    void onCameraClick(Notify notify);
-    void onDocumentClick(Notify notify);
-  }
-  
+
   private CommItem mCommItem = null;
 
   private Resources _resources = ContextUtils.getApplicationContext().getResources();
@@ -147,9 +141,8 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
     Locale.getDefault());
 
-  public CommItemAdapter(Context context, LinearLayoutManager layout, OnViewHolderClick listener) {
-    super(context, layout, listener);
-    
+  public CommItemAdapter(Context context, CommonItemClickListener listener) {
+    super(context, listener);
     mCommItem = new CommItem();
   }
   
@@ -157,12 +150,33 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   protected View createView(Context context, ViewGroup viewGroup, int viewType) {
     LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View view = inflater.inflate(R.layout.item_task_main, viewGroup, false);
-    
     dueInCounter = new DueInCounterRunnable(_handler, context, tv_due_in, iv_warning_icon, null, new Date());
-    
     return view;
   }
-  
+
+
+  @Override
+  @CallSuper
+  public void onBindViewHolder(@NonNull final ExpandableRecyclerView.Adapter.ViewHolder holder, int position) {
+    super.onBindViewHolder(holder, position);
+    ExpandableItem expandableItem = (ExpandableItem) holder.getView(R.id.expandable_item);
+    if(getItem(position).isCurrentlySelected()) expandableItem.showNow();
+    else expandableItem.hideNow();
+
+    expandableItem.setOnClickListener(new DoubleClickListener() {
+      @Override
+      public void onSingleClick(View v) {
+        if (getListener() != null) getListener().onClick(v, position, getItem(position), !expandableItem.isOpened());
+        EventBus.getDefault().post(new NotifyTapEvent(!expandableItem.isOpened(), getItem(position).getTaskId()));
+      }
+
+      @Override
+      public void onDoubleClick(View v) {
+        if (getListener() != null)  getListener().onDblClick(v, position, getItem(position));
+      }
+    });
+  }
+
   @Override
   protected void bindView(Notify item, ExpandableRecyclerView.Adapter.ViewHolder viewHolder) {
     if (item != null) {
@@ -176,28 +190,28 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       btn_go_process.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          listener.onItemClick(item);
+          getListener().onProgressItemClick(item);
         }
       });
       btn_go_map = (AppCompatButton)expandableItem.getContentLayout().findViewById(R.id.btn_go_map);
       btn_go_map.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          listener.onMapClick(item);
+          getListener().onMapClick(item);
         }
       });
       btn_go_camera = (AppCompatButton)expandableItem.getContentLayout().findViewById(R.id.btn_go_camera);
       btn_go_camera.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          listener.onCameraClick(item);
+          getListener().onCameraClick(item);
         }
       });
       btn_go_document = (AppCompatButton)expandableItem.getContentLayout().findViewById(R.id.btn_go_document);
       btn_go_document.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          listener.onDocumentClick(item);
+          getListener().onDocumentClick(item);
         }
       });
       
@@ -640,10 +654,6 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
         }
       }
     }
-  }
-  
-  public void setOnItemListener(OnItemClickListener listener) {
-    this.listener = listener;
   }
   
   private void applyDocuments(DocumentItem document) {

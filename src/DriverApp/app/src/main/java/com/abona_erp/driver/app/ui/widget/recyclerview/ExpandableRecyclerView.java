@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,28 +53,22 @@ public class ExpandableRecyclerView extends RecyclerView {
     
     private List<T> mItems;
     private Context context;
-    private OnViewHolderClick<T> listener;
-    @NonNull private final LinearLayoutManager layoutManager;
-    private int currentPosition = -1;
-    
-    public interface OnViewHolderClick<T> {
-      void onClick(View view, int position, T item);
-      void onDblClick(View view, int position, T item);
+    private CommonItemClickListener<T> listener;
+
+    protected CommonItemClickListener<T> getListener() {
+      return listener;
     }
-    
+
     public class ViewHolder extends RecyclerView.ViewHolder  {
       private Map<Integer, View> views;
       
-      public ViewHolder(View view, OnViewHolderClick listener) {
+      public ViewHolder(View view, CommonItemClickListener sListener) {
         super(view);
+        listener = sListener;
         views = new HashMap<>();
         views.put(0, view);
       }
-      
-      public void initViewList(int[] idList) {
-        for (int id : idList)
-          initViewById(id);
-      }
+
       
       public void initViewById(int id) {
         View view = (getView() != null ? getView().findViewById(id) : null);
@@ -100,9 +96,8 @@ public class ExpandableRecyclerView extends RecyclerView {
     
     protected abstract void bindView(T item, Adapter.ViewHolder viewHolder);
     
-    public Adapter(Context context, @NonNull LinearLayoutManager layoutManager, OnViewHolderClick<T> listener) {
+    public Adapter(Context context, CommonItemClickListener<T> listener) {
       this.context = context;
-      this.layoutManager = layoutManager;
       this.listener = listener;
       mItems = new ArrayList<>();
     }
@@ -119,45 +114,7 @@ public class ExpandableRecyclerView extends RecyclerView {
       if (expandableItem == null) {
         throw new RuntimeException("Item of this adapter must contain ExpandableItem!");
       }
-      expandableItem.setOnClickListener(new DoubleClickListener() {
-        
-        @Override
-        public void onSingleClick(View v) {
-          try {
-            currentPosition = holder.getLayoutPosition();
-            for (int index = 0; index < layoutManager.getChildCount(); ++index) {
-              if (index != (currentPosition - layoutManager.findFirstVisibleItemPosition())) {
-                final ExpandableItem currentExpandableItem =
-                  layoutManager.getChildAt(index).findViewWithTag(ExpandableItem.TAG);
-                currentExpandableItem.hide();
-              }
-            }
-            final ExpandableItem item = layoutManager
-              .getChildAt(currentPosition - layoutManager.findFirstVisibleItemPosition())
-              .findViewWithTag(ExpandableItem.TAG);
-            if (expandableItem.isOpened()) {
-              expandableItem.hide();
-            } else {
-              expandableItem.show();
-            }
-  
-            listener.onClick(v, holder.getAdapterPosition(), getItem(holder.getAdapterPosition()));
-          } catch (Exception e) { }
-        }
-  
-        @Override
-        public void onDoubleClick(View v) {
-          if (listener != null) {
-            listener.onDblClick(v, holder.getAdapterPosition(), getItem(holder.getAdapterPosition()));
-          }
-        }
-      });
-      if (currentPosition != position && expandableItem.isOpened()) {
-        expandableItem.hideNow();
-      } else if (currentPosition == position && !expandableItem.isOpened() && !expandableItem.isClosedByUser()) {
-        expandableItem.showNow();
-      }
-      
+
       bindView(getItem(position), holder);
     }
     
@@ -183,10 +140,6 @@ public class ExpandableRecyclerView extends RecyclerView {
     
     public List<T> getList() {
       return mItems;
-    }
-    
-    public void setClickListener(OnViewHolderClick listener) {
-      this.listener = listener;
     }
     
     private void addItems(List<T> list) {

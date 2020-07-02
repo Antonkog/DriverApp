@@ -14,7 +14,7 @@
     android:layout_height="@dimen/icon_size_24"
     android:padding="5dp"
     app:tint="@color/clrFont"
-    tools:src="@drawable/ic_phone_24px"
+    tools:src="@drawable/ic_phone_wh"
     />
 
   <Space

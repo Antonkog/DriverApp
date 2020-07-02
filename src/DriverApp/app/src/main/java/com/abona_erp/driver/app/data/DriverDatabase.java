@@ -30,7 +30,7 @@ import com.abona_erp.driver.core.base.ContextUtils;
   DeviceProfile.class,
   OfflineConfirmation.class,
   LogItem.class
-}, version = 3, exportSchema = false)
+}, version = 4, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class DriverDatabase extends RoomDatabase {
 
@@ -50,14 +50,23 @@ public abstract class DriverDatabase extends RoomDatabase {
           INSTANCE = Room.databaseBuilder(ContextUtils.getApplicationContext(),
             DriverDatabase.class, "abona_driver77")
             .allowMainThreadQueries()
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build();
         }
       }
     }
     return INSTANCE;
   }
-  
+
+
+  static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+    @Override
+    public void migrate(SupportSQLiteDatabase database) {
+      database.execSQL("ALTER TABLE taskItem "
+              + " ADD COLUMN currently_selected INTEGER DEFAULT 0 NOT NULL");
+    }
+  };
+
   static final Migration MIGRATION_2_3 = new Migration(2, 3) {
     @Override
     public void migrate(@NonNull SupportSQLiteDatabase database) {

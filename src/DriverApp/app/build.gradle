@@ -5,13 +5,7 @@ import dependencies.Versions
 apply plugin: 'com.android.application'
 
 android {
-logger.quiet("Build variable Major:$System.env.Major")    
-    lintOptions {
-        checkReleaseBuilds false
-        // Or, if you prefer, you can continue to check for errors in release builds,
-        // but continue the build even when errors are found:
-        abortOnError false
-    }
+logger.quiet("Build variable Major:$System.env.Major")
 /* Set the build version first */
 	Properties properties = new Properties()
 	def propertiesFile = project.rootProject.file('local.properties')
@@ -23,7 +17,7 @@ logger.quiet("Build variable Major:$System.env.Major")
 	def systemEnvbuildMajor = System.getenv('Major')
 	ext."build.Major" = localbuildMajor != null ? localbuildMajor : systemEnvbuildMajor
 
-	def localbuildMinor = properties.getProperty('Minor') 
+	def localbuildMinor = properties.getProperty('Minor')
 	def systemEnvbuildMinor = System.getenv('Minor')
 	ext."build.Minor" = localbuildMinor != null ? localbuildMinor : systemEnvbuildMinor
 
@@ -88,6 +82,12 @@ logger.quiet("Build variable Major:$System.env.Major")
 
     buildTypes {
         release {
+            lintOptions {
+                checkReleaseBuilds false
+                // Or, if you prefer, you can continue to check for errors in release builds,
+                // but continue the build even when errors are found:
+                abortOnError false
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // Set signing config if keystore variables are set.

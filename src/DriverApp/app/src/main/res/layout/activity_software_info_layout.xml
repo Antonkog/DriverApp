@@ -5,8 +5,7 @@
   android:id="@+id/software_info_layout"
   android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@drawable/main_menu_background">
+  android:layout_height="match_parent">
 
   <RelativeLayout
     android:layout_width="match_parent"

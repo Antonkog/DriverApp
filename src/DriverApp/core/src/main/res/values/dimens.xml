@@ -29,4 +29,5 @@
 
 
   <dimen name="margin_std">16dp</dimen>
+  <dimen name="margin_sm">8dp</dimen>
 </resources>

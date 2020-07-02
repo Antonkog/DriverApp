@@ -8,10 +8,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-
-import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.io.File;
@@ -19,7 +20,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public class AppUtils {
@@ -73,21 +73,42 @@ public class AppUtils {
     }
     return null;
   }
-  
+
   public static String parseOrderNo(int orderNo) {
     if (orderNo > 0) {
-      String _orderNo = String.valueOf(orderNo);
-      String tmp = _orderNo.substring(0, 4);
-      tmp += "/";
-      tmp += _orderNo.substring(4, 6);
-      tmp += "/";
-      tmp += _orderNo.substring(6);
-      return tmp;
+      try {
+        char [] numString = String.valueOf(orderNo).toCharArray();
+        StringBuilder parsedNum = new StringBuilder();
+        for(int counter = 0; counter < numString.length; counter++ ){
+          if (counter == 4 || counter == 6) {
+            parsedNum.append("/");
+          }
+          parsedNum.append(numString[counter]);
+        }
+        return parsedNum.toString();
+      } catch (RuntimeException e) {
+        Log.e(AppUtils.class.getCanonicalName(), " parsing exception : string from server based on :" + orderNo);
+        return "-";
+      }
+    }
+    return "-";
+  }
+  public static boolean isNetworkConnected(Context context) {
+    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+    if (activeNetwork != null) {
+      // connected to the internet
+//      if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+//        // connected to wifi
+//      } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+//        // connected to mobile data
+//      }
+      return true;
     } else {
-      return "";
+      return false;
     }
   }
-  
+
   /**
    * Calls {@link Context#startForegroundService(Intent)} if {@link #SDK_INT}
    * is 26 or higher, or {@link Context#startService(Intent)} otherwise.

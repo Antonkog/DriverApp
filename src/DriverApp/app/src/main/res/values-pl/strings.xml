@@ -135,4 +135,5 @@
     <string name="order">Zamówienie</string>
   <string name="action">Akcja</string>
   <string name="timestamp">Czas</string>
+    <string name="airplane_warning">Funkcja aplikacji ABONA Driver jest ograniczona w trybie samolotowym</string>
 </resources>
