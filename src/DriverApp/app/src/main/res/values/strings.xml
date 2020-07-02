@@ -193,4 +193,7 @@
   <string name="preference_language">Language</string>
   <string name="preference_language_show">English</string>
   <!-- MULTILANG -->
+
+  <string name="load_error" translatable="false">Failed to load the image!</string>
+  <string name="not_selected" translatable="false">Please choose an image for edit</string>
 </resources>

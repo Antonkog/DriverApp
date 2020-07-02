@@ -1,7 +1,9 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment;
 
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -157,23 +159,45 @@ public class ImageCameraFragment extends Fragment
               BuildConfig.APPLICATION_ID + ".provider",
               photoFile);
             
-            try {
+            //try {
+              ContentValues image = getImageContent(photoFile);
+              /*
               MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
                 photoFile.getAbsolutePath(), photoFile.getName(), photoFile.getName());
+              */
+              
+              getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
               
               App.eventBus.post(new ImageEvent(photoFile.getAbsolutePath()));
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
+            //} catch (IOException e) {
+            //  e.printStackTrace();
+            //}
           }
         }
       });
     }
   }
   
+  public ContentValues getImageContent(File parent) {
+    ContentValues image = new ContentValues();
+    image.put(MediaStore.Images.Media.TITLE, R.string.app_name);
+    image.put(MediaStore.Images.Media.DISPLAY_NAME, parent.getName());
+    image.put(MediaStore.Images.Media.DESCRIPTION, "App Image");
+    image.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+    image.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+    return image;
+  }
+  
   private File saveImage(Bitmap bmp, String mandantId, String orderNo, String taskId) throws IOException {
+  
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+    
+    
+    
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    bmp.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+    bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
     File f = createImageFile(mandantId, orderNo, taskId);
   
     FileOutputStream fos = new FileOutputStream(f);
