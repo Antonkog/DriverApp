@@ -18,7 +18,6 @@ package com.redhotapp.driverapp.data.source.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.redhotapp.driverapp.data.Task
 
 /**
  * The Room Database that contains the Task table.

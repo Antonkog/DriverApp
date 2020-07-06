@@ -6,10 +6,11 @@ import androidx.lifecycle.ViewModel
 import android.util.Patterns
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Result
+import com.redhotapp.driverapp.data.source.TasksRepository
 import com.redhotapp.driverapp.data.source.net.ApiService
 
 
-class LoginViewModel(private val apiService: ApiService) : ViewModel() {
+class LoginViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
 //
 //    private val _loginForm = MutableLiveData<LoginFormState>()
 //    val loginFormState: LiveData<LoginFormState> = _loginForm

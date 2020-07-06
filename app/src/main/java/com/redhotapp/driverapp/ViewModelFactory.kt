@@ -20,22 +20,22 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import com.redhotapp.driverapp.addedittask.AddEditTaskViewModel
 import com.redhotapp.driverapp.data.source.TasksRepository
 import com.redhotapp.driverapp.login.LoginViewModel
 import com.redhotapp.driverapp.statistics.StatisticsViewModel
 import com.redhotapp.driverapp.taskdetail.TaskDetailViewModel
 import com.redhotapp.driverapp.tasks.TasksViewModel
+import javax.inject.Inject
 
 /**
  * Factory for all ViewModels.
  */
 @Suppress("UNCHECKED_CAST")
 class ViewModelFactory constructor(
-        private val tasksRepository: TasksRepository,
         owner: SavedStateRegistryOwner,
         defaultArgs: Bundle? = null
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+    @Inject private lateinit var tasksRepository: TasksRepository
 
     override fun <T : ViewModel> create(
             key: String,
@@ -47,8 +47,6 @@ class ViewModelFactory constructor(
                 StatisticsViewModel(tasksRepository)
             isAssignableFrom(TaskDetailViewModel::class.java) ->
                 TaskDetailViewModel(tasksRepository)
-            isAssignableFrom(AddEditTaskViewModel::class.java) ->
-                AddEditTaskViewModel(tasksRepository)
             isAssignableFrom(TasksViewModel::class.java) ->
                 TasksViewModel(tasksRepository, handle)
             isAssignableFrom(LoginViewModel::class.java) ->

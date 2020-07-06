@@ -22,7 +22,7 @@
 
         <variable
             name="task"
-            type="com.redhotapp.driverapp.data.Task" />
+            type="com.redhotapp.driverapp.data.source.local.Task" />
 
         <variable
             name="viewmodel"

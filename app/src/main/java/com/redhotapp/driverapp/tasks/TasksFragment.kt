@@ -30,7 +30,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.redhotapp.driverapp.EventObserver
 import com.redhotapp.driverapp.R
-import com.redhotapp.driverapp.data.Task
 import com.redhotapp.driverapp.databinding.FragmentTasksBinding
 import com.redhotapp.driverapp.util.getViewModelFactory
 import com.redhotapp.driverapp.util.setupRefreshLayout

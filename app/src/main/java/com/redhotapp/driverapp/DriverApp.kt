@@ -17,11 +17,14 @@
 package com.redhotapp.driverapp
 
 import android.app.Application
+import android.content.Context
 import androidx.multidex.MultiDexApplication
+import com.redhotapp.driverapp.data.source.TasksDataSource
 import com.redhotapp.driverapp.data.source.TasksRepository
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import timber.log.Timber.DebugTree
+import javax.inject.Inject
 
 /**
  * An application that lazily provides a repository. Note that this Service Locator pattern is
@@ -31,13 +34,18 @@ import timber.log.Timber.DebugTree
  */
 @HiltAndroidApp
 class DriverApp : MultiDexApplication() {
-
-    // Depends on the flavor,
-    val taskRepository: TasksRepository
-        get() = ServiceLocator.provideTasksRepository(this)
-
     override fun onCreate() {
         super.onCreate()
+        context = applicationContext
         if (BuildConfig.DEBUG) Timber.plant(DebugTree())
     }
+
+    companion object {
+        lateinit var context: Context
+        @JvmStatic
+        fun nonReleaseTesting(): Boolean {
+            return BuildConfig.DEBUG
+        }
+    }
+
 }

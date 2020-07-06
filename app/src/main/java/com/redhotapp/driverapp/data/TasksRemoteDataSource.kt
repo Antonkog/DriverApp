@@ -21,36 +21,52 @@ import androidx.lifecycle.map
 import com.redhotapp.driverapp.data.Result.Error
 import com.redhotapp.driverapp.data.Result.Success
 import com.redhotapp.driverapp.data.source.TasksDataSource
+import com.redhotapp.driverapp.data.source.TasksRepository
+import com.redhotapp.driverapp.data.source.local.Task
 import java.util.LinkedHashMap
 
 /**
  * Implementation of a remote data source with static access to the data for easy testing.
  */
-class TasksRemoteDataSource : TasksDataSource {
+class TasksRemoteDataSource : TasksRepository {
 
-    private var TASKS_SERVICE_DATA: LinkedHashMap<String, Task> = LinkedHashMap()
+    private var TASKS_SERVICE_DATA: LinkedHashMap<Int, Task> = LinkedHashMap()
 
     private val observableTasks = MutableLiveData<Result<List<Task>>>()
 
-    override suspend fun refreshTasks() {
+    override fun refreshTasks() {
         observableTasks.postValue(getTasks())
     }
 
-    override suspend fun refreshTask(taskId: String) {
+    override fun refreshTask(taskId: Int) {
         refreshTasks()
     }
+
+    override fun completeTask(taskId: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun activateTask(taskId: Int) {
+        TODO("Not yet implemented")
+    }
+
 
     override fun observeTasks(): LiveData<Result<List<Task>>> {
         return observableTasks
     }
 
-    override fun observeTask(taskId: String): LiveData<Result<Task>> {
+    override fun getTasks(forceUpdate: Boolean): Result<List<Task>> {
+        TODO("Not yet implemented")
+    }
+
+
+    override fun observeTask(taskId: Int): LiveData<Result<Task>> {
         return observableTasks.map { tasks ->
             when (tasks) {
                 is Result.Loading -> Result.Loading
                 is Error -> Error(tasks.exception)
                 is Success -> {
-                    val task = tasks.data.firstOrNull() { it.id == taskId }
+                    val task = tasks.data.firstOrNull() { it.taskId == taskId }
                         ?: return@map Error(Exception("Not found"))
                     Success(task)
                 }
@@ -58,51 +74,35 @@ class TasksRemoteDataSource : TasksDataSource {
         }
     }
 
-    override suspend fun getTask(taskId: String): Result<Task> {
+    override fun getTask(taskId: String): Result<Task> {
         TASKS_SERVICE_DATA[taskId]?.let {
             return Success(it)
         }
         return Error(Exception("Could not find task"))
     }
 
-    override suspend fun getTasks(): Result<List<Task>> {
+    override  fun getTasks(): Result<List<Task>> {
         return Success(TASKS_SERVICE_DATA.values.toList())
     }
 
-    override suspend fun saveTask(task: Task) {
-        TASKS_SERVICE_DATA[task.id] = task
+    override  fun saveTask(task: Task) {
+        TASKS_SERVICE_DATA[task.taskId] = task
     }
 
-    override suspend fun completeTask(task: Task) {
-        val completedTask = Task(task.title, task.description, true, task.id)
-        TASKS_SERVICE_DATA[task.id] = completedTask
-    }
 
-    override suspend fun completeTask(taskId: String) {
-        // Not required for the remote data source.
-    }
 
-    override suspend fun activateTask(task: Task) {
-        val activeTask = Task(task.title, task.description, false, task.id)
-        TASKS_SERVICE_DATA[task.id] = activeTask
-    }
-
-    override suspend fun activateTask(taskId: String) {
-        // Not required for the remote data source.
-    }
-
-    override suspend fun clearCompletedTasks() {
+    override  fun clearCompletedTasks() {
         TASKS_SERVICE_DATA = TASKS_SERVICE_DATA.filterValues {
-            !it.isCompleted
-        } as LinkedHashMap<String, Task>
+             it.status?.contains("123")?:false
+        } as LinkedHashMap<Int, Task>
     }
 
-    override suspend fun deleteTask(taskId: String) {
+    override fun deleteTask(taskId: Int) {
         TASKS_SERVICE_DATA.remove(taskId)
         refreshTasks()
     }
 
-    override suspend fun deleteAllTasks() {
+    override  fun deleteAllTasks() {
         TASKS_SERVICE_DATA.clear()
         refreshTasks()
     }

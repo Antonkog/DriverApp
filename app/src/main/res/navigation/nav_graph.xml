@@ -23,6 +23,7 @@
 
     <fragment
         android:id="@+id/task_detail_fragment_dest"
+        tools:layout="@layout/activity_detail_layout"
         android:name="com.redhotapp.driverapp.taskdetail.TaskDetailFragment"
         android:label="Task Details">
         <argument
@@ -43,6 +44,7 @@
     </fragment>
     <fragment
         android:id="@+id/tasks_fragment_dest"
+        tools:layout="@layout/activity_main_new"
         android:name="com.redhotapp.driverapp.tasks.TasksFragment"
         android:label="@string/app_name">
         <argument
@@ -75,20 +77,20 @@
         android:id="@+id/lastActivityFragment"
         android:name="com.redhotapp.driverapp.lastActivity.LastActivityFragment"
         android:label="last_activity_fragment"
-        tools:layout="@layout/fragment_last_activity" />
+        tools:layout="@layout/activity_main" />
     <fragment
         android:id="@+id/documentFragment"
         android:name="com.redhotapp.driverapp.document.DocumentFragment"
         android:label="document_fragment"
-        tools:layout="@layout/fragment_document" />
+        tools:layout="@layout/activity_document_layout" />
     <fragment
         android:id="@+id/photoFragment"
         android:name="com.redhotapp.driverapp.photo.PhotoFragment"
         android:label="photo_fragment"
-        tools:layout="@layout/fragment_photo" />
+        tools:layout="@layout/activity_photo_layout" />
     <fragment
         android:id="@+id/softwareFragment"
         android:name="com.redhotapp.driverapp.about.SoftwareFragment"
         android:label="software_fragment"
-        tools:layout="@layout/fragment_software" />
+        tools:layout="@layout/activity_software_info_layout" />
 </navigation>

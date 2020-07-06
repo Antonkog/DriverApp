@@ -26,8 +26,9 @@ import com.redhotapp.driverapp.Event
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Result
 import com.redhotapp.driverapp.data.Result.Success
-import com.redhotapp.driverapp.data.Task
 import com.redhotapp.driverapp.data.source.TasksRepository
+import com.redhotapp.driverapp.data.source.local.Task
+import com.redhotapp.driverapp.data.succeeded
 import kotlinx.coroutines.launch
 
 /**
@@ -37,7 +38,7 @@ class TaskDetailViewModel(
     private val tasksRepository: TasksRepository
 ) : ViewModel() {
 
-    private val _taskId = MutableLiveData<String>()
+    private val _taskId = MutableLiveData<Int>()
 
     private val _task = _taskId.switchMap { taskId ->
         tasksRepository.observeTask(taskId).map { computeResult(it) }
@@ -60,7 +61,7 @@ class TaskDetailViewModel(
 
     // This LiveData depends on another so we can use a transformation.
     val completed: LiveData<Boolean> = _task.map { input: Task? ->
-        input?.isCompleted ?: false
+        input?.status?.contains("123") ?: false
     }
 
     fun deleteTask() = viewModelScope.launch {
@@ -77,15 +78,15 @@ class TaskDetailViewModel(
     fun setCompleted(completed: Boolean) = viewModelScope.launch {
         val task = _task.value ?: return@launch
         if (completed) {
-            tasksRepository.completeTask(task)
+            tasksRepository.completeTask(task.taskId)
             showSnackbarMessage(R.string.task_marked_complete)
         } else {
-            tasksRepository.activateTask(task)
+            tasksRepository.activateTask(task.taskId)
             showSnackbarMessage(R.string.task_marked_active)
         }
     }
 
-    fun start(taskId: String?) {
+    fun start(taskId: Int?) {
         // If we're already loading or already loaded, return (might be a config change)
         if (_dataLoading.value == true || taskId == _taskId.value) {
             return
@@ -108,7 +109,7 @@ class TaskDetailViewModel(
         _task.value?.let {
             _dataLoading.value = true
             viewModelScope.launch {
-                tasksRepository.refreshTask(it.id)
+                tasksRepository.refreshTask(it.taskId)
                 _dataLoading.value = false
             }
         }

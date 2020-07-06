@@ -17,7 +17,7 @@ package com.redhotapp.driverapp.data.source
 
 import androidx.lifecycle.LiveData
 import com.redhotapp.driverapp.data.Result
-import com.redhotapp.driverapp.data.Task
+import com.redhotapp.driverapp.data.source.local.Task
 
 /**
  * Main entry point for accessing tasks data.
@@ -27,28 +27,13 @@ interface TasksDataSource {
     fun observeTasks(): LiveData<Result<List<Task>>>
 
     suspend fun getTasks(): Result<List<Task>>
-
-    suspend fun refreshTasks()
-
-    fun observeTask(taskId: String): LiveData<Result<Task>>
-
-    suspend fun getTask(taskId: String): Result<Task>
-
+    suspend fun deleteTask(taskId: Int)
     suspend fun refreshTask(taskId: String)
-
+    suspend fun getTask(taskId: Int): Result<Task>
     suspend fun saveTask(task: Task)
-
     suspend fun completeTask(task: Task)
-
-    suspend fun completeTask(taskId: String)
-
+    suspend fun completeTask(taskId: Int)
     suspend fun activateTask(task: Task)
-
-    suspend fun activateTask(taskId: String)
-
-    suspend fun clearCompletedTasks()
-
-    suspend fun deleteAllTasks()
-
-    suspend fun deleteTask(taskId: String)
+    suspend fun activateTask(taskId: Int)
+    fun observeTask(taskId: Int): LiveData<Result<Task>>
 }

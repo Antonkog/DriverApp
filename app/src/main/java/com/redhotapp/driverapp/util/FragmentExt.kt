@@ -22,8 +22,8 @@ package com.redhotapp.driverapp.util
 import androidx.fragment.app.Fragment
 import com.redhotapp.driverapp.DriverApp
 import com.redhotapp.driverapp.ViewModelFactory
-
+import com.redhotapp.driverapp.data.source.TasksRepository
+import javax.inject.Inject
 fun Fragment.getViewModelFactory(): ViewModelFactory {
-    val repository = (requireContext().applicationContext as DriverApp).taskRepository
-    return ViewModelFactory(repository, this)
+    return ViewModelFactory(this)
 }

@@ -18,7 +18,7 @@ package com.redhotapp.driverapp.data.source
 
 import androidx.lifecycle.LiveData
 import com.redhotapp.driverapp.data.Result
-import com.redhotapp.driverapp.data.Task
+import com.redhotapp.driverapp.data.source.local.Task
 
 /**
  * Interface to the data layer.
@@ -27,29 +27,24 @@ interface TasksRepository {
 
     fun observeTasks(): LiveData<Result<List<Task>>>
 
-    suspend fun getTasks(forceUpdate: Boolean = false): Result<List<Task>>
+    fun getTasks(forceUpdate: Boolean = false): Result<List<Task>>
 
-    suspend fun refreshTasks()
+    fun observeTask(taskId: Int): LiveData<Result<Task>>
 
-    fun observeTask(taskId: String): LiveData<Result<Task>>
+    fun refreshTasks()
 
-    suspend fun getTask(taskId: String, forceUpdate: Boolean = false): Result<Task>
+    fun refreshTask(taskId: Int)
 
-    suspend fun refreshTask(taskId: String)
+    fun completeTask(taskId: Int)
 
-    suspend fun saveTask(task: Task)
+    fun activateTask(taskId: Int)
 
-    suspend fun completeTask(task: Task)
+    fun clearCompletedTasks()
 
-    suspend fun completeTask(taskId: String)
+    fun deleteAllTasks()
 
-    suspend fun activateTask(task: Task)
-
-    suspend fun activateTask(taskId: String)
-
-    suspend fun clearCompletedTasks()
-
-    suspend fun deleteAllTasks()
-
-    suspend fun deleteTask(taskId: String)
+    fun deleteTask(taskId: Int)
+    fun getTask(taskId: String): Result<Task>
+    fun getTasks(): Result<List<Task>>
+    fun saveTask(task: Task)
 }

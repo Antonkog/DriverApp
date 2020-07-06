@@ -25,11 +25,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.Task
 import com.redhotapp.driverapp.Event
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Result
 import com.redhotapp.driverapp.data.Result.Success
-import com.redhotapp.driverapp.data.Task
 import com.redhotapp.driverapp.data.source.TasksDataSource
 import com.redhotapp.driverapp.data.source.TasksRepository
 import com.redhotapp.driverapp.tasks.TasksFilterType.ACTIVE_TASKS
@@ -47,7 +47,7 @@ class TasksViewModel(
 
     private val _forceUpdate = MutableLiveData<Boolean>(false)
 
-    private val _items: LiveData<List<Task>> = _forceUpdate.switchMap { forceUpdate ->
+    private val _items: LiveData<List<String>> = _forceUpdate.switchMap { forceUpdate ->
         if (forceUpdate) {
             _dataLoading.value = true
             viewModelScope.launch {
@@ -58,7 +58,7 @@ class TasksViewModel(
         tasksRepository.observeTasks().distinctUntilChanged().switchMap { filterTasks(it) }
     }
 
-    val items: LiveData<List<Task>> = _items
+    val items: LiveData<List<String>> = _items
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -154,7 +154,7 @@ class TasksViewModel(
         }
     }
 
-    fun completeTask(task: Task, completed: Boolean) = viewModelScope.launch {
+    fun completeTask(task: String, completed: Boolean) = viewModelScope.launch {
         if (completed) {
             tasksRepository.completeTask(task)
             showSnackbarMessage(R.string.task_marked_complete)
@@ -192,9 +192,9 @@ class TasksViewModel(
         _snackbarText.value = Event(message)
     }
 
-    private fun filterTasks(tasksResult: Result<List<Task>>): LiveData<List<Task>> {
+    private fun filterTasks(tasksResult: Result<List<String>>): LiveData<List<String>> {
         // TODO: This is a good case for liveData builder. Replace when stable.
-        val result = MutableLiveData<List<Task>>()
+        val result = MutableLiveData<List<String>>()
 
         if (tasksResult is Success) {
             isDataLoadingError.value = false
@@ -217,16 +217,16 @@ class TasksViewModel(
         _forceUpdate.value = forceUpdate
     }
 
-    private fun filterItems(tasks: List<Task>, filteringType: TasksFilterType): List<Task> {
-        val tasksToShow = ArrayList<Task>()
+    private fun filterItems(tasks: List<String>, filteringType: TasksFilterType): List<String> {
+        val tasksToShow = ArrayList<String>()
         // We filter the tasks based on the requestType
         for (task in tasks) {
             when (filteringType) {
                 ALL_TASKS -> tasksToShow.add(task)
-                ACTIVE_TASKS -> if (task.isActive) {
+                ACTIVE_TASKS -> if (task.contains("isActive")) {
                     tasksToShow.add(task)
                 }
-                COMPLETED_TASKS -> if (task.isCompleted) {
+                COMPLETED_TASKS -> if (task.contains("Completed")) {
                     tasksToShow.add(task)
                 }
             }

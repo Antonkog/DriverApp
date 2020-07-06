@@ -21,10 +21,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.Task
 import com.redhotapp.driverapp.data.Result
 import com.redhotapp.driverapp.data.Result.Error
 import com.redhotapp.driverapp.data.Result.Success
-import com.redhotapp.driverapp.data.Task
 import com.redhotapp.driverapp.data.source.TasksRepository
 import kotlinx.coroutines.launch
 
@@ -35,7 +35,7 @@ class StatisticsViewModel(
     private val tasksRepository: TasksRepository
 ) : ViewModel() {
 
-    private val tasks: LiveData<Result<List<Task>>> = tasksRepository.observeTasks()
+    private val tasks: LiveData<Result<List<String>>> = tasksRepository.observeTasks()
     private val _dataLoading = MutableLiveData<Boolean>(false)
     private val stats: LiveData<StatsResult?> = tasks.map {
         if (it is Success) {

@@ -20,7 +20,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.redhotapp.driverapp.data.Task
+import com.redhotapp.driverapp.data.source.local.Task
 import com.redhotapp.driverapp.databinding.TaskItemBinding
 import com.redhotapp.driverapp.tasks.TasksAdapter.ViewHolder
 
@@ -69,7 +69,7 @@ class TasksAdapter(private val viewModel: TasksViewModel) :
  */
 class TaskDiffCallback : DiffUtil.ItemCallback<Task>() {
     override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.taskId == newItem.taskId
     }
 
     override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
