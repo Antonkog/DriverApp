@@ -13,7 +13,6 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -66,7 +65,7 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
   @Override
   public LastActivityAdapter.ViewHolder
   onCreateViewHolder(ViewGroup parent, int viewType) {
-    View itemView = mInflater.inflate(R.layout.item_task_status, parent, false);
+    View itemView = mInflater.inflate(R.layout.item_activity_status, parent, false);
     return new LastActivityAdapter.ViewHolder(itemView);
   }
 
@@ -88,66 +87,14 @@ public class LastActivityAdapter extends RecyclerView.Adapter<LastActivityAdapte
     } else if (current.getConfirmStatus() == 1) {
       // CONFIRMED BY DEVICE:
       holder.iv_done_all.setColorFilter(ContextCompat.getColor(mContext, R.color.clrLabelChanged));
-    } else if (current.getConfirmStatus() == 2) {
+    } else if (current.getConfirmStatus() == 2 ||current.getStatusType() == 4) {
       // CONFIRMED BY USER:
       holder.iv_done_all.setColorFilter(ContextCompat.getColor(mContext, R.color.clrTaskFinished));
     }
 
-    if (current.getTaskActionType() == 0) {
-      holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_pick_up));
-      holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_pick_up));
-    } else if (current.getTaskActionType() == 1) {
-      holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_drop_off));
-      holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_drop_off));
-    } else if (current.getTaskActionType() == 3) {
-      holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_tractor_swap));
-      holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_tractor_swap));
-    } else if (current.getTaskActionType() == 4) {
-      holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_delay));
-      holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_delay));
-    } else if (current.getTaskActionType() == 2) {
-      holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_general));
-      holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_general));
-    } else if (current.getTaskActionType() == 100) {
-      holder.tv_TaskActionType.setText(mContext.getResources().getString(R.string.action_type_unknown));
-      holder.tv_TaskActionType.setBackground(mContext.getResources().getDrawable(R.drawable.bg_action_type_unknown));
-    }
-
-    if (current.getStatusType() == 0) {
-      holder.tv_StatusType.setText(mContext.getResources().getString(R.string.label_new));
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_new));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.ic_notifications));
-    } else if (current.getStatusType() == 1) {
-      holder.tv_StatusType.setText(mContext.getResources().getString(R.string.label_updated));
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_updated));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.ic_down_arrow));
-    } else if (current.getStatusType() == 2) {
-      holder.tv_StatusType.setText(mContext.getResources().getString(R.string.label_changed));
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_changed));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.ic_refresh));
-    } else if (current.getStatusType() == 3) {
-      holder.tv_StatusType.setText(mContext.getResources().getString(R.string.label_done));
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_deleted));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.ic_done));
-    } else if (current.getStatusType() == 4) {
-      holder.tv_StatusType.setText(mContext.getResources().getString(R.string.label_done));
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_done));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.ic_done));
-      holder.iv_done_all.setColorFilter(ContextCompat.getColor(mContext, R.color.clrTaskFinished));
-    } else if (current.getStatusType() == 5) {
-      holder.tv_StatusType.setText("CHANGED BY ABONA");
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_changed_by_abona));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.abona_36x36));
-    } else if (current.getStatusType() == 6) {
-      holder.tv_StatusType.setText("CHANGED BY ABONA");
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_changed_by_abona));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.abona_36x36));
-    } else if (current.getStatusType() == 9) {
-      // DELETED:
-      holder.tv_StatusType.setText(mContext.getResources().getString(R.string.label_deleted));
-      holder.tv_StatusType.setBackground(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.bg_deleted));
-      holder.iv_icon.setBackgroundDrawable(ContextUtils.getApplicationContext().getResources().getDrawable(R.drawable.ic_delete));
-    }
+    holder.tv_TaskActionType.setText(current.getActionTypeString(mContext));
+    holder.tv_TaskActionType.setBackground(current.getActionTypeBackground(mContext));
+    holder.iv_icon.setBackgroundDrawable(current.getActionTypeIcon(mContext));
 
     holder.itemView.setOnClickListener(v -> {
       current.setCurrentlySelected(!current.isCurrentlySelected());

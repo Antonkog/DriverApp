@@ -6,6 +6,6 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:layout_margin="@dimen/spacing_medium"
-  app:layoutHeader="@layout/item_task_header"
+  app:layoutHeader="@layout/item_task_new_header"
   app:layoutContent="@layout/item_task_content"
   />

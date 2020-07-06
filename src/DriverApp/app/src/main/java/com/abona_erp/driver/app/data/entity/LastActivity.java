@@ -1,14 +1,22 @@
 package com.abona_erp.driver.app.data.entity;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+
+import androidx.annotation.IntDef;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.converters.TimestampConverter;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 
 import java.io.Serializable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -20,25 +28,6 @@ public class LastActivity implements Serializable {
 
   @ColumnInfo(name = "task_id")
   private int taskId;
-
-  @Override
-  public String toString() {
-    return "LastActivity{" +
-            "id=" + id +
-            ", taskId=" + taskId +
-            ", clientId=" + clientId +
-            ", customer='" + customer + '\'' +
-            ", orderNo='" + orderNo + '\'' +
-            ", detailList=" + detailList +
-            ", statusType=" + statusType +
-            ", confirmStatus=" + confirmStatus +
-            ", visible=" + visible +
-            ", taskActionType=" + taskActionType +
-            ", createdAt=" + createdAt +
-            ", modifiedAt=" + modifiedAt +
-            ", currentlySelected=" + currentlySelected +
-            '}';
-  }
 
   @ColumnInfo(name = "client_id")
   private int clientId;
@@ -128,8 +117,23 @@ public class LastActivity implements Serializable {
   public int getStatusType() {
     return statusType;
   }
-  
-  public void setStatusType(int statusType) {
+
+  public static final int NOT_CONFIRMED = 0;
+  public static final int UPDATE = 1;
+  public static final int FINISHED_TASK = 3;
+  public static final int ERLEDIGT = 4;
+  public static final int DELETED = 9;
+
+  @Retention(RetentionPolicy.SOURCE)
+  @IntDef({NOT_CONFIRMED, UPDATE, FINISHED_TASK, ERLEDIGT,DELETED})
+  // Create an interface for validating int types
+  public @interface StatusTypeDef {}
+  // Declare the constants
+  public void setStatusType(@StatusTypeDef int statusType) {
+    this.statusType = statusType;
+  }
+
+  public void setIntStatus(int statusType) {
     this.statusType = statusType;
   }
 
@@ -166,7 +170,90 @@ public class LastActivity implements Serializable {
   public int getTaskActionType() {
     return taskActionType;
   }
-  
+
+  public static String getStatusTypeString(int statusType, Context context){
+    switch (statusType){
+      case NOT_CONFIRMED:
+        return context.getResources().getString(R.string.action_not_confirmed);
+      case UPDATE:
+        return context.getResources().getString(R.string.action_update);
+      case FINISHED_TASK:
+        return context.getResources().getString(R.string.action_finished);
+      case ERLEDIGT:
+        return context.getResources().getString(R.string.action_erledict);
+      case DELETED:
+        return context.getResources().getString(R.string.action_deleted);
+      default: return Constants.empty_str;
+    }
+  }
+
+  public String getActionTypeString(Context context){
+    switch (taskActionType){
+      case 0:
+        return context.getResources().getString(R.string.action_type_pick_up);
+      case 1:
+        return context.getResources().getString(R.string.action_type_drop_off);
+      case 2:
+        return context.getResources().getString(R.string.action_type_general);
+      case 3:
+        return context.getResources().getString(R.string.action_type_tractor_swap);
+      case 4:
+        return context.getResources().getString(R.string.action_type_delay);
+      case 5:
+      case 6:
+        return context.getResources().getString(R.string.action_type_changed_by_a);
+      case 9:
+        return context.getResources().getString(R.string.label_deleted);
+      case 100:
+        return context.getResources().getString(R.string.action_type_unknown);
+      default: return Constants.empty_str;
+    }
+  }
+
+  public Drawable getActionTypeBackground(Context context){
+    switch (taskActionType){
+      case 0:
+        return context.getResources().getDrawable(R.drawable.bg_action_type_pick_up, null);
+      case 1:
+        return context.getResources().getDrawable(R.drawable.bg_action_type_drop_off, null);
+      case 2:
+        return context.getResources().getDrawable(R.drawable.bg_action_type_general, null);
+      case 3:
+        return context.getResources().getDrawable(R.drawable.bg_action_type_tractor_swap, null);
+      case 4:
+        return context.getResources().getDrawable(R.drawable.bg_action_type_delay, null);
+      case 5:
+      case 6:
+        return context.getResources().getDrawable(R.drawable.bg_changed_by_abona, null);
+      case 9:
+        return context.getResources().getDrawable(R.drawable.bg_deleted, null);
+      case 100:
+        return context.getResources().getDrawable(R.drawable.bg_action_type_unknown, null);
+      default: return context.getResources().getDrawable(R.drawable.transparent, null);
+    }
+  }
+  public Drawable getActionTypeIcon(Context context){
+    switch (taskActionType){
+      case 0:
+        return context.getResources().getDrawable(R.drawable.ic_notifications, null);
+      case 1:
+        return context.getResources().getDrawable(R.drawable.ic_down_arrow, null);
+      case 2:
+        return context.getResources().getDrawable(R.drawable.ic_refresh, null);
+      case 3:
+      case 4:
+        return context.getResources().getDrawable(R.drawable.ic_done, null);
+      case 5:
+      case 6:
+        return context.getResources().getDrawable(R.drawable.abona_36x36, null);
+      case 9:
+        return context.getResources().getDrawable(R.drawable.ic_delete, null);
+      case 100:
+        return context.getResources().getDrawable(R.drawable.bg_action_type_unknown, null);
+      default: return context.getResources().getDrawable(R.drawable.transparent, null);
+    }
+  }
+
   public void setTaskActionType(int taskActionType) {
     this.taskActionType = taskActionType;
   }
@@ -185,5 +272,24 @@ public class LastActivity implements Serializable {
   
   public void setModifiedAt(Date modifiedAt) {
     this.modifiedAt = modifiedAt;
+  }
+
+  @Override
+  public String toString() {
+    return "LastActivity{" +
+            "id=" + id +
+            ", taskId=" + taskId +
+            ", clientId=" + clientId +
+            ", customer='" + customer + '\'' +
+            ", orderNo='" + orderNo + '\'' +
+            ", detailList=" + detailList +
+            ", statusType=" + statusType +
+            ", confirmStatus=" + confirmStatus +
+            ", visible=" + visible +
+            ", taskActionType=" + taskActionType +
+            ", createdAt=" + createdAt +
+            ", modifiedAt=" + modifiedAt +
+            ", currentlySelected=" + currentlySelected +
+            '}';
   }
 }

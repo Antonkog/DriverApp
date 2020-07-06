@@ -48,16 +48,11 @@ import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
 import com.kongzue.dialog.v3.MessageDialog;
-import com.shuhart.stepview.StepView;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -396,7 +391,7 @@ public class DetailFragment extends Fragment {
         applyButtonState();
         
         if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
-          mNotify.setStatus(100);
+          mNotify.setStatus(TaskStatus.FINISHED);
           mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
           mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
           mViewModel.update(mNotify);
@@ -408,7 +403,7 @@ public class DetailFragment extends Fragment {
               @Override
               public void onSuccess(LastActivity lastActivity) {
                 lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-                lastActivity.setStatusType(9);
+                lastActivity.setStatusType(LastActivity.DELETED);
   
                 ArrayList<String> _list = lastActivity.getDetailList();
   
@@ -522,7 +517,7 @@ public class DetailFragment extends Fragment {
                       mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
                       mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
                       mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                      mNotify.setStatus(50);
+                      mNotify.setStatus(TaskStatus.RUNNING);
                       mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
                       mViewModel.update(mNotify);
                       applyButtonState();
@@ -551,7 +546,7 @@ public class DetailFragment extends Fragment {
                   })
                 .show();
             } else {
-              mNotify.setStatus(100);
+              mNotify.setStatus(TaskStatus.FINISHED);
               mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
               mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
               mViewModel.update(mNotify);
@@ -565,7 +560,7 @@ public class DetailFragment extends Fragment {
                   public void onSuccess(LastActivity lastActivity) {
                     
                     lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-                    lastActivity.setStatusType(3);
+                    lastActivity.setStatusType(LastActivity.FINISHED_TASK);
         
                     ArrayList<String> _list = lastActivity.getDetailList();
   
@@ -621,7 +616,7 @@ public class DetailFragment extends Fragment {
             for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
               if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
                 if (i == mCommItem.getTaskItem().getActivities().size()-1) {
-                  mNotify.setStatus(100);
+                  mNotify.setStatus(TaskStatus.FINISHED);
                   mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
                   mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
                   mViewModel.update(mNotify);
@@ -634,7 +629,7 @@ public class DetailFragment extends Fragment {
                       @Override
                       public void onSuccess(LastActivity lastActivity) {
                         lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-                        lastActivity.setStatusType(4);
+                        lastActivity.setStatusType(LastActivity.ERLEDIGT);
   
                         ArrayList<String> _list = lastActivity.getDetailList();
   
@@ -718,7 +713,7 @@ public class DetailFragment extends Fragment {
         
         } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
   
-          mNotify.setStatus(100);
+          mNotify.setStatus(TaskStatus.FINISHED);
           mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
           mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
           mViewModel.update(mNotify);

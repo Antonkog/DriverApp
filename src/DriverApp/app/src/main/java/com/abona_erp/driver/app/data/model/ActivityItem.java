@@ -126,4 +126,20 @@ public class ActivityItem {
   public void setDeviceId(String deviceInstanceId) {
     this.deviceId = deviceInstanceId;
   }
+
+  @Override
+  public String toString() {
+    return "ActivityItem{" +
+            "mandantId=" + mandantId +
+            ", taskId=" + taskId +
+            ", activityId=" + activityId +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", started=" + started +
+            ", finished=" + finished +
+            ", status=" + status +
+            ", sequence=" + sequence +
+            ", deviceId='" + deviceId + '\'' +
+            '}';
+  }
 }

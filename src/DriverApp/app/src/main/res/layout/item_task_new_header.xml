@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_sub_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_medium"
+    android:background="#C3CFE2"
+    android:foreground="?selectableItemBackground"
+    android:minHeight="40dp">
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_warning_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_danger"
+        android:tint="@color/clrAbona"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/asapTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/task_finish"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/iv_warning_icon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_task_finish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/clrFont"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/asapTextView"
+        app:layout_constraintTop_toBottomOf="@+id/asapTextView"
+        tools:text="29.10.2019 10:33:33" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/asapTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/due_in"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/tv_task_finish"
+        app:layout_constraintTop_toTopOf="@+id/asapTextView" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_due_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/clrFont"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/asapTextView2"
+        app:layout_constraintTop_toBottomOf="@+id/asapTextView2"
+        tools:text="- 737544d 10h 54min" />
+
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/asapTextView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/order_no"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/tv_due_in"
+        app:layout_constraintTop_toTopOf="@+id/asapTextView2" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_order_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/clrFont"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/asapTextView3"
+        app:layout_constraintTop_toBottomOf="@+id/asapTextView3"
+        tools:text="2019/41/370" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_contact_info"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:backgroundTint="@color/grey_40"
+        android:src="@drawable/ic_phone_wh"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_message_info"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:backgroundTint="@color/grey_40"
+        android:src="@drawable/ic_message"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/btn_contact_info"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_dangerous_goods_info"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:backgroundTint="@color/grey_40"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_class_1_explosives_1_1"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/btn_message_info"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_palette_info"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:backgroundTint="@color/grey_40"
+        android:src="@drawable/ic_pallet"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/btn_dangerous_goods_info"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_document_info"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:backgroundTint="@color/grey_40"
+        android:src="@drawable/ic_work"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/btn_palette_info"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_action_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/clrWhite"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/iv_warning_icon"
+        app:layout_constraintTop_toBottomOf="@+id/tv_task_finish"
+        tools:text="Abladestelle" />
+
+    <com.abona_erp.driver.flag_kit.FlagKit
+        android:id="@+id/fk_flag"
+        android:layout_width="24dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:countryCode="de"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_action_type"
+        app:layout_constraintTop_toBottomOf="@+id/tv_action_type"
+        tools:src="@drawable/flag_de" />
+
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_header_notes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/clrAbona"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_action_type"
+        app:layout_constraintStart_toEndOf="@+id/tv_action_type"
+        app:layout_constraintTop_toTopOf="@+id/tv_action_type"
+        tools:text="1 Bemerkung verfügbar" />
+
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_destination_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/clrWhite"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/fk_flag"
+        app:layout_constraintStart_toEndOf="@+id/fk_flag"
+        app:layout_constraintTop_toTopOf="@+id/fk_flag"
+        tools:text="DE - 76646 Bruchsal, Heinrich-Blanc-Str. 30" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/clrWhite"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_activity_step_status_message"
+        app:layout_constraintEnd_toStartOf="@+id/tv_activity_step_status_message"
+        app:layout_constraintTop_toTopOf="@+id/tv_activity_step_status_message"
+        tools:text="Running" />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_status_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/clrWhite"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_contact_info"
+        tools:text="Driving to loading" />
+
+    <ProgressBar
+        android:id="@+id/pb_activity_step"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:max="100"
+        android:progress="10"
+        app:layout_constraintEnd_toEndOf="@+id/tv_activity_step_status_message"
+        app:layout_constraintStart_toStartOf="@+id/tv_activity_step_status"
+        app:layout_constraintTop_toBottomOf="@+id/tv_activity_step_status_message" />
+
+    <View
+        android:id="@+id/view_gap"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
