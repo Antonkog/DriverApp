@@ -16,4 +16,9 @@
     <string name="preferences_id">com.redhotapp.driverapp.preferences</string>
     <string name="preferences_endpoint">endpoint</string>
     <string name="token">token</string>
+
+    <string name="name_hint">manyvehicles@abona-erp.com</string>
+    <string name="password_hint">1234qwerQWER,.-</string>
+    <string name="client_id_hint">3</string>
+
 </resources>

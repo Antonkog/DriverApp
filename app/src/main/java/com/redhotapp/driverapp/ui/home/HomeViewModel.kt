@@ -11,7 +11,7 @@ import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.data.remote.ApiService
 import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
 
-class HomeViewModel @ViewModelInject constructor(api: ApiRepository, gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) : ViewModel() {  //taskRepo : ApiRepository,
+class HomeViewModel @ViewModelInject constructor(api: ApiRepository, gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) : BaseViewModel() {  //taskRepo : ApiRepository,
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"
