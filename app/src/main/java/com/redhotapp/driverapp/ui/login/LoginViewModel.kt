@@ -1,8 +1,7 @@
 package com.redhotapp.driverapp.ui.login
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.redhotapp.driverapp.ui.home.BaseViewModel
+import com.redhotapp.driverapp.ui.base.BaseViewModel
 
 class LoginViewModel : BaseViewModel() {
 
@@ -38,5 +37,11 @@ class LoginViewModel : BaseViewModel() {
         return true
     }
 
+    fun userCancelledRegistration() : Boolean {
+        // Clear existing registration data
+//        registrationState.value = RegistrationState.COLLECT_PROFILE_DATA
+//        authToken = ""
+        return true
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.redhotapp.driverapp.ui.home
+package com.redhotapp.driverapp.ui.base
 
 import androidx.lifecycle.ViewModel
 

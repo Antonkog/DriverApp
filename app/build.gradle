@@ -23,15 +23,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
     }
 
 // To inline the bytecode built with JVM target 1.8 into
 // bytecode that is being built with JVM target 1.6. (e.g. navArgs)
-//    buildFeatures { //android studio 4.0 - replace  block below ->
-//        dataBinding = true
-//    }
-    viewBinding {
-        enabled = true
+    buildFeatures { //android studio 4.0 - replace  block below ->
+        dataBinding = true
     }
 
     compileOptions {

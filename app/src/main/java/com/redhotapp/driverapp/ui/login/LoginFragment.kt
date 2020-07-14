@@ -1,21 +1,23 @@
 package com.redhotapp.driverapp.ui.login
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.redhotapp.driverapp.R
-import kotlinx.android.synthetic.main.login_fragment.*
+import com.redhotapp.driverapp.databinding.LoginFragmentBinding
 
 class LoginFragment : Fragment() {
 
 
     private val loginViewModel by viewModels<LoginViewModel> ()
+
+
+    private lateinit var viewDataBinding: LoginFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,17 +30,14 @@ class LoginFragment : Fragment() {
         loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> showWelcomeMessage()
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(R.id.loginFragment)
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(R.id.nav_login)
             }
         })
-
-
 
         return root
     }
 
     private fun showWelcomeMessage() {
-        welcome_text_view.text = "welcome"
+        viewDataBinding.welcomeTextView.text = "welcome"
     }
-
 }
