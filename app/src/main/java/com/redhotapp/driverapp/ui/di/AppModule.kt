@@ -1,0 +1,115 @@
+/*
+ * Copyright (C) 2019 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.redhotapp.driverapp.ui.di
+
+import android.app.Application
+import android.content.Context
+import com.google.gson.Gson
+import com.redhotapp.driverapp.App
+import com.redhotapp.driverapp.data.Constant
+import com.redhotapp.driverapp.data.remote.ApiRepository
+import com.redhotapp.driverapp.data.remote.ApiRepositoryImpl
+import com.redhotapp.driverapp.data.remote.ApiService
+import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
+
+
+/**
+ * Module to tell Hilt how to provide instances of types that cannot be constructor-injected.
+ *
+ * As these types are scoped to the application lifecycle using @Singleton, they're installed
+ * in Hilt's ApplicationComponent.
+ */
+@Module
+@InstallIn(ApplicationComponent::class)
+object AppModule {
+
+    @Singleton
+    @Provides
+    fun provideGson(): Gson {
+        return Gson()
+    }
+
+    @Singleton
+    @Provides
+    fun provideHttpClient(): OkHttpClient {
+        val okHttpBuilder = OkHttpClient.Builder()
+        okHttpBuilder.connectTimeout(1, TimeUnit.MINUTES)
+        okHttpBuilder.readTimeout(1, TimeUnit.MINUTES)
+        okHttpBuilder.writeTimeout(1, TimeUnit.MINUTES)
+        return okHttpBuilder.build()
+    }
+
+
+    @Singleton
+    @Provides
+    fun provideRabbitService(okHttpClient: OkHttpClient): RabbitService {
+      return  Retrofit.Builder()
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create(Gson()))
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+          .baseUrl(Constant.baseRabbitUrl).build().create(RabbitService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiService(okHttpClient: OkHttpClient): ApiService {
+        return  Retrofit.Builder()
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .baseUrl(Constant.baseRabbitUrl).build().create(ApiService::class.java)
+    }
+//
+//
+//    @Provides
+//    fun provideIoDispatcher() = Dispatchers.IO
+}
+
+
+
+
+/**
+ * The binding for ApiRepository is on its own module so that we can replace it easily in tests.
+ */
+@Module
+@InstallIn(ApplicationComponent::class)
+object TasksRepositoryModule {
+
+    @Singleton
+    @Provides
+    fun provideApiRepository(
+         rabbitService: RabbitService,
+         apiService: ApiService
+    ): ApiRepository {
+        return ApiRepositoryImpl(
+            rabbitService, apiService
+        )
+    }
+}
+
+
