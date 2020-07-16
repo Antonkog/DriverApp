@@ -1,7 +1,9 @@
 package com.redhotapp.driverapp.data
 
 object Constant {
-    val baseRabbitUrl: String = "http://yms-test.abona-erp.com:50517"
+    const val userAgentAppName = "ABONA DriverApp"
+    const val baseRabbitUrl: String = "http://yms-test.abona-erp.com:50517/"
+    const val grantTypeToken: String = "password"
 
     const val testString = " "
     const val testStringDriver = " "

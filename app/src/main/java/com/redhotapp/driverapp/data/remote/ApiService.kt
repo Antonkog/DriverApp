@@ -1,19 +1,20 @@
 package com.redhotapp.driverapp.data.remote
 
-import retrofit2.Call
+import io.reactivex.rxjava3.core.Observable
+import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
-    @Headers("Content-Type:application/x-www-form-urlencoded")
-    @POST("authentication")
-    fun authentication(@Body body: String?): Call<String?>?
+    @FormUrlEncoded
+    @POST("/authentication")
+    fun authentication(@Field("grant_type")  grantType :String, @Field("username")  username :String, @Field("password")  password :String) : Observable<Response<String>>
 
-    //
-    //    @Headers("Content-Type:application/json; charset=UTF-8")
-    //    @POST("api/device/deviceprofile")
-    //    Call<ResultOfAction> deviceProfile(@Body CommItem commItem);
-    //
-    //
+//
+//    @Headers("Content-Type:application/json; charset=UTF-8")
+//    @POST("api/device/deviceprofile")
+//    Call<ResultOfAction> deviceProfile(@Body CommItem commItem);
+//
+//
 //    @GET("api/device/GetAllTask")
 //    fun getAllTasks(@Query("deviceId") deviceId: String?): io.reactivex.Observable<Result<List<Task?>?>?>?
 //

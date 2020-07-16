@@ -5,14 +5,19 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
 
-class HomeViewModel @ViewModelInject constructor(api: ApiRepository, gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) : BaseViewModel() {  //taskRepo : ApiRepository,
+class HomeViewModel @ViewModelInject constructor(private val api: ApiRepository, private val  gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"
     }
     val text: LiveData<String> = _text
+
+    fun loggedIn(): Boolean {
+        return false
+    }
 }

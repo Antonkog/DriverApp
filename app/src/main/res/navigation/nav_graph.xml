@@ -9,7 +9,7 @@
         android:id="@+id/nav_home"
         android:name="com.redhotapp.driverapp.ui.home.HomeFragment"
         android:label="@string/screen_home"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/home_fragment">
         <action
             android:id="@+id/action_nav_home_to_loginFragment"
             app:destination="@id/nav_login" />

@@ -5,28 +5,49 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import com.redhotapp.driverapp.R
+import com.redhotapp.driverapp.databinding.HomeFragmentBinding
+import com.redhotapp.driverapp.databinding.LoginFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
+import com.redhotapp.driverapp.ui.login.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
 
     private val homeViewModel by viewModels<HomeViewModel> ()
+//    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
+
+    private lateinit var homeBinding: HomeFragmentBinding
+
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
+        val view = inflater.inflate(R.layout.home_fragment, container, false)
+
+                homeBinding = HomeFragmentBinding.inflate(layoutInflater, container, false).apply {
+                    viewmodel = homeViewModel
+
+                }
+//        homeBinding = HomeFragmentBinding.bind(view).apply {
+//            viewmodel = homeViewModel
+//        }
+
+
+        homeBinding.lifecycleOwner = this.viewLifecycleOwner
+
         homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
+            homeBinding.textHome.text = it
         })
-        return root
+
+        if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
+        return view
     }
 }

@@ -18,8 +18,13 @@
     <string name="preferences_endpoint">endpoint</string>
     <string name="token">token</string>
 
-    <string name="name_hint">manyvehicles@abona-erp.com</string>
-    <string name="password_hint">1234qwerQWER,.-</string>
-    <string name="client_id_hint">3</string>
+    <string name="need_log_in">First log in</string>
 
+    <string name="name_test">manyvehicles@abona-erp.com</string>
+    <string name="password_test">1234qwerQWER,.-</string>
+    <string name="client_id_test">3</string>
+    <string name="name_hint">Login</string>
+    <string name="password_hint">Password</string>
+    <string name="client_id_hint">Client ID</string>
+    <string name="set_test_data">Set test data</string>
 </resources>

@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.login.LoginFragment">
+
+  <data>
+
+    <import type="android.view.View" />
+
+    <import type="androidx.core.content.ContextCompat" />
+
+    <variable
+        name="viewmodel"
+        type="com.redhotapp.driverapp.ui.login.LoginViewModel" />
+
+  </data>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
   <EditText
       android:id="@+id/editName"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="100dp"
-      android:layout_marginEnd="16dp"
       android:ems="10"
       android:inputType="textPersonName"
-      android:text="@string/name_hint"
+      android:hint="@string/name_hint"
       app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
   <EditText
@@ -25,65 +38,47 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
-      android:layout_marginEnd="16dp"
       android:ems="10"
       android:inputType="textPassword"
       app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/editName"
-      tools:text="@string/password_hint" />
+      android:hint="@string/password_hint" />
 
   <EditText
       android:id="@+id/editClientId"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
-      android:layout_marginEnd="16dp"
       android:ems="10"
       android:inputType="textPersonName"
-      android:text="Name"
       app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/editPassword"
-      tools:text="@string/client_id_hint" />
+      android:hint="@string/client_id_hint"
+      tools:text="@string/client_id_test" />
 
-  <TextView
-      android:id="@+id/text_name"
+  <Button
+      android:id="@+id/button_test"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:text="TextView"
-      app:layout_constraintBottom_toBottomOf="@+id/editName"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/editName" />
-
-  <TextView
-      android:id="@+id/textPass"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:text="TextView"
-      app:layout_constraintBottom_toBottomOf="@+id/editPassword"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/editPassword" />
-
-  <TextView
-      android:id="@+id/textClientId"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:text="TextView"
-      app:layout_constraintBottom_toBottomOf="@+id/editClientId"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/editClientId" />
-
-  <TextView
-      android:id="@+id/welcome_text_view"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="100dp"
-      android:text="TextView"
+      android:text="@string/set_test_data"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/editClientId" />
+
+  <Button
+      android:id="@+id/button_log_in"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/screen_login"
+      app:layout_constraintBottom_toTopOf="@+id/button_test"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/editClientId" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
