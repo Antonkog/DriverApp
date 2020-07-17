@@ -3,6 +3,8 @@ package com.abona_erp.driver.app.data.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class CommItem {
   
   @SerializedName("Header")
@@ -40,6 +42,10 @@ public class CommItem {
   @SerializedName("DocumentItem")
   @Expose
   private DocumentItem documentItem;
+  
+  @SerializedName("DelayReasons")
+  @Expose
+  private List<DelayReasonItem> delayReasonItems;
   
   // ------------------------------------------------------------------------
   // GETTER & SETTER
@@ -114,5 +120,13 @@ public class CommItem {
   
   public void setDocumentItem(DocumentItem documentItem) {
     this.documentItem = documentItem;
+  }
+  
+  public List<DelayReasonItem> getDelayReasonItems() {
+    return this.delayReasonItems;
+  }
+  
+  public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
+    this.delayReasonItems = delayReasonItems;
   }
 }

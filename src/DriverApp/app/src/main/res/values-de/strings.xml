@@ -41,6 +41,9 @@
   <string name="action_exception_on_rest_api">Fehler in der REST-API!</string>
   <string name="action_later">Später</string>
 
+  <string name="next">Weiter</string>
+  <string name="start">Starten</string>
+
   <string name="document_type">Dokument Typ</string>
   <string name="document_type_na">Keine (N/A)</string>
   <string name="document_type_pod">Zustellnachweis (POD)</string>

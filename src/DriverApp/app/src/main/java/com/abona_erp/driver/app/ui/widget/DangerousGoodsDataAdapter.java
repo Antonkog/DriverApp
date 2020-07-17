@@ -100,7 +100,7 @@ public class DangerousGoodsDataAdapter extends RecyclerView.Adapter<DangerousGoo
       case CLASS_7_RADIOACTIVE_III: return _resources.getDrawable(R.drawable.ic_class_7_radioactive_iii);
       case CLASS_8_CORROSIVE: return _resources.getDrawable(R.drawable.ic_class_8_corrosive);
       case CLASS_9_MISCELLANEOUS: return _resources.getDrawable(R.drawable.ic_class_9_miscellaneus);
-      default: return null;
+      default: return _resources.getDrawable(R.drawable.ic_risk);
     }
   }
 }

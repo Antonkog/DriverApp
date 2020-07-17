@@ -16,16 +16,21 @@ import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.dao.OfflineDelayReasonDAO;
+import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.entity.OfflineDelayReasonEntity;
 import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.DataType;
+import com.abona_erp.driver.app.data.model.DelayReasonItem;
+import com.abona_erp.driver.app.data.model.DelaySource;
 import com.abona_erp.driver.app.data.model.DeviceProfileItem;
 import com.abona_erp.driver.app.data.model.Header;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
@@ -41,6 +46,7 @@ import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
 import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
@@ -81,13 +87,16 @@ public class BackgroundServiceWorker extends Service {
   
   private Context mContext;
   private Handler mHandler;
+  private Handler mDelayReasonHandler;
   private Runner  mRunner;
+  private DelayReasonRunner mDelayReasonRunner;
   
   private DriverDatabase mDB = DriverDatabase.getDatabase();
   private DeviceProfileDAO mDeviceProfileDAO = mDB.deviceProfileDAO();
   private OfflineConfirmationDAO mOfflineConfirmationDAO = mDB.offlineConfirmationDAO();
   private NotifyDao mNotifyDAO = mDB.notifyDao();
   private LastActivityDAO mLastActivityDAO = mDB.lastActivityDAO();
+  private OfflineDelayReasonDAO mOfflineDelayReasonDAO = mDB.offlineDelayReasonDAO();
   
   public BackgroundServiceWorker() {
   }
@@ -95,6 +104,13 @@ public class BackgroundServiceWorker extends Service {
   public BackgroundServiceWorker(Context appContext) {
     super();
     this.mContext = appContext;
+  }
+  
+  public class DelayReasonRunner implements Runnable {
+    @Override
+    public void run() {
+    
+    }
   }
   
   private volatile static int delay = 3000;
@@ -132,7 +148,11 @@ public class BackgroundServiceWorker extends Service {
             public void run() {
               List<OfflineConfirmation> offlineConfirmations =
                 mOfflineConfirmationDAO.getAllOfflineConfirmations();
-              if (!allowRequest && offlineConfirmations.size() > 0) {
+  
+              List<OfflineDelayReasonEntity> offlineDelayReasonEntities =
+                mOfflineDelayReasonDAO.getAllOfflineDelayReasons();
+              
+              if (!allowRequest && (offlineConfirmations.size() > 0 || offlineDelayReasonEntities.size() > 0)) {
                 allowRequest = true;
               }
             }
@@ -158,6 +178,92 @@ public class BackgroundServiceWorker extends Service {
   private void handleJobs() {
   
     handleConfirmationJob();
+    handleDelayReasonJob();
+  }
+  
+  private void handleDelayReasonJob() {
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+    
+        List<OfflineDelayReasonEntity> offlineDelayReasonEntities = mOfflineDelayReasonDAO.getAllOfflineDelayReasons();
+        if (offlineDelayReasonEntities.size() > 0) {
+        
+          CommItem reqItem = new CommItem();
+          Header header = new Header();
+          header.setTimestampSenderUTC(new Date());
+          header.setDataType(DataType.DELAY_REASONS);
+          header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+          reqItem.setHeader(header);
+  
+          DelayReasonItem delayReasonItem = new DelayReasonItem();
+          delayReasonItem.setWaitingReasongId(offlineDelayReasonEntities.get(0).getWaitingReasonId());
+          delayReasonItem.setActivityId(offlineDelayReasonEntities.get(0).getActivityId());
+          delayReasonItem.setMandantId(offlineDelayReasonEntities.get(0).getMandantId());
+          delayReasonItem.setTaskId(offlineDelayReasonEntities.get(0).getTaskId());
+          delayReasonItem.setTimestampUtc(offlineDelayReasonEntities.get(0).getTimestamp());
+          delayReasonItem.setDelayInMinutes(offlineDelayReasonEntities.get(0).getDelayInMinutes());
+          if (offlineDelayReasonEntities.get(0).getDelaySource() == 0) {
+            delayReasonItem.setDelaySource(DelaySource.NA);
+          } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 1) {
+            delayReasonItem.setDelaySource(DelaySource.DISPATCHER);
+          } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 2) {
+            delayReasonItem.setDelaySource(DelaySource.CUSTOMER);
+          } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 3) {
+            delayReasonItem.setDelaySource(DelaySource.DRIVER);
+          }
+          delayReasonItem.setComment(offlineDelayReasonEntities.get(0).getComment());
+          
+          List<DelayReasonItem> items = new ArrayList<>();
+          items.add(delayReasonItem);
+          reqItem.setDelayReasonItems(items);
+          
+          Call<ResultOfAction> call = App.getInstance().apiManager
+            .getDelayReasonApi().setDelayReasons(reqItem);
+          call.enqueue(new Callback<ResultOfAction>() {
+            @Override
+            public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+    
+              if (response.body() == null) return;
+              if (response.body().getIsSuccess() && !response.body().getIsException()) {
+                
+                ResultOfAction resultOfAction = response.body();
+                if (resultOfAction == null) return;
+                if (resultOfAction.getCommItem() == null) return;
+  
+                mNotifyDAO.loadNotifyById(offlineDelayReasonEntities.get(0).getNotifyId())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new DisposableSingleObserver<Notify>() {
+                    @Override
+                    public void onSuccess(Notify notify) {
+    
+                      notify.setData(App.getInstance().gsonUtc.toJson(resultOfAction.getCommItem()));
+                      AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                          mNotifyDAO .updateNotify(notify);
+                          mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
+                        }
+                      });
+                    }
+  
+                    @Override
+                    public void onError(Throwable e) {
+    
+                    }
+                  });
+              }
+            }
+  
+            @Override
+            public void onFailure(Call<ResultOfAction> call, Throwable t) {
+    
+            }
+          });
+        }
+      }
+    });
   }
   
   private void handleConfirmationJob() {
@@ -342,6 +448,8 @@ public class BackgroundServiceWorker extends Service {
                             });
                           }
                         }
+  
+                        DelayReasonUtil.getDelayReasonsFromService(notify.getMandantId());
                       } else if (response.code() == 401) {
           
                         // error case:
@@ -413,8 +521,22 @@ public class BackgroundServiceWorker extends Service {
                                   public void onSuccess(LastActivity lastActivity) {
                                     if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal()) {
                                       updateLastActivity(mLastActivityDAO, lastActivity, -1, "CONFIRMED BY DEVICE", 1);
+                                      notify.setConfirmationStatus(1);
+                                      AsyncTask.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                          mNotifyDAO.updateNotify(notify);
+                                        }
+                                      });
                                     } else if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal()) {
                                       updateLastActivity(mLastActivityDAO, lastActivity, -1, "CONFIRMED BY USER", 2);
+                                      notify.setConfirmationStatus(2);
+                                      AsyncTask.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                          mNotifyDAO.updateNotify(notify);
+                                        }
+                                      });
                                     }
                                   }
                     
@@ -678,7 +800,9 @@ public class BackgroundServiceWorker extends Service {
     Log.i(TAG, "onCreate() called!");
     
     mHandler = new Handler();
+    mDelayReasonHandler = new Handler();
     mRunner = new Runner();
+    mDelayReasonRunner = new DelayReasonRunner();
   }
   
   @Override
@@ -686,6 +810,7 @@ public class BackgroundServiceWorker extends Service {
     Log.i(TAG, "onStartCommand() called!");
     
     mHandler.post(mRunner);
+    mDelayReasonHandler.post(mDelayReasonRunner);
     return START_REDELIVER_INTENT;
   }
   
@@ -694,6 +819,7 @@ public class BackgroundServiceWorker extends Service {
     Log.i(TAG, "onDestroy() called!");
     super.onDestroy();
     mHandler.removeCallbacks(mRunner);
+    mDelayReasonHandler.removeCallbacks(mDelayReasonRunner);
     
     Intent broadcastIntent =
       new Intent("com.abona_erp.driver.app.RestartBackgroundServiceWorker");

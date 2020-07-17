@@ -24,11 +24,26 @@
       android:background="@color/clrListViewHeader">
 
       <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_warning_icon"
+        android:id="@+id/iv_confirmation"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/spacing_xsmall"
+        android:tint="@color/grey_40"
+        android:src="@drawable/ic_done_all"
+        />
+
+      <Space
+        android:layout_width="15dp"
+        android:layout_height="0dp"
+        />
+
+      <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="@dimen/spacing_xsmall"
+        android:layout_marginStart="@dimen/spacing_xsmall"
         android:src="@drawable/ic_danger"
         android:tint="@color/clrAbona"
         android:visibility="gone"
@@ -121,7 +136,7 @@
       </LinearLayout>
 
       <View
-        android:layout_width="@dimen/spacing_xxxlarge"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1"
         />
@@ -136,7 +151,8 @@
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:src="@drawable/ic_phone_wh"
-          android:backgroundTint="@color/grey_40"
+          android:backgroundTint="#AEBBCF"
+          android:tint="@color/clrFont"
           android:visibility="gone"
           tools:visibility="visible"
           />
@@ -145,7 +161,8 @@
           android:id="@+id/btn_message_info"
           android:layout_width="48dp"
           android:layout_height="48dp"
-          android:backgroundTint="@color/grey_40"
+          android:backgroundTint="#AEBBCF"
+          android:tint="@color/clrFont"
           android:src="@drawable/ic_message"
           android:visibility="gone"
           tools:visibility="visible"
@@ -155,7 +172,7 @@
           android:id="@+id/btn_dangerous_goods_info"
           android:layout_width="48dp"
           android:layout_height="48dp"
-          android:backgroundTint="@color/grey_40"
+          android:backgroundTint="#AEBBCF"
           android:scaleType="centerCrop"
           android:src="@drawable/ic_class_1_explosives_1_1"
           android:visibility="gone"
@@ -166,7 +183,8 @@
           android:id="@+id/btn_palette_info"
           android:layout_width="48dp"
           android:layout_height="48dp"
-          android:backgroundTint="@color/grey_40"
+          android:backgroundTint="#AEBBCF"
+          android:tint="@color/clrFont"
           android:src="@drawable/ic_pallet"
           android:visibility="gone"
           tools:visibility="visible"
@@ -176,10 +194,29 @@
           android:id="@+id/btn_document_info"
           android:layout_width="48dp"
           android:layout_height="48dp"
-          android:backgroundTint="@color/grey_40"
+          android:backgroundTint="#AEBBCF"
+          android:tint="@color/clrFont"
           android:src="@drawable/ic_work"
           android:visibility="gone"
           tools:visibility="visible"
+          />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+          android:id="@+id/btn_task_history"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:backgroundTint="#AEBBCF"
+          android:src="@drawable/ic_delay_reasons_history"
+          android:tint="@color/clrFont"
+          />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+          android:id="@+id/btn_task_info"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:backgroundTint="#AEBBCF"
+          android:src="@drawable/ic_info"
+          android:tint="@color/clrFont"
           />
 
       </LinearLayout>
@@ -192,7 +229,8 @@
       android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="#2980B9">
+      android:background="#2980B9"
+      android:baselineAligned="false">
 
       <LinearLayout
         android:orientation="vertical"
@@ -226,13 +264,12 @@
             android:id="@+id/tv_header_notes_minus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:textSize="12sp"
+            android:text="@string/minus_string"
             android:textColor="@color/clrWhite"
-            android:text="-"
-            />
+            android:textSize="12sp" />
 
           <Space
             android:layout_width="5dp"
@@ -248,6 +285,8 @@
             android:layout_marginBottom="5dp"
             android:textSize="12sp"
             android:textColor="@color/clrAbona"
+            android:visibility="gone"
+            tools:visibility="visible"
             tools:text="1 Bemerkung verfügbar"
             />
 
@@ -290,7 +329,8 @@
       <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
 
         <LinearLayout
           android:orientation="horizontal"
@@ -314,11 +354,10 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
-            android:textSize="12sp"
+            android:text="@string/colon_string"
             android:textColor="@color/clrWhite"
-            android:text=":"
-            tools:text=":"
-            />
+            android:textSize="12sp"
+            tools:text="@string/colon_string" />
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
             android:id="@+id/tv_activity_step_status_message"
@@ -347,17 +386,41 @@
 
       </LinearLayout>
 
+      <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_camera"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:backgroundTint="#40FFFFFF"
+        android:tint="@color/clrFont"
+        android:src="@drawable/ic_camera"
+        />
+
+      <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_map"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:backgroundTint="#40FFFFFF"
+        android:tint="@color/clrFont"
+        android:src="@android:drawable/ic_dialog_map"
+        />
+
     </LinearLayout>
 
   </LinearLayout>
 
-  <View
-    android:id="@+id/view_gap"
-    android:layout_width="match_parent"
-    android:layout_height="5dp"
-    android:layout_marginStart="5dp"
-    android:layout_marginEnd="5dp"
-    android:layout_gravity="bottom"
+  <com.lid.lib.LabelImageView
+    android:id="@+id/status_label_view"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    app:label_orientation="RIGHT_TOP"
+    app:label_text="NEW"
+    app:label_textSize="10sp"
+    app:label_backgroundColor="#2980B9"
+    android:layout_gravity="end|top"
+    android:visibility="gone"
+    tools:visibility="visible"
     />
 
 </FrameLayout>

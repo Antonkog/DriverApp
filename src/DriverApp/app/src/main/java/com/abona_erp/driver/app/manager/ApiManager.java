@@ -8,6 +8,7 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.data.remote.ActivityService;
 import com.abona_erp.driver.app.data.remote.ConfirmService;
+import com.abona_erp.driver.app.data.remote.DelayReasonService;
 import com.abona_erp.driver.app.data.remote.DocumentService;
 import com.abona_erp.driver.app.data.remote.FCMService;
 import com.abona_erp.driver.app.data.remote.FileDownloadService;
@@ -52,6 +53,7 @@ public class ApiManager implements Manager {
   private DocumentService mDocumentService;
   private FileDownloadService mFileDownloadService;
   private TaskService mTaskService;
+  private DelayReasonService mDelayReasonService;
   
   static OkHttpClient.Builder apiClientBuilder;
   static OkHttpClient.Builder authClientBuilder;
@@ -145,6 +147,16 @@ public class ApiManager implements Manager {
         .create(FileDownloadService.class);
     }
     return mFileDownloadService;
+  }
+  
+  public DelayReasonService getDelayReasonApi() {
+    if (mDelayReasonService == null) {
+      mDelayReasonService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+        + "api/activity/")
+        .create(DelayReasonService.class);
+    }
+    return mDelayReasonService;
   }
   
   private Retrofit provideRetrofit(String url) {

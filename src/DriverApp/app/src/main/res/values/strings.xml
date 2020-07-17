@@ -103,6 +103,9 @@
   <string name="action_exception_on_rest_api">Exception on REST-API!</string>
   <string name="action_later">Later</string>
 
+  <string name="next">Next</string>
+  <string name="start">Start</string>
+
   <string name="document_type">Dokument Type</string>
   <string name="document_type_na">No (N/A)</string>
   <string name="document_type_pod">Proof of Delivery (POD)</string>
@@ -196,6 +199,6 @@
   <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
   <!-- MULTILANG -->
 
-  <string name="load_error" translatable="false">Failed to load the image!</string>
-  <string name="not_selected" translatable="false">Please choose an image for edit</string>
+  <string name="minus_string" translatable="false">-</string>
+  <string name="colon_string" translatable="false">:</string>
 </resources>

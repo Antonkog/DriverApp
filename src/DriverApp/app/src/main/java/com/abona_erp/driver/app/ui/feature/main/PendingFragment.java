@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.ui.feature.main;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
@@ -70,37 +75,63 @@ public class PendingFragment extends Fragment implements CommonItemClickListener
   @Override
   public void onClick(View view, int position, Notify item, boolean selected) {
       item.setCurrentlySelected(selected);
-      viewModel.update(item);
+      if (!item.getRead()) {
+        item.setRead(true);
+  
+        DriverDatabase db = DriverDatabase.getDatabase();
+        OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+  
+        OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+        offlineConfirmation.setNotifyId((int)item.getId());
+        offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
+        AsyncTask.execute(new Runnable() {
+          @Override
+          public void run() {
+            dao.insert(offlineConfirmation);
+          }
+        });
+      }
   }
   
   @Override
   public void onDblClick(View view, int position, Notify item) {
     if (item != null) {
-      viewModel.update(item);
+      if (!item.getRead()) {
+        item.setRead(true);
+  
+        DriverDatabase db = DriverDatabase.getDatabase();
+        OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+  
+        OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+        offlineConfirmation.setNotifyId((int)item.getId());
+        offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
+        AsyncTask.execute(new Runnable() {
+          @Override
+          public void run() {
+            dao.insert(offlineConfirmation);
+          }
+        });
+      }
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), item));
     }
   }
   @Override
   public void onProgressItemClick(Notify notify) {
     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_TASK), notify));
-    viewModel.update(notify);
   }
 
   @Override
   public void onMapClick(Notify notify) {
     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_MAP), notify));
-    viewModel.update(notify);
   }
 
   @Override
   public void onCameraClick(Notify notify) {
     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_CAMERA), notify));
-    viewModel.update(notify);
   }
 
   @Override
   public void onDocumentClick(Notify notify) {
     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
-    viewModel.update(notify);
   }
 }

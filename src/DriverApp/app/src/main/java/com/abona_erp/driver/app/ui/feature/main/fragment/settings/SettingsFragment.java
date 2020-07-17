@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -131,7 +132,12 @@ public class SettingsFragment extends Fragment {
           DeviceProfile devProf = deviceProfiles.get(0);
     
           if (devProf.getDeviceId() != null) {
-            mDeviceId.setText(devProf.getDeviceId());
+            AsyncTask.execute(new Runnable() {
+              @Override
+              public void run() {
+                mDeviceId.setText(devProf.getDeviceId());
+              }
+            });
           } else {
             mDeviceId.setText("<Error By Device>");
           }
