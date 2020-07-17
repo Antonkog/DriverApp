@@ -59,6 +59,17 @@ public class Notify {
   @ColumnInfo(name = "currently_selected")
   @TypeConverters({BoolConverter.class})
   private boolean currentlySelected;
+  
+  @ColumnInfo(name = "confirmation_status")
+  private int confirmationStatus;
+  
+  public int getConfirmationStatus() {
+    return this.confirmationStatus;
+  }
+  
+  public void setConfirmationStatus(int confirmationStatus) {
+    this.confirmationStatus = confirmationStatus;
+  }
 
   public boolean isCurrentlySelected() {
     return currentlySelected;

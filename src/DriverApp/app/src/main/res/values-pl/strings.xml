@@ -40,6 +40,9 @@
   <string name="action_exception_on_rest_api">Błąd w interfejsie API REST!</string>
   <string name="action_later">Później</string>
 
+  <string name="next">Kolejny</string>
+  <string name="start">Początek</string>
+
   <string name="document_type">Typ dokumentu</string>
   <string name="document_type_na">Nie (N/A)</string>
   <string name="document_type_pod">Dowód dostawy (POD)</string>

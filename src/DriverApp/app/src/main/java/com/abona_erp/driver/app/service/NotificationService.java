@@ -39,6 +39,7 @@ import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.RingtoneUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -337,6 +338,8 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
               startRingtone(notification);
             }
           });
+  
+        DelayReasonUtil.getDelayReasonsFromService(mCommItem.getTaskItem().getMandantId());
       } else {
         Log.w(TAG, "Keine gültiger Task Item");
       }

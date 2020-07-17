@@ -9,16 +9,20 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.abona_erp.driver.app.data.converters.Converters;
+import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.dao.OfflineDelayReasonDAO;
+import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.entity.OfflineDelayReasonEntity;
 import com.abona_erp.driver.core.base.ContextUtils;
 
 /**
@@ -29,8 +33,10 @@ import com.abona_erp.driver.core.base.ContextUtils;
   LastActivity.class,
   DeviceProfile.class,
   OfflineConfirmation.class,
-  LogItem.class
-}, version = 4, exportSchema = false)
+  LogItem.class,
+  DelayReasonEntity.class,
+  OfflineDelayReasonEntity.class
+}, version = 5, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class DriverDatabase extends RoomDatabase {
 
@@ -39,6 +45,8 @@ public abstract class DriverDatabase extends RoomDatabase {
   public abstract DeviceProfileDAO deviceProfileDAO();
   public abstract OfflineConfirmationDAO offlineConfirmationDAO();
   public abstract LogDAO logDAO();
+  public abstract DelayReasonDAO delayReasonDAO();
+  public abstract OfflineDelayReasonDAO offlineDelayReasonDAO();
 
   // marking the instance as volatile to ensure atomic access to the variable.
   private static volatile DriverDatabase INSTANCE;
@@ -50,14 +58,31 @@ public abstract class DriverDatabase extends RoomDatabase {
           INSTANCE = Room.databaseBuilder(ContextUtils.getApplicationContext(),
             DriverDatabase.class, "abona_driver77")
             .allowMainThreadQueries()
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build();
         }
       }
     }
     return INSTANCE;
   }
-
+  /*
+  static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+    @Override
+    public void migrate(@NonNull SupportSQLiteDatabase database) {
+    
+    }
+  };
+*/
+  static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+    @Override
+    public void migrate(@NonNull SupportSQLiteDatabase database) {
+      database.execSQL("ALTER TABLE taskItem "
+        + " ADD COLUMN confirmation_status INTEGER DEFAULT 0 NOT NULL");
+  
+      database.execSQL("CREATE TABLE IF NOT EXISTS `delay_reason_table` (`MandantId` integer NOT NULL primary key, `ActivityId` integer NOT NULL primary key, `WaitingReasonId` integer NOT NULL primary key, `ReasonText` TEXT, `TranslatedReasonText` TEXT, `Code` integer, `SubCode` integer,  `ModifiedAt` TEXT, `CreatedAt` TEXT)");
+      database.execSQL("CREATE TABLE IF NOT EXISTS `offline_delay_reason_entity` (`id` integer NOT NULL primary key autoincrement, `notify_id` integer, `waiting_reason_id` integer, `activity_id` integer, `mandant_id` integer, `task_id` integer, `delay_in_minutes` integer, `delay_source` integer, `comment` TEXT, `timestamp` TEXT)");
+    }
+  };
 
   static final Migration MIGRATION_3_4 = new Migration(3, 4) {
     @Override

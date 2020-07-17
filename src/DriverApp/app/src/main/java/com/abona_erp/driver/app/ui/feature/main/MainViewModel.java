@@ -111,7 +111,7 @@ public class MainViewModel extends AndroidViewModel {
     return mRepository.getNotifyByMandantTaskId(mandantId, taskId);
   }
 
-  Single<Notify> getNotifyByTaskId(int taskId) {
+  public Single<Notify> getNotifyByTaskId(int taskId) {
       return mRepository.getNotifyByTaskId(taskId);
   }
 

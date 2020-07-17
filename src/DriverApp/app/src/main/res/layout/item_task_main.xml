@@ -7,5 +7,5 @@
   android:layout_height="wrap_content"
   android:layout_margin="@dimen/spacing_medium"
   app:layoutHeader="@layout/item_task_header"
-  app:layoutContent="@layout/item_task_content"
+  app:layoutContent="@layout/item_task_content_2"
   />

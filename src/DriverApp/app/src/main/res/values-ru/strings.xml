@@ -41,6 +41,9 @@
   <string name="action_exception_on_rest_api">Ошибка на REST-API!</string>
   <string name="action_later">Потом</string>
 
+  <string name="next">Далее</string>
+  <string name="start">Начало</string>
+
   <string name="document_type">Тип документа</string>
   <string name="document_type_na">Нет (N/A)</string>
   <string name="document_type_pod">Доказательство доставки (POD)</string>
@@ -138,7 +141,7 @@
 
   <string name="cancel">Отменить</string>
   <string name="enable">Включить</string>
-  <string name="next">Далее</string>
+
   <string name="back">Назад</string>
 
   <string name="theme_light">Светлая</string>

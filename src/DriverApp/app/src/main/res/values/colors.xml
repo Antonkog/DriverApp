@@ -6,11 +6,16 @@
 
   <color name="clrAbona">#E30613</color>
   <color name="clrFont">#1F1C2C</color>
+  <color name="clrFont_opaque">#601F1C2C</color>
   <color name="clrWhite">#FFF</color>
   <color name="clrMainHeader">#F5F7FA</color>
   <color name="orderMenuBG">#fafafa</color>
   <color name="clrIcon">#1F1C2C</color>
   <color name="clrTaskFinished">#10ac84</color>
+
+  <color name="clrConfirmationTypeReceived">@color/grey_40</color>
+  <color name="clrConfirmationTypeUser">#e67e22</color>
+  <color name="clrConfirmationTypeAbona">#10ac84</color>
 
   <color name="clrPickUp">#2980B9</color>
   <color name="clrDropOff">#10ac84</color>

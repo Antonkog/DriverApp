@@ -27,6 +27,10 @@ public class ResultOfAction {
   @Expose
   private List<TaskItem> allTask;
   
+  @SerializedName("DelayReasons")
+  @Expose
+  private List<DelayReasonItem> delayReasonItems;
+  
   public boolean getIsSuccess() {
     return isSuccess;
   }
@@ -65,5 +69,13 @@ public class ResultOfAction {
   
   public void setAllTask(List<TaskItem> allTask) {
     this.allTask = allTask;
+  }
+  
+  public List<DelayReasonItem> getDelayReasonItems() {
+    return delayReasonItems;
+  }
+  
+  public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
+    this.delayReasonItems = delayReasonItems;
   }
 }

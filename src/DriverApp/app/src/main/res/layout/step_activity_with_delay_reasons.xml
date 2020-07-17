@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:orientation="horizontal"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_marginTop="3dp"
+  android:descendantFocusability="blocksDescendants">
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginStart="@dimen/spacing_smlarge"
+    android:layout_marginEnd="@dimen/spacing_smlarge"
+    android:weightSum="3.0">
+
+    <View
+      android:id="@+id/step_view_top"
+      android:layout_width="1dp"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:layout_gravity="center_horizontal"
+      android:background="@color/grey_40"
+      />
+
+    <RelativeLayout
+      android:layout_width="wrap_content"
+      android:layout_height="0dp"
+      android:layout_weight="1">
+
+      <ImageView
+        android:layout_width="@dimen/spacing_mlarge"
+        android:layout_height="@dimen/spacing_mlarge"
+        android:tint="@color/clrFont"
+        android:src="@drawable/shape_round_solid"
+        app:srcCompat="@drawable/shape_round_solid"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_activity_step_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        android:text="1"
+        />
+
+      <ImageView
+        android:id="@+id/iv_activity_step_check_mark"
+        android:layout_width="@dimen/spacing_middle"
+        android:layout_height="@dimen/spacing_middle"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:src="@drawable/ic_done"
+        app:srcCompat="@drawable/ic_done"
+        />
+
+    </RelativeLayout>
+
+    <View
+      android:id="@+id/step_view_bottom"
+      android:layout_width="1dp"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:layout_gravity="center_horizontal"
+      android:background="@color/grey_40"
+      />
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/ll_activity_status"
+    android:orientation="vertical"
+    android:layout_width="80dp"
+    android:layout_height="match_parent"
+    android:minHeight="40dp"
+    android:gravity="center"
+    android:background="@color/grey_20">
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_activity_status_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:textColor="@color/grey_60"
+      android:padding="3dp"
+      android:textSize="10sp"
+      tools:text="Pending"
+      />
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_marginStart="@dimen/spacing_large">
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_activity_step_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/clrFont"
+      tools:text="Driving to loading..."
+      />
+
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp"
+          android:textColor="@color/grey_40"
+          android:text="Started:"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_activity_step_started"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:minWidth="120dp"
+          tools:text="25.07.2020 12:00:00"
+          />
+
+      </LinearLayout>
+
+      <View
+        android:layout_width="15dp"
+        android:layout_height="0dp"
+        />
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12sp"
+          android:textColor="@color/grey_40"
+          android:text="Finished:"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_activity_step_finished"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="12:00:00"
+          />
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+
+
+  <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:minWidth="120dp"
+    android:layout_margin="5dp"
+    android:background="@color/grey_20">
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:background="@color/grey_60">
+
+      <com.abona_erp.driver.app.ui.widget.VerticalTextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="6dp"
+        android:textSize="10sp"
+        android:textColor="#fff"
+        android:text="Delay"
+        />
+
+    </LinearLayout>
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_delay_reason_in_minutes"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="5dp"
+      android:layout_gravity="center_vertical"
+      android:minWidth="85dp"
+      android:gravity="end"
+      android:padding="5dp"
+      android:text="0 min"
+      android:textColor="#10ac84"
+      android:textSize="18sp"
+      />
+
+    <View
+      android:layout_width="1dp"
+      android:layout_height="match_parent"
+      android:background="@color/grey_10"
+      android:layout_margin="5dp"
+      />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/btn_add_delay_reason"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/ic_plus"
+      />
+
+  </LinearLayout>
+
+  <androidx.appcompat.widget.AppCompatImageButton
+    android:id="@+id/btn_delay_reason_history"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:paddingStart="15dp"
+    android:paddingEnd="15dp"
+    android:src="@drawable/ic_delay_reasons_history"
+    android:visibility="gone"
+    tools:visibility="visible"
+    />
+
+  <RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:paddingStart="15dp"
+      android:paddingEnd="15dp"
+      android:src="@drawable/ic_qr_code"
+      android:visibility="gone"
+      tools:visibility="visible"
+      />
+
+    <ImageView
+      android:layout_width="24dp"
+      android:layout_height="24dp"
+      android:src="@drawable/ic_done"
+      android:tint="#10ac84"
+      android:layout_centerInParent="true"
+      android:visibility="gone"
+      tools:visibility="visible"
+      />
+
+  </RelativeLayout>
+
+  <androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/btn_activity_next"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/next_button_tint"
+    android:textColor="#fff"
+    android:text="@string/start"
+    />
+
+</LinearLayout>

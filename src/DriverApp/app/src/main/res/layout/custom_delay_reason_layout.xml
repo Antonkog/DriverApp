@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:gravity="center">
+
+  <LinearLayout
+    android:id="@+id/ll_title"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:gravity="center_vertical">
+
+    <View
+      android:id="@+id/vw_action_type"
+      android:layout_width="7dp"
+      android:layout_height="match_parent"
+      />
+
+    <Space
+      android:layout_width="7dp"
+      android:layout_height="0dp"
+      />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Delay Reason"
+      android:textColor="@color/clrFont"
+      android:textSize="24sp"
+      android:gravity="center"
+      />
+
+    <Space
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      />
+
+    <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="15dp">
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="@string/order_no"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_order_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        tools:text="2020/23/345"
+        />
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+  <View
+    android:id="@+id/horizontal_line_1"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_below="@id/ll_title"
+    android:layout_marginStart="32dp"
+    android:layout_marginEnd="32dp"
+    android:background="@color/grey_10"
+    />
+
+  <LinearLayout
+    android:id="@+id/box_currently_delay"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:gravity="center"
+    android:layout_below="@id/horizontal_line_1">
+
+    <com.abona_erp.driver.app.ui.widget.VerticalTextView
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:background="@color/grey_10"
+      android:gravity="center"
+      android:padding="6dp"
+      android:textSize="10sp"
+      android:textColor="#000"
+      android:text="Delay"
+      />
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_current_delay_reason"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="8dp"
+      android:background="@color/grey_10"
+      android:textColor="#10ac84"
+      android:text="0 min"
+      android:textSize="32sp"
+      />
+
+  </LinearLayout>
+
+  <View
+    android:id="@+id/horizontal_line_2"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_below="@id/box_currently_delay"
+    android:layout_marginTop="5dp"
+    android:layout_marginStart="32dp"
+    android:layout_marginEnd="32dp"
+    android:background="@color/grey_10"
+    />
+
+  <com.chivorn.smartmaterialspinner.SmartMaterialSpinner
+    android:id="@+id/sms_delay_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/horizontal_line_2"
+    android:layout_marginTop="5dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    app:smsp_floatingLabelColor="@color/grey_40"
+    app:smsp_floatingLabelText="Delay Reason Text"
+    />
+
+  <com.chivorn.smartmaterialspinner.SmartMaterialSpinner
+    android:id="@+id/sms_delay_source"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_below="@id/sms_delay_text"
+    app:smsp_floatingLabelColor="@color/grey_40"
+    app:smsp_floatingLabelText="Delay Source"
+    />
+
+  <com.chivorn.smartmaterialspinner.SmartMaterialSpinner
+    android:id="@+id/sms_delay_in_minutes"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_below="@id/sms_delay_source"
+    app:smsp_floatingLabelColor="@color/grey_40"
+    app:smsp_floatingLabelText="Delay In Minutes"
+    />
+
+  <LinearLayout
+    android:id="@+id/delay_reason_comment"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_below="@id/sms_delay_in_minutes">
+
+    <EditText
+      android:id="@+id/et_delay_reason_comment"
+      android:layout_width="match_parent"
+      android:layout_height="80dp"
+      android:padding="5dp"
+      android:background="@color/grey_5"
+      android:gravity="left|top"
+      android:inputType="text|textMultiLine"
+      android:ems="10"
+      android:hint="Write your comment..."
+      android:longClickable="false"
+      android:textSize="14sp"
+      />
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:gravity="center"
+    android:layout_below="@id/delay_reason_comment">
+
+    <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/btn_cancel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@drawable/button_shape"
+      android:textColor="@color/clrWhite"
+      android:text="@string/action_cancel"
+      />
+
+    <Space
+      android:layout_width="16dp"
+      android:layout_height="0dp"
+      />
+
+    <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/btn_ok"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@drawable/button_shape"
+      android:textColor="@color/clrWhite"
+      android:text="@string/action_ok"
+      />
+
+  </LinearLayout>
+
+</RelativeLayout>

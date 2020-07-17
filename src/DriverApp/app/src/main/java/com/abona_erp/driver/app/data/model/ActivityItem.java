@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
+import java.util.List;
 
 public class ActivityItem {
   
@@ -46,6 +47,10 @@ public class ActivityItem {
   @SerializedName("DeviceId")
   @Expose
   private String deviceId;
+  
+  @SerializedName("DelayReasons")
+  @Expose
+  private List<DelayReasonItem> delayReasonItems;
   
   public Integer getMandantId() {
     return mandantId;
@@ -125,5 +130,13 @@ public class ActivityItem {
   
   public void setDeviceId(String deviceInstanceId) {
     this.deviceId = deviceInstanceId;
+  }
+  
+  public List<DelayReasonItem> getDelayReasonItems() {
+    return this.delayReasonItems;
+  }
+  
+  public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
+    this.delayReasonItems = delayReasonItems;
   }
 }

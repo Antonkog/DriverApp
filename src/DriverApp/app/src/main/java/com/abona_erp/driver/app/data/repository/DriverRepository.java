@@ -7,11 +7,13 @@ import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.LogItem;
@@ -55,6 +57,8 @@ public class DriverRepository {
   private LogDAO mLogDAO;
   private LiveData<List<LogItem>> mAllLogs;
   
+  private DelayReasonDAO mDelayReasonDAO;
+  
   public DriverRepository(Application application) {
     DriverDatabase db = DriverDatabase.getDatabase();
     mNotifyDao = db.notifyDao();
@@ -77,6 +81,8 @@ public class DriverRepository {
     
     mLogDAO = db.logDAO();
     mAllLogs = mLogDAO.getAllLogs();
+    
+    mDelayReasonDAO = db.delayReasonDAO();
   }
   
   public LiveData<List<LogItem>> getAllLogs() {
@@ -195,6 +201,19 @@ public class DriverRepository {
   
   public void deleteAllLogs() {
     new deleteAllLogsAsyncTask(mLogDAO).execute();
+  }
+  
+  public long insert(DelayReasonEntity item) {
+    new insertDelayReasonAsyncTask(mDelayReasonDAO).execute(item);
+    return 0;
+  }
+  
+  public void update(DelayReasonEntity item) {
+    new updateDelayReasonAsyncTask(mDelayReasonDAO).execute(item);
+  }
+  
+  public Single<DelayReasonEntity> getDelayReasonByMandantId(int mandantId, int activityId, int waitingReasonCode) {
+    return mDelayReasonDAO.getDelayReasonByMandantId(mandantId, activityId, waitingReasonCode);
   }
 
   private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
@@ -428,6 +447,36 @@ public class DriverRepository {
     @Override
     protected Void doInBackground(Void... params) {
       _dao.deleteAll();
+      return null;
+    }
+  }
+  
+  static class insertDelayReasonAsyncTask extends AsyncTask<DelayReasonEntity, Void, Void> {
+    
+    private DelayReasonDAO dao;
+    
+    insertDelayReasonAsyncTask(DelayReasonDAO dao) {
+      this.dao = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(final DelayReasonEntity... params) {
+      dao.insert(params[0]);
+      return null;
+    }
+  }
+  
+  static class updateDelayReasonAsyncTask extends AsyncTask<DelayReasonEntity, Void, Void> {
+    
+    private DelayReasonDAO dao;
+    
+    updateDelayReasonAsyncTask(DelayReasonDAO dao) {
+      this.dao = dao;
+    }
+    
+    @Override
+    protected Void doInBackground(final DelayReasonEntity... params) {
+      dao.update(params[0]);
       return null;
     }
   }
