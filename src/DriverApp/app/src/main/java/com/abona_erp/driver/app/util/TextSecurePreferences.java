@@ -48,7 +48,11 @@ public class TextSecurePreferences {
   public static final String LANGUAGE_PREF                     = "pref_language";
   
 
+  public static final String UPDATE_LANG_CODE    = "pref_update_lang_code";
+  public static final String UPDATE_ALL_TASKS    = "pref_update_all_tasks";
+  public static final String UPDATE_DELAY_REASON = "pref_update_delay_reason";
   
+  public static final String PREF_MANDANT_ID = "pref_mandant_id";
 
 
   public static boolean enableLoginPage() {
@@ -59,6 +63,14 @@ public class TextSecurePreferences {
   public static void setLoginPageEnable(boolean enable) {
     setBooleanPreference(ContextUtils.getApplicationContext(),
       PREF_LOGIN, enable);
+  }
+  
+  public static int getMandantID() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(), PREF_MANDANT_ID, 0);
+  }
+  
+  public static void setMandantID(int mandantID) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_MANDANT_ID, mandantID);
   }
   
   public static String getClientID() {
@@ -147,6 +159,30 @@ public class TextSecurePreferences {
   public static void setPushRegistered(Context context, boolean registered) {
     Log.i(TAG, "Setting push registered: " + registered);
     setBooleanPreference(context, REGISTERED_GCM_PREF, registered);
+  }
+  
+  public static boolean isUpdateLangCode() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(), UPDATE_LANG_CODE, false);
+  }
+  
+  public static void setUpdateLangCode(boolean update) {
+    setBooleanPreference(ContextUtils.getApplicationContext(), UPDATE_LANG_CODE, update);
+  }
+  
+  public static boolean isUpdateAllTasks() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(), UPDATE_ALL_TASKS, false);
+  }
+  
+  public static void setUpdateAllTasks(boolean update) {
+    setBooleanPreference(ContextUtils.getApplicationContext(), UPDATE_ALL_TASKS, update);
+  }
+  
+  public static boolean isUpdateDelayReason() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(), UPDATE_DELAY_REASON, false);
+  }
+  
+  public static void setUpdateDelayReason(boolean update) {
+    setBooleanPreference(ContextUtils.getApplicationContext(), UPDATE_DELAY_REASON, update);
   }
   
   public static String getFCMSenderID(Context context) {

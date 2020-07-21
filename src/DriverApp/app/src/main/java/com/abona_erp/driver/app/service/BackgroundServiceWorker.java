@@ -35,6 +35,7 @@ import com.abona_erp.driver.app.data.model.DeviceProfileItem;
 import com.abona_erp.driver.app.data.model.Header;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
+import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.PageEvent;
@@ -46,6 +47,7 @@ import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
 import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.util.DateConverterUTC;
 import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -139,6 +141,20 @@ public class BackgroundServiceWorker extends Service {
   
           if (!isDeviceUpdateToken()) {
             allowRequest = true;
+            mHandler.postDelayed(this, delay);
+            return;
+          }
+          
+          if (TextSecurePreferences.isUpdateLangCode()) {
+            updateLangCode();
+            mHandler.postDelayed(this, delay);
+            return;
+          } else if (TextSecurePreferences.isUpdateAllTasks()) {
+            updateGetAllTasks();
+            mHandler.postDelayed(this, delay);
+            return;
+          } else if (TextSecurePreferences.isUpdateDelayReason()) {
+            DelayReasonUtil.getDelayReasonsFromService(TextSecurePreferences.getMandantID());
             mHandler.postDelayed(this, delay);
             return;
           }
@@ -238,7 +254,7 @@ public class BackgroundServiceWorker extends Service {
                     @Override
                     public void onSuccess(Notify notify) {
     
-                      notify.setData(App.getInstance().gsonUtc.toJson(resultOfAction.getCommItem()));
+                      notify.setData(App.getInstance().gson.toJson(resultOfAction.getCommItem()));
                       AsyncTask.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -297,57 +313,33 @@ public class BackgroundServiceWorker extends Service {
                 }
                 header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
                 header.setTimestampSenderUTC(/*commItemDB.getHeader().getTimestampSenderUTC()*/new Date());
-//                Log.i(TAG, "***************************** " + commItemDB.getHeader().getTimestampSenderUTC());
                 commItemReq.setHeader(header);
   
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
+                  
+                  ActivityItem _currActivity = commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId());
+                  
                   // SET ACTIVITY ITEM CHANGE:
                   ActivityItem activityItem = new ActivityItem();
                   activityItem.setDeviceId(DeviceUtils.getUniqueIMEI(getApplicationContext()));
-                  activityItem.setTaskId(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getTaskId());
-                  activityItem.setMandantId(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getMandantId());
-                  activityItem.setActivityId(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getActivityId());
-                  activityItem.setName(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getName());
-                  activityItem.setDescription(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getDescription());
+                  activityItem.setTaskId(_currActivity.getTaskId());
+                  activityItem.setMandantId(_currActivity.getMandantId());
+                  activityItem.setActivityId(_currActivity.getActivityId());
+                  activityItem.setName(_currActivity.getName());
+                  activityItem.setDescription(_currActivity.getDescription());
     
-                  if (commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getStatus().ordinal() == 0) {
+                  if (_currActivity.getStatus().ordinal() == 0) {
                     activityItem.setStatus(ActivityStatus.PENDING);
-                  } else if (commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getStatus().ordinal() == 1) {
+                  } else if (_currActivity.getStatus().ordinal() == 1) {
                     activityItem.setStatus(ActivityStatus.RUNNING);
-                    try {
-                      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                      sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                      String _format = sdf.format(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getStarted());
-        
-                      //String _format = App.getSdfUtc().format(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(j).getActivityId()).getStarted());
-                      //Date started =
-        
-                      Date started = sdf.parse(_format);
-                      activityItem.setStarted(started);
-        
-                      String _endFormat = sdf.format(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getFinished());
-                      Date finished = sdf.parse(_endFormat);
-                      activityItem.setFinished(finished);
-                    } catch (ParseException e) {
-                      e.printStackTrace();
-                    }
-                  } else if (commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getStatus().ordinal() == 2) {
+                    activityItem.setStarted(_currActivity.getStarted());
+                    activityItem.setFinished(_currActivity.getFinished());
+                  } else if (_currActivity.getStatus().ordinal() == 2) {
                     activityItem.setStatus(ActivityStatus.FINISHED);
-                    try {
-                      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                      sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                      String _format = sdf.format(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getStarted());
-                      Date started = sdf.parse(_format);
-                      activityItem.setStarted(started);
-        
-                      String _endFormat = sdf.format(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getFinished());
-                      Date finished = sdf.parse(_endFormat);
-                      activityItem.setFinished(finished);
-                    } catch (ParseException e) {
-                      e.printStackTrace();
-                    }
+                    activityItem.setStarted(_currActivity.getStarted());
+                    activityItem.setFinished(_currActivity.getFinished());
                   }
-                  activityItem.setSequence(commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getSequence());
+                  activityItem.setSequence(_currActivity.getSequence());
                   commItemReq.setActivityItem(activityItem);
     
                   Call<ResultOfAction> call = App.getInstance().apiManager.getActivityApi().activityChange(commItemReq);
@@ -702,6 +694,84 @@ public class BackgroundServiceWorker extends Service {
     return true;
   }
   
+  private void updateGetAllTasks() {
+    
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        Call<ResultOfAction> call = App.getInstance().apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+        call.enqueue(new Callback<ResultOfAction>() {
+          @Override
+          public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+            if (response.isSuccessful() && response.body() != null) {
+              handleGetAllTasks(response.body());
+            } else {
+              
+              switch (response.code()) {
+                case 401: handleAccessToken(); break;
+              }
+            }
+          }
+  
+          @Override
+          public void onFailure(Call<ResultOfAction> call, Throwable t) {
+    
+          }
+        });
+      }
+    });
+  }
+  
+  private void updateLangCode() {
+
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+    
+        List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
+        
+        CommItem commItem = new CommItem();
+        Header header = new Header();
+        header.setDataType(DataType.DEVICE_PROFILE);
+        header.setTimestampSenderUTC(new Date());
+        header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+        commItem.setHeader(header);
+        
+        DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
+        deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
+        deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+        deviceProfileItem.setModel(deviceProfiles.get(0).getDeviceModel());
+        deviceProfileItem.setManufacturer(deviceProfiles.get(0).getDeviceManufacturer());
+        //deviceProfileItem.setUpdatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getModifiedAt()));
+        deviceProfileItem.setLanguageCode(TextSecurePreferences.getLanguage(ContextUtils.getApplicationContext()));
+        commItem.setDeviceProfileItem(deviceProfileItem);
+        
+        Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
+        call.enqueue(new Callback<ResultOfAction>() {
+          @Override
+          public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+            if (response.isSuccessful()) {
+              if (response.body() != null && response.body().getIsSuccess() && !response.body().getIsException()) {
+                TextSecurePreferences.setUpdateLangCode(false);
+              }
+            } else {
+              
+              // error case:
+              switch (response.code()) {
+                case 401: handleAccessToken(); break;
+              }
+            }
+          }
+  
+          @Override
+          public void onFailure(Call<ResultOfAction> call, Throwable t) {
+    
+          }
+        });
+      }
+    });
+  }
+  
   private boolean isDeviceRegistrated() {
     if (!TextSecurePreferences.isDeviceFirstTimeRun()) {
       Log.i(TAG, ">>>>>>> DEVICE FIRST TIME RUN NOT FINISHED - WAITING...");
@@ -735,7 +805,7 @@ public class BackgroundServiceWorker extends Service {
             deviceProfileItem.setManufacturer(deviceProfiles.get(0).getDeviceManufacturer());
             deviceProfileItem.setCreatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getCreatedAt()));
             deviceProfileItem.setUpdatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getModifiedAt()));
-            deviceProfileItem.setLanguageCode(deviceProfiles.get(0).getLanguageCode());
+            deviceProfileItem.setLanguageCode(deviceProfiles.get(0).getLanguageCode().replace("_", "-"));
             deviceProfileItem.setVersionCode(deviceProfiles.get(0).getVersionCode());
             deviceProfileItem.setVersionName(deviceProfiles.get(0).getVersionName());
             commItem.setDeviceProfileItem(deviceProfileItem);
@@ -864,6 +934,96 @@ public class BackgroundServiceWorker extends Service {
         }
       }
     });
+  }
+  
+  private void handleGetAllTasks(ResultOfAction resultOfAction) {
+    
+    if (resultOfAction == null) return;
+    
+    try {
+      if (resultOfAction.getIsSuccess() && !resultOfAction.getIsException()) {
+        if (resultOfAction.getAllTask() != null && resultOfAction.getAllTask().size() > 0) {
+          for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
+  
+            TaskItem taskItem = resultOfAction.getAllTask().get(i);
+            if (taskItem.getMandantId() == null) continue;
+            int mandantId = taskItem.getMandantId();
+            TextSecurePreferences.setMandantID(mandantId);
+  
+            if (taskItem.getTaskId() == null) continue;
+            int taskId = taskItem.getTaskId();
+            
+            mNotifyDAO.loadNotifyByTaskMandantId(mandantId, taskId)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribeOn(Schedulers.io())
+              .subscribe(new DisposableSingleObserver<Notify>() {
+                @Override
+                public void onSuccess(Notify notify) {
+                  CommItem commItem = new CommItem();
+                  commItem = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
+                  if (commItem != null) {
+                    commItem.setTaskItem(taskItem);
+  
+                    notify.setRead(false);
+                    notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
+                    notify.setData(App.getInstance().gson.toJson(commItem));
+                    notify.setModifiedAt(AppUtils.getCurrentDateTime());
+  
+                    if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
+                      notify.setStatus(0);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
+                      notify.setStatus(50);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.CMR)) {
+                      notify.setStatus(90);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.FINISHED)) {
+                      notify.setStatus(100);
+                    } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
+                      notify.setStatus(51);
+                    }
+                    
+                    mNotifyDAO.updateNotify(notify);
+                  }
+                }
+  
+                @Override
+                public void onError(Throwable e) {
+  
+                  CommItem commItem = new CommItem();
+                  commItem.setTaskItem(taskItem);
+  
+                  // Nicht vorhanden:
+                  Notify notify = new Notify();
+                  notify.setMandantId(mandantId);
+                  notify.setTaskId(taskId);
+                  notify.setRead(false);
+                  notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
+                  notify.setOrderNo(taskItem.getOrderNo());
+                  notify.setCreatedAt(AppUtils.getCurrentDateTime());
+                  notify.setModifiedAt(AppUtils.getCurrentDateTime());
+                  notify.setData(App.getInstance().gsonUtc.toJson(commItem));
+  
+                  if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
+                    notify.setStatus(0);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
+                    notify.setStatus(50);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.CMR)) {
+                    notify.setStatus(90);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.FINISHED)) {
+                    notify.setStatus(100);
+                  } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
+                    notify.setStatus(51);
+                  }
+  
+                  mNotifyDAO.updateNotify(notify);
+                }
+              });
+          }
+          TextSecurePreferences.setUpdateAllTasks(false);
+        }
+      }
+    } catch (Exception e) {
+      Log.d(TAG, e.getMessage());
+    }
   }
   
   private void handleAccessToken() {

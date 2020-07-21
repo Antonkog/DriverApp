@@ -84,9 +84,11 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
   
   @Override
   public void onClick(View view, int position, Notify notify, boolean selected) {
+    App.selectedTaskPos = position;
     notify.setCurrentlySelected(selected);
     if (!notify.getRead()) {
       notify.setRead(true);
+      viewModel.update(notify);
   
       DriverDatabase db = DriverDatabase.getDatabase();
       OfflineConfirmationDAO dao = db.offlineConfirmationDAO();

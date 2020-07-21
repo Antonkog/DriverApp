@@ -161,9 +161,11 @@ public class CompletedFragment extends Fragment implements CommonItemClickListen
 
   @Override
   public void onClick(View view, int position, Notify item, boolean selected) {
+    App.selectedTaskPos = position;
     item.setCurrentlySelected(selected);
     if (!item.getRead()) {
       item.setRead(true);
+      viewModel.update(item);
   
       DriverDatabase db = DriverDatabase.getDatabase();
       OfflineConfirmationDAO dao = db.offlineConfirmationDAO();

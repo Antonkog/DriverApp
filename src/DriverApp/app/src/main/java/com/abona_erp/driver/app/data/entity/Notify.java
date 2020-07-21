@@ -7,6 +7,7 @@ import androidx.room.TypeConverters;
 
 import com.abona_erp.driver.app.util.BoolConverter;
 import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.util.DateConverterWithoutUTC;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +46,7 @@ public class Notify {
   private ArrayList<String> documentUrls = new ArrayList<>();
   
   @ColumnInfo(name = "task_due_finish")
-  @TypeConverters({DateConverter.class})
+  @TypeConverters({DateConverterWithoutUTC.class})
   private Date taskDueFinish;
   
   @ColumnInfo(name = "created_at")

@@ -28,6 +28,7 @@ public class App extends BaseApp {
   protected static App sInstance;
   
   public static boolean isAppInForeground = false;
+  public static int selectedTaskPos = -1;
 
   @Inject
   @Named("GSON") //that is NOT how di should be implemented, instances should be injected right where we need them, but for now just cleaning the
