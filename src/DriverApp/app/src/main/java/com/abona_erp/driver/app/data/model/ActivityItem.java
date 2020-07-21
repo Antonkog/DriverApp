@@ -1,5 +1,8 @@
 package com.abona_erp.driver.app.data.model;
 
+import androidx.room.TypeConverters;
+
+import com.abona_erp.driver.app.util.DateConverterUTC;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -30,10 +33,12 @@ public class ActivityItem {
   
   @SerializedName("Started")
   @Expose
+  //@TypeConverters(DateConverterUTC.class)
   private Date started;
   
   @SerializedName("Finished")
   @Expose
+  //@TypeConverters(DateConverterUTC.class)
   private Date finished;
   
   @SerializedName("Status")

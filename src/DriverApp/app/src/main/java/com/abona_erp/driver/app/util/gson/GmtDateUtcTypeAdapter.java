@@ -20,27 +20,23 @@ import java.util.TimeZone;
 public class GmtDateUtcTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
   
   private final DateFormat dateFormat;
-  private final DateFormat dateFormatUtc;
-  private final DateFormat dateFormat2;
+  private final DateFormat dateFormat_2;
+  private final DateFormat dateFormat_3;
   
   public GmtDateUtcTypeAdapter() {
-    dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-      Locale.getDefault());
+    dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    dateFormat_2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    dateFormat_3 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     
-    dateFormatUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-      Locale.getDefault());
-    dateFormatUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
-    
-    dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
-      Locale.getDefault());
-    dateFormat2.setTimeZone(TimeZone.getTimeZone("UTC"));
+    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    dateFormat_2.setTimeZone(TimeZone.getTimeZone("UTC"));
+    dateFormat_3.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
   
   @Override
   public synchronized JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext) {
-    synchronized (dateFormatUtc) {
-      String dateFormatAsString = dateFormatUtc.format(date);
-      Log.i("-------------", dateFormatAsString + " ************************************************");
+    synchronized (dateFormat) {
+      String dateFormatAsString = dateFormat.format(date);
       return new JsonPrimitive(dateFormatAsString);
     }
   }
@@ -48,18 +44,22 @@ public class GmtDateUtcTypeAdapter implements JsonSerializer<Date>, JsonDeserial
   @Override
   public synchronized Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
     try {
-      synchronized (dateFormatUtc) {
-        Log.i("*********", dateFormatUtc.parse(jsonElement.getAsString()) + " *************************************");
-        return dateFormatUtc.parse(jsonElement.getAsString());
+      synchronized (dateFormat) {
+        return dateFormat.parse(jsonElement.getAsString());
       }
     } catch (ParseException e) {
       try {
-        synchronized (dateFormat2) {
-          Log.i("*********", dateFormat2.parse(jsonElement.getAsString()) + " *************************************");
-          return dateFormat2.parse(jsonElement.getAsString());
+        synchronized (dateFormat_2) {
+          return dateFormat_2.parse(jsonElement.getAsString());
         }
       } catch (ParseException e1) {
-        throw new JsonSyntaxException(jsonElement.getAsString(), e);
+        try {
+          synchronized (dateFormat_3) {
+            return dateFormat_3.parse(jsonElement.getAsString());
+          }
+        } catch (ParseException e2) {
+          throw new JsonSyntaxException(jsonElement.getAsString(), e2);
+        }
       }
     }
   }

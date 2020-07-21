@@ -108,6 +108,7 @@ public class ApplicationModule {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE);
         gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
         JsonDeserializer deserializer = new IntegerJsonDeserializer();

@@ -73,6 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
 
@@ -153,6 +154,8 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   public CommItemAdapter(Context context, CommonItemClickListener listener) {
     super(context, listener);
     mCommItem = new CommItem();
+    
+    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
   
   @Override
@@ -171,6 +174,12 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
     ExpandableItem expandableItem = (ExpandableItem) holder.getView(R.id.expandable_item);
     if(getItem(position).isCurrentlySelected()) expandableItem.showNow();
     else expandableItem.hideNow();
+    
+    if (App.selectedTaskPos == position) {
+      expandableItem.showNow();
+    } else {
+      expandableItem.hideNow();
+    }
 
     expandableItem.setOnClickListener(new DoubleClickListener() {
       @Override

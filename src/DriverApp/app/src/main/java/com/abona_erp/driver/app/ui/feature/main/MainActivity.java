@@ -748,13 +748,13 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                 public void onSuccess(Notify notify) {
                   
                   CommItem commItem = new CommItem();
-                  commItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
+                  commItem = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                   if (commItem != null) {
                     commItem.setTaskItem(taskItem);
                     
                     notify.setRead(false);
                     notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
-                    notify.setData(App.getInstance().gsonUtc.toJson(commItem));
+                    notify.setData(App.getInstance().gson.toJson(commItem));
                     notify.setModifiedAt(AppUtils.getCurrentDateTime());
   
                     if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {

@@ -53,6 +53,8 @@ import com.kongzue.dialog.util.InputInfo;
 import com.kongzue.dialog.util.TextInfo;
 import com.kongzue.dialog.v3.InputDialog;
 
+import org.w3c.dom.Text;
+
 import java.util.Date;
 import java.util.List;
 
@@ -107,6 +109,12 @@ public class SettingsFragment extends Fragment {
     super.onResume();
   }
   
+  private void updateLanguageCode() {
+    TextSecurePreferences.setUpdateLangCode(true);
+    TextSecurePreferences.setUpdateAllTasks(true);
+    TextSecurePreferences.setUpdateDelayReason(true);
+  }
+  
   private void initComponents(@NonNull View root) {
     
     mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_settings_back);
@@ -124,52 +132,46 @@ public class SettingsFragment extends Fragment {
     mDeviceCreated = (AsapTextView)root.findViewById(R.id.tv_device_created);
     mDeviceUpdated = (AsapTextView)root.findViewById(R.id.tv_device_updated);
     
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
-        List<DeviceProfile> deviceProfiles = mDeviceDao.getDeviceProfiles();
-        if (deviceProfiles.size() > 0) {
-          DeviceProfile devProf = deviceProfiles.get(0);
+    try {
+      List<DeviceProfile> deviceProfiles = mDeviceDao.getDeviceProfiles();
+      if (deviceProfiles.size() > 0) {
+        DeviceProfile devProf = deviceProfiles.get(0);
     
-          if (devProf.getDeviceId() != null) {
-            AsyncTask.execute(new Runnable() {
-              @Override
-              public void run() {
-                mDeviceId.setText(devProf.getDeviceId());
-              }
-            });
-          } else {
-            mDeviceId.setText("<Error By Device>");
-          }
+        if (devProf.getDeviceId() != null) {
+          mDeviceId.setText(devProf.getDeviceId());
+        } else {
+          mDeviceId.setText("<Error By Device>");
+        }
     
-          if (devProf.getDeviceModel() != null) {
-            mDeviceModel.setText(devProf.getDeviceModel());
-          } else {
-            mDeviceModel.setText("<Unknown Device Model>");
-          }
-          
-          if (devProf.getDeviceManufacturer() != null) {
-            mDeviceManufacturer.setText(devProf.getDeviceManufacturer());
-          } else {
-            mDeviceManufacturer.setText("<Unknown Manufacturer>");
-          }
-          
-          if (devProf.getDeviceSerial() != null) {
-            mDeviceSerial.setText(devProf.getDeviceSerial());
-          } else {
-            mDeviceSerial.setText("<Unknown Serial>");
-          }
-          
-          if (devProf.getCreatedAt() != null) {
-            mDeviceCreated.setText(devProf.getCreatedAt());
-          }
-          
-          if (devProf.getModifiedAt() != null) {
-            mDeviceUpdated.setText(devProf.getModifiedAt());
-          }
+        if (devProf.getDeviceModel() != null) {
+          mDeviceModel.setText(devProf.getDeviceModel());
+        } else {
+          mDeviceModel.setText("<Unknown Device Model>");
+        }
+    
+        if (devProf.getDeviceManufacturer() != null) {
+          mDeviceManufacturer.setText(devProf.getDeviceManufacturer());
+        } else {
+          mDeviceManufacturer.setText("<Unknown Manufacturer>");
+        }
+    
+        if (devProf.getDeviceSerial() != null) {
+          mDeviceSerial.setText(devProf.getDeviceSerial());
+        } else {
+          mDeviceSerial.setText("<Unknown Serial>");
+        }
+    
+        if (devProf.getCreatedAt() != null) {
+          mDeviceCreated.setText(devProf.getCreatedAt());
+        }
+    
+        if (devProf.getModifiedAt() != null) {
+          mDeviceUpdated.setText(devProf.getModifiedAt());
         }
       }
-    });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     
     mLlLanguage = (LinearLayout)root.findViewById(R.id.ll_settings_language);
     mLlLanguage.setOnClickListener(new View.OnClickListener() {
@@ -196,6 +198,8 @@ public class SettingsFragment extends Fragment {
                 DynamicLanguageContextWrapper.updateContext(getContext(),
                   TextSecurePreferences.getLanguage(getContext()));
                 getActivity().recreate();
+  
+                updateLanguageCode();
               break;
               
               case 1: // DEUTSCH
@@ -203,6 +207,8 @@ public class SettingsFragment extends Fragment {
                 DynamicLanguageContextWrapper.updateContext(getContext(),
                   TextSecurePreferences.getLanguage(getContext()));
                 getActivity().recreate();
+                
+                updateLanguageCode();
                 break;
                 
               case 2: // RUSSISCH
@@ -210,6 +216,8 @@ public class SettingsFragment extends Fragment {
                 DynamicLanguageContextWrapper.updateContext(getContext(),
                   TextSecurePreferences.getLanguage(getContext()));
                 getActivity().recreate();
+                
+                updateLanguageCode();
                 break;
                 
               case 3: // POLNISCH
@@ -217,6 +225,8 @@ public class SettingsFragment extends Fragment {
                 DynamicLanguageContextWrapper.updateContext(getContext(),
                   TextSecurePreferences.getLanguage(getContext()));
                 getActivity().recreate();
+                
+                updateLanguageCode();
                 break;
             }
           }

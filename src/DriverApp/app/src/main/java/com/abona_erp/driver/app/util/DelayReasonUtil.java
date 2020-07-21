@@ -101,6 +101,8 @@ public class DelayReasonUtil {
                 }
               }
             }
+            
+            TextSecurePreferences.setUpdateDelayReason(false);
           } else {
             // Ignore.
           }
