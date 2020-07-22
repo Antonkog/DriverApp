@@ -16,6 +16,7 @@ import com.abona_erp.driver.app.data.remote.RemoteConstants;
 import com.abona_erp.driver.app.data.remote.TaskService;
 import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
+import com.abona_erp.driver.app.data.remote.interceptor.MockInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
@@ -36,6 +37,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiManager implements Manager {
@@ -146,23 +148,25 @@ public class ApiManager implements Manager {
     }
     return mFileDownloadService;
   }
-  
+
   private Retrofit provideRetrofit(String url) {
-    
+
     return new Retrofit.Builder()
-      .baseUrl(url)
-      .client(provideOkHttpClient())
-      .addConverterFactory(GsonConverterFactory.create(App.getInstance().gson))
-      .build();
+            .baseUrl(url)
+            .client(provideOkHttpClient())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(App.getInstance().gson))
+            .build();
   }
-  
+
   private Retrofit provideRetrofitUtc(String url) {
-    
+
     return new Retrofit.Builder()
-      .baseUrl(url)
-      .client(provideOkHttpClient())
-      .addConverterFactory(GsonConverterFactory.create(App.getInstance().gsonUtc))
-      .build();
+            .baseUrl(url)
+            .client(provideOkHttpClient())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(App.getInstance().gsonUtc))
+            .build();
   }
   
   private OkHttpClient provideOkHttpClient() {
@@ -183,6 +187,8 @@ public class ApiManager implements Manager {
     //String UA = System.getProperty("http.agent");
     httpClient.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", versionName));
     httpClient.addInterceptor(new RequestInterceptor());
+    if(BuildConfig.DEBUG && App.isTesting())
+    httpClient.addInterceptor(new MockInterceptor());
     httpClient.addInterceptor(new NetworkConnectionInterceptor() {
       @Override
       public boolean isInternetAvailable() {
