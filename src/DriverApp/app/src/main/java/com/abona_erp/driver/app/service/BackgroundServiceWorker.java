@@ -393,7 +393,17 @@ public class BackgroundServiceWorker extends Service {
                           if (response.body().getCommItem() != null) {
                             notify.setData(App.getInstance().gson.toJson(response.body().getCommItem()));
                             notify.setRead(false);
-                            notify.setStatus(response.body().getCommItem().getTaskItem().getTaskStatus());
+                            if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+                              notify.setStatus(0);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+                              notify.setStatus(50);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+                              notify.setStatus(90);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+                              notify.setStatus(100);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
+                              notify.setStatus(51);
+                            }
                             notify.setTaskDueFinish(response.body().getCommItem().getTaskItem().getTaskDueDateFinish());
               
                             AsyncTask.execute(new Runnable() {
@@ -542,8 +552,17 @@ public class BackgroundServiceWorker extends Service {
               
                             notify.setData(App.getInstance().gson.toJson(response.body().getCommItem()));
                             notify.setRead(false);
-                            notify.setStatus(response.body().getCommItem().getTaskItem().getTaskStatus());
-
+                            if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+                              notify.setStatus(0);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+                              notify.setStatus(50);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+                              notify.setStatus(90);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+                              notify.setStatus(100);
+                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
+                              notify.setStatus(51);
+                            }
                             notify.setTaskDueFinish(response.body().getCommItem().getTaskItem().getTaskDueDateFinish());
               
                             AsyncTask.execute(new Runnable() {
@@ -904,7 +923,7 @@ public class BackgroundServiceWorker extends Service {
       lastActivity.setConfirmStatus(confirmationStatus);
     }
     if (statusType != -1) {
-      lastActivity.setIntStatus(statusType);
+      lastActivity.setStatusType(statusType);
     }
     
     AsyncTask.execute(new Runnable() {

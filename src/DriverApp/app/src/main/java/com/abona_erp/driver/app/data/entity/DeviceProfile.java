@@ -1,22 +1,9 @@
 package com.abona_erp.driver.app.data.entity;
 
-import android.content.Context;
-import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import com.abona_erp.driver.app.BuildConfig;
-import com.abona_erp.driver.app.util.DeviceUtils;
-import com.abona_erp.driver.app.util.TextSecurePreferences;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 @Entity(tableName = "device_profile")
 public class DeviceProfile {
@@ -55,26 +42,7 @@ public class DeviceProfile {
   @ColumnInfo(name = "modified_at")
   //@TypeConverters({DateConverter.class})
   private String modifiedAt;
-
-
-  public void initFirstTime(Context context) {
-    setId(1);
-    setDeviceId(DeviceUtils.getUniqueIMEI(context));
-    setInstanceId(TextSecurePreferences.getFcmToken(context));
-    setDeviceModel(Build.MODEL);
-    setDeviceManufacturer(Build.MANUFACTURER);
-    setDeviceSerial(DeviceUtils.getUniqueIMEI(context));
-    setLanguageCode(Locale.getDefault().toString());
-    setVersionCode(BuildConfig.VERSION_CODE);
-    setVersionName(BuildConfig.VERSION_NAME);
-
-    DateFormat dfUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            Locale.getDefault());
-    dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
-    Date currentTimestamp = new Date();
-    setCreatedAt(dfUtc.format(currentTimestamp));
-    setModifiedAt(dfUtc.format(currentTimestamp));
-  }
+  
   public int getId() {
     return id;
   }

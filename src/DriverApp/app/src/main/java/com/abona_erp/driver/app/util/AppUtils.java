@@ -13,7 +13,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import com.abona_erp.driver.app.logging.Log;
-import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.io.File;
@@ -89,10 +88,10 @@ public class AppUtils {
         return parsedNum.toString();
       } catch (RuntimeException e) {
         Log.e(AppUtils.class.getCanonicalName(), " parsing exception : string from server based on :" + orderNo);
-        return Constants.empty_str;
+        return "-";
       }
     }
-    return Constants.empty_str;
+    return "-";
   }
   public static boolean isNetworkConnected(Context context) {
     ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

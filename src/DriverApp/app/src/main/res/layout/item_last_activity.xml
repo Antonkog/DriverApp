@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/root_last_activity"
+  android:orientation="horizontal"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/spacing_smlarge"
+    android:layout_marginStart="@dimen/spacing_smlarge"
+    android:gravity="center_horizontal">
+
+    <View
+      android:layout_width="1dp"
+      android:layout_height="match_parent"
+      android:layout_centerHorizontal="true"
+      android:background="@color/grey_80"
+      />
+
+    <RelativeLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/spacing_large">
+
+      <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="@dimen/spacing_mlarge"
+        android:layout_height="@dimen/spacing_mlarge"
+        android:tint="@color/clrIcon"
+        app:srcCompat="@drawable/shape_round_solid"
+        />
+
+      <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_last_activity_icon"
+        android:layout_width="@dimen/spacing_middle"
+        android:layout_height="@dimen/spacing_middle"
+        android:layout_centerInParent="true"
+        tools:src="@drawable/abona_36x36"
+        />
+
+    </RelativeLayout>
+
+  </RelativeLayout>
+
+  <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingTop="@dimen/spacing_large"
+    android:paddingLeft="@dimen/spacing_large"
+    android:paddingRight="@dimen/spacing_large">
+
+    <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_last_activity_customer"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_vertical"
+          android:layout_weight="1"
+          android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+          android:textStyle="bold"
+          android:textColor="@color/clrFont"
+          android:maxLines="2"
+          android:ellipsize="end"
+          tools:text="DAIMLER AG"
+          />
+
+        <View
+          android:layout_width="@dimen/spacing_medium"
+          android:layout_height="0dp"
+          />
+
+        <androidx.appcompat.widget.AppCompatImageView
+          android:id="@+id/iv_last_activity_done_all"
+          android:layout_width="16dp"
+          android:layout_height="16dp"
+          android:tint="@color/grey_40"
+          android:src="@drawable/ic_done_all"
+          android:visibility="visible"
+          />
+
+      </LinearLayout>
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_last_activity_order_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/status_pending_bg"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        tools:text="Order No"
+        />
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_small"
+        />
+
+      <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_last_activity_task_id"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@drawable/status_pending_bg"
+          android:textColor="#fff"
+          android:textSize="10sp"
+          tools:text="110"
+          />
+
+        <View
+          android:layout_width="@dimen/spacing_small"
+          android:layout_height="0dp"
+          />
+
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tv_last_activity_status_type"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@drawable/status_pending_bg"
+          android:textColor="#fff"
+          android:textSize="10sp"
+          tools:text="UPDATED"
+          />
+
+      </LinearLayout>
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_small"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_last_activity_action_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        tools:background="@drawable/bg_action_type_pick_up"
+        />
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_small"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_last_activity_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/status_pending_bg"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        tools:text="Do., 19 Dez. 2019 14:02:40"
+        />
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</LinearLayout>

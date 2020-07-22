@@ -26,7 +26,6 @@ import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
-import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
@@ -57,11 +56,12 @@ import com.kongzue.dialog.util.DialogSettings;
 import com.kongzue.dialog.v3.MessageDialog;
 
 import java.lang.reflect.Type;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
+
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -70,6 +70,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 public class NotificationService extends JobService implements MediaPlayer.OnPreparedListener {
   
   private static final String TAG = NotificationService.class.getSimpleName();
@@ -218,7 +219,17 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
                   notify.setPercentFinished((int)Math.round(mCommItem.getPercentItem().getPercentFinished()));
                 }
               }
-              notify.setStatus(mCommItem.getTaskItem().getTaskStatus());
+              if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+                notify.setStatus(0);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+                notify.setStatus(50);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+                notify.setStatus(90);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+                notify.setStatus(100);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
+                notify.setStatus(51);
+              }
               notify.setTaskDueFinish(mCommItem.getTaskItem().getTaskDueDateFinish());
               notify.setOrderNo(mCommItem.getTaskItem().getOrderNo());
               notify.setModifiedAt(AppUtils.getCurrentDateTime());
@@ -233,7 +244,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
                   public void onSuccess(LastActivity lastActivity) {
                     lastActivity.setCustomer(mCommItem.getTaskItem().getKundenName());
                     lastActivity.setOrderNo(AppUtils.parseOrderNo(mCommItem.getTaskItem().getOrderNo()));
-                    lastActivity.setStatusType(LastActivity.UPDATE);
+                    lastActivity.setStatusType(1);
                     lastActivity.setConfirmStatus(0);
                     lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
   
@@ -308,7 +319,17 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
               }
               notify.setData(raw);
               notify.setRead(false);
-              notify.setStatus(mCommItem.getTaskItem().getTaskStatus());
+              if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+                notify.setStatus(0);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+                notify.setStatus(50);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+                notify.setStatus(90);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+                notify.setStatus(100);
+              } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
+                notify.setStatus(51);
+              }
               notify.setTaskDueFinish(mCommItem.getTaskItem().getTaskDueDateFinish());
               notify.setOrderNo(mCommItem.getTaskItem().getOrderNo());
               notify.setCreatedAt(AppUtils.getCurrentDateTime());

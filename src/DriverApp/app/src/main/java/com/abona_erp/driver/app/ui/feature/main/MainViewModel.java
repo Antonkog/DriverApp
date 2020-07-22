@@ -57,8 +57,27 @@ public class MainViewModel extends AndroidViewModel {
 
   LiveData<Integer> getNotReadNotificationCount() {
     return mNotReadNotificationCount;
-}
+  }
+  
+  LiveData<Integer> getRowCount() {
+    return mRowCount;
+  }
 
+  LiveData<List<LastActivity>> getAllLastActivityItems() {
+    return mAllLastActivityItems;
+  }
+
+  LiveData<List<Notify>> getAllPendingNotifications() {
+    return mAllPendingNotifications;
+  }
+
+  LiveData<List<Notify>> getAllRunningNotifications() {
+    return mAllRunningNotifications;
+  }
+
+  LiveData<List<Notify>> getAllCMRNotifications() {
+    return mAllCMRNotifications;
+  }
 
   LiveData<List<Notify>> getAllCompletedNotifications() {
     return mAllCompletedNotifications;
@@ -67,18 +86,6 @@ public class MainViewModel extends AndroidViewModel {
   Single<List<Notify>> getAllTasksByMandantAndOrderNo(int mandantID, int orderNo) {
     return mRepository.getAllTasksByOrderNo(mandantID, orderNo);
   }
-  Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
-    return mRepository.getNotifyByMandantTaskId(mandantId, taskId);
-  }
-
-  Single<Notify> getNotifyByTaskId(int taskId) {
-    return mRepository.getNotifyByTaskId(taskId);
-  }
-
-  Single<LastActivity> getLastActivityByTaskClientId(int taskId, int clientId) {
-    return mRepository.getLastActivityByTaskClientId(taskId, clientId);
-  }
-
   
   void insert(LogItem item) {
     mRepository.insert(item);
@@ -90,10 +97,6 @@ public class MainViewModel extends AndroidViewModel {
 
   void insert(LastActivity lastActivity) {
     mRepository.insert(lastActivity);
-  }
-
-  void delete(LastActivity lastActivity) {
-    mRepository.delete(lastActivity);
   }
 
   void update(Notify notify) {
@@ -118,7 +121,6 @@ public class MainViewModel extends AndroidViewModel {
   
   // -----------------------------------------------------------------------------------------------
   // DEVICE PROFILE:
-
   void insert(DeviceProfile deviceProfile) {
     mRepository.insert(deviceProfile);
   }
@@ -126,5 +128,18 @@ public class MainViewModel extends AndroidViewModel {
   void update(DeviceProfile deviceProfile) {
     mRepository.update(deviceProfile);
   }
-
+  
+  //List<DeviceProfile> getAllDeviceProfiles() {
+  //  return mAllDeviceProfiles;
+  //}
+  // DEVICE PROFILE:
+  // -----------------------------------------------------------------------------------------------
+  
+  // -----------------------------------------------------------------------------------------------
+  // LAST ACTIVITY:
+  void delete(LastActivity lastActivity) {
+    mRepository.delete(lastActivity);
+  }
+  // LAST ACTIVITY:
+  // -----------------------------------------------------------------------------------------------
 }

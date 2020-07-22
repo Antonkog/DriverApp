@@ -144,19 +144,4 @@ public class ActivityItem {
   public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
     this.delayReasonItems = delayReasonItems;
   }
-  @Override
-  public String toString() {
-    return "ActivityItem{" +
-            "mandantId=" + mandantId +
-            ", taskId=" + taskId +
-            ", activityId=" + activityId +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            ", started=" + started +
-            ", finished=" + finished +
-            ", status=" + status +
-            ", sequence=" + sequence +
-            ", deviceId='" + deviceId + '\'' +
-            '}';
-  }
 }

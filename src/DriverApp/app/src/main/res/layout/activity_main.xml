@@ -4,107 +4,123 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginStart="@dimen/margin_sm"
+    android:layout_marginEnd="@dimen/spacing_medium"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/header_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/main_container"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/appCompatImageView"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="left"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_app_icon_driver"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image_logo"
-            android:layout_width="@dimen/icon_size_48"
-            android:layout_height="@dimen/icon_size_48"
-            android:layout_gravity="start"
-            android:layout_marginStart="@dimen/margin_sm"
-            android:src="@drawable/ic_app_icon_driver"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
-        <com.abona_erp.driver.app.ui.widget.AsapTextView
-            android:id="@+id/tv_vehicle_registration_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginStart="@dimen/margin_sm"
-            android:singleLine="true"
-            android:text="@string/registration_number"
-            android:textAllCaps="true"
-            android:textColor="#1F1C2C"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/image_logo"
-            app:layout_constraintStart_toEndOf="@+id/image_logo"
-            app:layout_constraintTop_toTopOf="@+id/image_logo" />
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/tv_vehicle_registration_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginStart="8dp"
+        android:singleLine="true"
+        android:text="@string/registration_number"
+        android:textAllCaps="true"
+        android:textColor="#1F1C2C"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView"
+        app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+        app:layout_constraintTop_toTopOf="@+id/appCompatImageView" />
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/tv_vehicle_client_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="left"
+      android:layout_marginTop="12dp"
+      android:ellipsize="marquee"
+      android:textColor="@color/grey_60"
+      android:textSize="12sp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/appCompatImageView"
+      tools:ignore="DuplicateIds"
+      tools:text="Hegeesvsvsv svslmann Express" />
 
 
-        <com.abona_erp.driver.app.ui.widget.AsapTextView
-            android:id="@+id/tv_vehicle_client_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginStart="@dimen/margin_sm"
-            android:ellipsize="marquee"
-            android:textColor="@color/grey_60"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_vehicle_registration_number"
-            app:layout_constraintStart_toEndOf="@+id/tv_vehicle_registration_number"
-            app:layout_constraintTop_toTopOf="@+id/tv_vehicle_registration_number"
-            tools:ignore="DuplicateIds"
-            tools:text="Hegeesvsvsv svslmann Express" />
+    <az.plainpie.PieView
+        android:id="@+id/mainPieView"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="left"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:inner_pie_padding="8"
+        app:layout_constraintBottom_toTopOf="@+id/main_container"
+        app:layout_constraintStart_toStartOf="@+id/main_container"
+        app:layout_constraintTop_toTopOf="parent"
+        app:percentage="75"
+        app:percentage_size="15" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="@dimen/icon_size_48"
-            android:layout_height="@dimen/icon_size_48"
-            android:layout_marginEnd="@dimen/margin_sm"
-            android:indeterminateTint="@color/clrAbona"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/menu_row"
-            app:layout_constraintTop_toTopOf="parent" />
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/task_stat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="8dp"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:text="@string/task_status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_vehicle_client_name" />
 
-        <include
-            android:id="@+id/menu_row"
-            layout="@layout/activity_main_header_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/lv_last_activity"
+        android:layout_width="180dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/task_stat"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/item_task_status" />
 
-        <View
-            android:id="@+id/top_divider"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/margin_sm"
-            android:background="@color/color_normal"
+    <include
+        android:id="@+id/menu_row"
+        layout="@layout/activity_main_header_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/image_logo" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <View
+        android:id="@+id/top_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/color_normal"
+        android:layout_marginLeft="@dimen/margin_sm"
+        app:layout_constraintBottom_toTopOf="@+id/main_container"
+        app:layout_constraintEnd_toEndOf="@+id/main_container"
+        app:layout_constraintStart_toStartOf="@+id/main_container" />
 
     <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margin_sm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header_container"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/lv_last_activity"
+        app:layout_constraintTop_toBottomOf="@id/menu_row"
         app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

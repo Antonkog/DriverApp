@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,7 +40,6 @@ import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
-import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.DueInCounterRunnable;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
@@ -83,9 +81,9 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
 
   private Resources _resources = ContextUtils.getApplicationContext().getResources();
   private Handler _handler = new Handler();
-  private DueInCounterRunnable dueInCounter;  
+  private DueInCounterRunnable dueInCounter;
+  
   private static int mCountProgressSteps = 0;
-  private LayoutInflater inflater;
   
   // HEADER:
   private AppCompatImageView iv_confirmation;
@@ -128,35 +126,18 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   private AppCompatImageButton btn_go_process;
   private AppCompatButton btn_go_map;
   private AppCompatButton btn_go_camera;
-  private AppCompatButton btn_go_document;  
-  private AsapTextView tv_due_in;
-  private AsapTextView tv_info_reference;
-  private AsapTextView tv_info_reference_title;
-  private AsapTextView tv_loading_order;
-  private AsapTextView tv_loading_order_title;
-  private AsapTextView tv_ref_id_1;
-  private AsapTextView tv_ref_id_1_title;
-  private AsapTextView tv_ref_id_2;
-  private AsapTextView tv_ref_id_2_title;
-  private AsapTextView tv_adr_class;
-  private AsapTextView tv_adr_class_title;
-  private AsapTextView tv_un_no;
-  private AsapTextView tv_un_no_title;
-  private AsapTextView tv_number_of_paletts;
-  private AsapTextView tv_number_of_paletts_title;
-  private AsapTextView tv_dpl;
-  private AsapTextView tv_dpl_title;
-  private AsapTextView tv_contact_title;
-  private AsapTextView tv_contact;
-  private AsapTextView tv_notes;
-  private AsapTextView tv_notes_title;
-  private AsapTextView tv_header_notes;
+  private AppCompatButton btn_go_document;
+  
   private AppCompatImageView iv_dangerous_goods;
   private AppCompatImageView iv_palette_info;
   private AppCompatImageView iv_notes;
   private AppCompatImageView iv_contacts;
+  
+  
+  
   private Map<Integer, Integer> badgeValues = new HashMap<>();
-  private Map<Integer, Integer> uploadedDocumentBadgeValues = new HashMap<>();  
+  private Map<Integer, Integer> uploadedDocumentBadgeValues = new HashMap<>();
+  
   BadgeSpan badgeSpan;
   Badge badge;
 
@@ -179,7 +160,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   
   @Override
   protected View createView(Context context, ViewGroup viewGroup, int viewType) {
-    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View view = inflater.inflate(R.layout.item_task_main, viewGroup, false);
     dueInCounter = new DueInCounterRunnable(_handler, context, tv_due_in, iv_warning, null, new Date());
     return view;
@@ -298,47 +279,6 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       }
   
       btn_contact_info = (AppCompatImageButton)expandableItem.getHeaderLayout().findViewById(R.id.btn_contact_info);
-      });
-      
-      iv_warning_icon = expandableItem.getHeaderLayout().findViewById(R.id.iv_warning_icon);
-      tv_due_in = expandableItem.getHeaderLayout().findViewById(R.id.tv_due_in);
-      tv_header_notes = expandableItem.getHeaderLayout().findViewById(R.id.tv_header_notes);
-      btn_contact_info = expandableItem.getHeaderLayout().findViewById(R.id.btn_contact_info);
-      AsapTextView tv_task_finish = expandableItem.getHeaderLayout().findViewById(R.id.tv_task_finish);
-      AsapTextView tv_order_no = expandableItem.getHeaderLayout().findViewById(R.id.tv_order_no);
-      AsapTextView tv_action_type = expandableItem.getHeaderLayout().findViewById(R.id.tv_action_type);
-      AsapTextView tv_destination_address = expandableItem.getHeaderLayout().findViewById(R.id.tv_destination_address);
-      AsapTextView tv_activity_step_status = expandableItem.getHeaderLayout().findViewById(R.id.tv_activity_step_status);
-      AsapTextView tv_activity_step_status_message = expandableItem.getHeaderLayout().findViewById(R.id.tv_activity_step_status_message);
-
-      iv_dangerous_goods = (AppCompatImageView)expandableItem.getContentLayout().findViewById(R.id.iv_dangerous_goods);
-      iv_palette_info = (AppCompatImageView)expandableItem.getContentLayout().findViewById(R.id.iv_palette_info);
-      iv_contacts = (AppCompatImageView)expandableItem.getContentLayout().findViewById(R.id.iv_contacts);
-      iv_notes = (AppCompatImageView)expandableItem.getContentLayout().findViewById(R.id.iv_notes);
-      AsapTextView tv_name = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_name);
-      AsapTextView tv_geo_data = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_geo_data);
-      AsapTextView tv_client = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_client);
-      AsapTextView tv_client_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_client_title);
-      tv_info_reference = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_info_reference);
-      tv_info_reference_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_info_reference_title);
-      tv_loading_order = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_loading_order);
-      tv_loading_order_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_loading_order_title);
-      tv_ref_id_1 = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_ref_id_1);
-      tv_ref_id_1_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_ref_id_1_title);
-      tv_ref_id_2 = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_ref_id_2);
-      tv_ref_id_2_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_ref_id_2_title);
-      tv_adr_class = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_adr_class);
-      tv_adr_class_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_adr_class_title);
-      tv_un_no = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_un_no);
-      tv_un_no_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_un_no_title);
-      tv_number_of_paletts = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_number_of_paletts);
-      tv_number_of_paletts_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_number_of_paletts_title);
-      tv_dpl = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_dpl);
-      tv_dpl_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_dpl_title);
-      tv_contact = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_contact);
-      tv_contact_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_contact_title);
-      tv_notes = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_notes);
-      tv_notes_title = (AsapTextView)expandableItem.getContentLayout().findViewById(R.id.tv_notes_title);
       btn_contact_info.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -419,18 +359,10 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       });
       
       btn_task_history = (AppCompatImageButton)expandableItem.getHeaderLayout().findViewById(R.id.btn_task_history);
-      btn_task_history.setOnClickListener(new View.OnClickListener() {  
-      ProgressBar pb_activity_step = (ProgressBar)expandableItem.getHeaderLayout().findViewById(R.id.pb_activity_step);;
-  
-      ConstraintLayout ll_sub_header = expandableItem.getHeaderLayout().findViewById(R.id.ll_sub_header);
-      LinearLayout ll_sub_content = (LinearLayout)expandableItem.getContentLayout().findViewById(R.id.ll_sub_content);
-      LinearLayout ll_sub_button_content = (LinearLayout)expandableItem.getContentLayout().findViewById(R.id.ll_sub_button_content);
-      View view_gap = (View)expandableItem.getHeaderLayout().findViewById(R.id.view_gap);
-      
-      ll_dangerous_goods = (LinearLayout)expandableItem.getContentLayout().findViewById(R.id.ll_dangerous_goods);
-      ll_dangerous_goods.setOnClickListener(new View.OnClickListener() {
+      btn_task_history.setOnClickListener(new View.OnClickListener() {
         @Override
-        public void onClick(View view) {    
+        public void onClick(View view) {
+    
         }
       });
       
@@ -438,6 +370,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       btn_task_info.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+  
           CustomTaskInfoDialog dialog = new CustomTaskInfoDialog((Activity)getContext(), commItem, 0);
           dialog.show();
           dialog.setCanceledOnTouchOutside(false);
@@ -457,12 +390,12 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
           getListener().onMapClick(item);
         }
       });
-      LinearLayout actContainer =  expandableItem.getContentLayout().findViewById(R.id.activity_container);
+  
       // LOGIC LOGIC LOGIC
-      synchronized (CommItemAdapter.this) {// here is activities for current task.
+      synchronized (CommItemAdapter.this) {
         if (commItem.getTaskItem().getTaskDueDateFinish() != null) {
           tv_task_finish.setText(sdf.format(commItem.getTaskItem().getTaskDueDateFinish()));
-          if (commItem.getTaskItem().getTaskStatus() != null) { //here is task status
+          if (commItem.getTaskItem().getTaskStatus() != null) {
             if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING) || commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
               enableDueInTimer(true, tv_due_in, iv_warning, commItem.getTaskItem().getTaskDueDateFinish());
             } else {
@@ -476,7 +409,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
         tv_order_no.setText(AppUtils.parseOrderNo(commItem.getTaskItem().getOrderNo()));
       }
   
-      if (commItem.getTaskItem().getActionType() != null) { ///here is task action type
+      if (commItem.getTaskItem().getActionType() != null) {
         ll_sub_header.setBackgroundColor(getActionTypeColor(commItem.getTaskItem().getActionType()));
         tv_action_type.setText(getActionTypeString(commItem.getTaskItem().getActionType()));
       }
@@ -492,7 +425,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
         if (commItem.getTaskItem().getAddress().getNation() != null) {
           nation = commItem.getTaskItem().getAddress().getNation();
           fk_flag.setCountryCode(nation);
-          address += nation + Constants.empty_str;
+          address += nation + " - ";
         }
         if (commItem.getTaskItem().getAddress().getZip() != null) {
           zip = commItem.getTaskItem().getAddress().getZip();
@@ -690,22 +623,15 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   private void applyNotes(List<NotesItem> notes) {
     if (notes == null || notes.size() <= 0) {
       btn_notes_info.setVisibility(View.GONE);
-      iv_notes.setVisibility(View.GONE);
-      tv_notes_title.setVisibility(View.GONE);
-      tv_notes.setVisibility(View.GONE);
-      tv_header_notes.setVisibility(View.GONE);
-      ll_notes.setVisibility(View.GONE);
       return;
     }
-    
-    ll_notes.setVisibility(View.VISIBLE);
-    iv_notes.setVisibility(View.VISIBLE);
     btn_notes_info.setVisibility(View.VISIBLE);
     
     String comment_text = _resources.getQuantityString(R.plurals.numberOfNotesAvailable, notes.size(), notes.size());
     
     for (int i = 0; i < notes.size(); i++) {
       if (notes.get(i).getNoteType().equals(EnumNoteType.HIGH)) {
+        tv_header_notes_minus.setVisibility(View.VISIBLE);
         tv_header_notes.setVisibility(View.VISIBLE);
         tv_header_notes.setText(comment_text);
         break;
@@ -748,7 +674,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       long hours = diff / 60;
   
       long days = hours / 24;
-      String d = diff < 0 ? Constants.empty_str : "";
+      String d = diff < 0 ? "-" : "";
       d += String.valueOf(Math.abs(days));
       dueInCounter.tv_DueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
   
