@@ -13,7 +13,6 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.model.DMSDocumentType;
-import com.abona_erp.driver.core.base.ContextUtils;
 
 public class CustomDMSDocumentTypeDialog extends Dialog implements View.OnClickListener {
   
@@ -40,25 +39,24 @@ public class CustomDMSDocumentTypeDialog extends Dialog implements View.OnClickL
   
   RadioGroup rg_group_1;
   RadioGroup rg_group_2;
-  
+  RadioGroup rg_group_3;
+  RadioGroup rg_group_4;
+  RadioButton rb_na;
   RadioButton rb_pod;
+  RadioButton rb_cmr;
   RadioButton rb_pallets_note;
   RadioButton rb_safety_certificate;
   RadioButton rb_shipment_image;
   RadioButton rb_damaged_shipment_image;
   RadioButton rb_damaged_vehicle_image;
   
-  AsapTextView btn_document_type_show_more;
-  
   private DMSDocumentType mDocumentType;
   private boolean isChecking = true;
-  private int mCheckedId = R.id.rb_pod;
-  private DMSDocumentType documentType = DMSDocumentType.POD_CMR;
+  private int mCheckedId = R.id.rb_na;
+  private DMSDocumentType documentType = DMSDocumentType.NA;
   
   private String mOrderNo;
   private int mActionType;
-  
-  private static boolean sIsExpanded = false;
   
   public CustomDMSDocumentTypeDialog(Activity a, String orderNo, DMSDocumentType documentType, OnSelectedTypeEventListener onSelectedTypeEventListener) {
     super(a);
@@ -90,48 +88,45 @@ public class CustomDMSDocumentTypeDialog extends Dialog implements View.OnClickL
     rg_group_1.setOnCheckedChangeListener(listener1);
     rg_group_2 = (RadioGroup)findViewById(R.id.rg_group_2);
     rg_group_2.setOnCheckedChangeListener(listener2);
-    
+    rg_group_3 = (RadioGroup)findViewById(R.id.rg_group_3);
+    rg_group_3.setOnCheckedChangeListener(listener3);
+    rg_group_4 = (RadioGroup)findViewById(R.id.rg_group_4);
+    rg_group_4.setOnCheckedChangeListener(listener4);
+    rb_na = (RadioButton)findViewById(R.id.rb_na);
+    rb_na.setChecked(true);
     rb_pod = (RadioButton)findViewById(R.id.rb_pod);
-    rb_pod.setChecked(true);
+    rb_cmr = (RadioButton)findViewById(R.id.rb_cmr);
     rb_pallets_note = (RadioButton)findViewById(R.id.rb_pallets_note);
     rb_safety_certificate = (RadioButton)findViewById(R.id.rb_safety_certificate);
     rb_shipment_image = (RadioButton)findViewById(R.id.rb_shipment_image);
     rb_damaged_shipment_image = (RadioButton)findViewById(R.id.rb_damaged_shipment_image);
     rb_damaged_vehicle_image = (RadioButton)findViewById(R.id.rb_damaged_vehicle_image);
     
-    btn_document_type_show_more = (AsapTextView)findViewById(R.id.btn_document_type_show_more);
-    btn_document_type_show_more.setOnClickListener(this);
-    
     switch (mDocumentType) {
-      case POD_CMR:
+      case POD:
         rb_pod.setChecked(true);
+        break;
+      case CMR:
+        rb_cmr.setChecked(true);
         break;
       case PALLETS_NOTE:
         rb_pallets_note.setChecked(true);
-        sIsExpanded = true;
-        showOrHideRadioButtons();
         break;
       case SAFETY_CERTIFICATE:
         rb_safety_certificate.setChecked(true);
-        sIsExpanded = true;
-        showOrHideRadioButtons();
         break;
       case SHIPMENT_IMAGE:
         rb_shipment_image.setChecked(true);
         break;
       case DAMAGED_SHIPMENT_IMAGE:
         rb_damaged_shipment_image.setChecked(true);
-        sIsExpanded = true;
-        showOrHideRadioButtons();
         break;
       case DAMAGED_VEHICLE_IMAGE:
         rb_damaged_vehicle_image.setChecked(true);
-        sIsExpanded = true;
-        showOrHideRadioButtons();
         break;
       case NA:
       default:
-        rb_pod.setChecked(true);
+        rb_na.setChecked(true);
         break;
     }
 
@@ -145,6 +140,14 @@ public class CustomDMSDocumentTypeDialog extends Dialog implements View.OnClickL
         rg_group_2.setOnCheckedChangeListener(null);
         rg_group_2.clearCheck();
         rg_group_2.setOnCheckedChangeListener(listener2);
+        
+        rg_group_3.setOnCheckedChangeListener(null);
+        rg_group_3.clearCheck();
+        rg_group_3.setOnCheckedChangeListener(listener3);
+        
+        rg_group_4.setOnCheckedChangeListener(null);
+        rg_group_4.clearCheck();
+        rg_group_4.setOnCheckedChangeListener(listener4);
         
         mCheckedId = checkedId;
         isChecking = false;
@@ -160,6 +163,14 @@ public class CustomDMSDocumentTypeDialog extends Dialog implements View.OnClickL
         rg_group_1.setOnCheckedChangeListener(null);
         rg_group_1.clearCheck();
         rg_group_1.setOnCheckedChangeListener(listener1);
+    
+        rg_group_3.setOnCheckedChangeListener(null);
+        rg_group_3.clearCheck();
+        rg_group_3.setOnCheckedChangeListener(listener3);
+        
+        rg_group_4.setOnCheckedChangeListener(null);
+        rg_group_4.clearCheck();
+        rg_group_4.setOnCheckedChangeListener(listener4);
         
         mCheckedId = checkedId;
         isChecking = false;
@@ -168,32 +179,62 @@ public class CustomDMSDocumentTypeDialog extends Dialog implements View.OnClickL
     }
   };
   
-  private void showOrHideRadioButtons() {
-    if (!sIsExpanded) {
-      sIsExpanded = true;
-      rb_pallets_note.setVisibility(View.VISIBLE);
-      rb_safety_certificate.setVisibility(View.VISIBLE);
-      rb_damaged_shipment_image.setVisibility(View.VISIBLE);
-      rb_damaged_vehicle_image.setVisibility(View.VISIBLE);
-      
-      btn_document_type_show_more.setText(ContextUtils.getApplicationContext().getResources().getString(R.string.less));
-    } else {
-      sIsExpanded = false;
-      rb_pallets_note.setVisibility(View.GONE);
-      rb_safety_certificate.setVisibility(View.GONE);
-      rb_damaged_shipment_image.setVisibility(View.GONE);
-      rb_damaged_vehicle_image.setVisibility(View.GONE);
-      
-      btn_document_type_show_more.setText(ContextUtils.getApplicationContext().getResources().getString(R.string.more));
+  private RadioGroup.OnCheckedChangeListener listener3 = new RadioGroup.OnCheckedChangeListener() {
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+      if (checkedId != -1 && isChecking) {
+        rg_group_1.setOnCheckedChangeListener(null);
+        rg_group_1.clearCheck();
+        rg_group_1.setOnCheckedChangeListener(listener1);
+    
+        rg_group_2.setOnCheckedChangeListener(null);
+        rg_group_2.clearCheck();
+        rg_group_2.setOnCheckedChangeListener(listener2);
+    
+        rg_group_4.setOnCheckedChangeListener(null);
+        rg_group_4.clearCheck();
+        rg_group_4.setOnCheckedChangeListener(listener4);
+        
+        mCheckedId = checkedId;
+        isChecking = false;
+      }
+      isChecking = true;
     }
-  }
+  };
+  
+  private RadioGroup.OnCheckedChangeListener listener4 = new RadioGroup.OnCheckedChangeListener() {
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+      if (checkedId != -1 && isChecking) {
+        rg_group_1.setOnCheckedChangeListener(null);
+        rg_group_1.clearCheck();
+        rg_group_1.setOnCheckedChangeListener(listener1);
+    
+        rg_group_2.setOnCheckedChangeListener(null);
+        rg_group_2.clearCheck();
+        rg_group_2.setOnCheckedChangeListener(listener2);
+    
+        rg_group_3.setOnCheckedChangeListener(null);
+        rg_group_3.clearCheck();
+        rg_group_3.setOnCheckedChangeListener(listener3);
+    
+        mCheckedId = checkedId;
+        isChecking = false;
+      }
+      isChecking = true;
+    }
+  };
   
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
       case R.id.btn_ok:
-        if (mCheckedId == R.id.rb_pod) {
-          mDocumentType = DMSDocumentType.POD_CMR;
+        if (mCheckedId == R.id.rb_na) {
+          mDocumentType = DMSDocumentType.NA;
+        } else if (mCheckedId == R.id.rb_pod) {
+          mDocumentType = DMSDocumentType.POD;
+        } else if (mCheckedId == R.id.rb_cmr) {
+          mDocumentType = DMSDocumentType.CMR;
         } else if (mCheckedId == R.id.rb_pallets_note) {
           mDocumentType = DMSDocumentType.PALLETS_NOTE;
         } else if (mCheckedId == R.id.rb_safety_certificate) {
@@ -210,9 +251,6 @@ public class CustomDMSDocumentTypeDialog extends Dialog implements View.OnClickL
         
         onSelectedTypeEventListener.selectedEvent(mDocumentType);
         dismiss();
-        break;
-      case R.id.btn_document_type_show_more:
-        showOrHideRadioButtons();
         break;
       default:
         dismiss();

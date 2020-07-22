@@ -207,8 +207,10 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
   
   private String getDocumentType(DMSDocumentType documentType) {
     switch (documentType) {
-      case POD_CMR:
+      case POD:
         return "POD";
+      case CMR:
+        return "CMR";
       case PALLETS_NOTE:
         return "PN";
       case SAFETY_CERTIFICATE:

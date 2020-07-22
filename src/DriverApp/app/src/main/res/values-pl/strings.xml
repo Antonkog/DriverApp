@@ -122,9 +122,6 @@
   <string name="current_location">Aktualna lokalizacja</string>
   <string name="destination_location">Miejsce docelowe</string>
 
-  <string name="more">Więcej</string>
-  <string name="less">Mniej</string>
-
   <string name="pending">Otwarte\u0020</string>
   <string name="running">W toku\u0020</string>
   <string name="cmr">CMR\u0020</string>

@@ -1,94 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
+  android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <LinearLayout
-    android:orientation="vertical"
+  <RadioGroup
+    android:id="@+id/rg_group_1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-    <RadioGroup
-      android:id="@+id/rg_group_1"
-      android:layout_width="match_parent"
+    <RadioButton
+      android:id="@+id/rb_na"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:orientation="vertical">
-
-      <RadioButton
-        android:id="@+id/rb_pod"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/document_type_pod"
-        />
-
-      <RadioButton
-        android:id="@+id/rb_shipment_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/document_type_si"
-        />
-
-    </RadioGroup>
-
-    <RadioGroup
-      android:id="@+id/rg_group_2"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="vertical">
-
-      <RadioButton
-        android:id="@+id/rb_pallets_note"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/document_type_pn"
-        android:visibility="gone"
-        />
-
-      <RadioButton
-        android:id="@+id/rb_safety_certificate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/document_type_sc"
-        android:visibility="gone"
-        />
-
-      <RadioButton
-        android:id="@+id/rb_damaged_shipment_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/document_type_dsi"
-        android:visibility="gone"
-        />
-
-      <RadioButton
-        android:id="@+id/rb_damaged_vehicle_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/document_type_dvi"
-        android:visibility="gone"
-        />
-
-    </RadioGroup>
-
-    <com.abona_erp.driver.app.ui.widget.AsapTextView
-      android:id="@+id/btn_document_type_show_more"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:padding="8dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginBottom="8dp"
-      android:layout_gravity="center"
-      android:clickable="true"
-      android:focusable="true"
-      android:text="@string/more"
-      android:textSize="14sp"
-      android:textColor="@color/clrAbona"
+      android:layout_weight="1"
+      android:text="@string/document_type_na"
       />
 
-  </LinearLayout>
+    <RadioButton
+      android:id="@+id/rb_pod"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_pod"
+      />
 
-</androidx.core.widget.NestedScrollView>
+  </RadioGroup>
+
+  <RadioGroup
+    android:id="@+id/rg_group_2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+      android:id="@+id/rb_cmr"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_cmr"
+      />
+
+    <RadioButton
+      android:id="@+id/rb_pallets_note"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_pn"
+      />
+
+  </RadioGroup>
+
+  <RadioGroup
+    android:id="@+id/rg_group_3"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+      android:id="@+id/rb_safety_certificate"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_sc"
+      />
+
+    <RadioButton
+      android:id="@+id/rb_shipment_image"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_si"
+      />
+
+  </RadioGroup>
+
+  <RadioGroup
+    android:id="@+id/rg_group_4"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+      android:id="@+id/rb_damaged_shipment_image"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_dsi"
+      />
+
+    <RadioButton
+      android:id="@+id/rb_damaged_vehicle_image"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/document_type_dvi"
+      />
+
+  </RadioGroup>
+
+</LinearLayout>
