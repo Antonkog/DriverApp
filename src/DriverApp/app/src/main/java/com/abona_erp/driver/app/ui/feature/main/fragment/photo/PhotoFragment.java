@@ -491,10 +491,8 @@ public class PhotoFragment extends Fragment
                         String dmsType = "0";
                         if (uploadItem.getDocumentType().equals(DMSDocumentType.NA)) {
                           dmsType = "0";
-                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.POD)) {
+                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.POD_CMR)) {
                           dmsType = "24";
-                        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.CMR)) {
-                          dmsType = "25";
                         } else if (uploadItem.getDocumentType().equals(DMSDocumentType.PALLETS_NOTE)) {
                           dmsType = "26";
                         } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SAFETY_CERTIFICATE)) {
