@@ -14,8 +14,7 @@ import java.lang.reflect.Type;
 public enum DMSDocumentType {
   
   NA(0),
-  POD(24),
-  CMR(25),
+  POD_CMR(24),
   PALLETS_NOTE(26),
   SAFETY_CERTIFICATE(27),
   SHIPMENT_IMAGE(28),
