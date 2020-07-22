@@ -197,9 +197,6 @@
   <string name="preference_language">Language</string>
   <string name="preference_language_show">English</string>
   <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
-
-  <string name="more">More</string>
-  <string name="less">Less</string>
   <!-- MULTILANG -->
 
   <string name="minus_string" translatable="false">-</string>
