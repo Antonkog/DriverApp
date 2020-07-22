@@ -35,6 +35,10 @@ import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
 
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.util.DialogSettings;
+import com.kongzue.dialog.v3.MessageDialog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -273,7 +277,374 @@ public class DetailFragment extends Fragment {
   
     mBtnBackActivity = (AppCompatButton)root.findViewById(R.id.btn_detail_back_activity);
     mBtnNextActivity = (AppCompatButton)root.findViewById(R.id.btn_detail_next_activity);
+    mBtnNextActivity.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        
+        if (disableButtonTwoSecs()) return;
+        
+        
+        applyButtonState();
+        
+        if (mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) && mCommItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
+          mNotify.setStatus(TaskStatus.FINISHED);
+          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+          mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+          mViewModel.update(mNotify);
+          
+          mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(new DisposableSingleObserver<LastActivity>() {
+              @Override
+              public void onSuccess(LastActivity lastActivity) {
+                lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+                lastActivity.setStatusType(LastActivity.DELETED);
   
+                ArrayList<String> _list = lastActivity.getDetailList();
+  
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                  Locale.getDefault());
+                LastActivityDetails _detail = new LastActivityDetails();
+                _detail.setDescription("DELETED");
+                _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+                _list.add(App.getInstance().gson.toJson(_detail));
+                lastActivity.setDetailList(_list);
+                lastActivity.setVisible(false);
+  
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    mViewModel.update(lastActivity);
+                  }
+                });
+              }
+  
+              @Override
+              public void onError(Throwable e) {
+    
+              }
+            });
+  
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+          
+          mActivityList.clear();
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+              mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                mCommItem.getTaskItem().getActionType(),
+                mCommItem.getTaskItem().getActivities().get(j)));
+            }
+            mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
+              .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+            
+            boolean fFinished = false;
+            for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+              if (mCommItem.getTaskItem().getActivities().get(j).getStatus().equals(ActivityStatus.FINISHED)) {
+                if (j == mCommItem.getTaskItem().getActivities().size()-1) {
+                  fFinished = true;
+                  mBtnNextActivity.setText(getContext().getResources().getString(R.string.action_finished));
+                }
+                continue;
+              }
+            }
+            
+            if (!fFinished) {
+              // -----------------------------------------------------------------------------------
+              // Check is Previous Task available?
+              if (mCommItem.getTaskItem().getPreviousTaskId() != null && mCommItem.getTaskItem().getPreviousTaskId() > 0) {
+                mViewModel.getNotifyByTaskId(mCommItem.getTaskItem().getPreviousTaskId()).observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new DisposableSingleObserver<Notify>() {
+                    @Override
+                    public void onSuccess(Notify notify) {
+                      CommItem item = new CommItem();
+                      item  = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
+                      if (item != null) {
+                        if (!item.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+                          AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                              MessageDialog.build((AppCompatActivity)getContext())
+                                .setStyle(DialogSettings.STYLE.STYLE_IOS)
+                                .setTheme(DialogSettings.THEME.LIGHT)
+                                .setTitle(getContext().getResources().getString(R.string.action_warning_notice))
+                                .setMessage(getContext().getResources().getString(R.string.action_previous_task_message))
+                                .setOkButton(getContext().getResources().getString(R.string.action_ok),
+                                  new OnDialogButtonClickListener() {
+                                    @Override
+                                    public boolean onClick(BaseDialog baseDialog, View v) {
+                                      isPreviousTaskFinished = false;
+                                      return false;
+                                    }
+                                  })
+                                .show();
+                            }
+                          });
+                        } else {
+                          isPreviousTaskFinished = true;
+                        }
+                      }
+                    }
+  
+                    @Override
+                    public void onError(Throwable e) {
+                      isPreviousTaskFinished = true;
+                    }
+                  });
+              } else {
+                isPreviousTaskFinished = true;
+              }
+              if (!isPreviousTaskFinished) {
+                return;
+              }
+              // -----------------------------------------------------------------------------------
+              MessageDialog.build((AppCompatActivity)getContext())
+                .setStyle(DialogSettings.STYLE.STYLE_IOS)
+                .setTheme(DialogSettings.THEME.LIGHT)
+                .setTitle(getContext().getResources().getString(R.string.action_start_order))
+                .setMessage(getContext().getResources().getString(R.string.action_start_task_msg))
+                .setOkButton(getContext().getResources().getString(R.string.action_start),
+                  new OnDialogButtonClickListener() {
+                    @Override
+                    public boolean onClick(BaseDialog baseDialog, View v) {
+                      isPreviousTaskFinished = false;
+                      mCommItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                      mCommItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                      mCommItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                      mNotify.setStatus(TaskStatus.RUNNING);
+                      mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+                      mViewModel.update(mNotify);
+                      applyButtonState();
+  
+                      mActivityList.clear();
+                      if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                        for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                          mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                            mCommItem.getTaskItem().getActionType(),
+                            mCommItem.getTaskItem().getActivities().get(j)));
+                        }
+                        mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
+                          .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                      }
+  
+                      setOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                      return false;
+                    }
+                  })
+                .setCancelButton(getContext().getResources().getString(R.string.action_cancel),
+                  new OnDialogButtonClickListener() {
+                    @Override
+                    public boolean onClick(BaseDialog baseDialog, View v) {
+                      return false;
+                    }
+                  })
+                .show();
+            } else {
+              mNotify.setStatus(TaskStatus.FINISHED);
+              mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+              mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+              mViewModel.update(mNotify);
+              applyButtonState();
+  
+              mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new DisposableSingleObserver<LastActivity>() {
+                  @Override
+                  public void onSuccess(LastActivity lastActivity) {
+                    
+                    lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+                    lastActivity.setStatusType(LastActivity.FINISHED_TASK);
+        
+                    ArrayList<String> _list = lastActivity.getDetailList();
+  
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                      Locale.getDefault());
+                    LastActivityDetails _detail = new LastActivityDetails();
+                    _detail.setDescription("FINISHED TASK");
+                    _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+                    _list.add(App.getInstance().gson.toJson(_detail));
+                    lastActivity.setDetailList(_list);
+        
+                    AsyncTask.execute(new Runnable() {
+                      @Override
+                      public void run() {
+                        mViewModel.update(lastActivity);
+                      }
+                    });
+                  }
+      
+                  @Override
+                  public void onError(Throwable e) {
+        
+                  }
+                });
+            }
+          }
+          
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+          
+          mActivityList.clear();
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
+              mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),
+                mCommItem.getTaskItem().getActionType(),
+                mCommItem.getTaskItem().getActivities().get(i)));
+            }
+            mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem()
+              .getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+            
+            boolean fFinished = false;
+            for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
+                  fFinished = true;
+                  mBtnNextActivity.setText("FINISHED");
+                }
+                continue;
+              }
+            }
+          }
+        
+          if (mCommItem.getTaskItem().getActivities().size() > 0) {
+            for (int i = 0; i < mCommItem.getTaskItem().getActivities().size(); i++) {
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
+                  mNotify.setStatus(TaskStatus.FINISHED);
+                  mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+                  mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+                  mViewModel.update(mNotify);
+                  applyButtonState();
+                  
+                  mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new DisposableSingleObserver<LastActivity>() {
+                      @Override
+                      public void onSuccess(LastActivity lastActivity) {
+                        lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+                        lastActivity.setStatusType(LastActivity.ERLEDIGT);
+  
+                        ArrayList<String> _list = lastActivity.getDetailList();
+  
+                        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                          Locale.getDefault());
+                        LastActivityDetails _detail = new LastActivityDetails();
+                        _detail.setDescription("ERLEDIGT");
+                        _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+                        _list.add(App.getInstance().gson.toJson(_detail));
+                        lastActivity.setDetailList(_list);
+                        lastActivity.setVisible(false);
+  
+                        AsyncTask.execute(new Runnable() {
+                          @Override
+                          public void run() {
+                            mViewModel.update(lastActivity);
+                          }
+                        });
+                      }
+  
+                      @Override
+                      public void onError(Throwable e) {
+    
+                      }
+                    });
+                }
+                continue;
+              }
+              
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
+                mCommItem.getTaskItem().getActivities().get(i).setFinished(AppUtils.getCurrentDateTimeUtc());
+                mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+                mViewModel.update(mNotify);
+  
+                setOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                
+                if (i < mCommItem.getTaskItem().getActivities().size()-1) {
+                  mCommItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
+                  mCommItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
+                  mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+                  mViewModel.update(mNotify);
+  
+                  setOfflineWork(mNotify.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                }
+  
+                mActivityList.clear();
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),mCommItem.getTaskItem().getActionType(), mCommItem.getTaskItem().getActivities().get(j)));
+                  }
+                }
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+  
+                if (i == mCommItem.getTaskItem().getActivities().size()-1) {
+                  mBtnNextActivity.setText("FINISHED");
+                }
+                break;
+              }
+  
+              if (mCommItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
+                mCommItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
+                mCommItem.getTaskItem().getActivities().get(i).setStarted(AppUtils.getCurrentDateTimeUtc());
+                mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+                mViewModel.update(mNotify);
+                
+                if (i != 0)
+                  setOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+  
+                mActivityList.clear();
+                if (mCommItem.getTaskItem().getActivities().size() > 0) {
+                  for (int j = 0; j < mCommItem.getTaskItem().getActivities().size(); j++) {
+                    mActivityList.add(new ActivityStep(mCommItem.getTaskItem().getTaskStatus(),mCommItem.getTaskItem().getActionType(), mCommItem.getTaskItem().getActivities().get(j)));
+                  }
+                }
+                mAdapter.setActivityStepItems(mActivityList, mCommItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED) ? true : false);
+                break;
+              }
+            }
+          }
+        
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+  
+          mNotify.setStatus(TaskStatus.FINISHED);
+          mCommItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+          mNotify.setData(App.getInstance().gsonUtc.toJson(mCommItem));
+          mViewModel.update(mNotify);
+          applyButtonState();
+          
+        } else if (mCommItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+          mViewModel.delete(mNotify);
+  
+          mViewModel.getLastActivityByTaskClientId(mCommItem.getTaskItem().getTaskId(), mCommItem.getTaskItem().getMandantId())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(new DisposableSingleObserver<LastActivity>() {
+              @Override
+              public void onSuccess(LastActivity lastActivity) {
+        
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    mViewModel.delete(lastActivity);
+                  }
+                });
+              }
+      
+              @Override
+              public void onError(Throwable e) {
+        
+              }
+            });
+  
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+        }
+  
+        applyButtonState();
+      }
+    });  
     mListView = (RecyclerView)root.findViewById(R.id.lv_activity_step);
     LinearLayoutManager llm = new LinearLayoutManager(getContext(),
       RecyclerView.VERTICAL, false);

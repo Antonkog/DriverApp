@@ -28,11 +28,9 @@ import com.abona_erp.driver.app.util.AppUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class DriverRepository {
@@ -255,7 +253,7 @@ public class DriverRepository {
           lastActivity.setClientId(commItem.getTaskItem().getMandantId());
           lastActivity.setCustomer(commItem.getTaskItem().getKundenName());
           lastActivity.setOrderNo(AppUtils.parseOrderNo(commItem.getTaskItem().getOrderNo()));
-          lastActivity.setStatusType(0);
+          lastActivity.setStatusType(LastActivity.NOT_CONFIRMED);
           lastActivity.setConfirmStatus(0);
           if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING) || commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
             lastActivity.setVisible(true);

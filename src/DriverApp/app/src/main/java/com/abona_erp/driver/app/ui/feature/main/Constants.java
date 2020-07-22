@@ -4,13 +4,15 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
 
-final class Constants {
+public final class Constants {
   
   private Constants() {
   }
   
   private static final String PACKAGE_NAME = "com.google.android.gms.location.Geofence";
-  
+
+  public static final String empty_str = " - ";
+
   static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
   
   /**

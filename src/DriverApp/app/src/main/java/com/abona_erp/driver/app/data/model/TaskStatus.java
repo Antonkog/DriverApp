@@ -1,5 +1,9 @@
 package com.abona_erp.driver.app.data.model;
 
+import android.content.Context;
+
+import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -32,7 +36,23 @@ public enum TaskStatus {
     }
     return PENDING;
   }
-  
+
+  public String getTextStatus(Context context) {
+    switch (taskStatus){
+      case 0:
+        return context.getString(R.string.pending);
+         case 50:
+        return context.getString(R.string.running);
+         case 51:
+        return context.getString(R.string.action_error);
+         case 90:
+        return context.getString(R.string.cmr);
+         case 100:
+        return context.getString(R.string.action_finished);
+      default: return Constants.empty_str;
+    }
+  }
+
   static class Serializer implements JsonSerializer<TaskStatus>, JsonDeserializer<TaskStatus> {
     
     @Override

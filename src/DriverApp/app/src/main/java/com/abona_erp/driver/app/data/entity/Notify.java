@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.util.BoolConverter;
 import com.abona_erp.driver.app.util.DateConverter;
 import com.abona_erp.driver.app.util.DateConverterWithoutUTC;
@@ -80,6 +81,7 @@ public class Notify {
     this.currentlySelected = currentlySelected;
   }
 
+
   public int getId() {
     return id;
   }
@@ -107,11 +109,30 @@ public class Notify {
   public int getStatus() {
     return status;
   }
-  
+
   public void setStatus(int status) {
     this.status = status;
   }
-  
+
+  public void setStatus(TaskStatus status) {
+    switch (status) {
+      case PENDING:
+        setStatus(0);
+        break;
+      case RUNNING:
+        setStatus(50);
+      case BREAK:
+        setStatus(51);
+        break;
+      case CMR:
+        setStatus(90);
+        break;
+      case FINISHED:
+        setStatus(100);
+        break;
+    }
+  }
+
   public int getMandantId() {
     return mandantId;
   }
