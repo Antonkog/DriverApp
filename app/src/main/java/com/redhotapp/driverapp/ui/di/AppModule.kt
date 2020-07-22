@@ -65,8 +65,8 @@ object AppModule {
         okHttpBuilder.connectTimeout(1, TimeUnit.MINUTES)
         okHttpBuilder.readTimeout(1, TimeUnit.MINUTES)
         okHttpBuilder.writeTimeout(1, TimeUnit.MINUTES)
-        okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
-        okHttpBuilder.addInterceptor(RequestInterceptor())
+//        okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
+//        okHttpBuilder.addInterceptor(RequestInterceptor())
         if (BuildConfig.DEBUG) {
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY

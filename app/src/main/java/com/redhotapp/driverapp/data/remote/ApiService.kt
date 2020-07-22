@@ -1,5 +1,6 @@
 package com.redhotapp.driverapp.data.remote
 
+import com.redhotapp.driverapp.data.model.TokenResponse
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.Response
 import retrofit2.http.*
@@ -7,7 +8,7 @@ import retrofit2.http.*
 interface ApiService {
     @FormUrlEncoded
     @POST("/authentication")
-    fun authentication(@Field("grant_type")  grantType :String, @Field("username")  username :String, @Field("password")  password :String) : Observable<Response<String>>
+    fun authentication(@Field("grant_type")  grantType :String, @Field("username")  username :String, @Field("password")  password :String) : Observable<Response<TokenResponse>>
 
 //
 //    @Headers("Content-Type:application/json; charset=UTF-8")

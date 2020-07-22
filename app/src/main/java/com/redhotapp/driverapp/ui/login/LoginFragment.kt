@@ -56,7 +56,6 @@ class LoginFragment : BaseFragment() {
 
         loginBinding.buttonLogIn.setOnClickListener {
             loginViewModel.authenticate(
-
                         loginBinding.editName.text.toString(),
                         loginBinding.editPassword.text.toString(),
                                 loginBinding.editClientId.text.toString()

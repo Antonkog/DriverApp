@@ -13,6 +13,7 @@ import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -20,6 +21,7 @@ class LoginViewModel
 @ViewModelInject constructor(private val api: ApiRepository, private val gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
 
 
+    val TAG = "LoginViewModel"
     enum class AuthenticationState {
         UNAUTHENTICATED,        // Initial state, the user needs to authenticate
         AUTHENTICATED  ,        // The user has authenticated successfully
@@ -37,12 +39,12 @@ class LoginViewModel
     }
 
     fun authenticate(username: String, password: String, clientId: String) {
-
-
         api.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread()).subscribe {
-                Log.e(LoginViewModel::class.java.canonicalName, it.toString())
-            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { result -> Log.e(TAG, result.body().toString()) },
+                { error -> Log.e(TAG, error.localizedMessage) }
+            )
 
 //        if (!true) {
 //            authenticationState.value = AuthenticationState.AUTHENTICATED

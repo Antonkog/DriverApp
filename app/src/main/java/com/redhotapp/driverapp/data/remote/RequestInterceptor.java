@@ -1,9 +1,5 @@
 package com.redhotapp.driverapp.data.remote;
 
-import com.google.android.material.internal.ContextUtils;
-import com.redhotapp.driverapp.App;
-import com.redhotapp.driverapp.data.local.Preferences;
-
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -17,10 +13,11 @@ public class RequestInterceptor implements Interceptor {
     Request.Builder builder = chain.request().newBuilder();
     builder.addHeader("Content-Type", "application/json");
     builder.addHeader("Accept", "application/json");
-    builder.addHeader("Authorization", "Bearer " +
-     "" //Preferences.Companion.getAccessToken( )
-    );
-    
+    builder.addHeader("Connection", "keep-alive");
+    builder.addHeader("cache-control", "no-cache");
+//    builder.addHeader("Authorization", "Bearer " +
+//     "" //Preferences.Companion.getAccessToken( )
+//    );
     return chain.proceed(builder.build());
   }
 }
