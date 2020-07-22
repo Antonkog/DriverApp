@@ -11,7 +11,6 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -40,7 +39,6 @@ import com.abona_erp.driver.app.data.model.PalletExchange;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.model.UploadItem;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
@@ -413,22 +411,6 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       LinearLayout actContainer =  expandableItem.getContentLayout().findViewById(R.id.activity_container);
       // LOGIC LOGIC LOGIC
       synchronized (CommItemAdapter.this) {// here is activities for current task.
-        if(commItem.getTaskItem().getActivities()!=null){
-          if(actContainer.getChildCount() == 0)
-          for(int i= 0; i < 3; i++){
-            View view = inflater.inflate(R.layout.item_activity_row, actContainer, false);
-            ((AsapTextView)view.findViewById(R.id.tv_last_activity_order_no)).setText("ex_1020/15/13");
-            ((AsapTextView)view.findViewById(R.id.tv_last_activity_timestamp)).setText("ex_Do., 19 Dez. 2019 14:02:40");
-            ((AsapTextView)view.findViewById(R.id.tv_last_activity_action_type)).setText("ex_UPDATED");
-            ((AsapTextView)view.findViewById(R.id.tv_last_activity_status_type)).setText("ex_NEW");
-            ((ImageView)view.findViewById(R.id.iv_last_activity_done_all)).setColorFilter(ContextCompat.getColor(view.getContext(), R.color.clrTaskFinished));
-            actContainer.addView(view);
-          }
-        } else {
-          Log.e(CommItemAdapter.class.getCanonicalName(), " no data ");
-        }
-
-
         if (commItem.getTaskItem().getTaskDueDateFinish() != null) {
           tv_task_finish.setText(sdf.format(commItem.getTaskItem().getTaskDueDateFinish()));
           if (commItem.getTaskItem().getTaskStatus() != null) { //here is task status
