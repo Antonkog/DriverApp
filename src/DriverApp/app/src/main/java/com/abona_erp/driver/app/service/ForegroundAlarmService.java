@@ -3,9 +3,7 @@ package com.abona_erp.driver.app.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -15,18 +13,23 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.model.TaskItem;
+import com.abona_erp.driver.app.data.remote.NetworkUtil;
 import com.abona_erp.driver.app.manager.ApiManager;
+import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
-import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.worker.NotifyWorker;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
@@ -38,7 +41,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class ForegroundAlarmService extends Service {
-    private static final String TAG = ForegroundAlarmService.class.getCanonicalName() ;
+    private static final String TAG = ForegroundAlarmService.class.getCanonicalName();
 
     @Inject
     ApiManager apiManager;
@@ -48,8 +51,6 @@ public class ForegroundAlarmService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    public static final String CHANNEL_ID = "ForegroundServiceChannel";
 
     @Override
     public void onCreate() {
@@ -61,41 +62,69 @@ public class ForegroundAlarmService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Notification notification = prepareNotification(getApplicationContext().getResources().getString(R.string.alarm_check_title),
                 getApplicationContext().getResources().getString(R.string.alarm_check_text)).build();
-        startForeground(1, notification);
+        startForeground(Constants.ALARM_CHECK_JOB_ID, notification);
 
-        checkTasks();
+        if (NetworkUtil.isConnected(getApplicationContext()))
+            checkTasks();
+        else {
+            if (!EventBus.getDefault().isRegistered(this))
+                EventBus.getDefault().register(this);
+        }
         return START_NOT_STICKY;
     }
 
-     private void checkTasks() {
-         apiManager.getTaskApi().getTasksSingle(DeviceUtils.getUniqueIMEI(getApplicationContext()))
+    private void checkTasks() {
+        apiManager.getTaskApi().getTasksSingle(DeviceUtils.getUniqueIMEI(getApplicationContext()))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(resultOfAction -> {
-                    if(resultOfAction.getAllTask()!= null && !resultOfAction.getAllTask().isEmpty()){
-                        for(TaskItem taskItem : resultOfAction.getAllTask()){
-                            startNotificationWithDelay(taskItem);
-                        }
-                    }else {
-                        Log.e(TAG, "no alarm tasks");
-                    }
-                });
+            if (resultOfAction.getAllTask() != null && !resultOfAction.getAllTask().isEmpty()) {
+                for (TaskItem taskItem : resultOfAction.getAllTask()) {
+                    startNotificationWithDelay(taskItem);
+                }
+            } else {
+                Log.e(TAG, "no alarm tasks");
+            }
+        });
     }
 
 
     private void startNotificationWithDelay(TaskItem taskItem) {
-        WorkManager mWorkManager = WorkManager.getInstance(App.getInstance());
+        WorkManager workManager = WorkManager.getInstance(App.getInstance());
 
-        long delay = taskItem.getTaskDueDateFinish().getTime() - (Constants.REPEAT_COUNT * Constants.REPEAT_TIME * 60 * 1000) - System.currentTimeMillis();
+        long delay = getAlarmDelay(taskItem);
 
         if(delay > 0){
-            Log.e(TAG, " alarm delay: secs " + delay/1000);
-            OneTimeWorkRequest taskAlarmRequest =
-                    new OneTimeWorkRequest.Builder(NotifyWorker.class)
-                           .setInputData(createInputDataForUri(taskItem.getTaskId()))
-                            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                            .build();
-            mWorkManager.enqueue(taskAlarmRequest);
+            Log.e(TAG, taskItem.getTaskId() + " alarm delay: secs " + delay/1000);
+            setOneTimeWork(taskItem.getTaskId(), workManager, delay);
+//            setRepeatWork(taskItem, workManager); //don't work properly when kill stop app
         }
+//        else {
+//            Log.e(TAG, taskItem.getTaskId() + " alarm time overdue " + delay/1000);
+//        }
+    }
+
+    public static long getAlarmDelay(TaskItem taskItem) {
+        return taskItem.getTaskDueDateFinish().getTime() - (Constants.REPEAT_COUNT * Constants.REPEAT_TIME * 60 * 1000) - System.currentTimeMillis();
+    }
+
+    private void setRepeatWork(TaskItem taskItem, WorkManager workManager) {
+        PeriodicWorkRequest periodicWorkRequest =
+                new PeriodicWorkRequest.Builder(NotifyWorker.class,
+                        Constants.REPEAT_TIME, TimeUnit.MINUTES, Constants.FLEX_TIME, TimeUnit.MINUTES)
+                        .setInputData(createInputDataForUri(taskItem.getTaskId()))
+                        .addTag(taskItem.getTaskId() + Constants.WORK_TAG_SUFFIX)
+                        .build();
+
+        workManager.enqueueUniquePeriodicWork(taskItem.getTaskId() + Constants.WORK_TAG_SUFFIX, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
+    }
+
+    public static void setOneTimeWork(int taskId, WorkManager workManager, long delay) {
+        OneTimeWorkRequest taskAlarmRequest =
+                new OneTimeWorkRequest.Builder(NotifyWorker.class)
+                        .setInputData(ForegroundAlarmService.createInputDataForUri(taskId))
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .build();
+        workManager.enqueue(taskAlarmRequest);
     }
 
     /**
@@ -111,7 +140,7 @@ public class ForegroundAlarmService extends Service {
 
     private NotificationCompat.Builder prepareNotification(String title, String message) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL_ID)
-             //   .setContentIntent(getPendingIntent())
+                //   .setContentIntent(getPendingIntent())
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
                 .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.mipmap.ic_launcher))
                 .setContentTitle(title)
@@ -127,15 +156,6 @@ public class ForegroundAlarmService extends Service {
             builder.setChannelId(Constants.NOTIFICATION_CHANNEL_ID);
         }
         return builder;
-    }
-
-    private PendingIntent getPendingIntent() {
-        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
-        // Create the TaskStackBuilder and add the intent, which inflates the back stack
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
-        // Get the PendingIntent containing the entire back stack
-        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @Override
@@ -156,10 +176,11 @@ public class ForegroundAlarmService extends Service {
     private static Calendar getTaskTime(TaskItem taskItem) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(taskItem.getTaskDueDateFinish());
-        int m  = Constants.REPEAT_COUNT;
-        calendar.add(Calendar.MINUTE, - (Constants.REPEAT_TIME * Constants.REPEAT_COUNT));
-        while (m > 0){
-            if(calendar.getTimeInMillis() < System.currentTimeMillis()) calendar.add(Calendar.MINUTE, Constants.REPEAT_TIME);
+        int m = Constants.REPEAT_COUNT;
+        calendar.add(Calendar.MINUTE, -(Constants.REPEAT_TIME * Constants.REPEAT_COUNT));
+        while (m > 0) {
+            if (calendar.getTimeInMillis() < System.currentTimeMillis())
+                calendar.add(Calendar.MINUTE, Constants.REPEAT_TIME);
             m--;
         }
 //        android.util.Log.d(TAG, "got time for alarm: " + calendar.getTime().toString() );
@@ -167,5 +188,10 @@ public class ForegroundAlarmService extends Service {
     }
 
 
-
+    @Subscribe
+    public void onMessageEvent(ConnectivityEvent event) {
+        if (event.isConnected()) {
+            checkTasks();
+        }
+    }
 }

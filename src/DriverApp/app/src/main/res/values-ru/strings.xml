@@ -147,4 +147,13 @@
   <string name="action">Действие</string>
   <string name="timestamp">Время</string>
     <string name="airplane_warning">Функция приложения ABONA Driver ограничена в режиме полета</string>
+
+  <string name="alarm_title">Пожалуйста, проверьте задание</string>
+  <string name="alarm_text">Время задания на исходе</string>
+
+  <string name="alarm_check_text">Я уведомлю вас перед окончанием времени на задание</string>
+
+  <string name="alarm_check_failed">Будильник не был установлен</string>
+  <string name="alarm_check_failed_reason">Причина: задание изменилось</string>
+  <string name="alarm_check_notime_reason">Причина: время задания окончено</string>
 </resources>

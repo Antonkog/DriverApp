@@ -8,17 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.model.TaskItem;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.manager.ApiManager;
 import com.abona_erp.driver.app.service.AlarmChecker;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
@@ -42,8 +42,9 @@ public class NotifyWorker extends Worker implements AlarmChecker {
     @Inject
     public ApiManager apiManager;
 
-    public Context appContext;
+    private Context appContext;
 
+    private Boolean taskTimeFinish = false;
 
     public NotifyWorker(
             @NonNull Context context,
@@ -58,8 +59,7 @@ public class NotifyWorker extends Worker implements AlarmChecker {
 
         int taskId = getInputData().getInt(Constants.EXTRAS_ALARM_TASK_ID, 0);
 
-        android.util.Log.e(TAG, " alarm work started: " + taskId);
-
+        Log.d(TAG, " alarm work started: " + taskId);
         showCheckingNotification();
 
         checkTaskExist(taskId).subscribe(exist -> {
@@ -67,8 +67,13 @@ public class NotifyWorker extends Worker implements AlarmChecker {
                 Log.d(TAG, "alarm task exist " + taskId);
                 showExistNotification(taskId);
             } else {
-                showNotExistNotification();
+                if (taskTimeFinish) {
+                    showTimeOverdueNotification();
+                } else {
+                    showNotExistNotification();
+                }
                 Log.d(TAG, "alarm task not found " + taskId);
+                WorkManager.getInstance(appContext).cancelAllWorkByTag(taskId + Constants.WORK_TAG_SUFFIX);
             }
             removeCheckingNotification(); //in this case onStopJob not called.
         });
@@ -77,7 +82,6 @@ public class NotifyWorker extends Worker implements AlarmChecker {
         // Indicate whether the work finished successfully with the Result
         return Result.success();
     }
-
 
     public void showCheckingNotification() {
         NotificationCompat.Builder builder = prepareNotification(appContext.getResources().getString(R.string.alarm_check_title), appContext.getResources().getString(R.string.alarm_check_text));
@@ -90,6 +94,11 @@ public class NotifyWorker extends Worker implements AlarmChecker {
     }
 
     public void showNotExistNotification() {
+        NotificationCompat.Builder builder = prepareNotification(appContext.getResources().getString(R.string.alarm_check_failed), appContext.getResources().getString(R.string.alarm_check_failed_reason));
+        notificationManager.notify(Constants.NOTIFICATION_NOT_EXIST_ALARM_ID, builder.build());
+    }
+
+    public void showTimeOverdueNotification() {
         NotificationCompat.Builder builder = prepareNotification(appContext.getResources().getString(R.string.alarm_check_failed), appContext.getResources().getString(R.string.alarm_check_failed_reason));
         notificationManager.notify(Constants.NOTIFICATION_NOT_EXIST_ALARM_ID, builder.build());
     }
@@ -134,7 +143,12 @@ public class NotifyWorker extends Worker implements AlarmChecker {
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(resultOfAction -> {
                     if (resultOfAction.getIsSuccess() && !resultOfAction.getAllTask().isEmpty()) {
+                        taskTimeFinish = false;
                         for (TaskItem taskItem : resultOfAction.getAllTask()) {
+                            if (checkTaskDelayed(taskItem)) {
+                                taskTimeFinish = true;
+                                return false;
+                            }
                             if (taskId == taskItem.getTaskId()) return true;
                         }
                     }
@@ -142,51 +156,7 @@ public class NotifyWorker extends Worker implements AlarmChecker {
                 });
     }
 
-
-
-
-
-    /**
-     * Create a Notification that is shown as a heads-up notification if possible.
-     *
-     * @param message Message shown on the notification
-     * @param context Context needed to create Toast
-     */
-    static void makeStatusNotification(String message, String title,  Context context, int notifID) {
-
-        // Make a channel if necessary
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the NotificationChannel, but only on API 26+ because
-            // the NotificationChannel class is new and not in the support library
-
-            NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.PACKAGE_NAME,
-                    NotificationManager.IMPORTANCE_HIGH);
-
-
-            // Add the channel
-            NotificationManager notificationManager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
-                .setContentTitle(title)
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setVibrate(new long[0])
-                .setWhen(System.currentTimeMillis());
-
-
-        // Show the notification
-        NotificationManagerCompat.from(context).notify(notifID, builder.build());
+    private boolean checkTaskDelayed(TaskItem taskItem) {
+       return taskItem.getTaskDueDateFinish().getTime() < System.currentTimeMillis();
     }
-
-
-
 }

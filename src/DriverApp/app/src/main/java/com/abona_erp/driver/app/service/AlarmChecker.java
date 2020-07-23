@@ -8,4 +8,5 @@ public interface AlarmChecker {
     void showCheckingNotification();
     void removeCheckingNotification();
     void showNotExistNotification();
+    void showTimeOverdueNotification();
 }
