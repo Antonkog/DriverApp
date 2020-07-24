@@ -133,6 +133,7 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation "androidx.work:work-runtime:2.3.4"
 
     // Room
     implementation "androidx.room:room-runtime:2.2.5"
@@ -152,16 +153,16 @@ dependencies {
     implementation Dep.Dagger.androidSupport
     annotationProcessor Dep.Dagger.androidProcessor
 
-    implementation "com.squareup.retrofit2:retrofit:2.6.2"
-    implementation "com.squareup.retrofit2:converter-gson:2.6.2"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.6.2"
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.2.0"
 
     // OkHttp:
-    implementation 'com.squareup.okhttp3:okhttp:4.2.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.1'
+    implementation "com.squareup.okhttp3:okhttp:4.7.2"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.7.2"
 
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
-    implementation "io.reactivex.rxjava2:rxjava:2.2.12"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.19"
 
     implementation 'com.google.code.gson:gson:2.8.6'
 
@@ -184,15 +185,10 @@ dependencies {
     implementation 'org.whispersystems:signal-service-android:2.13.9'
     implementation "com.github.skydoves:powermenu:2.1.2"
     api 'com.otaliastudios:cameraview:2.4.0'
-    //implementation 'com.github.tizisdeepan:gallerypicker:1.0.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.kongzue.dialog_v3x:dialog:3.1.8'
     implementation 'com.ramijemli.percentagechartview:percentagechartview:0.3.0'
     implementation 'com.pnikosis:materialish-progress:1.7'
-    implementation 'com.jaredrummler:colorpicker:1.1.0'
-    //implementation 'com.github.iamutkarshtiwari:Ananas:1.2.3'
-    //implementation 'me.jfenn.ColorPickerDialog:base:0.2.1'
-
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

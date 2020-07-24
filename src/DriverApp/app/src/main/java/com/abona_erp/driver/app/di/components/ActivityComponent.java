@@ -8,7 +8,6 @@ import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.DocumentViewAdapter;
-import com.abona_erp.driver.app.work.ActivityWorkManager;
 
 import dagger.Subcomponent;
 
@@ -21,6 +20,5 @@ public interface ActivityComponent {
     void inject(LoginActivity loginActivity);
     void inject(DocumentViewAdapter documentViewAdapter);
     void inject(BackgroundServiceWorker backgroundServiceWorker);
-    void inject(ActivityWorkManager activityWorkManager);
     void inject(PhotoFragment photoFragment);
 }

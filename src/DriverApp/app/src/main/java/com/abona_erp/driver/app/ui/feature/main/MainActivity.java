@@ -2,6 +2,8 @@ package com.abona_erp.driver.app.ui.feature.main;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -54,6 +56,7 @@ import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
+import com.abona_erp.driver.app.service.ForegroundAlarmService;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
@@ -112,6 +115,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+
 import az.plainpie.PieView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -121,7 +126,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends BaseActivity /*implements OnCompleteListener<Void>*/ {
-  
+
+  @Inject
+  public NotificationManager notificationManager;
+   @Inject
+  public AlarmManager alarmManager;
+
   private static final String TAG = MainActivity.class.getSimpleName();
   
   public static final int REQUEST_APP_SETTINGS = 321;
@@ -140,7 +150,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   private AppCompatImageView getAllTaskImage;
 
 
-  private NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
+  private NetworkChangeReceiver networkChangeReceiver;
 
   // VIEW MODEL:
   private MainViewModel mMainViewModel;
@@ -166,22 +176,22 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if(EventBus.getDefault().isRegistered(this))
-    EventBus.getDefault().unregister(this);
+    if(EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
+    unRegisterNetworkChangeReceiver();
   }
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    
+    injectDependency();
     if (TextSecurePreferences.enableLoginPage()) {
       Intent intent = new Intent(this, LoginActivity.class);
       startActivity(intent);
       finish();
       return;
     }
-    
+    registerNetworkChangeReceiver();
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOGIFY
     initializeLogify();
@@ -206,7 +216,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       findViewById(R.id.connectivity_image).setVisibility(View.GONE);
     }
     if(!EventBus.getDefault().isRegistered(this)) App.eventBus.register(this);
-    registerNetworkChangeReceiver();
 
     FirebaseInstanceId.getInstance().getInstanceId()
       .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
@@ -399,10 +408,26 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     App.eventBus.post(new TaskStatusEvent(TextSecurePreferences.getTaskPercentage(getBaseContext())));
   }
 
+  @Override
+  public void injectDependency() {
+    getActivityComponent().inject(this);
+  }
+
   private void registerNetworkChangeReceiver() {
+    if(networkChangeReceiver == null)
+    networkChangeReceiver = new NetworkChangeReceiver();
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
     registerReceiver(networkChangeReceiver, intentFilter);
+  }
+
+  private void unRegisterNetworkChangeReceiver() {
+    if(networkChangeReceiver!=null)
+    try {
+      unregisterReceiver(networkChangeReceiver);
+    } catch (IllegalArgumentException e){
+      Log.e(TAG, " Receiver not registered: com.abona_erp.driver.app.receiver.NetworkChangeReceiver");
+    }
   }
 
   private void hideMainActivityItems(){
@@ -731,8 +756,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     try {
       if (resultOfAction.getIsSuccess() && !resultOfAction.getIsException()) {
         if (resultOfAction.getAllTask() != null && resultOfAction.getAllTask().size() > 0) {
-          for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
-            
+          Intent serviceIntent = new Intent(this, ForegroundAlarmService.class);
+          startService(serviceIntent);
+
+           for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
+
             TaskItem taskItem = resultOfAction.getAllTask().get(i);
             if (taskItem.getMandantId() == null) continue;
             int mandantId = taskItem.getMandantId();
@@ -838,7 +866,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", e.getMessage());
     }
   }
-  
+
+
+
   private void handleAccessToken() {
     App.getInstance().apiManager.provideAuthClient().newCall(App.getInstance().apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
       @Override
@@ -849,7 +879,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
         if (response.isSuccessful()) {
           try {
-            String jsonData = response.body().string().toString();
+            String jsonData = response.body().string();
             JSONObject jobject = new JSONObject(jsonData);
             String access_token = jobject.getString("access_token");
             if (!TextUtils.isEmpty(access_token)) {

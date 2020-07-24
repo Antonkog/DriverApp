@@ -5,44 +5,28 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class NetworkUtil {
-    public static final int TYPE_WIFI = 1;
-    public static final int TYPE_MOBILE = 2;
-    public static final int TYPE_NOT_CONNECTED = 0;
-    public static final int NETWORK_STATUS_NOT_CONNECTED = 0;
-    public static final int NETWORK_STATUS_WIFI = 1;
-    public static final int NETWORK_STATUS_MOBILE = 2;
-
-
-    public static boolean isConnected(Context context){
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return( activeNetwork != null &&
-                    activeNetwork.isConnectedOrConnecting());
+    public static boolean isConnected(Context context) {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return deprecatedCheck(cm); //todo: use android.net.ConnectivityManager.NetworkCallback
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            Network network = cm.getActiveNetwork();
+//            if (network == null) return false;
+//            NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+//            if (capabilities == null) return false;
+//            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+//                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+//                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+//            ) return true;
+//            else return false;
+//        } else {
+//            return deprecatedCheck(cm);
+//        }
     }
-//    public static int getConnectivityStatus(Context context) {
-//        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        if (null != activeNetwork) {
-//            if(activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
-//                return TYPE_WIFI;
-//
-//            if(activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
-//                return TYPE_MOBILE;
-//        }
-//        return TYPE_NOT_CONNECTED;
-//    }
-//
-//    public static int getConnectivityStatusString(Context context) {
-//        int conn = NetworkUtil.getConnectivityStatus(context);
-//        int status = 0;
-//        if (conn == NetworkUtil.TYPE_WIFI) {
-//            status = NETWORK_STATUS_WIFI;
-//        } else if (conn == NetworkUtil.TYPE_MOBILE) {
-//            status = NETWORK_STATUS_MOBILE;
-//        } else if (conn == NetworkUtil.TYPE_NOT_CONNECTED) {
-//            status = NETWORK_STATUS_NOT_CONNECTED;
-//        }
-//        return status;
-//    }
+
+    @SuppressWarnings("deprecation")
+    private static boolean deprecatedCheck(ConnectivityManager cm) {
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return (activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting());
+    }
 }
