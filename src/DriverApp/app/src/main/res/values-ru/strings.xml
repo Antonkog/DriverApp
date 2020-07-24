@@ -136,6 +136,9 @@
 
   <string name="preference_language">Язык</string>
   <string name="preference_language_show">Русский</string>
+
+  <string name="more">Больше</string>
+  <string name="less">Меньше</string>
   <!-- MULTILANG -->
 
 
