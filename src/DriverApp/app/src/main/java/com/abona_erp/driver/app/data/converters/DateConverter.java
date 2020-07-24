@@ -1,4 +1,4 @@
-package com.abona_erp.driver.app.util;
+package com.abona_erp.driver.app.data.converters;
 
 import androidx.room.TypeConverter;
 

@@ -65,22 +65,14 @@ public abstract class DriverDatabase extends RoomDatabase {
     }
     return INSTANCE;
   }
-  /*
-  static final Migration MIGRATION_5_6 = new Migration(5, 6) {
-    @Override
-    public void migrate(@NonNull SupportSQLiteDatabase database) {
-    
-    }
-  };
-*/
+
   static final Migration MIGRATION_4_5 = new Migration(4, 5) {
     @Override
     public void migrate(@NonNull SupportSQLiteDatabase database) {
       database.execSQL("ALTER TABLE taskItem "
         + " ADD COLUMN confirmation_status INTEGER DEFAULT 0 NOT NULL");
-  
-      database.execSQL("CREATE TABLE IF NOT EXISTS `delay_reason_table` (`MandantId` integer NOT NULL primary key, `ActivityId` integer NOT NULL primary key, `WaitingReasonId` integer NOT NULL primary key, `ReasonText` TEXT, `TranslatedReasonText` TEXT, `Code` integer, `SubCode` integer,  `ModifiedAt` TEXT, `CreatedAt` TEXT)");
-      database.execSQL("CREATE TABLE IF NOT EXISTS `offline_delay_reason_entity` (`id` integer NOT NULL primary key autoincrement, `notify_id` integer, `waiting_reason_id` integer, `activity_id` integer, `mandant_id` integer, `task_id` integer, `delay_in_minutes` integer, `delay_source` integer, `comment` TEXT, `timestamp` TEXT)");
+      database.execSQL("CREATE TABLE IF NOT EXISTS `delay_reason_table` (`id` INTEGER NOT NULL primary key AUTOINCREMENT , `MandantId` INTEGER DEFAULT 0 NOT NULL , `ActivityId` INTEGER DEFAULT 0 NOT NULL , `WaitingReasonId` INTEGER DEFAULT 0 NOT NULL , `ReasonText` TEXT, `TranslatedReasonText` TEXT, `Code` INTEGER DEFAULT 0 NOT NULL, `SubCode` INTEGER DEFAULT 0 NOT NULL,  `ModifiedAt` TEXT, `CreatedAt` TEXT)");
+      database.execSQL("CREATE TABLE IF NOT EXISTS `offline_delay_reason_entity` (`id` INTEGER NOT NULL primary key autoincrement, `notify_id` INTEGER DEFAULT 0 NOT NULL, `waiting_reason_id` INTEGER DEFAULT 0 NOT NULL, `activity_id` INTEGER DEFAULT 0 NOT NULL, `mandant_id` INTEGER DEFAULT 0 NOT NULL, `task_id` INTEGER DEFAULT 0 NOT NULL, `delay_in_minutes` integer DEFAULT 0 NOT NULL, `delay_source` INTEGER DEFAULT 0 NOT NULL, `comment` TEXT, `timestamp` TEXT)");
     }
   };
 

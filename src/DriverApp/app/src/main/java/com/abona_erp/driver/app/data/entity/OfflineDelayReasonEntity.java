@@ -7,6 +7,8 @@ import androidx.room.TypeConverters;
 
 import com.abona_erp.driver.app.data.converters.TimestampConverter;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 
 @Entity(tableName = "offline_delay_reason_entity")
@@ -22,18 +24,22 @@ public class OfflineDelayReasonEntity {
   private int waitingReasonId;
   
   @ColumnInfo(name = "activity_id")
+  @NotNull
   private int activityId;
   
   @ColumnInfo(name = "mandant_id")
+  @NotNull
   private int mandantId;
   
   @ColumnInfo(name = "task_id")
   private int taskId;
   
   @ColumnInfo(name = "delay_in_minutes")
+  @NotNull
   private int delayInMinutes;
-  
+
   @ColumnInfo(name = "delay_source")
+  @NotNull
   private int delaySource;
   
   @ColumnInfo(name = "comment")
@@ -92,7 +98,7 @@ public class OfflineDelayReasonEntity {
   }
   
   public int getDelayInMinutes() {
-    return delayInMinutes;
+      return delayInMinutes;
   }
   
   public void setDelayInMinutes(int delayInMinutes) {

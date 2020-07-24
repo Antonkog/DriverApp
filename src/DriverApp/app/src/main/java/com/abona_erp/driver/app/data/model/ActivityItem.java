@@ -1,8 +1,5 @@
 package com.abona_erp.driver.app.data.model;
 
-import androidx.room.TypeConverters;
-
-import com.abona_erp.driver.app.util.DateConverterUTC;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

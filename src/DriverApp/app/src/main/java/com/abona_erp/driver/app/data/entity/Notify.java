@@ -5,14 +5,15 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.abona_erp.driver.app.data.converters.DateConverterWithoutUTC;
 import com.abona_erp.driver.app.util.BoolConverter;
-import com.abona_erp.driver.app.util.DateConverter;
-import com.abona_erp.driver.app.util.DateConverterWithoutUTC;
+import com.abona_erp.driver.app.data.converters.DateConverter;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 @Entity(tableName = "taskItem")
+@TypeConverters({DateConverterWithoutUTC.class})
 public class Notify {
   
   @PrimaryKey(autoGenerate = true)

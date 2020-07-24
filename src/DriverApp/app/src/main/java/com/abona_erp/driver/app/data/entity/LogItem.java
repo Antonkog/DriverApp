@@ -7,9 +7,8 @@ import androidx.room.TypeConverters;
 
 import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
-import com.abona_erp.driver.app.util.DateConverter;
+import com.abona_erp.driver.app.data.converters.DateConverter;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity(tableName = "logItem")
