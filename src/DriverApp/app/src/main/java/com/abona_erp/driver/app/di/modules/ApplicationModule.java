@@ -1,5 +1,7 @@
 package com.abona_erp.driver.app.di.modules;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -56,6 +58,18 @@ public class ApplicationModule {
     @ApplicationScope
     static SharedPreferences provideSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    @Provides
+    @ApplicationScope
+    NotificationManager provideNotificationManager(Context context) {
+        return (NotificationManager) context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+    }
+
+    @Provides
+    @ApplicationScope
+    AlarmManager provideAlarmManager(Context context) {
+        return (AlarmManager) context.getSystemService(android.content.Context.ALARM_SERVICE);
     }
 
     @Provides

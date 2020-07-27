@@ -202,6 +202,19 @@
   <string name="less">Less</string>
   <!-- MULTILANG -->
 
+  <string name="load_error" translatable="false">Failed to load the image!</string>
+  <string name="not_selected" translatable="false">Please choose an image for edit</string>
+
+  <string name="alarm_title">Please check task</string>
+  <string name="alarm_text">Your task time is going to the end</string>
+
+  <string name="alarm_check_title"  translatable="false">Driver App</string>
+  <string name="alarm_check_text">I will notify you before task end</string>
+
+  <string name="alarm_check_failed">Alarm was not set</string>
+  <string name="alarm_check_failed_reason">Reason: task was changed</string>
+  <string name="alarm_check_notime_reason">Reason: task time ended</string>
+
   <string name="minus_string" translatable="false">-</string>
   <string name="colon_string" translatable="false">:</string>
 </resources>

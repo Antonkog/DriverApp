@@ -147,4 +147,13 @@
   <string name="action">"Aktion "</string>
   <string name="timestamp">Zeitstempel</string>
     <string name="airplane_warning">Bei Flugzeugmodus ist die Funktion der ABONA Driver App eingeschränkt</string>
+
+  <string name = "alarm_title">Bitte überprüfen Sie die Aufgabe</string>
+  <string name = "alarm_text">Ihre Aufgabenzeit geht zu Ende</string>
+
+  <string name ="alarm_check_text">Ich werde Sie vor Ende der Aufgabe benachrichtigen</string>
+
+  <string name ="alarm_check_failed">Alarm wurde nicht gesetzt</string>
+  <string name ="alarm_check_failed_reason"> Grund: Aufgabe wurde geändert</string>
+  <string name="alarm_check_notime_reason">Grund: Die Aufgabenzeit ist abgelaufen</string>
 </resources>

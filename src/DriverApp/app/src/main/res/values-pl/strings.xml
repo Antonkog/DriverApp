@@ -142,4 +142,13 @@
   <string name="action">Akcja</string>
   <string name="timestamp">Czas</string>
     <string name="airplane_warning">Funkcja aplikacji ABONA Driver jest ograniczona w trybie samolotowym</string>
+
+  <string name = "alarm_title"> Sprawdź zadanie </string>
+  <string name = "alarm_text"> Twój czas zadania dobiega końca </string>
+
+  <string name ="alarm_check_text">Powiadomię Cię przed zakończeniem zadania</string>
+
+  <string name ="alarm_check_failed">"Alarm nie został ustawiony"</string>
+  <string name ="alarm_check_failed_reason">"Powód: zadanie zostało zmienione"</string>
+  <string name="alarm_check_notime_reason">"Powód: upłynął czas zadania"</string>
 </resources>

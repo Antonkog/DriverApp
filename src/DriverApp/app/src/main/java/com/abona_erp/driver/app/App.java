@@ -6,6 +6,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.abona_erp.driver.app.di.components.ApplicationComponent;
 import com.abona_erp.driver.app.di.components.DaggerApplicationComponent;
+import com.abona_erp.driver.app.di.modules.ApplicationModule;
 import com.abona_erp.driver.app.manager.ApiManager;
 import com.abona_erp.driver.app.manager.SharedPrefManager;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -44,6 +45,14 @@ public class App extends BaseApp {
   public static final EventBus eventBus = EventBus.getDefault();
   public static final SharedPrefManager spManager = new SharedPrefManager();
 
+  /**
+   * that method defines if test utils used, in addition to Build config debug
+   * @return
+   */
+  public static boolean isTesting() {
+    return false;
+  }
+
   public ApplicationComponent getApplicationComponent() {
     return appComponent;
   }
@@ -58,8 +67,7 @@ public class App extends BaseApp {
     super.onCreate();
     sInstance = this;
 
-    appComponent = DaggerApplicationComponent
-            .builder()
+    appComponent = DaggerApplicationComponent.builder().applicationModule(new ApplicationModule(this))
             .build();
 
     appComponent.inject(this);
