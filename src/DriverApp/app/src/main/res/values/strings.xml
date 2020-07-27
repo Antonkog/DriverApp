@@ -6,10 +6,10 @@
   <!-- This String is used in the User Agent -->
   <string name="useragent_appname" translatable="false">ABONA Driver App</string>
 
-  <string name="tab_text_pending" translatable="false">Pending\u0020</string>
-  <string name="tab_text_running" translatable="false">Running\u0020</string>
-  <string name="tab_text_cmr" translatable="false">CMR\u0020</string>
-  <string name="tab_text_completed" translatable="false">Completed\u0020</string>
+  <string name="tab_text_pending" translatable="false">Pending</string>
+  <string name="tab_text_running" translatable="false">Running</string>
+  <string name="tab_text_cmr" translatable="false">CMR</string>
+  <string name="tab_text_completed" translatable="false">Completed</string>
 
   <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
   <string name="notification_channel_id" translatable="false">default</string>
@@ -44,9 +44,9 @@
 
 
 
-  <string name="pending">Pending\u0020</string>
-  <string name="running">Running\u0020</string>
-  <string name="cmr">CMR\u0020</string>
+  <string name="pending">Pending</string>
+  <string name="running">Running</string>
+  <string name="cmr">CMR</string>
   <string name="completed">Completed\u0020</string>
 
   <string name="label_new">NEW</string>
@@ -102,6 +102,9 @@
   <string name="action_update_message">Update completed!</string>
   <string name="action_exception_on_rest_api">Exception on REST-API!</string>
   <string name="action_later">Later</string>
+  <string name="action_not_confirmed" translatable="false">Not confirmed</string>
+  <string name="action_erledict" translatable="false">Erledigt</string>
+  <string name="action_deleted" translatable="false">Deleted</string>
 
   <string name="next">Next</string>
   <string name="start">Start</string>
@@ -183,6 +186,7 @@
   <string name="action_type_tractor_swap">Tractor Swap</string>
   <string name="action_type_general">General</string>
   <string name="action_type_delay">Delay</string>
+  <string name="action_type_changed_by_a" translatable="false">Changed by Abona</string>
   <string name="action_type_unknown">Unknown</string>
 
   <string name="hint_ip_address" translatable="false">IP Address</string>

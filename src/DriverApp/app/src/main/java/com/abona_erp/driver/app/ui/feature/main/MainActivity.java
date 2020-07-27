@@ -21,6 +21,7 @@ import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,8 +33,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
@@ -44,7 +43,6 @@ import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
-import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
@@ -65,8 +63,6 @@ import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
-import com.abona_erp.driver.app.ui.feature.main.adapter.LastActClickListener;
-import com.abona_erp.driver.app.ui.feature.main.adapter.LastActivityAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.about.SoftwareAboutFragment;
@@ -117,7 +113,6 @@ import java.util.TimeZone;
 
 import javax.inject.Inject;
 
-import az.plainpie.PieView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -139,12 +134,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   public static final String BACK_STACK_ROOT_TAG = "root_fragment";
 
   private CommItem mCommItem;
-  
-  private RecyclerView lvLastActivity;
-  private LastActivityAdapter lastActivityAdapter;
-  private PieView mMainPieView;
-  private View customMenu;
-  private View topDividerView;
+  private View header;
+  private ProgressBar progressBar;
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
   private AppCompatImageView getAllTaskImage;
@@ -265,16 +256,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     ((AsapTextView)findViewById(R.id.tv_vehicle_registration_number))
             .setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    mMainPieView = (PieView)findViewById(R.id.mainPieView);
-    mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrAbona));
-    mMainPieView.setInnerBackgroundColor(getResources().getColor(R.color.clrFont));
-    mMainPieView.setInnerText("0 %");
-    mMainPieView.setPercentage(0);
-
-    customMenu = findViewById(R.id.menu_row);// to hide it when using settings fragment
-    topDividerView = findViewById(R.id.top_divider);// to hide it when using settings fragment
+    header = findViewById(R.id.header_container);// to hide it when using settings fragment
 
     ImageView settingsImage  = findViewById(R.id.settings_image);
 
@@ -285,17 +267,19 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     });
 
     getAllTaskImage = findViewById(R.id.refresh_image);
+    progressBar = findViewById(R.id.progressBar);
     getAllTaskImage.setOnClickListener(new View.OnClickListener() {
-      
       @Override
       public void onClick(View view) {
-        
+        progressBar.setVisibility(View.VISIBLE);
         getAllTaskImage.setEnabled(false);
-        
+
         Call<ResultOfAction> call = App.getInstance().apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         call.enqueue(new Callback<ResultOfAction>() {
           @Override
           public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+            getAllTaskImage.setEnabled(true);
+            progressBar.setVisibility(View.GONE);
             if (response.isSuccessful() && response.body() != null) {
               handleGetAllTasks(response.body());
             } else {
@@ -308,8 +292,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                   // TODO: Log
                   break;
               }
-  
-              getAllTaskImage.setEnabled(true);
             }
           }
   
@@ -317,29 +299,12 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
           public void onFailure(Call<ResultOfAction> call, Throwable t) {
             // TODO: Wahrscheinlich kein Internet!
             getAllTaskImage.setEnabled(true);
+            progressBar.setVisibility(View.GONE);
           }
         });
       }
     });
 
-    lvLastActivity = (RecyclerView) findViewById(R.id.lv_last_activity);
-    LinearLayoutManager recyclerLayoutManager =
-      new LinearLayoutManager(getApplicationContext(),
-        RecyclerView.VERTICAL, false);
-    lvLastActivity.setLayoutManager(recyclerLayoutManager);
-     lastActivityAdapter = new LastActivityAdapter(getApplicationContext(), new LastActClickListener() {
-      @Override
-      public void onItemClick(int mandantID, int taskId) {
-        mMainViewModel.getNotifyByTaskId(taskId).subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(current -> {
-                  current.setCurrentlySelected(!current.isCurrentlySelected());
-                  mMainViewModel.update(current);
-                });
-      }
-    });
-          ////////////////////////////////////////////////////////////////////////////////////////////////
-    lvLastActivity.setAdapter(lastActivityAdapter);
     
     mMainViewModel.getNotReadNotificationCount().observe(this, new Observer<Integer>() {
       @Override
@@ -381,12 +346,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       }
     });
 
-    mMainViewModel.getAllLastActivityItems().observe(this, new Observer<List<LastActivity>>() {
-      @Override
-      public void onChanged(List<LastActivity> lastActivities) {
-        lastActivityAdapter.setLastActivityItems(lastActivities);
-      }
-    });
 
     if (!TextSecurePreferences.isDeviceRegistrated()) {
       loadMainFragment(DeviceNotRegistratedFragment.newInstance());
@@ -431,15 +390,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   }
 
   private void hideMainActivityItems(){
-    mMainPieView.setVisibility(View.GONE);
-    customMenu.setVisibility(View.GONE);
-    topDividerView.setVisibility(View.GONE);
+    header.setVisibility(View.GONE);
   }
 
   private void showMainActivityItems(){
-    mMainPieView.setVisibility(View.VISIBLE);
-    customMenu.setVisibility(View.VISIBLE);
-    topDividerView.setVisibility(View.VISIBLE);
+    header.setVisibility(View.VISIBLE);
   }
 
   @Override
@@ -529,20 +484,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         }
       }
   }
-
-  @Subscribe
-  public void onMessageEvent(TaskStatusEvent event) {
-    if (event.getPercentage() < 0)
-      return;
-    mMainPieView.setPercentage(event.getPercentage());
-    mMainPieView.setInnerText(event.getPercentage() + " %");
-    if (event.getPercentage() == 100) {
-      mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrTaskFinished, null));
-    } else {
-      mMainPieView.setPercentageBackgroundColor(getResources().getColor(R.color.clrAbona, null));
-    }
-  }
-
 
   @Subscribe
   public void onMessageEvent(PageEvent event) {
@@ -637,9 +578,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
           mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
         }
         
-        if (event.isDeleteAll()) {
-          mMainPieView.setPercentage(0);
-        }
+//        if (event.isDeleteAll()) {
+//          mMainPieView.setPercentage(0);
+//        }
       }
     });
   }
@@ -752,7 +693,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       getAllTaskImage.setEnabled(true);
       return;
     }
-    
+
     try {
       if (resultOfAction.getIsSuccess() && !resultOfAction.getIsException()) {
         if (resultOfAction.getAllTask() != null && resultOfAction.getAllTask().size() > 0) {
@@ -784,7 +725,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                     notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
                     notify.setData(App.getInstance().gson.toJson(commItem));
                     notify.setModifiedAt(AppUtils.getCurrentDateTime());
-  
+
                     if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
                       notify.setStatus(0);
                     } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
@@ -796,7 +737,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                     } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
                       notify.setStatus(51);
                     }
-                    
+
                     mMainViewModel.update(notify);
                   }
                 }
@@ -817,7 +758,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                   notify.setCreatedAt(AppUtils.getCurrentDateTime());
                   notify.setModifiedAt(AppUtils.getCurrentDateTime());
                   notify.setData(App.getInstance().gsonUtc.toJson(commItem));
-                  
+
                   if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
                     notify.setStatus(0);
                   } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
@@ -829,13 +770,12 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                   } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
                     notify.setStatus(51);
                   }
-                  
+
                   mMainViewModel.insert(notify);
                 }
               });
           }
           // Aktualisiert:
-          getAllTaskImage.setEnabled(true);
           showOkDialog(
             getApplicationContext().getResources()
               .getString(R.string.action_update),
@@ -843,7 +783,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               .getString(R.string.action_update_message));
         } else {
           // Kein Update vorhanden:
-          getAllTaskImage.setEnabled(true);
           showOkDialog(
             getApplicationContext().getResources()
               .getString(R.string.action_update),
@@ -852,17 +791,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         }
       } else if (resultOfAction.getIsException()) {
         // Exception from REST-API
-        getAllTaskImage.setEnabled(true);
         showOkDialog(getApplicationContext().getResources().getString(R.string.action_warning_notice),
           getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
         addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", resultOfAction.getText());
       } else {
         // Unknown Error
-        getAllTaskImage.setEnabled(true);
         addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", "Unknown Error!");
       }
     } catch (Exception e) {
-      getAllTaskImage.setEnabled(true);
       addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", e.getMessage());
     }
   }
@@ -958,14 +894,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       deviceProfile.setLanguageCode(Locale.getDefault().toString());
       deviceProfile.setVersionCode(BuildConfig.VERSION_CODE);
       deviceProfile.setVersionName(BuildConfig.VERSION_NAME);
-  
+
       DateFormat dfUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
         Locale.getDefault());
       dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
       Date currentTimestamp = new Date();
       deviceProfile.setCreatedAt(dfUtc.format(currentTimestamp));
       deviceProfile.setModifiedAt(dfUtc.format(currentTimestamp));
-      
+
       mMainViewModel.insert(deviceProfile);
      
       TextSecurePreferences.setDeviceFirstTimeRun(true);
