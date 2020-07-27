@@ -261,8 +261,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     ImageView settingsImage  = findViewById(R.id.settings_image);
 
     settingsImage.setOnClickListener(v->{
-      loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS),
-              null), SettingsFragment.newInstance());
+      loadSettingsFragment();
       hideMainActivityItems();
     });
 
@@ -352,7 +351,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     } else {
       loadMainFragment(MainFragment.newInstance());
     }
-    
+//order matter: first loading main fragment
+    if(getIntent()!= null && getIntent().getExtras()!= null && getIntent().getExtras().getBoolean(Constants.EXTRAS_START_SETTINGS) == true){
+      loadSettingsFragment();
+      hideMainActivityItems();
+    }
     /*
     // Empty list for storing geofences.
     mGeofenceList = new ArrayList<>();
@@ -823,7 +826,12 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       .addToBackStack(BACK_STACK_ROOT_TAG)
       .commit();
   }
-  
+
+  private void loadSettingsFragment() {
+    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS),
+            null), SettingsFragment.newInstance());
+  }
+
   private void loadFragment(PageEvent pageEvent, Fragment fragment) {
     
     Bundle bundle = new Bundle();

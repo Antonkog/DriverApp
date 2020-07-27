@@ -156,4 +156,6 @@
   <string name ="alarm_check_failed">Alarm wurde nicht gesetzt</string>
   <string name ="alarm_check_failed_reason"> Grund: Aufgabe wurde geändert</string>
   <string name="alarm_check_notime_reason">Grund: Die Aufgabenzeit ist abgelaufen</string>
+    <string name="preference_notification">Benachrichtigung</string>
+  <string name="preference_notification_show">Minuten vor Ende der Aufgabe</string>
 </resources>

@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class TextSecurePreferences {
   public static final String LANGUAGE_PREF                     = "pref_language";
   
 
+  public static final String PREF_NOTIFICATION_BEFORE_TASK    = "pref_notification_before_task";
   public static final String UPDATE_LANG_CODE    = "pref_update_lang_code";
   public static final String UPDATE_ALL_TASKS    = "pref_update_all_tasks";
   public static final String UPDATE_DELAY_REASON = "pref_update_delay_reason";
@@ -71,6 +73,13 @@ public class TextSecurePreferences {
   
   public static void setMandantID(int mandantID) {
     setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_MANDANT_ID, mandantID);
+  }
+  public static int getNotificationTime() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(), PREF_NOTIFICATION_BEFORE_TASK, Constants.REPEAT_TIME * Constants.REPEAT_COUNT);
+  }
+
+  public static void setNotificationTime(int time) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_NOTIFICATION_BEFORE_TASK, time);
   }
   
   public static String getClientID() {

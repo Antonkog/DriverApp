@@ -162,4 +162,6 @@
   <string name="alarm_check_failed">Будильник не был установлен</string>
   <string name="alarm_check_failed_reason">Причина: задание изменилось</string>
   <string name="alarm_check_notime_reason">Причина: время задания окончено</string>
+    <string name="preference_notification">Уведомление</string>
+  <string name="preference_notification_show">Минут перед окончанием задания</string>
 </resources>

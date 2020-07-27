@@ -151,4 +151,6 @@
   <string name ="alarm_check_failed">"Alarm nie został ustawiony"</string>
   <string name ="alarm_check_failed_reason">"Powód: zadanie zostało zmienione"</string>
   <string name="alarm_check_notime_reason">"Powód: upłynął czas zadania"</string>
+    <string name="preference_notification">Powiadomienie</string>
+  <string name="preference_notification_show">Minuty przed zakończeniem zadania</string>
 </resources>

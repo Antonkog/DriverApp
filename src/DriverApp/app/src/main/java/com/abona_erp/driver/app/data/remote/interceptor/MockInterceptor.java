@@ -3,6 +3,7 @@ package com.abona_erp.driver.app.data.remote.interceptor;
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -78,7 +79,7 @@ public class MockInterceptor implements Interceptor {
     private String getTestTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.MINUTE, + (Constants.REPEAT_TIME * Constants.REPEAT_COUNT)); //future task
+        calendar.add(Calendar.MINUTE, + (TextSecurePreferences.getNotificationTime())); //future task
         Random r = new Random(System.currentTimeMillis());
         calendar.add(Calendar.MINUTE, r.nextInt(Constants.TEST_TIME_QUOTES) +2);
         String format = "yyyy-MM-dd'T'HH:mm:ss";

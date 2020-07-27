@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -50,6 +51,7 @@ public class SettingsFragment extends Fragment {
   private static final String TAG = SettingsFragment.class.getSimpleName();
   
   private LinearLayout mLlLanguage;
+  private LinearLayout notificationContainer;
   private Button mBtnSave;
   private AppCompatButton mBtnProtocol;
   //private TextInputEditText mTeServerPort;
@@ -61,9 +63,9 @@ public class SettingsFragment extends Fragment {
   private AsapTextView mDeviceSerial;
   private AsapTextView mDeviceCreated;
   private AsapTextView mDeviceUpdated;
-  
+  private SeekBar seekBar;
   private AppCompatImageButton mBtnBack;
-  
+
   private MainViewModel mainViewModel;
   
   private DriverDatabase mDb = DriverDatabase.getDatabase();
@@ -159,7 +161,31 @@ public class SettingsFragment extends Fragment {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    
+
+    AsapTextView notificationTimeText = root.findViewById(R.id.notification_text_before);
+    seekBar = root.findViewById(R.id.seekBar);
+    seekBar.setProgress(TextSecurePreferences.getNotificationTime());
+    notificationTimeText.setText(TextSecurePreferences.getNotificationTime() + " ");
+
+    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      @Override
+      public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+      }
+
+      @Override
+      public void onStartTrackingTouch(SeekBar seekBar) {
+
+      }
+
+      @Override
+      public void onStopTrackingTouch(SeekBar seekBar) {
+        TextSecurePreferences.setNotificationTime(seekBar.getProgress());
+        notificationTimeText.setText(TextSecurePreferences.getNotificationTime() + " ");
+      }
+    });
+
+
     mLlLanguage = (LinearLayout)root.findViewById(R.id.ll_settings_language);
     mLlLanguage.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -223,7 +249,7 @@ public class SettingsFragment extends Fragment {
         dialog.show();
       }
     });
-    
+
     //mTeIpAddress = (TextInputEditText)root.findViewById(R.id.te_ip_address);
     //mTeIpAddress.setText(/*"https://" +*/ TextSecurePreferences.getServerIpAddress());
     //Selection.setSelection(new SpannableString("https://")/*mTeIpAddress.getText()*/, /*mTeIpAddress.getText().length()*/8);

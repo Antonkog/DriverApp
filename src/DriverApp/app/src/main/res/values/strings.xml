@@ -200,6 +200,8 @@
 
   <string name="preference_language">Language</string>
   <string name="preference_language_show">English</string>
+  <string name="preference_notification">Notification</string>
+  <string name="preference_notification_show">Minutes before task end</string>
   <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
 
   <string name="more">More</string>

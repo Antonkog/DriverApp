@@ -16,4 +16,5 @@ public interface Constants {
   int NOTIFICATION_NOT_EXIST_ALARM_ID = 113;
   String  NOTIFICATION_CHANNEL_ID = "Abona Tasks";
   int ALARM_CHECK_JOB_ID = 47;
+  String  EXTRAS_START_SETTINGS = "extras_start_settings";
 }
