@@ -50,6 +50,7 @@ public class TextSecurePreferences {
   
 
   public static final String PREF_NOTIFICATION_BEFORE_TASK    = "pref_notification_before_task";
+  public static final String PREF_OLD_DEVICE_ID    = "pref_old_device_id";
   public static final String UPDATE_LANG_CODE    = "pref_update_lang_code";
   public static final String UPDATE_ALL_TASKS    = "pref_update_all_tasks";
   public static final String UPDATE_DELAY_REASON = "pref_update_delay_reason";
@@ -81,6 +82,16 @@ public class TextSecurePreferences {
   public static void setNotificationTime(int time) {
     setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_NOTIFICATION_BEFORE_TASK, time);
   }
+
+
+  public static String getOldDeviceID() {
+    return getStringPreference(ContextUtils.getApplicationContext(), PREF_OLD_DEVICE_ID, null);
+  }
+
+  public static void setOldDeviceID(String deviceId) {
+    setStringPreference(ContextUtils.getApplicationContext(), PREF_OLD_DEVICE_ID, deviceId);
+  }
+
   
   public static String getClientID() {
     return getStringPreference(ContextUtils.getApplicationContext(),
