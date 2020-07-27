@@ -112,9 +112,9 @@ public class Util {
     builder.show();
   }
 
-  public static void askNeedExit(MainActivity mainActivity) {
-    Context context = mainActivity.getBaseContext();
-    MessageDialog.build(mainActivity)
+  public static void askNeedExit(AppCompatActivity currentActivity) {
+    Context context = currentActivity.getBaseContext();
+    MessageDialog.build(currentActivity)
             .setStyle(DialogSettings.STYLE.STYLE_IOS)
             .setTheme(DialogSettings.THEME.LIGHT)
             .setTitle(context.getResources().getString(R.string.action_exit))
@@ -123,7 +123,7 @@ public class Util {
                     new OnDialogButtonClickListener() {
                       @Override
                       public boolean onClick(BaseDialog baseDialog, View v) {
-                        mainActivity.finish();
+                        currentActivity.finish();
                         return false;
                       }
                     })

@@ -669,24 +669,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     });
   }
 
-  //private static long back_pressed;
-  @Override
-  public void onBackPressed() {
-    FragmentManager fragments = getSupportFragmentManager();
-    Fragment mainFrag = fragments.findFragmentByTag("main");
-    
-    if (fragments.getBackStackEntryCount() > 1) {
-      fragments.popBackStackImmediate();
-    } else {
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          Util.askNeedExit(MainActivity.this);
-        }
-      });
-    }
-  }
-
   
   private void handleGetAllTasks(ResultOfAction resultOfAction) {
     if (resultOfAction == null) {

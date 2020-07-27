@@ -8,20 +8,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.Selection;
-import android.text.SpannableString;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,15 +30,12 @@ import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
-import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
-import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.base.ThreadUtils;
-import com.google.android.material.textfield.TextInputEditText;
 import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
@@ -53,9 +43,6 @@ import com.kongzue.dialog.util.InputInfo;
 import com.kongzue.dialog.util.TextInfo;
 import com.kongzue.dialog.v3.InputDialog;
 
-import org.w3c.dom.Text;
-
-import java.util.Date;
 import java.util.List;
 
 public class SettingsFragment extends Fragment {
