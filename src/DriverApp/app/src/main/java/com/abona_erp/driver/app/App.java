@@ -89,7 +89,7 @@ public class App extends BaseApp {
   private void saveDeviceIdOldApi() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
       if(TextSecurePreferences.getOldDeviceID() == null)
-        TextSecurePreferences.setOldDeviceID(DeviceUtils.getUniqueID(getApplicationContext()));
+        TextSecurePreferences.setOldDeviceID(DeviceUtils.getUniqueIMEI(getApplicationContext()));
     }
   }
 
