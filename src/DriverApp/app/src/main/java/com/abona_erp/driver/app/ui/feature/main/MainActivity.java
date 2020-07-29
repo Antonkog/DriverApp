@@ -52,6 +52,7 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.receiver.LocaleChangeReceiver;
 import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.service.ForegroundAlarmService;
@@ -142,6 +143,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
 
   private NetworkChangeReceiver networkChangeReceiver;
+  private LocaleChangeReceiver localeChangeReceiver;
 
   // VIEW MODEL:
   private MainViewModel mMainViewModel;
@@ -169,6 +171,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     super.onDestroy();
     if(EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
     unRegisterNetworkChangeReceiver();
+    unLocaleReceiver();
   }
 
   @Override
@@ -183,6 +186,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       return;
     }
     registerNetworkChangeReceiver();
+    registerLocaleReceiver();
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOGIFY
     initializeLogify();
@@ -368,6 +372,23 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     startBackgroundWorkerService();
     
     App.eventBus.post(new TaskStatusEvent(TextSecurePreferences.getTaskPercentage(getBaseContext())));
+  }
+
+  private void registerLocaleReceiver() {
+    if(localeChangeReceiver == null){
+      localeChangeReceiver  = new LocaleChangeReceiver();
+    }
+    IntentFilter filter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
+    registerReceiver(localeChangeReceiver, filter);
+  }
+
+  private void unLocaleReceiver() {
+    if(localeChangeReceiver!=null)
+      try {
+        unregisterReceiver(localeChangeReceiver);
+      } catch (IllegalArgumentException e){
+        Log.e(TAG, " Receiver not registered: com.abona_erp.driver.app.receiver.localeChangeReceiver");
+      }
   }
 
   @Override

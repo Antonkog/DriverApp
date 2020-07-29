@@ -133,7 +133,7 @@
 
 
 
-  <string name="pending">Offen\u0020</string>
+  <string name="pending">Offen</string>
   <string name="running">In Arbeit\u0020</string>
   <string name="cmr">CMR\u0020</string>
   <string name="completed">Erledigt\u0020</string>
@@ -158,4 +158,7 @@
   <string name="alarm_check_notime_reason">Grund: Die Aufgabenzeit ist abgelaufen</string>
     <string name="preference_notification">Benachrichtigung</string>
   <string name="preference_notification_show">Minuten vor Ende der Aufgabe</string>
+  <string name="delay_started">Gestartet:</string>
+  <string name="delay_finished">Fertig:</string>
+  <string name="delay_delay">Verzögern:</string>
 </resources>

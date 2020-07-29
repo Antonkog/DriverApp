@@ -252,7 +252,7 @@
             android:layout_marginBottom="5dp"
             android:textSize="12sp"
             android:textColor="@color/clrWhite"
-            tools:text="Abladestelle"
+            tools:text="@string/task_type_ph"
             />
 
           <Space
@@ -287,7 +287,7 @@
             android:textColor="@color/clrAbona"
             android:visibility="gone"
             tools:visibility="visible"
-            tools:text="1 Bemerkung verfügbar"
+            tools:text="@string/task_notes_ph"
             />
 
         </LinearLayout>
@@ -345,7 +345,7 @@
             android:layout_marginBottom="5dp"
             android:textSize="12sp"
             android:textColor="@color/clrWhite"
-            tools:text="Running"
+            tools:text="@string/running"
             />
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -368,7 +368,7 @@
             android:layout_marginBottom="5dp"
             android:textSize="12sp"
             android:textColor="@color/clrWhite"
-            tools:text="Driving to loading"
+            tools:text="@string/status_driving_to_loading"
             />
 
         </LinearLayout>

@@ -23,6 +23,8 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
@@ -31,11 +33,13 @@ import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import com.abona_erp.driver.app.worker.DeviceProfileWorker;
 import com.abona_erp.driver.core.base.ThreadUtils;
 import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
@@ -97,13 +101,34 @@ public class SettingsFragment extends Fragment {
   public void onResume() {
     super.onResume();
   }
-  
-  private void updateLanguageCode() {
+
+  /**
+   * this method should start DeviceProfileWorker
+   * that brings device profile to Abona server
+   * now not used as all work in BackgroundServiceWorker.java
+   * that is wrong.
+   */
+  private void startUpdateDeviceWork() {
+    OneTimeWorkRequest taskAlarmRequest =
+            new OneTimeWorkRequest.Builder(DeviceProfileWorker.class)
+                    .addTag(Constants.WORK_TAG_DEVICE_UPDATE)
+                    .build();
+    WorkManager.getInstance(getContext()).enqueue(taskAlarmRequest);
+  }
+
+  private void updateLanguage() {
+    DynamicLanguageContextWrapper.updateContext(getContext(),
+            TextSecurePreferences.getLanguage(getContext()));
+    getActivity().recreate();
+    updatePreferenceFlags();
+  }
+
+  public static void updatePreferenceFlags() {
     TextSecurePreferences.setUpdateLangCode(true);
     TextSecurePreferences.setUpdateAllTasks(true);
     TextSecurePreferences.setUpdateDelayReason(true);
   }
-  
+
   private void initComponents(@NonNull View root) {
     
     mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_settings_back);
@@ -207,39 +232,23 @@ public class SettingsFragment extends Fragment {
             
             switch (i) {
               case 0: // ENGLISCH
-                TextSecurePreferences.setLanguage(getContext(), "en_US");
-                DynamicLanguageContextWrapper.updateContext(getContext(),
-                  TextSecurePreferences.getLanguage(getContext()));
-                getActivity().recreate();
-  
-                updateLanguageCode();
-              break;
+                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_ENGLISH);
+                updateLanguage();
+                break;
               
               case 1: // DEUTSCH
-                TextSecurePreferences.setLanguage(getContext(), "de_DE");
-                DynamicLanguageContextWrapper.updateContext(getContext(),
-                  TextSecurePreferences.getLanguage(getContext()));
-                getActivity().recreate();
-                
-                updateLanguageCode();
+                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_GERMAN);
+                updateLanguage();
                 break;
                 
               case 2: // RUSSISCH
-                TextSecurePreferences.setLanguage(getContext(), "ru_RU");
-                DynamicLanguageContextWrapper.updateContext(getContext(),
-                  TextSecurePreferences.getLanguage(getContext()));
-                getActivity().recreate();
-                
-                updateLanguageCode();
+                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_RUSSIAN);
+                updateLanguage();
                 break;
                 
               case 3: // POLNISCH
-                TextSecurePreferences.setLanguage(getContext(), "pl_PL");
-                DynamicLanguageContextWrapper.updateContext(getContext(),
-                  TextSecurePreferences.getLanguage(getContext()));
-                getActivity().recreate();
-                
-                updateLanguageCode();
+                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_POLISH);
+                updateLanguage();
                 break;
             }
           }
@@ -250,32 +259,6 @@ public class SettingsFragment extends Fragment {
       }
     });
 
-    //mTeIpAddress = (TextInputEditText)root.findViewById(R.id.te_ip_address);
-    //mTeIpAddress.setText(/*"https://" +*/ TextSecurePreferences.getServerIpAddress());
-    //Selection.setSelection(new SpannableString("https://")/*mTeIpAddress.getText()*/, /*mTeIpAddress.getText().length()*/8);
-    //mTeIpAddress.addTextChangedListener(new TextWatcher() {
-    //  @Override
-    //  public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-    //
-    //  }
-    //
-    //  @Override
-    //  public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-    //
-    //  }
-    //
-    //  @Override
-    //  public void afterTextChanged(Editable editable) {
-    //    if (!editable.toString().startsWith("https://")) {
-    //      mTeIpAddress.setText("https://");
-    //      Selection.setSelection(mTeIpAddress.getText(), mTeIpAddress.getText().length());
-    //    }
-    //  }
-    //});
-    
-    //mTeServerPort = (TextInputEditText)root.findViewById(R.id.te_server_port);
-    //mTeServerPort.setText(String.valueOf(TextSecurePreferences.getServerPort()));
-    
     mBtnSave = (Button)root.findViewById(R.id.btn_settings_save);
     mBtnSave.setOnClickListener(new View.OnClickListener() {
       @Override

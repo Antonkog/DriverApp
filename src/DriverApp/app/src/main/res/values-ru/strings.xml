@@ -111,11 +111,11 @@
   <string name="order_documents_message">Сначала начните работу!</string>
 
   <string name="action_type_pick_up">Загрузка</string>
-  <string name="action_type_drop_off">разгрузка</string>
+  <string name="action_type_drop_off">Разгрузка</string>
   <string name="action_type_tractor_swap">Изменение тягача</string>
-  <string name="action_type_general">генеральный</string>
-  <string name="action_type_delay">задержка</string>
-  <string name="action_type_unknown">неизвестный</string>
+  <string name="action_type_general">Общий</string>
+  <string name="action_type_delay">Задержка</string>
+  <string name="action_type_unknown">Неизвестно</string>
 
   <string name="need_permissions">Нужны разрешения!</string>
   <string name="permission_message_settings">Это приложение требует разрешения для использования этой функции. Вы можете предоставить их в настройках приложения.</string>
@@ -123,10 +123,10 @@
   <string name="current_location">текущее местоположение</string>
   <string name="destination_location">Место назначения</string>
 
-  <string name="pending">В ожидании\u0020</string>
-  <string name="running">В работе\u0020</string>
-  <string name="cmr">CMR Документ\u0020</string>
-  <string name="completed">Завершено\u0020</string>
+  <string name="pending">В ожидании</string>
+  <string name="running">В работе</string>
+  <string name="cmr">CMR Документ</string>
+  <string name="completed">Завершено</string>
 
   <string name="label_new">новый</string>
   <string name="label_updated">обновленный</string>
@@ -164,4 +164,7 @@
   <string name="alarm_check_notime_reason">Причина: время задания окончено</string>
     <string name="preference_notification">Уведомление</string>
   <string name="preference_notification_show">Минут перед окончанием задания</string>
+  <string name="delay_started">Начало:</string>
+  <string name="delay_finished">Окончание:</string>
+  <string name="delay_delay">Зажержка:</string>
 </resources>

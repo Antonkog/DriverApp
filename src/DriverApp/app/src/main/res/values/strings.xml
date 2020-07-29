@@ -223,4 +223,18 @@
 
   <string name="minus_string" translatable="false">-</string>
   <string name="colon_string" translatable="false">:</string>
+
+  <string name="status_driving_to_loading" translatable="false">Driving to loading</string>
+  <string name="cancel">Cancel</string>
+  <string name="enable">Enable</string>
+  <string name="back">Back</string>
+  <string name="theme_light">White</string>
+  <string name="theme_dark">Dark</string>
+
+  <string name="delay_started">Started:</string>
+  <string name="delay_finished">Finished:</string>
+  <string name="delay_delay">Delay:</string>
+  <string name="task_type_ph" translatable="false">Abladestelle</string>
+  <string name="task_notes_ph" translatable="false">1 Bemerkung verfügbar</string>
+
 </resources>

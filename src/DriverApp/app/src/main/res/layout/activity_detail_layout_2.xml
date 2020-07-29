@@ -349,7 +349,7 @@
               android:layout_marginBottom="5dp"
               android:textSize="12sp"
               android:textColor="@color/clrWhite"
-              tools:text="Driving to loading"
+              tools:text="@string/status_driving_to_loading"
               />
 
           </LinearLayout>

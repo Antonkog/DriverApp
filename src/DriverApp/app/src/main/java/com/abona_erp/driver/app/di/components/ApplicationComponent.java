@@ -17,6 +17,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.DocumentViewAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.GalleryViewAdapter;
+import com.abona_erp.driver.app.worker.DeviceProfileWorker;
 import com.abona_erp.driver.app.worker.NotifyWorker;
 
 import dagger.Component;
@@ -41,6 +42,7 @@ public interface ApplicationComponent {
     void inject(FcmService service);
     void inject(ForegroundAlarmService foregroundAlarmService);
     void inject(NotifyWorker notifyWorker); //new api
+    void inject(DeviceProfileWorker profileWorker); //new api
 
     void inject(CompletedFragment completedFragment);
     void inject(DetailFragment detailFragment);

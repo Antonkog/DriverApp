@@ -110,7 +110,7 @@
   <string name="order_documents_message">Najpierw zacznij pracę!</string>
 
   <string name="action_type_pick_up">Ładowanie stelle</string>
-  <string name="action_type_drop_off">rozładunek</string>
+  <string name="action_type_drop_off">Rozładunek</string>
   <string name="action_type_tractor_swap">Wymiana ciągnika</string>
   <string name="action_type_general">Generał</string>
   <string name="action_type_delay">Opóźnienie</string>
@@ -125,7 +125,7 @@
   <string name="more">Więcej</string>
   <string name="less">Mniej</string>
 
-  <string name="pending">Otwarte\u0020</string>
+  <string name="pending">Otwarte</string>
   <string name="running">W toku\u0020</string>
   <string name="cmr">CMR\u0020</string>
   <string name="completed">Gotowy\u0020</string>
@@ -153,4 +153,7 @@
   <string name="alarm_check_notime_reason">"Powód: upłynął czas zadania"</string>
     <string name="preference_notification">Powiadomienie</string>
   <string name="preference_notification_show">Minuty przed zakończeniem zadania</string>
+  <string name="delay_started">"Zaczęła się: "</string>
+  <string name="delay_finished">Skończone:</string>
+  <string name="delay_delay">Opóźnienie:</string>
 </resources>

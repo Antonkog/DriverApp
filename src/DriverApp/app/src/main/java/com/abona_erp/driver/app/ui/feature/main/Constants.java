@@ -5,6 +5,7 @@ public interface Constants {
   String EXTRAS_ALARM_TASK_ID = "extras_alarm_task_id";
   String EXTRAS_ALARM_WORK_ID= "extras_alarm_work_id";
   String WORK_TAG_SUFFIX = "alarmTask";
+  String WORK_TAG_DEVICE_UPDATE = "deviceUpdateTask";
   int REPEAT_TIME = 5;
   int FLEX_TIME = 2;
   int REPEAT_COUNT = 3;
@@ -17,4 +18,9 @@ public interface Constants {
   String  NOTIFICATION_CHANNEL_ID = "Abona Tasks";
   int ALARM_CHECK_JOB_ID = 47;
   String  EXTRAS_START_SETTINGS = "extras_start_settings";
+    String LANG_TO_SERVER_ENGLISH = "en_US";
+    String LANG_TO_SERVER_GERMAN = "de_DE";
+    String LANG_TO_SERVER_RUSSIAN = "ru_RU";
+    String LANG_TO_SERVER_UKRAINIAN = "uk_UA";
+    String LANG_TO_SERVER_POLISH = "pl_PL";
 }

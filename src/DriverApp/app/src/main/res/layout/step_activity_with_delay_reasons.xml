@@ -91,7 +91,7 @@
       android:textColor="@color/grey_60"
       android:padding="3dp"
       android:textSize="10sp"
-      tools:text="Pending"
+      tools:text="@string/pending"
       />
 
   </LinearLayout>
@@ -108,7 +108,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:textColor="@color/clrFont"
-      tools:text="Driving to loading..."
+      tools:text="@string/status_driving_to_loading"
       />
 
     <LinearLayout
@@ -126,7 +126,7 @@
           android:layout_height="wrap_content"
           android:textSize="12sp"
           android:textColor="@color/grey_40"
-          android:text="Started:"
+          android:text="@string/delay_started"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -154,7 +154,7 @@
           android:layout_height="wrap_content"
           android:textSize="12sp"
           android:textColor="@color/grey_40"
-          android:text="Finished:"
+          android:text="@string/delay_finished"
           />
 
         <com.abona_erp.driver.app.ui.widget.AsapTextView
@@ -192,7 +192,7 @@
         android:padding="6dp"
         android:textSize="10sp"
         android:textColor="#fff"
-        android:text="Delay"
+        android:text="@string/delay_delay"
         />
 
     </LinearLayout>
