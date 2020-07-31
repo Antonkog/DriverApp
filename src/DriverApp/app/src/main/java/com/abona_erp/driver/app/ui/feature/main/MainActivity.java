@@ -10,9 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -155,6 +158,22 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   public BackgroundServiceWorker mBackgroundWorkerService;
   public Intent mIntentBackgroundWorkerService;
 
+  private DialogInterface.OnClickListener positiveDialogListener =  new DialogInterface.OnClickListener() {
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+      dialog.dismiss();
+      openSettings(MainActivity.this);
+    }
+  };
+
+  private DialogInterface.OnClickListener negativeDialogListener =  new DialogInterface.OnClickListener() {
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+      dialog.dismiss();
+      MainActivity.this.finish();
+    }
+  };
+
   public void startBackgroundWorkerService() {
     if (mBackgroundWorkerService == null) {
       mBackgroundWorkerService = new BackgroundServiceWorker(ContextUtils.getApplicationContext());
@@ -165,6 +184,16 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       startService(mIntentBackgroundWorkerService);
     }
   }
+
+  @Override
+  public void onBackPressed() {
+    if(getSupportFragmentManager().getBackStackEntryCount() > 1 )
+      App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+    else {
+      Util.askNeedExit(MainActivity.this);
+    }
+  }
+
 
   @Override
   protected void onDestroy() {
@@ -430,37 +459,37 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       if (!hasPermissions(Manifest.permission.READ_PHONE_STATE)) {
         Log.i(TAG, "onActivityResult() called! - No READ_PHONE_STATE permission...");
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this, getResources().getString(R.string.need_permissions), "No READ_PHONE_STATE permission...");
+        Util.showPermissionErrorMessageAndFinish(this, getResources().getString(R.string.need_permissions), "No READ_PHONE_STATE permission...", positiveDialogListener);
         return;
       }
       if (!hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
         Log.i(TAG, "onActivityResult() called! - No ACCESS_FINE_LOCATION permission...");
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No ACCESS_FINE_LOCATION permission...");
+        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No ACCESS_FINE_LOCATION permission...", positiveDialogListener);
         return;
       }
       if (!hasPermissions(Manifest.permission.CAMERA)) {
         Log.i(TAG, "onActivityResult() called! - No CAMERA permission...");
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No CAMERA permission...");
+        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No CAMERA permission...", positiveDialogListener);
         return;
       }
       if (!hasPermissions(Manifest.permission.RECORD_AUDIO)) {
         Log.i(TAG, "onActivityResult() called! - No RECORD_AUDIO permission...");
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No RECORD_AUDIO permission...");
+        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No RECORD_AUDIO permission...", positiveDialogListener);
         return;
       }
       if (!hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
         Log.i(TAG, "onActivityResult() called! - No WRITE_EXTERNAL_STORAGE permission...");
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No WRITE_EXTERNAL_STORAGE permission...");
+        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No WRITE_EXTERNAL_STORAGE permission...", positiveDialogListener);
         return;
       }
       if (!hasPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
         Log.i(TAG, "onActivityResult() called! - No READ_EXTERNAL_STORAGE permission...");
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No READ_EXTERNAL_STORAGE permission...");
+        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No READ_EXTERNAL_STORAGE permission...", positiveDialogListener);
         return;
       }
     }
@@ -918,7 +947,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       TextSecurePreferences.setDeviceFirstTimeRun(true);
     }
   }
-  
+
   private void requestDriverPermission() {
     
     Dexter.withActivity(MainActivity.this)
@@ -953,14 +982,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
           } else {
             Log.d(TAG, "!!!areAllPermissionsGranted() called!");
             TextSecurePreferences.setDevicePermissionsGranted(false);
-            Util.showSettingsDialog(MainActivity.this);
+            Util.showSettingsDialog(MainActivity.this, positiveDialogListener, negativeDialogListener);
           }
           
           // check for permanent denial of any permission.
           if (report.isAnyPermissionPermanentlyDenied()) {
             Log.d(TAG, "isAnyPermissionPermanentlyDenied() called!");
             TextSecurePreferences.setDevicePermissionsGranted(false);
-            Util.showSettingsDialog(MainActivity.this);
+            Util.showSettingsDialog(MainActivity.this, positiveDialogListener, negativeDialogListener);
           }
         }
   
@@ -974,8 +1003,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         @Override
         public void onError(DexterError error) {
           Log.i(TAG, "onError() called! " + error.toString());
-          
-          AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+          AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getApplicationContext(), R.style.AbonaDialog));
           builder.setTitle("Permission Error");
           builder.setMessage(error.toString());
           builder.setPositiveButton(getResources().getString(R.string.action_ok),
@@ -983,7 +1011,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             
             @Override
             public void onClick(DialogInterface dialog, int i) {
-              dialog.cancel();
+              dialog.dismiss();
             }
           });
           builder.show();
@@ -993,7 +1021,22 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       .check();
   }
 
-  
+
+  /**
+   * Navigating User to App Settings.
+   */
+  private static void openSettings(MainActivity mainActivity) {
+    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    Uri uri = Uri.fromParts("package", mainActivity.getPackageName(), null);
+    intent.setData(uri);
+    intent.addCategory(Intent.CATEGORY_DEFAULT);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+            | Intent.FLAG_ACTIVITY_NO_HISTORY
+            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+    mainActivity.startActivityForResult(intent, MainActivity.REQUEST_APP_SETTINGS);
+  }
+
   private boolean hasPermissions(@NonNull String... permissions) {
     for (String permission : permissions) {
       if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, permission)) {

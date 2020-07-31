@@ -2,13 +2,12 @@ package com.abona_erp.driver.app.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.provider.Settings;
 import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.R;
@@ -54,61 +53,21 @@ public class Util {
    * Showing Alert Dialog with Settings Option.
    * Navigates User to App Settings.
    */
-  public static void showSettingsDialog(MainActivity mainActivity) {
-
-    Context context = mainActivity.getBaseContext();
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle(context.getResources().getString(R.string.need_permissions));
-    builder.setMessage(context.getResources().getString(R.string.permission_message_settings));
-    builder.setPositiveButton(context.getResources().getString(R.string.menu_settings),
-            new DialogInterface.OnClickListener() {
-
-              @Override
-              public void onClick(DialogInterface dialog, int i) {
-                dialog.cancel();
-                openSettings(mainActivity);
-              }
-            });
-    builder.setNegativeButton(context.getResources().getString(R.string.action_cancel),
-            new DialogInterface.OnClickListener() {
-
-              @Override
-              public void onClick(DialogInterface dialog, int i) {
-                dialog.cancel();
-                mainActivity.finish();
-              }
-            });
-    builder.show();
+  public static void showSettingsDialog(Context context, DialogInterface.OnClickListener positiveListener, DialogInterface.OnClickListener negativeListeneer) {
+      AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AbonaDialog));
+      builder.setTitle(context.getResources().getString(R.string.need_permissions));
+      builder.setMessage(context.getResources().getString(R.string.permission_message_settings));
+      builder.setPositiveButton(context.getResources().getString(R.string.menu_settings), positiveListener);
+      builder.setNegativeButton(context.getResources().getString(R.string.action_cancel), negativeListeneer);
+      builder.show();
   }
 
 
-  /**
-   * Navigating User to App Settings.
-   */
-  private static void openSettings(MainActivity mainActivity) {
-    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-    Uri uri = Uri.fromParts("package", mainActivity.getPackageName(), null);
-    intent.setData(uri);
-    intent.addCategory(Intent.CATEGORY_DEFAULT);
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-            | Intent.FLAG_ACTIVITY_CLEAR_TASK
-            | Intent.FLAG_ACTIVITY_NO_HISTORY
-            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-    mainActivity.startActivityForResult(intent, MainActivity.REQUEST_APP_SETTINGS);
-  }
-
-  public static void showPermissionErrorMessageAndFinish(MainActivity mainActivity, String title, String message) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity.getBaseContext());
+  public static void showPermissionErrorMessageAndFinish(Context context, String title, String message, DialogInterface.OnClickListener positiveListener ) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AbonaDialog));
     builder.setTitle(title);
     builder.setMessage(message);
-    builder.setPositiveButton(mainActivity.getBaseContext().getResources().getString(R.string.action_ok),
-            new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int i) {
-                dialog.dismiss();
-                mainActivity.finish();
-              }
-            });
+    builder.setPositiveButton(context.getResources().getString(R.string.action_ok), positiveListener);
     builder.show();
   }
 

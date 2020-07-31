@@ -16,10 +16,8 @@ public class LocaleChangeReceiver extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
             switch (Locale.getDefault().getISO3Language().toLowerCase()){
                 case "rus":
-                    TextSecurePreferences.setLanguage(context, Constants.LANG_TO_SERVER_RUSSIAN);
-                    break;
                 case "ukr":
-                    TextSecurePreferences.setLanguage(context, Constants.LANG_TO_SERVER_UKRAINIAN);
+                    TextSecurePreferences.setLanguage(context, Constants.LANG_TO_SERVER_RUSSIAN); //as ukrainian is not implemented on server.
                     break;
                 case "eng":
                     TextSecurePreferences.setLanguage(context, Constants.LANG_TO_SERVER_ENGLISH);

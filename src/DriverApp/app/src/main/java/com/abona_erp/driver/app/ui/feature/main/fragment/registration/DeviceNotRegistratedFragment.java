@@ -18,7 +18,6 @@ import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
 import com.abona_erp.driver.core.base.ThreadUtils;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 public class DeviceNotRegistratedFragment extends Fragment {
   
@@ -107,11 +106,6 @@ public class DeviceNotRegistratedFragment extends Fragment {
     super.onDestroyView();
   
     mProgressDialog.setProgress(100);
-    ThreadUtils.postOnUiThreadDelayed(new Runnable() {
-      @Override
-      public void run() {
-        mProgressDialog.dismiss();
-      }
-    }, 2000);
+    ThreadUtils.postOnUiThread(() -> mProgressDialog.dismiss());
   }
 }

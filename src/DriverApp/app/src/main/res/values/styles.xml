@@ -17,6 +17,9 @@
     <item name="android:clickable">true</item>
   </style>
 
+  <style name="AbonaDialog" parent="AppTheme">
+    <item name="android:windowNoTitle">true</item>
+  </style>
 
   <style name="TaskStatusLabels" parent="AppTheme">
     <item name="android:textSize">10sp</item>

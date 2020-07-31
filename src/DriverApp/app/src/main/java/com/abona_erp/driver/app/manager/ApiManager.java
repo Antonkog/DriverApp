@@ -16,12 +16,12 @@ import com.abona_erp.driver.app.data.remote.FileUploadService;
 import com.abona_erp.driver.app.data.remote.RemoteConstants;
 import com.abona_erp.driver.app.data.remote.TaskService;
 import com.abona_erp.driver.app.data.remote.TokenService;
+import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.MockInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
-import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 
@@ -180,9 +180,9 @@ public class ApiManager implements Manager {
             .addConverterFactory(GsonConverterFactory.create(App.getInstance().gsonUtc))
             .build();
   }
-  
+
   private OkHttpClient provideOkHttpClient() {
-    OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    OkHttpClient.Builder httpClient = UnsafeOkHttpClient.getUnsafeOkHttpClient().newBuilder();
     httpClient.connectTimeout(30, TimeUnit.SECONDS);
     httpClient.readTimeout(30, TimeUnit.SECONDS);
     httpClient.writeTimeout(30, TimeUnit.SECONDS);
@@ -226,7 +226,6 @@ public class ApiManager implements Manager {
     }
   
     httpClient.cache(getCache());
-    httpClient.sslSocketFactory(ClientSSLSocketFactory.getSocketFactory());
     httpClient.hostnameVerifier(new HostnameVerifier() {
       @Override
       public boolean verify(String s, SSLSession sslSession) {
@@ -256,14 +255,13 @@ public class ApiManager implements Manager {
   
   static OkHttpClient.Builder makeApiClientBuilder() {
     if (apiClientBuilder == null) {
-      apiClientBuilder = new OkHttpClient.Builder()
+      apiClientBuilder = UnsafeOkHttpClient.getUnsafeOkHttpClient().newBuilder()
         .hostnameVerifier(new HostnameVerifier() {
           @Override
           public boolean verify(String s, SSLSession sslSession) {
             return true;
           }
         })
-        .sslSocketFactory(ClientSSLSocketFactory.getSocketFactory())
         .followRedirects(true)
         .followSslRedirects(true)
         .retryOnConnectionFailure(true)
@@ -309,14 +307,13 @@ public class ApiManager implements Manager {
   
   static OkHttpClient.Builder makeAuthClientBuilder() {
     if (authClientBuilder == null) {
-      authClientBuilder = new OkHttpClient.Builder()
+      authClientBuilder = UnsafeOkHttpClient.getUnsafeOkHttpClient().newBuilder()
         .hostnameVerifier(new HostnameVerifier() {
           @Override
           public boolean verify(String s, SSLSession sslSession) {
             return true;
           }
         })
-        .sslSocketFactory(ClientSSLSocketFactory.getSocketFactory())
         .followRedirects(true)
         .followSslRedirects(true)
         .retryOnConnectionFailure(true)

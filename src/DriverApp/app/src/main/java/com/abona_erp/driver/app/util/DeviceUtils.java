@@ -70,14 +70,14 @@ public class DeviceUtils {
   public static String getUniqueIMEI(Context context) {     try {
       TelephonyManager tm = ServiceUtil.getTelephonyManager(context);
       String imei;
-      
+
       if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           imei = tm.getImei();
         } else {
           imei = tm.getDeviceId();
         }
-        
+
         if (imei != null && !imei.isEmpty()) {
           return imei;
         } else {
@@ -99,16 +99,14 @@ public class DeviceUtils {
           }
           return mac;
         }
-      } else {
-        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID); //only that change...
       }
-    } catch (Exception e) {
-      Log.w("Error", e.getMessage());
-    }
-    
+  } catch (Exception e) {
+    Log.w("Error", e.getMessage());
+  }
+
     return null;
   }
-  
+
   public static String getMacAddress(String interfaceName) {
     try {
       Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();

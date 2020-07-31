@@ -37,6 +37,7 @@ import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
@@ -45,7 +46,6 @@ import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
-import com.abona_erp.driver.app.util.ClientSSLSocketFactory;
 import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -1075,7 +1075,7 @@ public class BackgroundServiceWorker extends Service {
     if (mClient == null) {
       synchronized (BackgroundServiceWorker.class) {
         if (mClient == null) {
-          mClient = new OkHttpClient.Builder()
+          mClient = UnsafeOkHttpClient.getUnsafeOkHttpClient().newBuilder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .hostnameVerifier(new HostnameVerifier() {
               @Override
@@ -1083,7 +1083,6 @@ public class BackgroundServiceWorker extends Service {
                 return true;
               }
             })
-            .sslSocketFactory(ClientSSLSocketFactory.getSocketFactory())
             .addInterceptor(logging)
             .build();
         }

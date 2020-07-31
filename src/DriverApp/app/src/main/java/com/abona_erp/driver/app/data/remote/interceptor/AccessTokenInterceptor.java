@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 
@@ -13,16 +14,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -104,7 +99,7 @@ public class AccessTokenInterceptor implements Interceptor {
     if (mClient == null) {
       synchronized (AccessTokenInterceptor.class) {
         if (mClient == null) {
-          mClient = new OkHttpClient.Builder()
+          mClient =  UnsafeOkHttpClient.getUnsafeOkHttpClient().newBuilder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .hostnameVerifier(new HostnameVerifier() {
               @Override
@@ -112,39 +107,11 @@ public class AccessTokenInterceptor implements Interceptor {
                 return true;
               }
             })
-            .sslSocketFactory(getSslSocket())
             .addInterceptor(logging)
             .build();
         }
       }
     }
     return mClient;
-  }
-  
-  private SSLSocketFactory getSslSocket() {
-    try {
-      SSLContext sslContext = SSLContext.getInstance("TLS");
-      X509TrustManager tm = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-    
-        }
-  
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-    
-        }
-  
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-          return new X509Certificate[0];
-        }
-      };
-      sslContext.init(null, new TrustManager[]{tm}, null);
-      return sslContext.getSocketFactory();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 }
