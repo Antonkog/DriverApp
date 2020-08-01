@@ -1,6 +1,7 @@
 package com.redhotapp.driverapp.ui.login
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginFragment : BaseFragment() {
 
+    val TAG : String  ="LoginFragment"
 
     private val loginViewModel by viewModels<LoginViewModel> ()
 //    val loginViewModel: LoginViewModel by navGraphViewModels(R.id.nav_login) for scoped in graph check if need
@@ -66,6 +68,7 @@ class LoginFragment : BaseFragment() {
     }
 
     private fun showWelcomeMessage() {
-         findNavController().navigate(R.id.nav_home)
+        Log.e(TAG, "navigating home")
+        findNavController().navigate(R.id.nav_home)
     }
 }

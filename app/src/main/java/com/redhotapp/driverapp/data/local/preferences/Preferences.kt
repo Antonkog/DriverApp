@@ -1,4 +1,4 @@
-package com.redhotapp.driverapp.data.local
+package com.redhotapp.driverapp.data.local.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -16,7 +16,9 @@ class Preferences {
 
 
         fun setEndpoint(context: Context, endpoint: String?) {
-            val sharedPref = getSharedPrefs(context) ?: return
+            val sharedPref = getSharedPrefs(
+                context
+            ) ?: return
             with(sharedPref.edit()) {
                 putString(context.getString(R.string.preferences_endpoint), endpoint)
                 commit()
@@ -24,7 +26,9 @@ class Preferences {
         }
 
         fun getEndpoint(context: Context): String {
-            val sharedPref = getSharedPrefs(context) ?: return Constant.defaultApiUrl
+            val sharedPref = getSharedPrefs(
+                context
+            ) ?: return Constant.defaultApiUrl
             return sharedPref.getString(
                 context.getString(R.string.preferences_endpoint),Constant.defaultApiUrl
             ) ?: Constant.defaultApiUrl
@@ -32,7 +36,9 @@ class Preferences {
 
 
         fun setAccessToken(context: Context, token: String?) {
-            val sharedPref = getSharedPrefs(context) ?: return
+            val sharedPref = getSharedPrefs(
+                context
+            ) ?: return
             with(sharedPref.edit()) {
                 putString(context.getString(R.string.token), token)
                 commit()
@@ -40,7 +46,9 @@ class Preferences {
         }
 
         fun  getAccessToken(context: Context): String? {
-            val sharedPref = getSharedPrefs(context).let {
+            val sharedPref = getSharedPrefs(
+                context
+            ).let {
                 return it?.getString(
                     context.getString(R.string.token), null
                 )

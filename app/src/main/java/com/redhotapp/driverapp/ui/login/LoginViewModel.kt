@@ -10,15 +10,17 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.redhotapp.driverapp.data.Constant
+import com.redhotapp.driverapp.data.local.preferences.Preferences
 import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class LoginViewModel
-@ViewModelInject constructor(private val api: ApiRepository, private val gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
+@ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
 
 
     val TAG = "LoginViewModel"
@@ -42,15 +44,16 @@ class LoginViewModel
         api.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { result -> Log.e(TAG, result.body().toString()) },
-                { error -> Log.e(TAG, error.localizedMessage) }
-            )
+                { result -> Log.e(TAG, result.body().toString())
+                    Log.e(TAG, "got auth")
+                    authenticationState.value = AuthenticationState.AUTHENTICATED
+                    Preferences.setAccessToken(context, result.body()?.accessToken)
+                },
+                { error -> Log.e(TAG, error.localizedMessage)
+                    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                }
 
-//        if (!true) {
-//            authenticationState.value = AuthenticationState.AUTHENTICATED
-//        } else {
-//            authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-//        }
+            )
     }
 
 

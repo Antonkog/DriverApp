@@ -2,10 +2,9 @@ package com.redhotapp.driverapp.data.remote.utils
 
 import android.content.Context
 import android.os.Build
-import com.google.android.material.internal.ContextUtils
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
-import com.redhotapp.driverapp.data.local.Preferences
+import com.redhotapp.driverapp.data.local.preferences.Preferences
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
