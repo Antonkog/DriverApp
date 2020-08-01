@@ -1,6 +1,7 @@
 package com.redhotapp.driverapp.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
 
+    val TAG = "HomeFragment"
     private val homeViewModel by viewModels<HomeViewModel> ()
 //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
 
@@ -36,15 +38,16 @@ class HomeFragment : BaseFragment() {
                     viewmodel = homeViewModel
 
                 }
-//        homeBinding = HomeFragmentBinding.bind(view).apply {
-//            viewmodel = homeViewModel
-//        }
+        homeBinding = HomeFragmentBinding.bind(view).apply {
+            viewmodel = homeViewModel
+        }
 
 
         homeBinding.lifecycleOwner = this.viewLifecycleOwner
 
         homeViewModel.text.observe(viewLifecycleOwner, Observer {
             homeBinding.textHome.text = it
+            Log.e(TAG, "has text")
         })
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
