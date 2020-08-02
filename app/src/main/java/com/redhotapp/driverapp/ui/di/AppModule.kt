@@ -20,10 +20,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
-import com.redhotapp.driverapp.data.remote.ApiRepository
-import com.redhotapp.driverapp.data.remote.ApiRepositoryImpl
-import com.redhotapp.driverapp.data.remote.ApiService
-import com.redhotapp.driverapp.data.remote.RequestInterceptor
+import com.redhotapp.driverapp.data.remote.*
 import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.redhotapp.driverapp.data.remote.utils.UnsafeOkHttpClient
 import com.redhotapp.driverapp.data.remote.utils.UserAgentInterceptor
@@ -65,7 +62,7 @@ object AppModule {
         okHttpBuilder.connectTimeout(1, TimeUnit.MINUTES)
         okHttpBuilder.readTimeout(1, TimeUnit.MINUTES)
         okHttpBuilder.writeTimeout(1, TimeUnit.MINUTES)
-//        okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
+        okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
 //        okHttpBuilder.addInterceptor(RequestInterceptor())
         if (BuildConfig.DEBUG) {
             val logging = HttpLoggingInterceptor()
@@ -95,6 +92,17 @@ object AppModule {
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .baseUrl(Constant.defaultApiUrl).build().create(ApiService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideAuthService(okHttpClient: OkHttpClient): AuthService {
+        return  Retrofit.Builder()
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+            .baseUrl(Constant.baseAuthUrl).build().create(AuthService::class.java)
+    }
+
 //
 //
 //    @Provides
@@ -115,10 +123,10 @@ object TasksRepositoryModule {
     @Provides
     fun provideApiRepository(
          rabbitService: RabbitService,
-         apiService: ApiService
+         apiService: ApiService, authService: AuthService
     ): ApiRepository {
         return ApiRepositoryImpl(
-            rabbitService, apiService
+            rabbitService, apiService, authService
         )
     }
 }

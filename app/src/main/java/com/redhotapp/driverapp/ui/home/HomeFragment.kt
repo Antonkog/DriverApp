@@ -15,6 +15,7 @@ import com.redhotapp.driverapp.databinding.HomeFragmentBinding
 import com.redhotapp.driverapp.databinding.LoginFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
 import com.redhotapp.driverapp.ui.login.LoginViewModel
+import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,6 +50,7 @@ class HomeFragment : BaseFragment() {
             homeBinding.textHome.text = it
             Log.e(TAG, "has text")
         })
+        homeBinding.button.setOnClickListener { view ->  homeViewModel.getAllTasks(DeviceUtils.getUniqueIMEI(context)) }
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
         return view

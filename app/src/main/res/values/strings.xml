@@ -16,6 +16,7 @@
     <string name="preferences_id">com.redhotapp.driverapp.preferences</string>
     <string name="preferences_endpoint">endpoint</string>
     <string name="token">token</string>
+    <string name="tokenFcm">tokenFcm</string>
 
     <string name="need_log_in">First log in</string>
 

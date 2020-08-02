@@ -54,5 +54,25 @@ class Preferences {
                 )
             }
         }
+
+        fun setFCMToken(context: Context, token: String?) {
+            val sharedPref = getSharedPrefs(
+                context
+            ) ?: return
+            with(sharedPref.edit()) {
+                putString(context.getString(R.string.tokenFcm), token)
+                commit()
+            }
+        }
+
+        fun  getFCMToken(context: Context): String? {
+            val sharedPref = getSharedPrefs(
+                context
+            ).let {
+                return it?.getString(
+                    context.getString(R.string.tokenFcm), null
+                )
+            }
+        }
     }
 }
