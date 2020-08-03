@@ -18,6 +18,7 @@ package com.redhotapp.driverapp.ui.di
 
 import android.content.Context
 import com.google.gson.Gson
+import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.remote.*
@@ -68,6 +69,7 @@ object AppModule {
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY
             okHttpBuilder.addInterceptor(logging)
+            okHttpBuilder.addInterceptor(OkHttpProfilerInterceptor() )
         }
         return okHttpBuilder.build()
     }

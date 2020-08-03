@@ -1,8 +1,7 @@
 package com.redhotapp.driverapp.ui.login
 
 import android.content.Context
-import android.os.AsyncTask
-import android.text.TextUtils
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.hilt.Assisted
@@ -12,6 +11,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
+import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.local.preferences.Preferences
 import com.redhotapp.driverapp.data.model.abona.CommItem
@@ -24,8 +24,6 @@ import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class LoginViewModel
@@ -58,7 +56,7 @@ class LoginViewModel
 
                     authenticationState.value = AuthenticationState.AUTHENTICATED
                     Preferences.setAccessToken(context, result.body()?.accessToken)
-
+                    setDeviceProfile(getCommItem())
                 },
                 { error ->
                     Log.e(TAG, error.localizedMessage)
@@ -66,11 +64,6 @@ class LoginViewModel
                 }
 
             )
-
-//        setFcmToken()
-
-//        setDeviceProfile(getCommItem())
-
     }
 
     fun getEndpointActive(clientId: String) {
@@ -114,7 +107,7 @@ class LoginViewModel
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> Log.e(TAG, result.toString())
-                    Log.e(TAG, "edvixce is set")
+                    Log.e(TAG, "device set success")
                 },
                 { error ->
                     Log.e(TAG, error.localizedMessage)
@@ -131,9 +124,17 @@ class LoginViewModel
         header.dataType = DataType.DEVICE_PROFILE
         header.deviceId = DeviceUtils.getUniqueIMEI(context)
         commItem.header = header
+
         val deviceProfileItem = DeviceProfileItem()
         deviceProfileItem.instanceId = Preferences.getFCMToken(context)
-        deviceProfileItem.deviceId = DeviceUtils.getUniqueIMEI(context)
+        deviceProfileItem.deviceId = DeviceUtils.getUniqueID(context)
+        deviceProfileItem.model = Build.MODEL
+        deviceProfileItem.manufacturer = Build.MANUFACTURER
+        deviceProfileItem.createdDate = Date()
+        deviceProfileItem.updatedDate = Date()
+        deviceProfileItem.languageCode = Locale.getDefault().toString().replace("_", "-")
+        deviceProfileItem.versionCode = BuildConfig.VERSION_CODE
+        deviceProfileItem.versionName = BuildConfig.VERSION_NAME
         commItem.deviceProfileItem = deviceProfileItem
         return commItem
     }

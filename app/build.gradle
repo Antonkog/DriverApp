@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
-//apply plugin: 'com.google.gms.google-services'  // Google Services plugin
+apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
 android {
     compileSdkVersion 29
@@ -94,7 +94,6 @@ dependencies {
     //rabbitMQ
     implementation 'com.rabbitmq:amqp-client:5.8.0'
 
-    
     // Add the SDK for Firebase Cloud Messaging
     implementation 'com.google.firebase:firebase-messaging:20.2.4'
     //multithreading
@@ -109,6 +108,8 @@ dependencies {
     //networking
     //json parsing
     implementation 'com.google.code.gson:gson:2.8.5'
+    //networkProfiler
+    implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.7'
     //okHttp
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'

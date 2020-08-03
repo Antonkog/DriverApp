@@ -2,6 +2,7 @@ package com.redhotapp.driverapp.data.remote.utils
 
 import okhttp3.OkHttpClient
 import java.security.cert.CertificateException
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -33,8 +34,7 @@ class UnsafeOkHttpClient {
 
                 val builder = OkHttpClient.Builder()
                 builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-                builder.hostnameVerifier { _, _ -> true }
-
+                builder.hostnameVerifier(HostnameVerifier { hostname, session -> true })
                 return builder
             } catch (e: Exception) {
                 throw RuntimeException(e)

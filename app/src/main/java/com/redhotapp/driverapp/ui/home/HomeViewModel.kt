@@ -28,8 +28,7 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
     val text: LiveData<String> = _text
 
     fun loggedIn(): Boolean {
-        return true
-        //return Preferences.getAccessToken(context) != null
+        return Preferences.getAccessToken(context) != null
     }
 
     fun getAllTasks(deviceId: String) {
