@@ -125,7 +125,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   public static final int REQUEST_APP_SETTINGS = 321;
   
   public static final String BACK_STACK_ROOT_TAG = "root_fragment";
-
+  private Handler h = new Handler();
   @Inject
   ApiService apiService;
 
@@ -318,41 +318,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     getAllTaskImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        progressBar.setVisibility(View.VISIBLE);
-        getAllTaskImage.setEnabled(false);
-
-        Call<ResultOfAction> call = App.getInstance().apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
-        call.enqueue(new Callback<ResultOfAction>() {
-          @Override
-          public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
-            getAllTaskImage.setEnabled(true);
-            progressBar.setVisibility(View.GONE);
-            if (response.isSuccessful() && response.body() != null) {
-              handleGetAllTasks(response.body());
-            } else {
-              
-              switch (response.code()) {
-                case 401:
-                  handleAccessToken();
-                  break;
-                default:
-                  // TODO: Log
-                  break;
-              }
-            }
-          }
-  
-          @Override
-          public void onFailure(Call<ResultOfAction> call, Throwable t) {
-            // TODO: Wahrscheinlich kein Internet!
-            getAllTaskImage.setEnabled(true);
-            progressBar.setVisibility(View.GONE);
-          }
-        });
+        onUpdateClick();
       }
     });
 
-    
+
     mMainViewModel.getNotReadNotificationCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
@@ -420,6 +390,40 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   }
 
 
+  private void onUpdateClick() {
+    progressBar.setVisibility(View.VISIBLE);
+    getAllTaskImage.setEnabled(false);
+
+    Call<ResultOfAction> call = App.getInstance().apiManager.getTaskApi().getAllTasks(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+    call.enqueue(new Callback<ResultOfAction>() {
+      @Override
+      public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+        getAllTaskImage.setEnabled(true);
+        progressBar.setVisibility(View.GONE);
+        if (response.isSuccessful() && response.body() != null) {
+          handleGetAllTasks(response.body());
+        } else {
+
+          switch (response.code()) {
+            case 401:
+              handleAccessToken();
+              break;
+            default:
+              // TODO: Log
+              break;
+          }
+        }
+      }
+
+      @Override
+      public void onFailure(Call<ResultOfAction> call, Throwable t) {
+        // TODO: Wahrscheinlich kein Internet!
+        getAllTaskImage.setEnabled(true);
+        progressBar.setVisibility(View.GONE);
+      }
+    });
+  }
+
   private int tryCount = 3;
   /**
    * this method changes ID on Abona Server
@@ -440,28 +444,28 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                                         .subscribe(result -> {
                                           if (result.getIsSuccess()) {
                                             databaseProfile.setDeviceId(getAndroidQnewID());
+                                            databaseProfile.setDeviceSerial(getAndroidQnewID());
                                             mMainViewModel.update(databaseProfile); //that is old implementation to update room table
+                                            mMainViewModel.deleteOldTables();
                                             Log.d(TAG, " success, id updatedToNew: " +  result.toString());
+                                            h.postDelayed(() -> {
+                                              onUpdateClick();
+                                            }, 1000);
                                           }else {
                                             Log.d(TAG, result.toString());
                                           }
                                         }, error -> {
                                           if (error instanceof HttpException) {
-                                            if (((HttpException) error).code() == 401) {
+                                            if (((HttpException) error).code() == 401 && tryCount > 0) {
                                               handleAccessToken();
-
                                               Log.d(TAG, "tryCount: " + tryCount + " got auth error, scheduling new update  " + error.toString());
-                                              Handler h = new Handler();
-                                              h.postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                  tryCount--;
-                                                  changeDeviceIdNewApi();
-                                                }
+                                              h.postDelayed(() -> {
+                                                tryCount--;
+                                                changeDeviceIdNewApi();
                                               }, Constants.REPEAT_TIME_MIGRATION);
                                             }
                                           }else {
-                                            Log.d(TAG, " error when calling migrate ID, " + error.toString());
+                                            Log.e(TAG, " error when calling migrate ID, " + error.toString());
                                           }
                                         });
                               }

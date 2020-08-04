@@ -72,9 +72,7 @@
     <item quantity="one">%d комментарий доступен</item>
     <item quantity="other">%d комментариев доступно</item>
   </plurals>
-  <string name="dpl">DPL</string>
   <string name="number_of_paletts">Количество паллет</string>
-  <string name="un_no">UN-No.</string>
   <string name="client">Организация</string>
   <string name="geo_data">Геоданные</string>
   <string name="name">Имя</string>
@@ -83,7 +81,7 @@
   <string name="contact_type_second_persecutor">2. Диспетчер</string>
   <string name="contact_type_customer">Покупатель</string>
   <string name="dangerous_goods">Опасные грузы</string>
-  <string name="palette_exchange">Обмен палитрой</string>
+  <string name="palette_exchange">Обмен паллет</string>
   <string name="registration_number">НЕТ МАШИНЫ</string>
   <string name="task_status">Статус задания</string>
   <string name="task_finish">Завершить задание</string>
@@ -129,13 +127,6 @@
   <!-- MULTILANG -->
 
 
-  <string name="cancel">Отменить</string>
-  <string name="enable">Включить</string>
-
-  <string name="back">Назад</string>
-
-  <string name="theme_light">Светлая</string>
-  <string name="theme_dark">Тёмная</string>
   <string name="order">"Заказ"</string>
   <string name="action">Действие</string>
   <string name="timestamp">Время</string>
@@ -151,4 +142,5 @@
   <string name="delay_started">Начало:</string>
   <string name="delay_finished">Окончание:</string>
   <string name="delay_delay">Задержка:</string>
+  <string name="task_information">Информация о задании</string>
 </resources>

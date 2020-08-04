@@ -138,6 +138,11 @@ public class MainViewModel extends AndroidViewModel {
   void update(DeviceProfile deviceProfile) {
     mRepository.update(deviceProfile);
   }
+
+  public void deleteOldTables(){
+    mRepository.deleteAllNotify();
+    mRepository.deleteAllLastActivities();
+  }
   
   //List<DeviceProfile> getAllDeviceProfiles() {
   //  return mAllDeviceProfiles;

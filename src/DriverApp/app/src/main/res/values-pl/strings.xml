@@ -75,9 +75,7 @@
     <item quantity="one">%d komentarz dostępny</item>
     <item quantity="other">%d komentarzy dostępnych</item>
   </plurals>
-  <string name="dpl">DPL</string>
-  <string name="number_of_paletts">Liczba palet</string>
-  <string name="un_no">UN-No.</string>
+    <string name="number_of_paletts">Liczba palet</string>
   <string name="client">Klient</string>
   <string name="geo_data">Geodata</string>
   <string name="name">Imię</string>
@@ -156,4 +154,5 @@
   <string name="delay_started">"Zaczęła się: "</string>
   <string name="delay_finished">Skończone:</string>
   <string name="delay_delay">Opóźnienie:</string>
+    <string name="task_information">Informacje o zadaniu</string>
 </resources>

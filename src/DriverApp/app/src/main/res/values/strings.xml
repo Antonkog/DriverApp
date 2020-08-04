@@ -156,9 +156,9 @@
     <item quantity="one">%d comment available</item>
     <item quantity="other">%d comments available</item>
   </plurals>
-  <string name="dpl">DPL</string>
+  <string name="dpl" translatable="false">DPL</string>
   <string name="number_of_paletts">Number of pallets</string>
-  <string name="un_no">UN-No.</string>
+  <string name="un_no" translatable="false">UN-No.</string>
   <string name="adr_class" translatable="false">ADR Class</string>
   <string name="client">Client</string>
   <string name="geo_data">Geodata</string>
@@ -169,6 +169,7 @@
   <string name="contact_type_customer">Customer</string>
   <string name="dangerous_goods">Dangerous Goods</string>
   <string name="palette_exchange">Palette Exchange</string>
+  <string name="task_information">Task Information</string>
 
 
   <string name="order">Order</string>
@@ -226,11 +227,11 @@
   <string name="colon_string" translatable="false">:</string>
 
   <string name="status_driving_to_loading" translatable="false">Driving to loading</string>
-  <string name="cancel">Cancel</string>
-  <string name="enable">Enable</string>
-  <string name="back">Back</string>
-  <string name="theme_light">White</string>
-  <string name="theme_dark">Dark</string>
+  <string name="cancel" translatable="false">Cancel</string>
+  <string name="enable" translatable="false">Enable</string>
+  <string name="back" translatable="false">Back</string>
+  <string name="theme_light" translatable="false">White</string>
+  <string name="theme_dark" translatable="false">Dark</string>
 
   <string name="delay_started">Started:</string>
   <string name="delay_finished">Finished:</string>
