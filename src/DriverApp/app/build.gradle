@@ -169,13 +169,12 @@ dependencies {
     // Event Bus
     implementation 'org.greenrobot:eventbus:3.1.1'
 
-
+    implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.5'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'de.hdodenhof:circleimageview:3.0.2'
     implementation 'com.github.zurche:plain-pie:v0.2.9'
     implementation 'com.github.linger1216:labelview:v1.1.2'
     implementation 'com.github.shivam301296:Android-CustomToast:1.0.1'
-    implementation 'com.karumi:dexter:6.0.0'
     implementation 'com.shuhart.stepview:stepview:1.5.0'
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'

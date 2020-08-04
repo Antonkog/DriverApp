@@ -15,10 +15,14 @@ import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageActivityHelp
 
 import java.util.Locale;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 public abstract class BaseActivity extends AppCompatActivity {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
+
+    public final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private ActivityComponent activityComponent;
 
@@ -27,6 +31,12 @@ public abstract class BaseActivity extends AppCompatActivity {
        // injectDependency(); only in one place for now
         activityComponent = getApplicationComponent().provideActivityComponent(new ActivityModule(this));
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.clear();
     }
 
     @Override

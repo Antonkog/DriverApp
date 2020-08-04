@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat;
 
 import com.abona_erp.driver.app.logging.Log;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
@@ -55,6 +57,13 @@ public class DeviceUtils {
     return idBuilder.toString();
   }
 
+  public static String getUniqueIMEI(Context context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+      return useDeprecatedMac(context);
+    else
+      return getUniqueID(context);
+  }
+
 
   /**
    * that is old method for device identification
@@ -67,7 +76,10 @@ public class DeviceUtils {
    * @return mac or serial
    * comments by A.KOGAN
    */
-  public static String getUniqueIMEI(Context context) {     try {
+  @Deprecated
+  @Nullable
+  private static String useDeprecatedMac(Context context) {
+    try {
       TelephonyManager tm = ServiceUtil.getTelephonyManager(context);
       String imei;
 

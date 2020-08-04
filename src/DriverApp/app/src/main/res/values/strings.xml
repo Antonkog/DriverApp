@@ -216,6 +216,7 @@
 
   <string name="alarm_check_title"  translatable="false">Driver App</string>
   <string name="alarm_check_text">I will notify you before task end</string>
+  <string name="running_text"  translatable="false">Running in background</string>
 
   <string name="alarm_check_failed">Alarm was not set</string>
   <string name="alarm_check_failed_reason">Reason: task was changed</string>

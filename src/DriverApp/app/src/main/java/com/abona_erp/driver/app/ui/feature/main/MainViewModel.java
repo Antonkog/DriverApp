@@ -14,6 +14,7 @@ import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class MainViewModel extends AndroidViewModel {
@@ -118,7 +119,16 @@ public class MainViewModel extends AndroidViewModel {
   Single<LastActivity> getLastActivityByTaskClientId(int taskId, int clientId) {
     return mRepository.getLastActivityByTaskClientId(taskId, clientId);
   }
-  
+
+  /**
+   * Get the DeviceProfile
+   *
+   * @return a {@link Flowable} DeviceProfile.
+   */
+  public Flowable<DeviceProfile> getDeviceProfile() {
+    return  mRepository.getmDeviceProfileDAO().getDeviceProfile();
+  }
+
   // -----------------------------------------------------------------------------------------------
   // DEVICE PROFILE:
   void insert(DeviceProfile deviceProfile) {

@@ -9,10 +9,18 @@ import android.preference.PreferenceManager;
 import androidx.room.Room;
 
 import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.remote.ApiService;
+import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
+import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
+import com.abona_erp.driver.app.data.remote.interceptor.MockInterceptor;
+import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
+import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.di.scopes.ApplicationScope;
 import com.abona_erp.driver.app.manager.ApiManager;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.gson.BooleanJsonDeserializer;
 import com.abona_erp.driver.app.util.gson.DoubleJsonDeserializer;
 import com.abona_erp.driver.app.util.gson.FloatJsonDeserializer;
@@ -26,13 +34,21 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
 import org.jetbrains.annotations.NotNull;
+import org.whispersystems.signalservice.internal.util.Util;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class ApplicationModule {
@@ -105,6 +121,40 @@ public class ApplicationModule {
         return gsonBuilder.create();
     }
 
+    @Provides
+    @ApplicationScope
+    OkHttpClient provideOkHttpClient() {
+        OkHttpClient.Builder httpClient = UnsafeOkHttpClient.getUnsafeOkHttpClient().newBuilder();
+        httpClient.connectTimeout(30, TimeUnit.SECONDS);
+        httpClient.readTimeout(30, TimeUnit.SECONDS);
+        httpClient.writeTimeout(30, TimeUnit.SECONDS);
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClient.addInterceptor(logging);
+            if(App.isTesting()) httpClient.addInterceptor(new MockInterceptor());
+        }
+        httpClient.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", BuildConfig.VERSION_NAME));
+        httpClient.addInterceptor(new AccessTokenInterceptor());
+        httpClient.addInterceptor(new RequestInterceptor());
+        httpClient.protocols(Util.immutableList(Protocol.HTTP_1_1));
+        httpClient.retryOnConnectionFailure(true);
+        return httpClient.build();
+    }
+
+
+    @Provides
+    @ApplicationScope
+    ApiService provideApiService(OkHttpClient okHttpClient, @Named("GSON_UTC") Gson gsonUtc)
+    {
+        return new Retrofit.Builder()
+                .baseUrl(TextSecurePreferences.getEndpoint())
+                .client(okHttpClient)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gsonUtc))
+                .build().create(ApiService.class);
+    }
+
 
     @Provides
     @ApplicationScope
@@ -146,13 +196,6 @@ public class ApplicationModule {
         return gsonBuilder;
     }
 
-
-//    @Provides
-//    @ApplicationScope
-//    static ApiManager provideApiManager(Context context, @Named("GSON") Gson gson,  @Named("GSON_UTC") Gson gsonUtc) {
-//        return new ApiManager(context, gson, gsonUtc);
-//    }
-//
 //
 //
 //  @Provides

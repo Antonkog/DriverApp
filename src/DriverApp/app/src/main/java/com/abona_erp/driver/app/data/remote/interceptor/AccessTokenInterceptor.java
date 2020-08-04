@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.abona_erp.driver.app.data.remote.RemoteConstants;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
@@ -38,7 +39,7 @@ public class AccessTokenInterceptor implements Interceptor {
   
   private String getAccessToken() {
     MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-    RequestBody body = RequestBody.create(mediaType, "grant_type=password&username=manyvehicles%40abona-erp.com&password=1234qwerQWER%2C.-");
+    RequestBody body = RequestBody.create(mediaType, RemoteConstants.ENDPOINT_AUTH);
   
     Request request = new Request.Builder()
       .url(TextSecurePreferences.getEndpoint() + "authentication")

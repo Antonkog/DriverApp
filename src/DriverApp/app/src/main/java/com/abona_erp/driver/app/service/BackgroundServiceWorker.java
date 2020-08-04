@@ -1,16 +1,23 @@
 package com.abona_erp.driver.app.service;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.DateConverter;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
@@ -44,6 +51,7 @@ import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
 import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DelayReasonUtil;
@@ -871,13 +879,35 @@ public class BackgroundServiceWorker extends Service {
   
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    Log.i(TAG, "onStartCommand() called!");
-    
+    Notification notification = prepareNotification(getApplicationContext().getResources().getString(R.string.alarm_check_title),
+            getApplicationContext().getResources().getString(R.string.running_text)).build();
+    startForeground(Constants.ALARM_CHECK_JOB_ID, notification);
+
     mHandler.post(mRunner);
     mDelayReasonHandler.post(mDelayReasonRunner);
     return START_REDELIVER_INTENT;
   }
-  
+
+  private NotificationCompat.Builder prepareNotification(String title, String message) {
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL_ID)
+//            .setContentIntent(getPendingIntent())
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.mipmap.ic_launcher))
+            .setContentTitle(title)
+            .setContentText(message)
+            .setAutoCancel(true)
+            .setWhen(System.currentTimeMillis());
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //need to specify channel  on that api
+      NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.PACKAGE_NAME,
+              NotificationManager.IMPORTANCE_HIGH);
+      NotificationManager notificationManager = getSystemService(NotificationManager.class);
+      notificationManager.createNotificationChannel(channel);
+      builder.setChannelId(Constants.NOTIFICATION_CHANNEL_ID);
+    }
+    return builder;
+  }
+
   @Override
   public void onDestroy() {
     Log.i(TAG, "onDestroy() called!");

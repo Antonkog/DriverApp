@@ -1,7 +1,6 @@
 package com.abona_erp.driver.app;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.lifecycle.ProcessLifecycleOwner;
 
@@ -10,7 +9,6 @@ import com.abona_erp.driver.app.di.components.DaggerApplicationComponent;
 import com.abona_erp.driver.app.di.modules.ApplicationModule;
 import com.abona_erp.driver.app.manager.ApiManager;
 import com.abona_erp.driver.app.manager.SharedPrefManager;
-import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
 import com.abona_erp.driver.core.base.ContextUtils;
@@ -78,19 +76,10 @@ public class App extends BaseApp {
     
     spManager.init(this);
     apiManager.init(this);
-    saveDeviceIdOldApi();
-  
     LogifyAlert client = LogifyAlert.getInstance();
     client.setApiKey("5B357B2806714B8598C6127F537CD389");
     client.setContext(this.getApplicationContext());
     client.startExceptionsHandling();
-  }
-
-  private void saveDeviceIdOldApi() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      if(TextSecurePreferences.getOldDeviceID() == null)
-        TextSecurePreferences.setOldDeviceID(DeviceUtils.getUniqueIMEI(getApplicationContext()));
-    }
   }
 
   public static App getInstance() {

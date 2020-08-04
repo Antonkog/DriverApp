@@ -28,11 +28,9 @@ import com.abona_erp.driver.app.util.AppUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class DriverRepository {
@@ -84,7 +82,11 @@ public class DriverRepository {
     
     mDelayReasonDAO = db.delayReasonDAO();
   }
-  
+
+  public DeviceProfileDAO getmDeviceProfileDAO() {
+    return mDeviceProfileDAO;
+  }
+
   public LiveData<List<LogItem>> getAllLogs() {
     return mAllLogs;
   }

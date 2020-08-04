@@ -78,4 +78,16 @@ public class ResultOfAction {
   public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
     this.delayReasonItems = delayReasonItems;
   }
+
+  @Override
+  public String toString() {
+    return "ResultOfAction{" +
+            "isSuccess=" + isSuccess +
+            ", isException=" + isException +
+            ", text='" + text + '\'' +
+            ", commItem=" + commItem +
+            ", allTask=" + allTask +
+            ", delayReasonItems=" + delayReasonItems +
+            '}';
+  }
 }

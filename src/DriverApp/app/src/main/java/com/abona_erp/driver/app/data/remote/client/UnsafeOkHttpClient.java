@@ -1,5 +1,8 @@
 package com.abona_erp.driver.app.data.remote.client;
 
+import com.abona_erp.driver.app.BuildConfig;
+import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor;
+
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -50,9 +53,8 @@ public class UnsafeOkHttpClient {
           return true;
         }
       });
-  
-      OkHttpClient okHttpClient = builder.build();
-      return okHttpClient;
+        if (BuildConfig.DEBUG) {builder.addInterceptor(new OkHttpProfilerInterceptor());}
+        return builder.build();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

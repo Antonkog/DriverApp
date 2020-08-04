@@ -2,8 +2,6 @@ package com.abona_erp.driver.app.ui.feature.main;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -27,10 +26,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -55,6 +54,7 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.data.remote.ApiService;
 import com.abona_erp.driver.app.receiver.LocaleChangeReceiver;
 import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
@@ -89,13 +89,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.DexterError;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.PermissionRequestErrorListener;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
@@ -122,20 +115,34 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 public class MainActivity extends BaseActivity /*implements OnCompleteListener<Void>*/ {
-
-  @Inject
-  public NotificationManager notificationManager;
-   @Inject
-  public AlarmManager alarmManager;
 
   private static final String TAG = MainActivity.class.getSimpleName();
   
   public static final int REQUEST_APP_SETTINGS = 321;
   
   public static final String BACK_STACK_ROOT_TAG = "root_fragment";
+
+  @Inject
+  ApiService apiService;
+
+  // Below flag used to check activity visible or not?
+  private boolean isActivityVisible;
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    isActivityVisible = true;
+  }
+
+  public void onPause() {
+    super.onPause();
+    isActivityVisible = false;
+  }
+
 
   private CommItem mCommItem;
   private View header;
@@ -156,7 +163,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   }
 
   public BackgroundServiceWorker mBackgroundWorkerService;
-  public Intent mIntentBackgroundWorkerService;
 
   private DialogInterface.OnClickListener positiveDialogListener =  new DialogInterface.OnClickListener() {
     @Override
@@ -174,14 +180,20 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     }
   };
 
+
+  /**
+   * need to make service foreground to make it work
+   * on android with new api >= Q
+   */
   public void startBackgroundWorkerService() {
     if (mBackgroundWorkerService == null) {
       mBackgroundWorkerService = new BackgroundServiceWorker(ContextUtils.getApplicationContext());
     }
-    mIntentBackgroundWorkerService = new Intent(ContextUtils.getApplicationContext(),
-            mBackgroundWorkerService.getClass());
-    if (!isMyServiceRunning(mBackgroundWorkerService.getClass())) {
-      startService(mIntentBackgroundWorkerService);
+    Intent serviceIntent = new Intent(this, BackgroundServiceWorker.class);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      startForegroundService(serviceIntent);
+    } else {
+      startService(serviceIntent);
     }
   }
 
@@ -298,6 +310,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       hideMainActivityItems();
     });
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      changeDeviceIdNewApi();
+    }
     getAllTaskImage = findViewById(R.id.refresh_image);
     progressBar = findViewById(R.id.progressBar);
     getAllTaskImage.setOnClickListener(new View.OnClickListener() {
@@ -398,9 +413,65 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     
     addGeofencesButtonHandler(null);
      */
+
     startBackgroundWorkerService();
-    
+
     App.eventBus.post(new TaskStatusEvent(TextSecurePreferences.getTaskPercentage(getBaseContext())));
+  }
+
+
+  private int tryCount = 3;
+  /**
+   * this method changes ID on Abona Server
+   * made because DeviceUtils.getUniqueIMEI() was wrong,
+   * based on MAC that is same on android 10 devices.
+   */
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private void changeDeviceIdNewApi() {
+    compositeDisposable.add(
+            mMainViewModel.getDeviceProfile().subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(databaseProfile -> {
+                              if(databaseProfile.getDeviceId()== null || !databaseProfile.getDeviceId().equals(getAndroidQnewID())) {
+                                Log.d(TAG, " migrating deviceID :  old : " + databaseProfile.getDeviceId() + " new  : " + getAndroidQnewID());
+                                apiService.migrateDeviceId(databaseProfile.getDeviceId(), getAndroidQnewID())
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(result -> {
+                                          if (result.getIsSuccess()) {
+                                            databaseProfile.setDeviceId(getAndroidQnewID());
+                                            mMainViewModel.update(databaseProfile); //that is old implementation to update room table
+                                            Log.d(TAG, " success, id updatedToNew: " +  result.toString());
+                                          }else {
+                                            Log.d(TAG, result.toString());
+                                          }
+                                        }, error -> {
+                                          if (error instanceof HttpException) {
+                                            if (((HttpException) error).code() == 401) {
+                                              handleAccessToken();
+
+                                              Log.d(TAG, "tryCount: " + tryCount + " got auth error, scheduling new update  " + error.toString());
+                                              Handler h = new Handler();
+                                              h.postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                  tryCount--;
+                                                  changeDeviceIdNewApi();
+                                                }
+                                              }, Constants.REPEAT_TIME_MIGRATION);
+                                            }
+                                          }else {
+                                            Log.d(TAG, " error when calling migrate ID, " + error.toString());
+                                          }
+                                        });
+                              }
+                    },
+                    throwable -> Log.e(TAG, "Unable to getDeviceFrom db", throwable)));
+  }
+
+  @NotNull
+  private String getAndroidQnewID() {
+    return DeviceUtils.getUniqueID(getBaseContext());
   }
 
   private void registerLocaleReceiver() {
@@ -495,16 +566,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     }
     
     TextSecurePreferences.setDevicePermissionsGranted(true);
-  /*
-    ServiceWorker serviceWorker = new ServiceWorker(getApplicationContext());
-    Intent mServiceWorkerIntent = new Intent(getApplicationContext(), serviceWorker.getClass());
-    if (!isMyServiceRunning(serviceWorker.getClass())) {
-      Log.i(TAG, "******* START SERVICE WORKER *******");
-      startService(mServiceWorkerIntent);
-    } else {
-      Log.i(TAG, "******* SERVICE WORKER IS ALREADY RUNNING *******");
-    }
-    */
+
     initFirstTimeRun();
     
     super.onActivityResult(requestCode, resultCode, data);
@@ -733,8 +795,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       if (resultOfAction.getIsSuccess() && !resultOfAction.getIsException()) {
         if (resultOfAction.getAllTask() != null && resultOfAction.getAllTask().size() > 0) {
           Intent serviceIntent = new Intent(this, ForegroundAlarmService.class);
-          startService(serviceIntent);
-
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+          } else {
+            startService(serviceIntent);
+          }
            for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
 
             TaskItem taskItem = resultOfAction.getAllTask().get(i);
@@ -949,77 +1014,25 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   }
 
   private void requestDriverPermission() {
-    
-    Dexter.withActivity(MainActivity.this)
-      .withPermissions(
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.CAMERA,
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-      )
-      .withListener(new MultiplePermissionsListener() {
-        @Override
-        public void onPermissionsChecked(MultiplePermissionsReport report) {
-          Log.d(TAG, "onPermissionsChecked() called!");
-    
-          // check if all permissions are granted:
-          if (report.areAllPermissionsGranted()) {
-            Log.d(TAG, "areAllPermissionsGranted() called!");
-            TextSecurePreferences.setDevicePermissionsGranted(true);
-            /*
-            ServiceWorker serviceWorker = new ServiceWorker(getApplicationContext());
-            Intent mServiceWorkerIntent = new Intent(getApplicationContext(), serviceWorker.getClass());
-            if (!isMyServiceRunning(serviceWorker.getClass())) {
-              Log.i(TAG, "******* START SERVICE WORKER *******");
-              startService(mServiceWorkerIntent);
-            } else {
-              Log.i(TAG, "******* SERVICE WORKER IS ALREADY RUNNING *******");
-            }
-            */
-            initFirstTimeRun();
-          } else {
-            Log.d(TAG, "!!!areAllPermissionsGranted() called!");
-            TextSecurePreferences.setDevicePermissionsGranted(false);
-            Util.showSettingsDialog(MainActivity.this, positiveDialogListener, negativeDialogListener);
-          }
-          
-          // check for permanent denial of any permission.
-          if (report.isAnyPermissionPermanentlyDenied()) {
-            Log.d(TAG, "isAnyPermissionPermanentlyDenied() called!");
-            TextSecurePreferences.setDevicePermissionsGranted(false);
-            Util.showSettingsDialog(MainActivity.this, positiveDialogListener, negativeDialogListener);
-          }
-        }
-  
-        @Override
-        public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-          Log.i(TAG, "onPermissionRationaleShouldBeShown() called!");
-          token.continuePermissionRequest();
-        }
-      })
-      .withErrorListener(new PermissionRequestErrorListener() {
-        @Override
-        public void onError(DexterError error) {
-          Log.i(TAG, "onError() called! " + error.toString());
-          AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getApplicationContext(), R.style.AbonaDialog));
-          builder.setTitle("Permission Error");
-          builder.setMessage(error.toString());
-          builder.setPositiveButton(getResources().getString(R.string.action_ok),
-            new DialogInterface.OnClickListener() {
-            
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-              dialog.dismiss();
-            }
-          });
-          builder.show();
-        }
-      })
-      .onSameThread()
-      .check();
+    if(!hasPermissions(Constants.permissions)){
+      ActivityCompat.requestPermissions(this, Constants.permissions, Constants.REQUEST_PERMISSIONS_KEY);
+    }
   }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (requestCode == Constants.REQUEST_PERMISSIONS_KEY){
+      if(hasPermissions(Constants.permissions)) {
+        TextSecurePreferences.setDevicePermissionsGranted(true);
+        initFirstTimeRun();
+      } else {
+        TextSecurePreferences.setDevicePermissionsGranted(false);
+        Util.showSettingsDialog(MainActivity.this, positiveDialogListener, negativeDialogListener);
+      }
+    }
+  }
+
 
 
   /**
