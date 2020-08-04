@@ -6,7 +6,7 @@ class Versions(val major: String,val minor:String,val rev:String,val offset:Stri
 
     public var versionMajor = 1//envrMajor
     public var versionMinor = 4    // Release gerade Zahlen im PlayStore
-    public var versionRevision = 6
+    public var versionRevision = 7
     public var versionOffset = 0
     public var androidVersionCode = getVersionCode(this.versionMajor,this.versionMinor,this.versionRevision,this.versionOffset)
     public var androidVersionName = getVersionName(this.versionMajor,this.versionMinor,this.versionRevision)
