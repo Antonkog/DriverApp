@@ -15,7 +15,7 @@ interface ApiService {
 
 
 //    @Headers("Content-Type:application/json; charset=UTF-8")
-    @POST("deviceprofile")
+    @POST("/api/device/deviceprofile")
     fun deviceProfile(@Body commItem: CommItem?): Observable<ResultOfAction>
 
 

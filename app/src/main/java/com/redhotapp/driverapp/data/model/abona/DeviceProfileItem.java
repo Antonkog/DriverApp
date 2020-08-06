@@ -29,11 +29,11 @@ public class DeviceProfileItem {
   
   @SerializedName("CreatedDate")
   @Expose
-  private Date createdDate;
+  private String createdDate;
   
   @SerializedName("UpdatedDate")
   @Expose
-  private Date updatedDate;
+  private String updatedDate;
   
   @SerializedName("LanguageCode")
   @Expose
@@ -87,19 +87,19 @@ public class DeviceProfileItem {
     this.instanceId = instanceId;
   }
   
-  public Date getCreatedDate() {
+  public String getCreatedDate() {
     return createdDate;
   }
   
-  public void setCreatedDate(Date createdDate) {
+  public void setCreatedDate(String createdDate) {
     this.createdDate = createdDate;
   }
   
-  public Date getUpdatedDate() {
+  public String getUpdatedDate() {
     return updatedDate;
   }
   
-  public void setUpdatedDate(Date updatedDate) {
+  public void setUpdatedDate(String updatedDate) {
     this.updatedDate = updatedDate;
   }
   

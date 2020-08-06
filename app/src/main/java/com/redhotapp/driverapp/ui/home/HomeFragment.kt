@@ -50,7 +50,7 @@ class HomeFragment : BaseFragment() {
             homeBinding.textHome.text = it
             Log.e(TAG, "has text")
         })
-        homeBinding.button.setOnClickListener { view ->  homeViewModel.getAllTasks(DeviceUtils.getUniqueIMEI(context)) }
+        homeBinding.button.setOnClickListener { view ->  homeViewModel.getAllTasks(DeviceUtils.getUniqueID(context)) }
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
         return view

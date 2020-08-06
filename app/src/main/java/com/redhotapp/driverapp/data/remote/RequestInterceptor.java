@@ -1,5 +1,7 @@
 package com.redhotapp.driverapp.data.remote;
 
+import com.redhotapp.driverapp.data.Constant;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -12,12 +14,9 @@ public class RequestInterceptor implements Interceptor {
   public Response intercept(Chain chain) throws IOException {
     Request.Builder builder = chain.request().newBuilder();
     builder.addHeader("Content-Type", "application/json");
-    builder.addHeader("Accept", "application/json");
     builder.addHeader("Connection", "keep-alive");
     builder.addHeader("cache-control", "no-cache");
-//    builder.addHeader("Authorization", "Bearer " +
-//     "" //Preferences.Companion.getAccessToken( )
-//    );
+    builder.addHeader("Host", Constant.defaultApiUrl);
     return chain.proceed(builder.build());
   }
 }

@@ -6,6 +6,6 @@ object Constant {
     const val grantTypeToken: String = "password"
     const val defaultApiUrl = "https://213.144.11.162:5000"
     const val baseAuthUrl = "http://endpoint.abona-erp.com"
-
-    var url = "http://endpoint.abona-erp.com"
+    const val abonaDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    const val abonaTimeZone = "UTC"
 }

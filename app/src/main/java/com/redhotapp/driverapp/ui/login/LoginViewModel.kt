@@ -24,6 +24,8 @@ import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class LoginViewModel
@@ -53,8 +55,6 @@ class LoginViewModel
             .subscribe(
                 { result -> Log.e(TAG, result.body().toString())
                     Log.e(TAG, "got auth")
-
-                    authenticationState.value = AuthenticationState.AUTHENTICATED
                     Preferences.setAccessToken(context, result.body()?.accessToken)
                     setDeviceProfile(getCommItem())
                 },
@@ -108,6 +108,7 @@ class LoginViewModel
             .subscribe(
                 { result -> Log.e(TAG, result.toString())
                     Log.e(TAG, "device set success")
+                    authenticationState.value = AuthenticationState.AUTHENTICATED
                 },
                 { error ->
                     Log.e(TAG, error.localizedMessage)
@@ -122,16 +123,20 @@ class LoginViewModel
         val commItem = CommItem()
         val header = Header()
         header.dataType = DataType.DEVICE_PROFILE
-        header.deviceId = DeviceUtils.getUniqueIMEI(context)
+        header.deviceId = DeviceUtils.getUniqueID(context)
         commItem.header = header
 
         val deviceProfileItem = DeviceProfileItem()
         deviceProfileItem.instanceId = Preferences.getFCMToken(context)
-        deviceProfileItem.deviceId = DeviceUtils.getUniqueID(context)
+        deviceProfileItem.deviceId =  DeviceUtils.getUniqueID(context)
         deviceProfileItem.model = Build.MODEL
         deviceProfileItem.manufacturer = Build.MANUFACTURER
-        deviceProfileItem.createdDate = Date()
-        deviceProfileItem.updatedDate = Date()
+        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaDateFormat, Locale.getDefault())
+
+        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+        val currentTimestamp = Date()
+        deviceProfileItem.createdDate = dfUtc.format(currentTimestamp)
+        deviceProfileItem.updatedDate = dfUtc.format(currentTimestamp)
         deviceProfileItem.languageCode = Locale.getDefault().toString().replace("_", "-")
         deviceProfileItem.versionCode = BuildConfig.VERSION_CODE
         deviceProfileItem.versionName = BuildConfig.VERSION_NAME
