@@ -19,7 +19,7 @@ public class LogEvent {
         item.setLevel(level);
         item.setType(type);
         item.setTitle(title);
-        if(idOptional>0)
+        if(idOptional > 0)
             item.setMessage(message + " " + idOptional);
         else
             item.setMessage(message);

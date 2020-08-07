@@ -84,7 +84,7 @@ public class PendingFragment extends Fragment implements CommonItemClickListener
       if (!item.getRead()) {
         item.setRead(true);
         viewModel.update(item);
-        EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_driver_open_task), LogType.HISTORY, LogLevel.INFO, getContext().getString(R.string.log_title_default), item.getId()));
+        EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_driver_open_task), LogType.HISTORY, LogLevel.INFO, getContext().getString(R.string.log_title_default), item.getTaskId()));
         DriverDatabase db = DriverDatabase.getDatabase();
         OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
   

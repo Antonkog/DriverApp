@@ -106,9 +106,6 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.insert(item);
   }
 
-   Single <List <LogItem>> getHistoryLogs(){
-    return mRepository.getLogsDAO().getHistoryLogs();
-  }
   void insert(Notify notify) {
     mRepository.insert(notify);
   }

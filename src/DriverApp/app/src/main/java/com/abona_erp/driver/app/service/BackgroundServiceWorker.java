@@ -942,7 +942,7 @@ public class BackgroundServiceWorker extends Service {
   private void updateLastActivity(LastActivityDAO dao, LastActivity lastActivity, int statusType, String description, int confirmationStatus) {
     EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_status_change) + description,
             LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),
-            0));
+            lastActivity.getTaskId()));
 
     lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
     

@@ -106,12 +106,13 @@ public class FcmService extends FirebaseMessagingService {
 
     CommItem commItem = App.getInstance().gsonUtc.fromJson(data.toString(), CommItem.class);
 
+    boolean exist = (commItem!= null && commItem.getTaskItem()!= null && commItem.getTaskItem().getTaskId()!= null);
     if (commItem.getHeader().getDataType().equals(DataType.DOCUMENT)) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  commItem.getTaskItem().getTaskId()));
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),exist? commItem.getTaskItem().getTaskId() : 0));
     } else if (commItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  commItem.getTaskItem().getTaskId()));
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  exist? commItem.getTaskItem().getTaskId() : 0));
     } else if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  commItem.getTaskItem().getTaskId()));
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  exist? commItem.getTaskItem().getTaskId() : 0));
     }
 
     FirebaseJobDispatcher dispatcher =

@@ -73,6 +73,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.about.SoftwareAboutFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.document_viewer.DocumentViewerFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.history.HistoryFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.protocol.ProtocolFragment;
@@ -599,13 +600,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Subscribe
   public void onMessageEvent(HistoryClick historyClick) {
-    mMainViewModel.getHistoryLogs().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe( logItems -> {
-              showLogItems(logItems);
-            }, error ->{
-              showHistoryClickError(error);
-            });
-
+    loadHistoryFragment();
   }
 
   private void showHistoryClickError(Throwable error) {
@@ -984,8 +979,13 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   private void loadSettingsFragment() {
     loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS),
-            null), SettingsFragment.newInstance());
+            null), new SettingsFragment());
   }
+   private void loadHistoryFragment() {
+    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_HISTORY),
+            null), new HistoryFragment());
+  }
+
 
   private void loadFragment(PageEvent pageEvent, Fragment fragment) {
     
