@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
@@ -23,10 +25,13 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
+import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
 import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Calendar;
 import java.util.List;
@@ -166,7 +171,7 @@ public class CompletedFragment extends Fragment implements CommonItemClickListen
     if (!item.getRead()) {
       item.setRead(true);
       viewModel.update(item);
-  
+      EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_driver_open_task), LogType.HISTORY, LogLevel.INFO, getContext().getString(R.string.log_title_default), item.getId()));
       DriverDatabase db = DriverDatabase.getDatabase();
       OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
   

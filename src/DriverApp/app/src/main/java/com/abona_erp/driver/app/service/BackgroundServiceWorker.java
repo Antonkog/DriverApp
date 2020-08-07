@@ -20,6 +20,8 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.DateConverter;
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
@@ -46,11 +48,11 @@ import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
-import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
@@ -60,6 +62,7 @@ import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -348,6 +351,10 @@ public class BackgroundServiceWorker extends Service {
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_change_send),
+                              LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),
+                              activityItem.getTaskId()));
+
                       allowRequest = true;
                       if (response.isSuccessful()) {
                         if (response.body() != null && response.body().getIsSuccess()) {
@@ -355,7 +362,6 @@ public class BackgroundServiceWorker extends Service {
                           if (response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
-                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
                             }
                           }
                           
@@ -388,7 +394,6 @@ public class BackgroundServiceWorker extends Service {
                           if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
-                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
                             }
                           }
             
@@ -494,11 +499,13 @@ public class BackgroundServiceWorker extends Service {
                           return;
           
                         if (response.body().getIsSuccess()) {
-  
+                          EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_open_confirm_send) ,
+                                  LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),
+                                  confirmationItem.getTaskId()));
+
                           if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
-                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
                             }
                           }
                           
@@ -546,7 +553,6 @@ public class BackgroundServiceWorker extends Service {
                           if (response.body() != null && response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
-                              App.eventBus.post(new TaskStatusEvent((int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished())));
                             }
                           }
             
@@ -706,6 +712,7 @@ public class BackgroundServiceWorker extends Service {
           @Override
           public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
             if (response.isSuccessful() && response.body() != null) {
+              EventBus.getDefault().post(new LogEvent(getString(R.string.log_task_come), LogType.HISTORY, LogLevel.INFO, getString(R.string.log_title_default), 0));
               handleGetAllTasks(response.body());
             } else {
               
@@ -933,6 +940,10 @@ public class BackgroundServiceWorker extends Service {
   }
   
   private void updateLastActivity(LastActivityDAO dao, LastActivity lastActivity, int statusType, String description, int confirmationStatus) {
+    EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_status_change) + description,
+            LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),
+            0));
+
     lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
     
     ArrayList<String> _list = lastActivity.getDetailList();

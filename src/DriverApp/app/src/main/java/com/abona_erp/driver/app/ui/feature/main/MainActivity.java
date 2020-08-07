@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -62,9 +63,10 @@ import com.abona_erp.driver.app.service.ForegroundAlarmService;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
+import com.abona_erp.driver.app.ui.event.HistoryClick;
+import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
-import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
@@ -253,44 +255,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     }
     if(!EventBus.getDefault().isRegistered(this)) App.eventBus.register(this);
 
-    FirebaseInstanceId.getInstance().getInstanceId()
-      .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-        @Override
-        public void onComplete(@NonNull Task<InstanceIdResult> task) {
-          if (!task.isSuccessful()) {
-            return;
-          }
-          
-          if (TextUtils.isEmpty(TextSecurePreferences.getFcmToken(getBaseContext()))
-            || TextSecurePreferences.getFcmToken(getBaseContext()).length() <= 0
-            || !TextSecurePreferences.getFcmToken(getBaseContext()).equals(task.getResult().getToken())) {
-            TextSecurePreferences.setFcmToken(getBaseContext(), task.getResult().getToken());
-            Log.d("MainActivity","Firebase registration Token=" + task.getResult().getToken());
-            if (TextSecurePreferences.isDeviceFirstTimeRun()) {
-              AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                  DriverDatabase db = DriverDatabase.getDatabase();
-                  DeviceProfileDAO dao = db.deviceProfileDAO();
-                  List<DeviceProfile> deviceProfiles = dao.getDeviceProfiles();
-                  if (deviceProfiles.size() > 0) {
-                    TextSecurePreferences.setFcmTokenUpdate(getBaseContext(), true);
-                    DateFormat dfUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                      Locale.getDefault());
-                    dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    Date currentTimestamp = new Date();
-                    TextSecurePreferences.setFcmTokenLastSetTime(getBaseContext(), dfUtc.format(currentTimestamp));
-          
-                    deviceProfiles.get(0).setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
-                    mMainViewModel.update(deviceProfiles.get(0));
-                  }
-                }
-              });
-            }
-          }
-        }
-      });
-    
+    addFirebaseListener();
+
     mVehicleClientName = (AsapTextView)findViewById(R.id.tv_vehicle_client_name);
     mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
     mVehicleRegistrationNumber = (AsapTextView)findViewById(R.id.tv_vehicle_registration_number);
@@ -318,11 +284,49 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     getAllTaskImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        mMainViewModel.addLog(getResources().getString(R.string.log_update_pressed), LogType.HISTORY, LogLevel.INFO, getResources().getString(R.string.log_title_default));
         onUpdateClick();
       }
     });
 
 
+    observeNotifications();
+    observeConfirmations();
+
+
+    if (!TextSecurePreferences.isDeviceRegistrated()) {
+      loadMainFragment(DeviceNotRegistratedFragment.newInstance());
+    } else {
+      loadMainFragment(MainFragment.newInstance());
+    }
+//order matter: first loading main fragment
+    if(getIntent()!= null && getIntent().getExtras()!= null && getIntent().getExtras().getBoolean(Constants.EXTRAS_START_SETTINGS) == true){
+      loadSettingsFragment();
+      hideMainActivityItems();
+    }
+    startBackgroundWorkerService();
+  }
+
+  private void observeConfirmations() {
+    mMainViewModel.getAllOfflineConfirmations().observe(this, new Observer<List<OfflineConfirmation>>() {
+      @Override
+      public void onChanged(List<OfflineConfirmation> offlineConfirmations) {
+        int count = offlineConfirmations.size();
+        if (count > 0) {
+          findViewById(R.id.badge_process).setVisibility(View.VISIBLE);
+          if (count <= 99) {
+            ((TextView)findViewById(R.id.badge_process)).setText(String.valueOf(count));
+          } else {
+            ((TextView)findViewById(R.id.badge_process)).setText("99+");
+          }
+        } else {
+          findViewById(R.id.badge_process).setVisibility(View.GONE);
+        }
+      }
+    });
+  }
+
+  private void observeNotifications() {
     mMainViewModel.getNotReadNotificationCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
@@ -345,48 +349,46 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         }
       }
     });
-    
-    mMainViewModel.getAllOfflineConfirmations().observe(this, new Observer<List<OfflineConfirmation>>() {
-      @Override
-      public void onChanged(List<OfflineConfirmation> offlineConfirmations) {
-        int count = offlineConfirmations.size();
-        if (count > 0) {
-          findViewById(R.id.badge_process).setVisibility(View.VISIBLE);
-          if (count <= 99) {
-            ((TextView)findViewById(R.id.badge_process)).setText(String.valueOf(count));
-          } else {
-            ((TextView)findViewById(R.id.badge_process)).setText("99+");
+  }
+
+  private void addFirebaseListener() {
+    FirebaseInstanceId.getInstance().getInstanceId()
+      .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+        @Override
+        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+          if (!task.isSuccessful()) {
+            return;
           }
-        } else {
-          findViewById(R.id.badge_process).setVisibility(View.GONE);
+
+          if (TextUtils.isEmpty(TextSecurePreferences.getFcmToken(getBaseContext()))
+            || TextSecurePreferences.getFcmToken(getBaseContext()).length() <= 0
+            || !TextSecurePreferences.getFcmToken(getBaseContext()).equals(task.getResult().getToken())) {
+            TextSecurePreferences.setFcmToken(getBaseContext(), task.getResult().getToken());
+            Log.d("MainActivity","Firebase registration Token=" + task.getResult().getToken());
+            if (TextSecurePreferences.isDeviceFirstTimeRun()) {
+              AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                  DriverDatabase db = DriverDatabase.getDatabase();
+                  DeviceProfileDAO dao = db.deviceProfileDAO();
+                  List<DeviceProfile> deviceProfiles = dao.getDeviceProfiles();
+                  if (deviceProfiles.size() > 0) {
+                    TextSecurePreferences.setFcmTokenUpdate(getBaseContext(), true);
+                    DateFormat dfUtc = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                      Locale.getDefault());
+                    dfUtc.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    Date currentTimestamp = new Date();
+                    TextSecurePreferences.setFcmTokenLastSetTime(getBaseContext(), dfUtc.format(currentTimestamp));
+
+                    deviceProfiles.get(0).setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
+                    mMainViewModel.update(deviceProfiles.get(0));
+                  }
+                }
+              });
+            }
+          }
         }
-      }
-    });
-
-
-    if (!TextSecurePreferences.isDeviceRegistrated()) {
-      loadMainFragment(DeviceNotRegistratedFragment.newInstance());
-    } else {
-      loadMainFragment(MainFragment.newInstance());
-    }
-//order matter: first loading main fragment
-    if(getIntent()!= null && getIntent().getExtras()!= null && getIntent().getExtras().getBoolean(Constants.EXTRAS_START_SETTINGS) == true){
-      loadSettingsFragment();
-      hideMainActivityItems();
-    }
-    /*
-    // Empty list for storing geofences.
-    mGeofenceList = new ArrayList<>();
-    mGeofencePendingIntent = null;
-    populateGeofenceList();
-    mGeofencingClient = LocationServices.getGeofencingClient(this);
-    
-    addGeofencesButtonHandler(null);
-     */
-
-    startBackgroundWorkerService();
-
-    App.eventBus.post(new TaskStatusEvent(TextSecurePreferences.getTaskPercentage(getBaseContext())));
+      });
   }
 
 
@@ -401,6 +403,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         getAllTaskImage.setEnabled(true);
         progressBar.setVisibility(View.GONE);
         if (response.isSuccessful() && response.body() != null) {
+          mMainViewModel.addLog(getString(R.string.log_task_come), LogType.HISTORY, LogLevel.INFO, getString(R.string.log_title_default));
           handleGetAllTasks(response.body());
         } else {
 
@@ -589,6 +592,35 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   }
 
   @Subscribe
+  public void onMessageEvent(LogEvent event) {
+    mMainViewModel.insert(event.getLog());
+  }
+
+
+  @Subscribe
+  public void onMessageEvent(HistoryClick historyClick) {
+    mMainViewModel.getHistoryLogs().subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe( logItems -> {
+              showLogItems(logItems);
+            }, error ->{
+              showHistoryClickError(error);
+            });
+
+  }
+
+  private void showHistoryClickError(Throwable error) {
+    Toast.makeText(this, error.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+  }
+
+  private void showLogItems(List<LogItem> logItems) {
+    StringBuilder sb = new StringBuilder();
+    for (LogItem logItem : logItems) {
+      sb.append(logItem.getMessage() + "\n");
+    }
+    Toast.makeText(this, " click :" +  sb.toString()  , Toast.LENGTH_LONG).show();
+  }
+
+  @Subscribe
   public void onMessageEvent(ConnectivityEvent event) {
       if(!event.isConnected()){
         findViewById(R.id.connectivity_image).setVisibility(View.VISIBLE);
@@ -730,10 +762,13 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             
             if (response.isSuccessful()) {
               if (response.body() != null) {
-  
                 Gson gson = new Gson();
                 String raw = gson.toJson(response.body());
-                
+
+                EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_got_links)+  " : " + raw,
+                        LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default), 0));
+
+
                 final List<AppFileInterchangeItem> appFileInterchangeItems;
                 appFileInterchangeItems = gson.fromJson(response.body().toString(), ArrayList.class);
                 if (appFileInterchangeItems != null) {
@@ -897,13 +932,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         // Exception from REST-API
         showOkDialog(getApplicationContext().getResources().getString(R.string.action_warning_notice),
           getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
-        addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", resultOfAction.getText());
+
+        mMainViewModel.addLog(resultOfAction.getText(), LogType.API, LogLevel.FATAL, getResources().getString(R.string.log_title_task));
       } else {
         // Unknown Error
-        addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", "Unknown Error!");
+        mMainViewModel.addLog(getResources().getString(R.string.log_message_unknown_error), LogType.API, LogLevel.FATAL, getResources().getString(R.string.log_title_task));
       }
     } catch (Exception e) {
-      addLog(LogLevel.FATAL, LogType.API, "GetAllTasks", e.getMessage());
+      mMainViewModel.addLog(e.getMessage(), LogType.API, LogLevel.FATAL, getResources().getString(R.string.log_title_task));
     }
   }
 
@@ -1063,15 +1099,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     return true;
   }
 
-  private void addLog(LogLevel level, LogType type, String title, String message) {
-    LogItem item = new LogItem();
-    item.setLevel(level);
-    item.setType(type);
-    item.setTitle(title);
-    item.setMessage(message);
-    item.setCreatedAt(new Date());
-    mMainViewModel.insert(item);
-  }
   
   private void initializeLogify() {
     // Initialize the Logify Alert client.

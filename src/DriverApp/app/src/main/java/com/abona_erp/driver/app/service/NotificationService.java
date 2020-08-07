@@ -9,12 +9,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleService;
-import androidx.lifecycle.Observer;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
@@ -23,53 +17,35 @@ import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
-import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
-import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
-import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
-import com.abona_erp.driver.app.ui.event.TaskStatusEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
-import com.abona_erp.driver.app.ui.feature.main.MainActivity;
-import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DelayReasonUtil;
-import com.abona_erp.driver.app.util.DeviceUtils;
-import com.abona_erp.driver.app.util.RingtoneUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.concurrent.MainUiThread;
 import com.abona_erp.driver.app.util.concurrent.ThreadExecutor;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.v3.MessageDialog;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
-import io.reactivex.Scheduler;
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class NotificationService extends JobService implements MediaPlayer.OnPreparedListener {
   
@@ -79,6 +55,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
   boolean jobCancelled = false;
   
   CommItem mCommItem;
+  @Inject
   DriverRepository mRepository;
   
   Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -137,6 +114,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
       return;
     try {
       String raw = jobParameters.getExtras().getString("data");
+      Log.e(TAG, "got data: " +raw);
       if (raw == null)
         return;
       Log.i(TAG, raw);
@@ -200,7 +178,6 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
       if (mCommItem.getPercentItem() != null) {
         if (mCommItem.getPercentItem().getTotalPercentFinished() != null && mCommItem.getPercentItem().getTotalPercentFinished() >= 0) {
           TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(mCommItem.getPercentItem().getTotalPercentFinished()));
-          App.eventBus.post(new TaskStatusEvent((int)Math.round(mCommItem.getPercentItem().getTotalPercentFinished())));
         }
       }
       
@@ -211,7 +188,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
             @Override
             public void onSuccess(Notify notify) {
               Log.d(TAG, "***** VORHANDEN - UPDATEN *****");
-  
+
               notify.setData(raw);
               notify.setRead(false);
               if (mCommItem.getPercentItem() != null) {

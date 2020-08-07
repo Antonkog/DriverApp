@@ -53,8 +53,6 @@ public class DriverRepository {
   private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmation;
   
   private LogDAO mLogDAO;
-  private LiveData<List<LogItem>> mAllLogs;
-  
   private DelayReasonDAO mDelayReasonDAO;
   
   public DriverRepository(Application application) {
@@ -78,8 +76,7 @@ public class DriverRepository {
     mAllOfflineConfirmation = mOfflineConfirmationDAO.getAllLiveDataConfirmations();
     
     mLogDAO = db.logDAO();
-    mAllLogs = mLogDAO.getAllLogs();
-    
+
     mDelayReasonDAO = db.delayReasonDAO();
   }
 
@@ -87,8 +84,8 @@ public class DriverRepository {
     return mDeviceProfileDAO;
   }
 
-  public LiveData<List<LogItem>> getAllLogs() {
-    return mAllLogs;
+  public LogDAO getLogsDAO() {
+    return mLogDAO;
   }
   
   public LiveData<List<OfflineConfirmation>> getAllLiveDataConfirmations() {
@@ -139,7 +136,7 @@ public class DriverRepository {
     new insertAsyncTask(mNotifyDao).execute(notify);
     return 0;
   }
-  
+
   public void update(Notify notify) {
     new updateAsyncTask(mNotifyDao).execute(notify);
   }

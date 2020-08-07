@@ -24,9 +24,11 @@ import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LogItem;
+import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
-import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.ServiceUtil;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -34,6 +36,8 @@ import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -99,7 +103,17 @@ public class FcmService extends FirebaseMessagingService {
     
     Bundle bundle = new Bundle();
     bundle.putString("data", data.toString());
-  
+
+    CommItem commItem = App.getInstance().gsonUtc.fromJson(data.toString(), CommItem.class);
+
+    if (commItem.getHeader().getDataType().equals(DataType.DOCUMENT)) {
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  commItem.getTaskItem().getTaskId()));
+    } else if (commItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  commItem.getTaskItem().getTaskId()));
+    } else if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  commItem.getTaskItem().getTaskId()));
+    }
+
     FirebaseJobDispatcher dispatcher =
       new FirebaseJobDispatcher(new GooglePlayDriver(this));
     Job myJob = dispatcher.newJobBuilder()

@@ -3,7 +3,6 @@ package com.abona_erp.driver.app.ui.feature.main.fragment.photo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -27,14 +26,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
-import com.abona_erp.driver.app.ui.event.EditingDeleteEvent;
-import com.abona_erp.driver.app.ui.event.EditingSaveEvent;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
+import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RefreshUiEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -53,6 +53,7 @@ import com.kongzue.dialog.util.DialogSettings;
 import com.kongzue.dialog.v3.MessageDialog;
 import com.kongzue.dialog.v3.WaitDialog;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
@@ -516,6 +517,9 @@ public class PhotoFragment extends Fragment
                           public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
                       
                             if (response.isSuccessful()) {
+                              EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_document_upload),
+                                      LogType.HISTORY, LogLevel.INFO, getContext().getString(R.string.log_title_default), mNotify.getTaskId()));
+
                               uploadItem.setUploaded(true);
                               mPhotoUrls.set(j, App.getInstance().gson.toJson(uploadItem));
                               mNotify.setPhotoUrls(mPhotoUrls);

@@ -5,6 +5,8 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.LogItem;
@@ -12,6 +14,7 @@ import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -87,11 +90,25 @@ public class MainViewModel extends AndroidViewModel {
   Single<List<Notify>> getAllTasksByMandantAndOrderNo(int mandantID, int orderNo) {
     return mRepository.getAllTasksByOrderNo(mandantID, orderNo);
   }
-  
+
+
+  public void addLog(String message, LogType type, LogLevel level, String title) {
+    LogItem item = new LogItem();
+    item.setLevel(level);
+    item.setType(type);
+    item.setTitle(title);
+    item.setMessage(message);
+    item.setCreatedAt(new Date());
+    insert(item);
+  }
+
   void insert(LogItem item) {
     mRepository.insert(item);
   }
-  
+
+   Single <List <LogItem>> getHistoryLogs(){
+    return mRepository.getLogsDAO().getHistoryLogs();
+  }
   void insert(Notify notify) {
     mRepository.insert(notify);
   }

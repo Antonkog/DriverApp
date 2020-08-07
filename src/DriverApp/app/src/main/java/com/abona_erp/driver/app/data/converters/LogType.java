@@ -11,8 +11,9 @@ public enum LogType {
   MESSAGE(4),
   WARNING(5),
   ERROR(6),
-  LOG(7);
-  
+  LOG(7),
+  HISTORY(8);
+
   private final Integer code;
   
   LogType(Integer value) {

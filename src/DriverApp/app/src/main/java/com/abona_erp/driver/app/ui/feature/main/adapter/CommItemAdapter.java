@@ -38,7 +38,7 @@ import com.abona_erp.driver.app.data.model.PalletExchange;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
-import com.abona_erp.driver.app.ui.event.NotifyTapEvent;
+import com.abona_erp.driver.app.ui.event.HistoryClick;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.DueInCounterRunnable;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -362,7 +362,7 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
       btn_task_history.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-    
+          EventBus.getDefault().post(new HistoryClick());
         }
       });
       

@@ -233,6 +233,34 @@
   <string name="theme_light" translatable="false">White</string>
   <string name="theme_dark" translatable="false">Dark</string>
 
+
+
+  <string name="log_title_default" translatable="false">History</string>
+
+  <string name="log_update_pressed" translatable="false">Update tasks pressed</string>
+  <string name="log_task_come" translatable="false">Tasks come</string>
+  <string name="log_driver_open_task" translatable="false">Driver firstTime read (open) task</string>
+  <string name="log_activity_change_send" translatable="false">Task read: sent to server</string>
+  <string name="log_open_confirm_send" translatable="false">Task confirmation sent to server</string>
+
+  <string name="log_activity_status_change" translatable="false">Activity change:</string>
+
+  <string name="log_task_updated_fcm" translatable="false">Task was updated via FCM</string>
+  <string name="log_document_fcm" translatable="false">Document from Abona via FCM</string>
+  <string name="log_vehicle_fcm" translatable="false">Vehicle from Abona via FCM</string>
+
+  <string name="log_document_got_links" translatable="false">Got links to documents</string>
+  <string name="log_document_upload" translatable="false">Document uploaded</string>
+
+  <string name="log_document_capture" translatable="false">Document captured</string>
+  <string name="log_document_download" translatable="false">Document downloaded</string>
+  <string name="log_finish_pressed" translatable="false">Driver pressed finish</string>
+  <string name="log_start_pressed" translatable="false">Driver pressed start</string>
+  <string name="log_start_sent" translatable="false">Start status sent</string>
+
+  <string name="log_title_task" translatable="false">GetAllTasks</string>
+  <string name="log_message_unknown_error" translatable="false">Unknown Error!</string>
+
   <string name="delay_started">Started:</string>
   <string name="delay_finished">Finished:</string>
   <string name="delay_delay">Delay:</string>

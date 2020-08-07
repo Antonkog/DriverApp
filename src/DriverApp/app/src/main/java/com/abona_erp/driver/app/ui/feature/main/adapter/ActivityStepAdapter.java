@@ -16,13 +16,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogLevel;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
@@ -35,9 +35,9 @@ import com.abona_erp.driver.app.data.model.ActivityStep;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.DelayReasonItem;
-import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
@@ -51,6 +51,8 @@ import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
 import com.kongzue.dialog.v3.MessageDialog;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,9 +63,6 @@ import java.util.Locale;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapter.ViewHolder> {
   
@@ -431,7 +430,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
   }
   
   private void handleNextButton() {
-    
+
     if (mNotify == null) return;
     
     CommItem commItem = App.getInstance().gsonUtc.fromJson(mNotify.getData(), CommItem.class);
@@ -525,7 +524,10 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                 mNotify.setStatus(50);
                 mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
                 updateNotify(mNotify);
-                
+
+                EventBus.getDefault().post(new LogEvent(v.getContext().getString(R.string.log_start_pressed),
+                        LogType.HISTORY, LogLevel.INFO, v.getContext().getString(R.string.log_title_default), commItem.getTaskItem().getTaskId()));
+
                 addOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                 return false;
               }
@@ -539,7 +541,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
             })
           .show();
       } else {
-        
+
         mNotify.setStatus(100);
         commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
         mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
