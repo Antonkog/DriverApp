@@ -1,6 +1,7 @@
 package com.redhotapp.driverapp.data.remote
 
 import com.google.gson.JsonObject
+import com.redhotapp.driverapp.data.model.CommResponceItem
 import com.redhotapp.driverapp.data.model.LatestOrder
 import com.redhotapp.driverapp.data.model.TokenResponse
 import com.redhotapp.driverapp.data.model.abona.CommItem
@@ -14,7 +15,7 @@ class ApiRepositoryImpl(val rabbit : RabbitService, val api : ApiService, val au
        return  rabbit.getLastOrder(id)
     }
 
-    override fun getAllTasks(deviceId: String): Observable<ResultOfAction> {
+    override fun getAllTasks(deviceId: String): Observable<CommResponceItem> {
        return api.getAllTasks(deviceId)
     }
 

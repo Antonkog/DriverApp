@@ -11,6 +11,8 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import com.redhotapp.driverapp.BuildConfig;
+
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
@@ -27,6 +29,7 @@ public class DeviceUtils {
    * author A.KOGAN
    */
   public static String getUniqueID(Context context) {
+    if(BuildConfig.DEBUG) return "bd92a5a47f4883c5";
     StringBuilder idBuilder = new StringBuilder();
     try {
       idBuilder.append(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));

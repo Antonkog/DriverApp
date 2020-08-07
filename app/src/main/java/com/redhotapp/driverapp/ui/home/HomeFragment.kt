@@ -5,16 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.databinding.HomeFragmentBinding
-import com.redhotapp.driverapp.databinding.LoginFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
-import com.redhotapp.driverapp.ui.login.LoginViewModel
 import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,11 +42,13 @@ class HomeFragment : BaseFragment() {
 
         homeBinding.lifecycleOwner = this.viewLifecycleOwner
 
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            homeBinding.textHome.text = it
-            Log.e(TAG, "has text")
+
+        homeViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
+            homeBinding.textHome.text = it[0].toString()
+            Log.e(TAG, "got tasks")
         })
-        homeBinding.button.setOnClickListener { view ->  homeViewModel.getAllTasks(DeviceUtils.getUniqueID(context)) }
+
+        homeBinding.button.setOnClickListener { view ->  homeViewModel.populateTasks(DeviceUtils.getUniqueID(context)) }
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
         return view

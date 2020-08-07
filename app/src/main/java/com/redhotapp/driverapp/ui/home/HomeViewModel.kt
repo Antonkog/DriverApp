@@ -14,6 +14,8 @@ import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.redhotapp.driverapp.data.local.preferences.Preferences
+import com.redhotapp.driverapp.data.model.AllTask
+import com.redhotapp.driverapp.data.model.abona.TaskItem
 import com.redhotapp.driverapp.ui.login.LoginViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -22,26 +24,23 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 
     private val TAG = "HomeViewModel"
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
+    val mutableTasks  = MutableLiveData<List<AllTask>> ()
 
     fun loggedIn(): Boolean {
         return Preferences.getAccessToken(context) != null
     }
 
-    fun getAllTasks(deviceId: String) {
+    fun populateTasks(deviceId: String) {
         api.getAllTasks(deviceId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> Log.e(TAG, result.toString())
                     Log.e(TAG, "got tasks")
-                    _text.value = result.toString()
+                    mutableTasks.postValue(result.allTask)
                 },
                 { error ->
-                    Log.e(TAG, error.localizedMessage)
+                    Log.e(TAG, "error while get tasks " +  error.localizedMessage)
                 }
 
             )

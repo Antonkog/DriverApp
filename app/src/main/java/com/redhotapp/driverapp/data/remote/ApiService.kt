@@ -1,5 +1,6 @@
 package com.redhotapp.driverapp.data.remote
 
+import com.redhotapp.driverapp.data.model.CommResponceItem
 import com.redhotapp.driverapp.data.model.TokenResponse
 import com.redhotapp.driverapp.data.model.abona.CommItem
 import com.redhotapp.driverapp.data.model.abona.ResultOfAction
@@ -20,7 +21,7 @@ interface ApiService {
 
 
     @GET("api/device/GetAllTask")
-    fun getAllTasks(@Query("deviceId") deviceId: String?): Observable<ResultOfAction>
+    fun getAllTasks(@Query("deviceId") deviceId: String?): Observable<CommResponceItem>
 //
 //    @Headers("Content-Type:application/json")
 //    @POST("api/activity/activity")

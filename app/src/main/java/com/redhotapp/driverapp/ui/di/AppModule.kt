@@ -17,14 +17,20 @@
 package com.redhotapp.driverapp.ui.di
 
 import android.content.Context
-import com.google.gson.Gson
+import android.graphics.drawable.shapes.Shape
+import com.google.gson.*
 import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
-import com.redhotapp.driverapp.data.remote.*
+import com.redhotapp.driverapp.data.model.abona.TaskItem
+import com.redhotapp.driverapp.data.remote.ApiRepository
+import com.redhotapp.driverapp.data.remote.ApiRepositoryImpl
+import com.redhotapp.driverapp.data.remote.ApiService
+import com.redhotapp.driverapp.data.remote.AuthService
 import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.redhotapp.driverapp.data.remote.utils.UnsafeOkHttpClient
 import com.redhotapp.driverapp.data.remote.utils.UserAgentInterceptor
+import com.redhotapp.driverapp.ui.utils.TaskDesirializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,10 +55,15 @@ import javax.inject.Singleton
 @InstallIn(ApplicationComponent::class)
 object AppModule {
 
+
     @Singleton
     @Provides
     fun provideGson(): Gson {
+//        val gson = GsonBuilder()
+//            .registerTypeAdapter(Shape::class.java, TaskDesirializer())
+//            .create()
         return Gson()
+
     }
 
 
