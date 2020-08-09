@@ -27,7 +27,7 @@ data class CommResponceItem(
     @SerializedName("LogText")
     val logText: Any,
     @SerializedName("Text")
-    val text: Any,
+    val text: String,
     @SerializedName("TransportAuftragOid")
     val transportAuftragOid: Int
 )

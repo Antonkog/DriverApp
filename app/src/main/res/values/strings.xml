@@ -17,6 +17,7 @@
     <string name="preferences_id">com.redhotapp.driverapp.preferences</string>
     <string name="preferences_endpoint">endpoint</string>
     <string name="token">token</string>
+    <string name="token_created">token_created</string>
     <string name="tokenFcm">tokenFcm</string>
     <string name="profile_active_key">profile_active</string>
 

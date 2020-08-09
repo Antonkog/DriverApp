@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Constant
 
-class Preferences {
+class PrivatePreferences {
 
     companion object Companion {
         private fun getSharedPrefs(context: Context): SharedPreferences? {

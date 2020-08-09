@@ -8,4 +8,5 @@ object Constant {
     const val baseAuthUrl = "http://endpoint.abona-erp.com"
     const val abonaDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     const val abonaTimeZone = "UTC"
+    const val tokenUpdateHours = 48
 }

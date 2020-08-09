@@ -17,7 +17,9 @@
 package com.redhotapp.driverapp.ui.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.shapes.Shape
+import androidx.preference.PreferenceManager
 import com.google.gson.*
 import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
 import com.redhotapp.driverapp.BuildConfig
@@ -66,6 +68,11 @@ object AppModule {
 
     }
 
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+    }
 
     @Singleton
     @Provides

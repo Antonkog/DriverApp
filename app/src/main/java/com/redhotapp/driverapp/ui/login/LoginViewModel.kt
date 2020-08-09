@@ -1,6 +1,7 @@
 package com.redhotapp.driverapp.ui.login
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -10,10 +11,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.google.gson.Gson
 import com.redhotapp.driverapp.BuildConfig
+import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Constant
-import com.redhotapp.driverapp.data.local.preferences.Preferences
+import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
+import com.redhotapp.driverapp.data.local.preferences.putAny
 import com.redhotapp.driverapp.data.model.abona.CommItem
 import com.redhotapp.driverapp.data.model.abona.DataType
 import com.redhotapp.driverapp.data.model.abona.DeviceProfileItem
@@ -29,7 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class LoginViewModel
-@ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val gson: Gson, @Assisted private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
+@ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) : BaseViewModel() {
 
 
     val TAG = "LoginViewModel"
@@ -55,7 +57,8 @@ class LoginViewModel
             .subscribe(
                 { result -> Log.e(TAG, result.body().toString())
                     Log.e(TAG, "got auth")
-                    Preferences.setAccessToken(context, result.body()?.accessToken)
+                    PrivatePreferences.setAccessToken(context, result.body()?.accessToken)
+                    prefs.putAny(context.getString(R.string.token_created), System.currentTimeMillis())
                     setDeviceProfile(getCommItem())
                 },
                 { error ->
@@ -96,7 +99,7 @@ class LoginViewModel
                 // Log and toast
                 Toast.makeText(context, token, Toast.LENGTH_SHORT).show()
 
-                Preferences.setFCMToken(context, token)
+                PrivatePreferences.setFCMToken(context, token)
             })
     }
 
@@ -127,7 +130,7 @@ class LoginViewModel
         commItem.header = header
 
         val deviceProfileItem = DeviceProfileItem()
-        deviceProfileItem.instanceId = Preferences.getFCMToken(context)
+        deviceProfileItem.instanceId = PrivatePreferences.getFCMToken(context)
         deviceProfileItem.deviceId =  DeviceUtils.getUniqueID(context)
         deviceProfileItem.model = Build.MODEL
         deviceProfileItem.manufacturer = Build.MANUFACTURER

@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.redhotapp.driverapp.data.local.preferences.Preferences
+import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
 import java.util.*
 
 
@@ -19,7 +19,7 @@ class FcmService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Preferences.setFCMToken(
+        PrivatePreferences.setFCMToken(
             applicationContext,
             token
         )

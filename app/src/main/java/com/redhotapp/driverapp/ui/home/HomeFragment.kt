@@ -44,13 +44,15 @@ class HomeFragment : BaseFragment() {
 
 
         homeViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
-            homeBinding.textHome.text = it[0].toString()
+            if(it.isNotEmpty())  homeBinding.textHome.text = it[0].toString()
             Log.e(TAG, "got tasks")
         })
-
-        homeBinding.button.setOnClickListener { view ->  homeViewModel.populateTasks(DeviceUtils.getUniqueID(context)) }
+        homeViewModel.error.observe(viewLifecycleOwner, Observer {
+            if(it.isNotEmpty())  homeBinding.textHome.text = it.toString()
+        })
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
+        else homeViewModel.populateTasks(DeviceUtils.getUniqueID(context))
         return view
     }
 }

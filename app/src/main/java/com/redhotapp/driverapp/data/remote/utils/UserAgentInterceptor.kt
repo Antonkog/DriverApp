@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
-import com.redhotapp.driverapp.data.local.preferences.Preferences
+import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -37,8 +37,8 @@ class UserAgentInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val userAgentRequest = chain.request().newBuilder()
             .header("User-Agent", userAgent).let {
-                if(Preferences.getAccessToken(context) != null){
-                    it.header("Authorization", "Bearer " + Preferences.getAccessToken(context)).build()
+                if(PrivatePreferences.getAccessToken(context) != null){
+                    it.header("Authorization", "Bearer " + PrivatePreferences.getAccessToken(context)).build()
                 } else{   it.build() }
             }
         return chain.proceed(userAgentRequest)
