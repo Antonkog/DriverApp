@@ -1,11 +1,10 @@
 package com.redhotapp.driverapp.data.remote
 
-import com.redhotapp.driverapp.data.model.CommResponceItem
+import com.redhotapp.driverapp.data.model.CommResponseItem
 import com.redhotapp.driverapp.data.model.TokenResponse
 import com.redhotapp.driverapp.data.model.abona.CommItem
 import com.redhotapp.driverapp.data.model.abona.ResultOfAction
 import io.reactivex.rxjava3.core.Observable
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -21,12 +20,15 @@ interface ApiService {
 
 
     @GET("api/device/GetAllTask")
-    fun getAllTasks(@Query("deviceId") deviceId: String?): Observable<CommResponceItem>
+    fun getAllTasks(@Query("deviceId") deviceId: String?): Observable<CommResponseItem>
 //
 //    @Headers("Content-Type:application/json")
 //    @POST("api/activity/activity")
 //    Call<ResultOfAction> activityChange(@Body CommItem commItem);
 //
+    @POST("api/Activity/Activity")
+    fun postActivity(deviceId: String): Observable<CommResponseItem>
+
 //    @Headers("Content-Type:application/json; charset=UTF-8")
 //    @POST("api/confirmation/confirm")
 //    Call<ResultOfAction> confirm(@Body CommItem commItem);

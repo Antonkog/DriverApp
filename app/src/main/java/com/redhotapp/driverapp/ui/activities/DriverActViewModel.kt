@@ -1,7 +1,13 @@
 package com.redhotapp.driverapp.ui.activities
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.redhotapp.driverapp.data.model.AllTask
+import com.redhotapp.driverapp.data.model.abona.ActivityItem
 
 class DriverActViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+    val mutableTasks  = MutableLiveData<List<ActivityItem>> ()
+
+
+
 }
