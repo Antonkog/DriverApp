@@ -68,4 +68,10 @@ data class AllTask(
     val vehicleNextTaskId: Int,
     @SerializedName("VehiclePreviousTaskId")
     val vehiclePreviousTaskId: Int
-)
+
+
+) {
+    override fun toString(): String {
+        return "AllTask(abonaTransferNr='$abonaTransferNr', actionType=$actionType, activities=$activities, address=$address, changeReason=$changeReason, changedItems=$changedItems, contacts=$contacts, dangerousGoods=$dangerousGoods, description=$description, kundenName='$kundenName', kundenNr=$kundenNr, mandantId=$mandantId, mandantName='$mandantName', nextTaskId=$nextTaskId, notes=$notes, orderDetails=$orderDetails, orderNo=$orderNo, palletExchange=$palletExchange, palletsAmount=$palletsAmount, percentFinishedActivities=$percentFinishedActivities, previousTaskId=$previousTaskId, referenceIdCustomer1='$referenceIdCustomer1', referenceIdCustomer2=$referenceIdCustomer2, status=$status, swapInfoItem=$swapInfoItem, taskChangeId=$taskChangeId, taskDetails=$taskDetails, taskDueDateFinish='$taskDueDateFinish', taskDueDateStart='$taskDueDateStart', taskId=$taskId, vehicleNextTaskId=$vehicleNextTaskId, vehiclePreviousTaskId=$vehiclePreviousTaskId)"
+    }
+}
