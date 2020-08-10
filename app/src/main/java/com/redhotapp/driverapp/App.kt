@@ -8,6 +8,11 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class App : Application(){
+    companion object {
+        fun isTesting (): Boolean {
+            return true
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()

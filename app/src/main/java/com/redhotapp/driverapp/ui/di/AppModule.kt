@@ -22,13 +22,11 @@ import android.graphics.drawable.shapes.Shape
 import androidx.preference.PreferenceManager
 import com.google.gson.*
 import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
+import com.redhotapp.driverapp.App
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.model.abona.TaskItem
-import com.redhotapp.driverapp.data.remote.ApiRepository
-import com.redhotapp.driverapp.data.remote.ApiRepositoryImpl
-import com.redhotapp.driverapp.data.remote.ApiService
-import com.redhotapp.driverapp.data.remote.AuthService
+import com.redhotapp.driverapp.data.remote.*
 import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.redhotapp.driverapp.data.remote.utils.UnsafeOkHttpClient
 import com.redhotapp.driverapp.data.remote.utils.UserAgentInterceptor
@@ -84,6 +82,9 @@ object AppModule {
         okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
 //        okHttpBuilder.addInterceptor(RequestInterceptor())
         if (BuildConfig.DEBUG) {
+            if(App.isTesting()){
+                okHttpBuilder.addInterceptor(MockInterceptor())
+            }
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY
             okHttpBuilder.addInterceptor(logging)
