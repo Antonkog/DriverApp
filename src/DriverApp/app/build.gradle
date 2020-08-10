@@ -169,7 +169,7 @@ dependencies {
     // Event Bus
     implementation 'org.greenrobot:eventbus:3.1.1'
 
-    implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.5'
+    implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.7'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'de.hdodenhof:circleimageview:3.0.2'
     implementation 'com.github.zurche:plain-pie:v0.2.9'
