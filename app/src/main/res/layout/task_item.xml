@@ -1,11 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-   <TextView
-       android:layout_margin="15dp"
-       android:id="@+id/task_text"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"/>
 
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+      <LinearLayout
+          android:id="@+id/linlay_description"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="16dp"
+          android:layout_marginEnd="16dp"
+          android:layout_marginBottom="16dp"
+          android:orientation="vertical"
+          app:layout_constraintBottom_toTopOf="@+id/progress_bar"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txtd_mandant_name"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="MandantName"-->
+      <!--          tools:layout_editor_absoluteX="23dp"-->
+      <!--          tools:layout_editor_absoluteY="59dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txt_mandant_name"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text='"Hegelmann Express GmbH",'-->
+      <!--          tools:layout_editor_absoluteX="182dp"-->
+      <!--          tools:layout_editor_absoluteY="59dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txtd_kunden_name"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="KundenName"-->
+      <!--          tools:layout_editor_absoluteX="20dp"-->
+      <!--          tools:layout_editor_absoluteY="112dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txt_kunden_name"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="Amazon"-->
+      <!--          tools:layout_editor_absoluteX="208dp"-->
+      <!--          tools:layout_editor_absoluteY="112dp" />-->
+
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txtd_finish_time"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="TaskDueDateFinish"-->
+      <!--          tools:layout_editor_absoluteX="23dp"-->
+      <!--          tools:layout_editor_absoluteY="175dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txt_finish_time"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="2020-06-03T00:00:00"-->
+      <!--          tools:layout_editor_absoluteX="209dp"-->
+      <!--          tools:layout_editor_absoluteY="175dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txtd_address"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="Address"-->
+      <!--          tools:layout_editor_absoluteX="49dp"-->
+      <!--          tools:layout_editor_absoluteY="248dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txt_adress"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text='"Street":"Vulytsia Balzaka"'-->
+      <!--          tools:layout_editor_absoluteX="219dp"-->
+      <!--          tools:layout_editor_absoluteY="248dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txtd_dangerous"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="DangerousGoods"-->
+      <!--          tools:layout_editor_absoluteX="60dp"-->
+      <!--          tools:layout_editor_absoluteY="321dp" />-->
+
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/txt_dangerous"-->
+      <!--          android:layout_width="wrap_content"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          android:text="false"-->
+      <!--          tools:layout_editor_absoluteX="209dp"-->
+      <!--          tools:layout_editor_absoluteY="321dp" />-->
+
+      <!--      <TextView-->
+      <!--          android:id="@+id/task_text"-->
+      <!--          android:layout_width="match_parent"-->
+      <!--          android:layout_height="wrap_content"-->
+      <!--          app:layout_constraintBottom_toTopOf="@+id/progress_bar"-->
+      <!--          app:layout_constraintEnd_toEndOf="parent"-->
+      <!--          app:layout_constraintHorizontal_bias="1.0"-->
+      <!--          app:layout_constraintStart_toStartOf="parent" />-->
+
+      <ProgressBar
+          android:id="@+id/progress_bar"
+          style="?android:attr/progressBarStyleHorizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="16dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent" />
+   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
