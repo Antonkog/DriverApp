@@ -1,28 +1,75 @@
 package com.redhotapp.driverapp.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.kivi.remote.presentation.base.recycler.LazyAdapter
+import com.kivi.remote.presentation.base.recycler.addItemDivider
+import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import com.redhotapp.driverapp.R
+import com.redhotapp.driverapp.data.Constant
+import com.redhotapp.driverapp.data.model.Activity
+import com.redhotapp.driverapp.data.remote.MockInterceptor
 import com.redhotapp.driverapp.databinding.DriverActFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
+import com.redhotapp.driverapp.ui.utils.DeviceUtils
+import dagger.hilt.android.AndroidEntryPoint
 
-class DriverActFragment : BaseFragment() {
+@AndroidEntryPoint
+class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activity>{
+    val TAG = "DriverActFragment"
 
+    private val driverActViewModel by viewModels<DriverActViewModel> ()
 
-    private val loginViewModel by viewModels<DriverActViewModel> ()
+    private lateinit var driverActFragmentBinding: DriverActFragmentBinding
 
-
-    private lateinit var viewDataBinding: DriverActFragmentBinding
-
+    private var adapter = ActivityAdapter(this)
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.driver_act_fragment, container, false)
+
+        driverActFragmentBinding = DataBindingUtil.inflate(
+            inflater, R.layout.driver_act_fragment, container,
+            false
+        )
+
+        driverActFragmentBinding.viewmodel = driverActViewModel
+        driverActFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
+
+        driverActViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
+            if(it.isNotEmpty())
+                adapter.swapData(it)
+            Log.e(TAG, "got tasks")
+        })
+
+        driverActViewModel.error.observe(viewLifecycleOwner, Observer {
+            if(it.isNotEmpty())  driverActFragmentBinding.textHome.text = it.toString()
+        })
+
+        driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), Constant.MOCK_TASK_ID_FOR_ACTIVITY)
+
+        return driverActFragmentBinding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // recyclerview init
+        driverActFragmentBinding.tasksRecycler.initWithLinLay(LinearLayoutManager.VERTICAL, adapter, listOf())
+        driverActFragmentBinding.tasksRecycler.addItemDivider()
+
+    }
+
+    override fun onLazyItemClick(data: Activity) {
+        Toast.makeText(context, " on activity click : ${data.activityId}", Toast.LENGTH_LONG).show()
+    }
 }

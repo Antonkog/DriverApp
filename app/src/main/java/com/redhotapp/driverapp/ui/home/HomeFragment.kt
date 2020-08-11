@@ -39,10 +39,10 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
     ): View? {
         val view = inflater.inflate(R.layout.home_fragment, container, false)
 
-                homeBinding = HomeFragmentBinding.inflate(layoutInflater, container, false).apply {
-                    viewmodel = homeViewModel
-
-                }
+//        homeBinding = HomeFragmentBinding.inflate(layoutInflater, container, false).apply {
+//            viewmodel = homeViewModel
+//
+//        }
         homeBinding = HomeFragmentBinding.bind(view).apply {
             viewmodel = homeViewModel
         }
@@ -76,6 +76,6 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
     }
 
     override fun onLazyItemClick(data: AllTask) {
-        Toast.makeText(context, " on task click : $data", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, " on task click : ${data.taskId}", Toast.LENGTH_SHORT).show()
     }
 }

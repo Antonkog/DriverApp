@@ -1,4 +1,4 @@
-package com.redhotapp.driverapp.ui.home
+package com.redhotapp.driverapp.ui.activities
 
 import android.view.LayoutInflater
 import android.widget.LinearLayout
@@ -6,18 +6,20 @@ import android.widget.TextView
 import com.google.gson.Gson
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.redhotapp.driverapp.R
+import com.redhotapp.driverapp.data.model.Activity
 import com.redhotapp.driverapp.data.model.AllTask
 import com.redhotapp.driverapp.databinding.TaskItemBinding
+import com.redhotapp.driverapp.ui.home.HomeFragment
 import com.redhotapp.driverapp.ui.utils.JsonParser
 import org.json.JSONObject
 
 
-class TasksAdapter(itemClickListener: HomeFragment) : LazyAdapter<AllTask, TaskItemBinding>(itemClickListener) {
+class ActivityAdapter(itemClickListener: DriverActFragment) : LazyAdapter<Activity, TaskItemBinding>(itemClickListener) {
 
-    override fun bindData(data: AllTask, binding: TaskItemBinding) {
+    override fun bindData(data: Activity, binding: TaskItemBinding) {
         binding.root.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
-        binding.progressBar.progress = if(data.status > 100) 100 else (data.status)   //text = "task: $data"
-
+//        binding.progressBar.progress = if(data.status > 100) 100 else (data.status)   //text = "task: $data"
+        binding.progressBar.progress = 100
         val jsonObject = JSONObject(Gson().toJson(data).trim())
         val map: Map<String, String> = JsonParser.parseJson(jsonObject)
 

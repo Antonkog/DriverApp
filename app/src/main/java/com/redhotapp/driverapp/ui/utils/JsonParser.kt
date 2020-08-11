@@ -1,4 +1,4 @@
-package com.redhotapp.driverapp.ui.home
+package com.redhotapp.driverapp.ui.utils
 
 import android.util.Log
 import org.json.JSONArray
@@ -32,11 +32,15 @@ object JsonParser {
                 when (val jobject = objJson[key]) {
                     is JSONArray -> {
                         Log.e(TAG, " JSONArray: $jobject")
-                        parseJson(jobject)
+                        parseJson(
+                            jobject
+                        )
                     }
                     is JSONObject -> {
                         Log.e(TAG, " JSONObject: $jobject")
-                        parseJson(jobject)
+                        parseJson(
+                            jobject
+                        )
                     }
                     else -> {
                         Log.e(TAG, " adding to map: $key $jobject")
