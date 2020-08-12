@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.addItemDivider
@@ -31,6 +32,8 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
     private lateinit var driverActFragmentBinding: DriverActFragmentBinding
 
     private var adapter = ActivityAdapter(this)
+
+    val args: DriverActFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,7 +59,7 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
             if(it.isNotEmpty())  driverActFragmentBinding.textHome.text = it.toString()
         })
 
-        driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), Constant.MOCK_TASK_ID_FOR_ACTIVITY)
+        driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), args.taskId)
 
         return driverActFragmentBinding.root
     }

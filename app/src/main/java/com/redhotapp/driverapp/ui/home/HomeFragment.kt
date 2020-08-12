@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
@@ -77,5 +78,8 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
 
     override fun onLazyItemClick(data: AllTask) {
         Toast.makeText(context, " on task click : ${data.taskId}", Toast.LENGTH_SHORT).show()
+
+        val action = HomeFragmentDirections.actionNavHomeToNavActivities(data.taskId)
+        findNavController().navigate(action)
     }
 }
