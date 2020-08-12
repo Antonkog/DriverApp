@@ -33,6 +33,7 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
+import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
@@ -86,7 +87,7 @@ public class SettingsFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+
     mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
   }
   
@@ -291,7 +292,6 @@ public class SettingsFragment extends Fragment {
                     mDb.offlineConfirmationDAO().deleteAll();
       
                     TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
-                    TextSecurePreferences.setDeviceFirstTimeRun(false);
                     TextSecurePreferences.setLoginPageEnable(true);
                   }
                 });
@@ -302,19 +302,18 @@ public class SettingsFragment extends Fragment {
   
                 //int server_port = Integer.valueOf(mTeServerPort.getText().toString());
                 //TextSecurePreferences.setServerPort(server_port);
-  
-                TextSecurePreferences.setDeviceFirstTimeRun(false);
+
                 TextSecurePreferences.setDeviceRegistrated(false);
                 ThreadUtils.postOnUiThreadDelayed(new Runnable() {
                   @Override
                   public void run() {
       
-                    Intent restartIntent = getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
+                    Intent restartIntent = getActivity().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
                     PendingIntent intent = PendingIntent.getActivity(getContext(), 0 , restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                     AlarmManager manager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
                     manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, intent);
                     getActivity().finish();
-                    Runtime.getRuntime().exit(0);
+                    stopBackgroundWorkerService();
                   }
                 }, 1000);
               }
@@ -339,5 +338,11 @@ public class SettingsFragment extends Fragment {
         App.eventBus.post(new ProtocolEvent());
       }
     });
+  }
+
+  public void stopBackgroundWorkerService() {
+    Intent serviceIntent = new Intent(getContext(), BackgroundServiceWorker.class);
+    serviceIntent.putExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, true);
+    getContext().startService(serviceIntent);
   }
 }

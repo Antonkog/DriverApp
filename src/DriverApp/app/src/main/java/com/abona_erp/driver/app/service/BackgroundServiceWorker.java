@@ -782,11 +782,6 @@ public class BackgroundServiceWorker extends Service {
   }
   
   private boolean isDeviceRegistrated() {
-    if (!TextSecurePreferences.isDeviceFirstTimeRun()) {
-      Log.i(TAG, ">>>>>>> DEVICE FIRST TIME RUN NOT FINISHED - WAITING...");
-      return false;
-    }
-    
     if (TextSecurePreferences.isDeviceRegistrated()) {
       return true;
     } else {
@@ -886,6 +881,10 @@ public class BackgroundServiceWorker extends Service {
   
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
+    if(intent.getBooleanExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, false) == true){
+      Log.e(TAG, "service stop");
+      stopService();
+    }
     Notification notification = prepareNotification(getApplicationContext().getResources().getString(R.string.alarm_check_title),
             getApplicationContext().getResources().getString(R.string.running_text)).build();
     startForeground(Constants.ALARM_CHECK_JOB_ID, notification);
@@ -893,6 +892,11 @@ public class BackgroundServiceWorker extends Service {
     mHandler.post(mRunner);
     mDelayReasonHandler.post(mDelayReasonRunner);
     return START_REDELIVER_INTENT;
+  }
+
+  private void stopService(){
+    stopForeground(true);
+    stopSelf();
   }
 
   private NotificationCompat.Builder prepareNotification(String title, String message) {

@@ -165,8 +165,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     ADD, REMOVE, NONE
   }
 
-  public BackgroundServiceWorker mBackgroundWorkerService;
-
   private DialogInterface.OnClickListener positiveDialogListener =  new DialogInterface.OnClickListener() {
     @Override
     public void onClick(DialogInterface dialog, int which) {
@@ -184,15 +182,17 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   };
 
 
-  /**
-   * need to make service foreground to make it work
-   * on android with new api >= Q
-   */
   public void startBackgroundWorkerService() {
-    if (mBackgroundWorkerService == null) {
-      mBackgroundWorkerService = new BackgroundServiceWorker(ContextUtils.getApplicationContext());
-    }
     Intent serviceIntent = new Intent(this, BackgroundServiceWorker.class);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      startForegroundService(serviceIntent);
+    } else {
+      startService(serviceIntent);
+    }
+  }
+
+  private void startAlarmService() {
+    Intent serviceIntent = new Intent(this, ForegroundAlarmService.class);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       startForegroundService(serviceIntent);
     } else {
@@ -255,8 +255,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       findViewById(R.id.connectivity_image).setVisibility(View.GONE);
     }
     if(!EventBus.getDefault().isRegistered(this)) App.eventBus.register(this);
-
-    addFirebaseListener();
 
     mVehicleClientName = (AsapTextView)findViewById(R.id.tv_vehicle_client_name);
     mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
@@ -365,8 +363,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             || TextSecurePreferences.getFcmToken(getBaseContext()).length() <= 0
             || !TextSecurePreferences.getFcmToken(getBaseContext()).equals(task.getResult().getToken())) {
             TextSecurePreferences.setFcmToken(getBaseContext(), task.getResult().getToken());
-            Log.d("MainActivity","Firebase registration Token=" + task.getResult().getToken());
-            if (TextSecurePreferences.isDeviceFirstTimeRun()) {
+            Log.d(TAG,"Firebase registration Token=" + task.getResult().getToken());
               AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -387,7 +384,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                 }
               });
             }
-          }
         }
       });
   }
@@ -828,13 +824,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     try {
       if (resultOfAction.getIsSuccess() && !resultOfAction.getIsException()) {
         if (resultOfAction.getAllTask() != null && resultOfAction.getAllTask().size() > 0) {
-          Intent serviceIntent = new Intent(this, ForegroundAlarmService.class);
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-          } else {
-            startService(serviceIntent);
-          }
-           for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
+          startAlarmService();
+          for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
 
             TaskItem taskItem = resultOfAction.getAllTask().get(i);
             if (taskItem.getMandantId() == null) continue;
@@ -937,7 +928,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       mMainViewModel.addLog(e.getMessage(), LogType.API, LogLevel.FATAL, getResources().getString(R.string.log_title_task));
     }
   }
-
 
 
   private void handleAccessToken() {
@@ -1048,7 +1038,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       deviceProfile.setModifiedAt(dfUtc.format(currentTimestamp));
 
       mMainViewModel.insert(deviceProfile);
-     
+
+      addFirebaseListener();
+
       TextSecurePreferences.setDeviceFirstTimeRun(true);
     }
   }
