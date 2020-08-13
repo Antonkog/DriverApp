@@ -1,8 +1,5 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.settings;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -36,6 +33,7 @@ import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
+import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -43,7 +41,6 @@ import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
 import com.abona_erp.driver.app.worker.DeviceProfileWorker;
-import com.abona_erp.driver.core.base.ThreadUtils;
 import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
@@ -266,68 +263,58 @@ public class SettingsFragment extends Fragment {
     mBtnSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        
-        InputDialog.build((AppCompatActivity)getContext())
-          .setStyle(DialogSettings.STYLE.STYLE_IOS)
-          .setTheme(DialogSettings.THEME.LIGHT)
-          .setTitle(getContext().getResources().getString(R.string.action_security_code))
-          .setMessage(getContext().getResources().getString(R.string.action_security_code_message))
-          .setInputInfo(new InputInfo()
-            .setMAX_LENGTH(4)
-            .setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
-            .setTextInfo(new TextInfo()
-              .setFontColor(Color.RED))
-          )
-          .setOkButton(getContext().getResources().getString(R.string.action_ok))
-          .setOnOkButtonClickListener(new OnInputDialogButtonClickListener() {
-            @Override
-            public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
-              if (inputStr.equals("0000")) {
-                // DEVICE RESET BEGIN
-                AsyncTask.execute(new Runnable() {
-                  @Override
-                  public void run() {
-                    mDb.lastActivityDAO().deleteAll();
-                    mDb.notifyDao().deleteAll();
-                    mDb.offlineConfirmationDAO().deleteAll();
-      
-                    TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
-                    TextSecurePreferences.setLoginPageEnable(true);
-                  }
-                });
-                // DEVICE RESET END
-  
-                //String ip_address = mTeIpAddress.getText().toString();
-                //TextSecurePreferences.setServerIpAddress(ip_address);
-  
-                //int server_port = Integer.valueOf(mTeServerPort.getText().toString());
-                //TextSecurePreferences.setServerPort(server_port);
 
-                TextSecurePreferences.setDeviceRegistrated(false);
-                ThreadUtils.postOnUiThreadDelayed(new Runnable() {
+        InputDialog.build((AppCompatActivity) getContext())
+                .setStyle(DialogSettings.STYLE.STYLE_IOS)
+                .setTheme(DialogSettings.THEME.LIGHT)
+                .setTitle(getContext().getResources().getString(R.string.action_security_code))
+                .setMessage(getContext().getResources().getString(R.string.action_security_code_message))
+                .setInputInfo(new InputInfo()
+                        .setMAX_LENGTH(4)
+                        .setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                        .setTextInfo(new TextInfo()
+                                .setFontColor(Color.RED))
+                )
+                .setOkButton(getContext().getResources().getString(R.string.action_ok))
+                .setOnOkButtonClickListener(new OnInputDialogButtonClickListener() {
                   @Override
-                  public void run() {
-      
-                    Intent restartIntent = getActivity().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
-                    PendingIntent intent = PendingIntent.getActivity(getContext(), 0 , restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-                    AlarmManager manager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
-                    manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, intent);
-                    getActivity().finish();
-                    stopBackgroundWorkerService();
+                  public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
+                    if (inputStr.equals("0000")) {
+                      // DEVICE RESET BEGIN
+                      AsyncTask.execute(() -> {
+                        mDb.lastActivityDAO().deleteAll();
+                        mDb.notifyDao().deleteAll();
+                        mDb.offlineConfirmationDAO().deleteAll();
+
+                        // DEVICE RESET END
+
+                        //String ip_address = mTeIpAddress.getText().toString();
+                        //TextSecurePreferences.setServerIpAddress(ip_address);
+
+                        //int server_port = Integer.valueOf(mTeServerPort.getText().toString());
+                        //TextSecurePreferences.setServerPort(server_port);
+
+                        TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
+                        TextSecurePreferences.setLoginPageEnable(true);
+                        TextSecurePreferences.setDeviceRegistrated(false);
+
+                        getActivity().runOnUiThread(() -> {
+
+                          stopBackgroundWorkerService();
+                          //start a same new one
+                          getActivity().startActivity(new Intent(getContext().getApplicationContext(), LoginActivity.class));
+                          //finish current
+                          getActivity().finish();
+                        });
+                      });
+
+                    }
+                    return false;
                   }
-                }, 1000);
-              }
-              return false;
-            }
-          })
-          .setCancelButton(getContext().getResources().getString(R.string.action_cancel))
-          .setOnCancelButtonClickListener(new OnInputDialogButtonClickListener() {
-            @Override
-            public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
-              return false;
-            }
-          })
-          .show();
+                })
+                .setCancelButton(getContext().getResources().getString(R.string.action_cancel))
+                .setOnCancelButtonClickListener((baseDialog, v, inputStr) -> false)
+                .show();
       }
     });
     
