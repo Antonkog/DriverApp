@@ -58,6 +58,7 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
     }
 
     fun setVisibleTaskID(allTask: AllTask) {
+        Log.e(TAG, "saving task " + allTask.taskId)
         prefs.putAny(context.resources.getString(R.string.current_visible_taskId), allTask.taskId)
     }
 

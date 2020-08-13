@@ -12,6 +12,8 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
@@ -53,6 +55,13 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
 
 
         homeBinding.tasksPager.adapter = adapter
+
+        TabLayoutMediator(homeBinding.tabLayout, homeBinding.tasksPager) { tab, position ->
+            //Some implementation
+//            tab.text = "OBJECT ${(position + 1)}"
+
+
+        }.attach()
 
         homeBinding.tasksPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
