@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
@@ -42,7 +43,6 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
 
 //        homeBinding = HomeFragmentBinding.inflate(layoutInflater, container, false).apply {
 //            viewmodel = homeViewModel
-//
 //        }
         homeBinding = HomeFragmentBinding.bind(view).apply {
             viewmodel = homeViewModel
@@ -51,6 +51,15 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
 
         homeBinding.lifecycleOwner = this.viewLifecycleOwner
 
+
+        homeBinding.tasksPager.adapter = adapter
+
+        homeBinding.tasksPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                homeViewModel.setVisibleTaskID(adapter.data[position])
+            }
+        })
 
         homeViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty())
@@ -67,18 +76,8 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // recyclerview init
-        homeBinding.tasksRecycler.initWithLinLay(LinearLayoutManager.VERTICAL, adapter, listOf())
-        homeBinding.tasksRecycler.addItemDivider()
-
-    }
-
     override fun onLazyItemClick(data: AllTask) {
         Toast.makeText(context, " on task click : ${data.taskId}", Toast.LENGTH_SHORT).show()
-
         val action = HomeFragmentDirections.actionNavHomeToNavActivities(data.taskId)
         findNavController().navigate(action)
     }

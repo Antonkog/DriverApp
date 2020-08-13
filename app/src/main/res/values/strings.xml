@@ -20,7 +20,7 @@
     <string name="token">token</string>
     <string name="token_created">token_created</string>
     <string name="tokenFcm">tokenFcm</string>
-    <string name="profile_active_key">profile_active</string>
+    <string name="current_visible_taskId">current_visible_taskId</string>
 
     <string name="need_log_in">First log in</string>
 

@@ -13,13 +13,12 @@ import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
+import com.redhotapp.driverapp.data.local.preferences.putAny
 import com.redhotapp.driverapp.data.model.AllTask
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
-
-
     private val TAG = "HomeViewModel"
 
     val mutableTasks  = MutableLiveData<List<AllTask>> ()
@@ -58,5 +57,8 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 
     }
 
+    fun setVisibleTaskID(allTask: AllTask) {
+        prefs.putAny(context.resources.getString(R.string.current_visible_taskId), allTask.taskId)
+    }
 
 }

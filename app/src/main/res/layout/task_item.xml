@@ -6,21 +6,42 @@
 
    <androidx.constraintlayout.widget.ConstraintLayout
        android:layout_width="match_parent"
-       android:layout_height="wrap_content">
+       android:layout_height="match_parent">
 
-      <LinearLayout
-          android:id="@+id/linlay_description"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="16dp"
-          android:layout_marginEnd="16dp"
-          android:layout_marginBottom="16dp"
-          android:orientation="vertical"
+      <ScrollView
+          android:layout_width="0dp"
+          android:layout_height="0dp"
           app:layout_constraintBottom_toTopOf="@+id/progress_bar"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
+          app:layout_constraintTop_toTopOf="parent">
+
+         <LinearLayout
+             android:id="@+id/linlay_description"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginStart="16dp"
+             android:layout_marginTop="16dp"
+             android:layout_marginEnd="16dp"
+             android:layout_marginBottom="16dp"
+             android:orientation="vertical"
+             app:layout_constraintBottom_toTopOf="@+id/progress_bar"
+             app:layout_constraintEnd_toEndOf="parent"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintTop_toTopOf="parent" />
+
+
+      </ScrollView>
+
+      <ProgressBar
+          android:id="@+id/progress_bar"
+          style="?android:attr/progressBarStyleHorizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="16dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent" />
 
       <!--      <TextView-->
       <!--          android:id="@+id/txtd_mandant_name"-->
@@ -113,14 +134,7 @@
       <!--          app:layout_constraintHorizontal_bias="1.0"-->
       <!--          app:layout_constraintStart_toStartOf="parent" />-->
 
-      <ProgressBar
-          android:id="@+id/progress_bar"
-          style="?android:attr/progressBarStyleHorizontal"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="16dp"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent" />
+
+
    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

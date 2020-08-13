@@ -31,7 +31,7 @@ class DriverActViewModel @ViewModelInject constructor(private val api: ApiReposi
                 { result -> Log.e(TAG, result.toString())
                     if(result.isSuccess){
                         Log.e(TAG, "got tasks")
-                        mutableTasks.postValue( result.allTask.filter { it.taskId == taskID }.firstOrNull()?.activities)
+                        mutableTasks.postValue(result.allTask.firstOrNull { it.taskId == taskID }?.activities)
                     }else{
                         error.postValue(result.text)
                     }
