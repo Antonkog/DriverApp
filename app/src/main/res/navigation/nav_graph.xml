@@ -13,10 +13,8 @@
         <action
             android:id="@+id/action_nav_home_to_loginFragment"
             app:destination="@id/nav_login" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_activities"
-            app:destination="@id/nav_activities" />
     </fragment>
+
     <fragment
         android:id="@+id/nav_login"
         android:name="com.redhotapp.driverapp.ui.login.LoginFragment"
@@ -38,11 +36,6 @@
         android:id="@+id/nav_activities"
         android:name="com.redhotapp.driverapp.ui.activities.DriverActFragment"
         android:label="@string/screen_activities"
-        tools:layout="@layout/driver_act_fragment">
-        <argument
-            android:name="task_id"
-            app:argType="integer"
-            android:defaultValue="0" />
-    </fragment>
+        tools:layout="@layout/driver_act_fragment"/>
 
 </navigation>

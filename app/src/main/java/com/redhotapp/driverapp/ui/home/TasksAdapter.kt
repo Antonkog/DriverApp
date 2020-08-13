@@ -1,5 +1,6 @@
 package com.redhotapp.driverapp.ui.home
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -12,11 +13,15 @@ import com.redhotapp.driverapp.ui.utils.JsonParser
 import org.json.JSONObject
 
 
-class TasksAdapter(itemClickListener: HomeFragment) : LazyAdapter<AllTask, TaskItemBinding>(itemClickListener) {
+class TasksAdapter(itemClickListener: HomeFragment?) : LazyAdapter<AllTask, TaskItemBinding>(null) {
 
     override fun bindData(data: AllTask, binding: TaskItemBinding) {
-        binding.root.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
+//        binding.progressBar.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
         binding.progressBar.progress = if(data.status > 100) 100 else (data.status)   //text = "task: $data"
+
+        binding.root.setOnClickListener { v ->
+            Log.e("TasksAdapter", "got click")
+        }
 
         val jsonObject = JSONObject(Gson().toJson(data).trim())
         val map: Map<String, String> = JsonParser.parseJson(jsonObject)

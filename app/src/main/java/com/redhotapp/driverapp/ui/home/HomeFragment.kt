@@ -26,12 +26,12 @@ import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
+class HomeFragment : BaseFragment() {
 
     val TAG = "HomeFragment"
     private val homeViewModel by viewModels<HomeViewModel> ()
 //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
-    private var adapter = TasksAdapter(this)
+    private var adapter = TasksAdapter(null)
 
     private lateinit var homeBinding: HomeFragmentBinding
 
@@ -83,11 +83,5 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<AllTask> {
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
         else homeViewModel.populateTasks(DeviceUtils.getUniqueID(context))
         return view
-    }
-
-    override fun onLazyItemClick(data: AllTask) {
-        Toast.makeText(context, " on task click : ${data.taskId}", Toast.LENGTH_SHORT).show()
-        val action = HomeFragmentDirections.actionNavHomeToNavActivities(data.taskId)
-        findNavController().navigate(action)
     }
 }

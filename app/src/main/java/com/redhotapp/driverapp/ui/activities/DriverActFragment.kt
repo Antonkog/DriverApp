@@ -33,7 +33,7 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
 
     private var adapter = ActivityAdapter(this)
 
-    val args: DriverActFragmentArgs by navArgs()
+//    val args: DriverActFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,17 +49,22 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
         driverActFragmentBinding.viewmodel = driverActViewModel
         driverActFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
+
         driverActViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
-            if(it.isNotEmpty())
+            if(it!= null && it.isNotEmpty()){
                 adapter.swapData(it)
-            Log.e(TAG, "got tasks")
+                Log.e(TAG, "got tasks")
+            }
         })
 
         driverActViewModel.error.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty())  driverActFragmentBinding.textHome.text = it.toString()
         })
 
-        driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), args.taskId)
+        driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
+
+//        if(args ==null) driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
+//        else driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), args.taskId)
 
         return driverActFragmentBinding.root
     }
