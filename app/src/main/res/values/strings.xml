@@ -11,6 +11,8 @@
     <string name="screen_login">Login</string>
     <string name="screen_home">Tasks</string>
     <string name="screen_activities">Activities</string>
+    <string name="screen_documents">Documents</string>
+    <string name="screen_delay_reason">Delay Reason</string>
     <string name="screen_settings">Settings</string>
 
     <string name="home_second">Home Second</string>
