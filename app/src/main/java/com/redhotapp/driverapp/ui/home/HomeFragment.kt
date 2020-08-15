@@ -21,7 +21,9 @@ import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.model.AllTask
 import com.redhotapp.driverapp.data.model.abona.TaskItem
 import com.redhotapp.driverapp.databinding.HomeFragmentBinding
+import com.redhotapp.driverapp.ui.RxBus
 import com.redhotapp.driverapp.ui.base.BaseFragment
+import com.redhotapp.driverapp.ui.events.RxBusEvent
 import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -73,12 +75,20 @@ class HomeFragment : BaseFragment() {
         homeViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty())
             adapter.swapData(it)
-            Log.e(TAG, "got tasks")
+            Log.e(TAG, "got tasks ${it}")
         })
 
         homeViewModel.error.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty())  homeBinding.textHome.text = it.toString()
         })
+
+        RxBus.listen(RxBusEvent.LogOut::class.java)
+            .subscribe {
+                Toast.makeText(context, "Logout Done !", Toast.LENGTH_LONG).show()
+                homeViewModel.resetAuthTime()
+                findNavController().navigate(R.id.nav_login)
+        }
+
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
         else homeViewModel.populateTasks(DeviceUtils.getUniqueID(context))

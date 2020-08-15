@@ -5,18 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.redhotapp.driverapp.R
-import com.redhotapp.driverapp.databinding.HomeFragmentBinding
 import com.redhotapp.driverapp.databinding.LoginFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
-import com.redhotapp.driverapp.ui.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,8 +38,8 @@ class LoginFragment : BaseFragment() {
 
         loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> showWelcomeMessage()
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Toast.makeText(requireContext(), R.string.need_log_in, Toast.LENGTH_LONG ).show()
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> navigateHome()
+//                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Toast.makeText(requireContext(), R.string.need_log_in, Toast.LENGTH_LONG ).show()
             }
         })
 
@@ -67,8 +61,7 @@ class LoginFragment : BaseFragment() {
         return view
     }
 
-    private fun showWelcomeMessage() {
-        Log.e(TAG, "navigating home")
+    private fun navigateHome() {
         findNavController().navigate(R.id.nav_home)
     }
 }

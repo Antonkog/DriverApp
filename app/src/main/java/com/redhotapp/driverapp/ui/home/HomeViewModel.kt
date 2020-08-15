@@ -7,6 +7,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.redhotapp.driverapp.App
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.remote.ApiRepository
@@ -31,6 +32,9 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
         return ((difference < Constant.tokenUpdateHours * 3600 * 1000) // hours to seconds to mills
                 && PrivatePreferences.getAccessToken(context) != null)
     }
+    fun resetAuthTime(){
+        prefs.putAny(context.getString(R.string.token_created),0)
+    }
 
     fun populateTasks(deviceId: String) {
         api.getAllTasks(deviceId)
@@ -38,15 +42,22 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> Log.e(TAG, result.toString())
-                    if(result.isSuccess){
+
+                    if(App.isTesting()){
                         Log.e(TAG, "got tasks")
                         mutableTasks.postValue(result.allTask)
-                    }else{
-                        error.postValue(result.text)
                     }
-                    if(result.isException) {
-                        Log.e(TAG, "got tasks is Exception: $result")
-                        error.postValue(result.text)
+                    else {
+                        if (result.isSuccess) {
+                            Log.e(TAG, "got tasks")
+                            mutableTasks.postValue(result.allTask)
+                        } else {
+                            error.postValue(result.text)
+                        }
+                        if (result.isException) {
+                            Log.e(TAG, "got tasks is Exception: $result")
+                            error.postValue(result.text)
+                        }
                     }
                 },
                 { e ->

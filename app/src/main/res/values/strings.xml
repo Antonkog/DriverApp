@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">ABONA Deutschland GmbH</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="action_log_out">Log out</string>
 
     <string name="screen_login">Login</string>
     <string name="screen_home">Tasks</string>

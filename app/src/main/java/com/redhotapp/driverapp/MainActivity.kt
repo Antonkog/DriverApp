@@ -3,6 +3,7 @@ package com.redhotapp.driverapp
 import android.app.Activity
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -15,6 +16,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.redhotapp.driverapp.ui.RxBus
+import com.redhotapp.driverapp.ui.events.RxBusEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,13 +41,23 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        menuInflater.inflate(R.menu.main, menu)
-//        return true
-//    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_log_out -> {
+              RxBus.publish(RxBusEvent.LogOut(true))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

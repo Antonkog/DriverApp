@@ -14,7 +14,7 @@ import org.json.JSONObject
 
 
 class TasksAdapter(itemClickListener: HomeFragment?) : LazyAdapter<AllTask, TaskItemBinding>(null) {
-
+val TAG = "TasksAdapter"
     override fun bindData(data: AllTask, binding: TaskItemBinding) {
 //        binding.progressBar.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
         binding.progressBar.progress = if(data.status > 100) 100 else (data.status)   //text = "task: $data"
@@ -33,6 +33,7 @@ class TasksAdapter(itemClickListener: HomeFragment?) : LazyAdapter<AllTask, Task
                 val row = LayoutInflater.from(binding.root.context)
                     .inflate(R.layout.task_row, null, false)
                 row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
+                Log.e(TAG, " adding entry "+ entry.key + " " + entry.value)
                 linearContent.addView(row)
             }
         }
