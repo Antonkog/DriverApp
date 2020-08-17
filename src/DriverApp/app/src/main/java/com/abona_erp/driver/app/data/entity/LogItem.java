@@ -32,7 +32,10 @@ public class LogItem /*implements Serializable*/ {
   
   @ColumnInfo(name = "created_at")
   private Date createdAt;
-  
+
+  @ColumnInfo(name = "task_id")
+  private int taskId;
+
   public int getId() {
     return id;
   }
@@ -40,7 +43,15 @@ public class LogItem /*implements Serializable*/ {
   public void setId(int id) {
     this.id = id;
   }
-  
+
+  public Integer getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(Integer taskId) {
+    this.taskId = taskId;
+  }
+
   public LogLevel getLevel() {
     return level;
   }

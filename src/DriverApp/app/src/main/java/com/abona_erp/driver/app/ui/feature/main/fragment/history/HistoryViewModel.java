@@ -18,7 +18,7 @@ public class HistoryViewModel extends AndroidViewModel {
   public HistoryViewModel(Application application) {
     super(application);
     _repo = new DriverRepository(application);
-    mAllLogs =  _repo.getLogsDAO().getHistoryLogs();
+    mAllLogs =  _repo.getLogsDAO().getLogs();
   }
   
   public LiveData<List<LogItem>> getHistoryLogs() {

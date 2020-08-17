@@ -525,8 +525,8 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                 mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
                 updateNotify(mNotify);
 
-                EventBus.getDefault().post(new LogEvent(v.getContext().getString(R.string.log_start_pressed),
-                        LogType.HISTORY, LogLevel.INFO, v.getContext().getString(R.string.log_title_default), commItem.getTaskItem().getTaskId()));
+                EventBus.getDefault().post(new LogEvent(v.getContext().getString(R.string.log_activity_start_pressed),
+                        LogType.APP_TO_SERVER, LogLevel.INFO, v.getContext().getString(R.string.log_title_activity), commItem.getTaskItem().getTaskId()));
 
                 addOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                 return false;

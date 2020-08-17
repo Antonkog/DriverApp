@@ -155,6 +155,7 @@ public class BackgroundServiceWorker extends Service {
             mHandler.postDelayed(this, delay);
             return;
           } else if (TextSecurePreferences.isUpdateAllTasks()) {
+            EventBus.getDefault().post(new LogEvent(getString(R.string.log_update_schedule), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
             updateGetAllTasks();
             mHandler.postDelayed(this, delay);
             return;
@@ -351,8 +352,9 @@ public class BackgroundServiceWorker extends Service {
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
-                      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_change_send),
-                              LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),
+
+                      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_status_change),
+                              LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_activity),
                               activityItem.getTaskId()));
 
                       allowRequest = true;
@@ -364,7 +366,7 @@ public class BackgroundServiceWorker extends Service {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
                             }
                           }
-                          
+
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
@@ -450,18 +452,20 @@ public class BackgroundServiceWorker extends Service {
   
                         DelayReasonUtil.getDelayReasonsFromService(notify.getMandantId());
                       } else if (response.code() == 401) {
-          
-                        // error case:
-                        switch (response.code()) {
-                          case 401:
+
+                            EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
+                                    LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
+                                    activityItem.getTaskId()));
+
                             handleAccessToken();
-                            break;
-                        }
                       }
                     }
       
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
+                      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_sent_error),
+                              LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
+                              activityItem.getTaskId()));
                       allowRequest = true;
                       Log.e(TAG, t.getMessage());
                     }
@@ -496,19 +500,26 @@ public class BackgroundServiceWorker extends Service {
                       if (response.isSuccessful()) {
           
                         if (response.body().getIsException())
-                          return;
-          
-                        if (response.body().getIsSuccess()) {
-                          EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_open_confirm_send) ,
-                                  LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),
+                        {
+                          EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_error),
+                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
                                   confirmationItem.getTaskId()));
+                          return;
+                        }
 
+
+                        if (response.body().getIsSuccess()) {
                           if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
                             }
                           }
-                          
+
+
+                          EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_send),
+                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
+                                  confirmationItem.getTaskId()));
+
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
@@ -610,7 +621,12 @@ public class BackgroundServiceWorker extends Service {
                         // error case:
                         switch (response.code()) {
                           case 401:
+                          {
+                            EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
+                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
+                                    confirmationItem.getTaskId()));
                             handleAccessToken();
+                          }
                             break;
                         }
                       }
@@ -712,19 +728,23 @@ public class BackgroundServiceWorker extends Service {
           @Override
           public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
             if (response.isSuccessful() && response.body() != null) {
-              EventBus.getDefault().post(new LogEvent(getString(R.string.log_task_come), LogType.HISTORY, LogLevel.INFO, getString(R.string.log_title_default), 0));
+              if(response.body().getAllTask().size() > 0)
+              EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
               handleGetAllTasks(response.body());
             } else {
               
               switch (response.code()) {
-                case 401: handleAccessToken(); break;
+                case 401: {
+                  handleAccessToken();
+                  EventBus.getDefault().post(new LogEvent(getString(R.string.log_token_error), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
+                } break;
               }
             }
           }
   
           @Override
           public void onFailure(Call<ResultOfAction> call, Throwable t) {
-    
+            EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_error), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
           }
         });
       }
@@ -944,9 +964,6 @@ public class BackgroundServiceWorker extends Service {
   }
   
   private void updateLastActivity(LastActivityDAO dao, LastActivity lastActivity, int statusType, String description, int confirmationStatus) {
-    EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_status_change) + description,
-            LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),
-            lastActivity.getTaskId()));
 
     lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
     

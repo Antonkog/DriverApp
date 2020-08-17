@@ -92,13 +92,21 @@ public class MainViewModel extends AndroidViewModel {
   }
 
 
-  public void addLog(String message, LogType type, LogLevel level, String title) {
+  public void addLog(LogItem item){
+    insert(item);
+  }
+  public void addLog(String message, LogType type, LogLevel level, String title){
+    addLog(message, type, level, title, 0);
+  }
+
+  public void addLog(String message, LogType type, LogLevel level, String title, int taskId) {
     LogItem item = new LogItem();
     item.setLevel(level);
     item.setType(type);
     item.setTitle(title);
     item.setMessage(message);
     item.setCreatedAt(new Date());
+    item.setTaskId(taskId);
     insert(item);
   }
 

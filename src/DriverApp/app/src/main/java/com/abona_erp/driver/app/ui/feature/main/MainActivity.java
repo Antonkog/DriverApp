@@ -46,7 +46,6 @@ import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
-import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
@@ -283,7 +282,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     getAllTaskImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        mMainViewModel.addLog(getResources().getString(R.string.log_update_pressed), LogType.HISTORY, LogLevel.INFO, getResources().getString(R.string.log_title_default));
+        mMainViewModel.addLog(getResources().getString(R.string.log_update_pressed), LogType.APP_TO_SERVER, LogLevel.INFO, getResources().getString(R.string.log_title_get_tasks));
         onUpdateClick();
       }
     });
@@ -400,12 +399,16 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         getAllTaskImage.setEnabled(true);
         progressBar.setVisibility(View.GONE);
         if (response.isSuccessful() && response.body() != null) {
-          mMainViewModel.addLog(getString(R.string.log_task_come), LogType.HISTORY, LogLevel.INFO, getString(R.string.log_title_default));
+
+          mMainViewModel.addLog(getResources().getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getResources().getString(R.string.log_title_get_tasks));
+
           handleGetAllTasks(response.body());
         } else {
 
           switch (response.code()) {
             case 401:
+              mMainViewModel.addLog(getResources().getString(R.string.log_token_error), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
+
               handleAccessToken();
               break;
             default:
@@ -418,6 +421,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       @Override
       public void onFailure(Call<ResultOfAction> call, Throwable t) {
         // TODO: Wahrscheinlich kein Internet!
+
+        mMainViewModel.addLog(getResources().getString(R.string.log_tasks_error), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
+
         getAllTaskImage.setEnabled(true);
         progressBar.setVisibility(View.GONE);
       }
@@ -444,7 +450,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                                         .subscribe(result -> {
                                           if (result.getIsSuccess()) {
                                             databaseProfile.setDeviceId(getAndroidQnewID());
-                                            databaseProfile.setDeviceSerial(getAndroidQnewID());
+                                            databaseProfile.setDeviceSerial(Build.getSerial());
                                             mMainViewModel.update(databaseProfile); //that is old implementation to update room table
                                             mMainViewModel.deleteOldTables();
                                             Log.d(TAG, " success, id updatedToNew: " +  result.toString());
@@ -590,7 +596,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Subscribe
   public void onMessageEvent(LogEvent event) {
-    mMainViewModel.insert(event.getLog());
+    mMainViewModel.addLog(event.getLog());
   }
 
 
@@ -603,13 +609,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     Toast.makeText(this, error.getLocalizedMessage(), Toast.LENGTH_LONG).show();
   }
 
-  private void showLogItems(List<LogItem> logItems) {
-    StringBuilder sb = new StringBuilder();
-    for (LogItem logItem : logItems) {
-      sb.append(logItem.getMessage() + "\n");
-    }
-    Toast.makeText(this, " click :" +  sb.toString()  , Toast.LENGTH_LONG).show();
-  }
 
   @Subscribe
   public void onMessageEvent(ConnectivityEvent event) {
@@ -755,9 +754,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               if (response.body() != null) {
                 Gson gson = new Gson();
                 String raw = gson.toJson(response.body());
-
-                EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_got_links)+  " : " + raw,
-                        LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default), 0));
+                mMainViewModel.addLog(getString(R.string.log_document_got_links) + " : " + raw, LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
 
 
                 final List<AppFileInterchangeItem> appFileInterchangeItems;
@@ -919,16 +916,15 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         showOkDialog(getApplicationContext().getResources().getString(R.string.action_warning_notice),
           getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
 
-        mMainViewModel.addLog(resultOfAction.getText(), LogType.API, LogLevel.FATAL, getResources().getString(R.string.log_title_task));
+        mMainViewModel.addLog(getResources().getString(R.string.action_exception_on_rest_api), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
       } else {
         // Unknown Error
-        mMainViewModel.addLog(getResources().getString(R.string.log_message_unknown_error), LogType.API, LogLevel.FATAL, getResources().getString(R.string.log_title_task));
+        mMainViewModel.addLog(getResources().getString(R.string.log_message_unknown_error), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
       }
     } catch (Exception e) {
-      mMainViewModel.addLog(e.getMessage(), LogType.API, LogLevel.FATAL, getResources().getString(R.string.log_title_task));
+      mMainViewModel.addLog(e.getMessage(), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
     }
   }
-
 
   private void handleAccessToken() {
     App.getInstance().apiManager.provideAuthClient().newCall(App.getInstance().apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
@@ -1025,7 +1021,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       deviceProfile.setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
       deviceProfile.setDeviceModel(Build.MODEL);
       deviceProfile.setDeviceManufacturer(Build.MANUFACTURER);
-      deviceProfile.setDeviceSerial(DeviceUtils.getUniqueIMEI(getBaseContext()));
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        deviceProfile.setDeviceSerial(Build.getSerial());
+      } else {
+        deviceProfile.setDeviceSerial(Build.SERIAL);
+      }
       deviceProfile.setLanguageCode(Locale.getDefault().toString());
       deviceProfile.setVersionCode(BuildConfig.VERSION_CODE);
       deviceProfile.setVersionName(BuildConfig.VERSION_NAME);

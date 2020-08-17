@@ -73,7 +73,7 @@ public class FcmService extends FirebaseMessagingService {
     
     Log.d(TAG, "++ FCM Message... latency (" + (System.currentTimeMillis() - message.getSentTime()) + " ms)");
     mNotifyData.add(message);
-    addLog(LogLevel.INFO, LogType.FCM, "FCM Firebase Notification", message.getData().toString());
+    addLog(LogLevel.INFO, LogType.FCM,  getBaseContext().getString(R.string.log_title_fcm), message.getData().toString());
   }
   
   @Override
@@ -108,11 +108,11 @@ public class FcmService extends FirebaseMessagingService {
 
     boolean exist = (commItem!= null && commItem.getTaskItem()!= null && commItem.getTaskItem().getTaskId()!= null);
     if (commItem.getHeader().getDataType().equals(DataType.DOCUMENT)) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),exist? commItem.getTaskItem().getTaskId() : 0));
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),exist? commItem.getTaskItem().getTaskId() : 0));
     } else if (commItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  exist? commItem.getTaskItem().getTaskId() : 0));
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
     } else if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.HISTORY, LogLevel.INFO, getBaseContext().getString(R.string.log_title_default),  exist? commItem.getTaskItem().getTaskId() : 0));
+      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
     }
 
     FirebaseJobDispatcher dispatcher =

@@ -285,6 +285,9 @@ public class SettingsFragment extends Fragment {
                         mDb.lastActivityDAO().deleteAll();
                         mDb.notifyDao().deleteAll();
                         mDb.offlineConfirmationDAO().deleteAll();
+                        mDb.delayReasonDAO().deleteAll();
+                        mDb.offlineDelayReasonDAO().deleteAll();
+                        mDb.logDAO().deleteAll();
 
                         // DEVICE RESET END
 

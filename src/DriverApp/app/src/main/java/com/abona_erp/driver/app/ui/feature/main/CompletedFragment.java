@@ -171,7 +171,7 @@ public class CompletedFragment extends Fragment implements CommonItemClickListen
     if (!item.getRead()) {
       item.setRead(true);
       viewModel.update(item);
-      EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_driver_open_task), LogType.HISTORY, LogLevel.INFO, getContext().getString(R.string.log_title_default), item.getTaskId()));
+      EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_confirm_open), LogType.APP_TO_SERVER, LogLevel.INFO, getContext().getString(R.string.log_title_open_confirm), item.getTaskId()));
       DriverDatabase db = DriverDatabase.getDatabase();
       OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
   

@@ -518,7 +518,7 @@ public class PhotoFragment extends Fragment
                       
                             if (response.isSuccessful()) {
                               EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_document_upload),
-                                      LogType.HISTORY, LogLevel.INFO, getContext().getString(R.string.log_title_default), mNotify.getTaskId()));
+                                      LogType.SERVER_TO_APP, LogLevel.INFO, getContext().getString(R.string.log_title_docs), mNotify.getTaskId()));
 
                               uploadItem.setUploaded(true);
                               mPhotoUrls.set(j, App.getInstance().gson.toJson(uploadItem));

@@ -13,10 +13,10 @@ import java.util.List;
 @Dao
 public interface LogDAO {
 
-  @Query("SELECT * FROM logItem where type = 8 ORDER BY id ASC")
-  LiveData<List<LogItem>> getHistoryLogs();
+  @Query("SELECT * FROM logItem  where type != 0 ORDER BY id DESC")
+  LiveData<List<LogItem>> getLogs();
 
-  @Query("SELECT * FROM logItem where type = 2 or type = 0 ORDER BY id ASC") //see LogLevel 2 = FCM and LogLevel 32 = FATAL
+  @Query("SELECT * FROM logItem where type = 0") //see LogLevel 2 = FCM and LogLevel 32 = FATAL
   LiveData<List<LogItem>> getProtocolLogs();
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)

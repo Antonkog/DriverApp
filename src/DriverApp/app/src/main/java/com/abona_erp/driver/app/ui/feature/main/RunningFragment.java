@@ -94,7 +94,7 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
     if (!notify.getRead()) {
       notify.setRead(true);
       viewModel.update(notify);
-      EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_driver_open_task), LogType.HISTORY, LogLevel.INFO, getContext().getString(R.string.log_title_default), notify.getTaskId()));
+      EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_confirm_open), LogType.APP_TO_SERVER, LogLevel.INFO, getContext().getString(R.string.log_title_open_confirm), notify.getTaskId()));
       DriverDatabase db = DriverDatabase.getDatabase();
       OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
   

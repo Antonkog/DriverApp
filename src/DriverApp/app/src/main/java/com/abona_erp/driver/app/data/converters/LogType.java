@@ -3,16 +3,10 @@ package com.abona_erp.driver.app.data.converters;
 import androidx.room.TypeConverter;
 
 public enum LogType {
-  
   FCM(0),
-  CONFIRMATION(1),
-  API(2),
-  INFO(3),
-  MESSAGE(4),
-  WARNING(5),
-  ERROR(6),
-  LOG(7),
-  HISTORY(8);
+  APP_TO_SERVER(1),
+  SERVER_TO_APP(2);
+
 
   private final Integer code;
   
