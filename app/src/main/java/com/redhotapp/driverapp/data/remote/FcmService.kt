@@ -23,7 +23,7 @@ class FcmService : FirebaseMessagingService() {
             applicationContext,
             token
         )
-        Log.i(TAG, "onNewToken: " + token)
+        Log.i(TAG, "onNewToken: $token")
     }
 
     companion object {

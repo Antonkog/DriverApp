@@ -32,9 +32,6 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
         return ((difference < Constant.tokenUpdateHours * 3600 * 1000) // hours to seconds to mills
                 && PrivatePreferences.getAccessToken(context) != null)
     }
-    fun resetAuthTime(){
-        prefs.putAny(context.getString(R.string.token_created),0)
-    }
 
     fun populateTasks(deviceId: String) {
         api.getAllTasks(deviceId)

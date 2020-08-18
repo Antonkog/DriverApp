@@ -79,16 +79,8 @@ class HomeFragment : BaseFragment() {
         })
 
         homeViewModel.error.observe(viewLifecycleOwner, Observer {
-            if(it.isNotEmpty())  homeBinding.textHome.text = it.toString()
+            if(it!= null && it.isNotEmpty())  homeBinding.textHome.text = it.toString()
         })
-
-        RxBus.listen(RxBusEvent.LogOut::class.java)
-            .subscribe {
-                Toast.makeText(context, "Logout Done !", Toast.LENGTH_LONG).show()
-                homeViewModel.resetAuthTime()
-                findNavController().navigate(R.id.nav_login)
-        }
-
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
         else homeViewModel.populateTasks(DeviceUtils.getUniqueID(context))

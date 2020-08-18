@@ -1,9 +1,9 @@
 package com.redhotapp.driverapp
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -13,16 +13,15 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.redhotapp.driverapp.ui.RxBus
 import com.redhotapp.driverapp.ui.events.RxBusEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
+    private val mainViewModel by viewModels<MainViewModel> ()
+    private lateinit var navController : NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,13 +30,30 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.nav_activities, R.id.nav_documents, R.id.nav_delay_reason,  R.id.nav_settings), drawerLayout)
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+//
+//    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+//        for (i in 0 until menu.size()) {
+//            val item = menu.getItem(i)
+//            if (item.itemId == 0) item.isChecked = somevar
+//        }
+//        return super.onPrepareOptionsMenu(menu)
+//    }
+
+
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.action_show_all).let {
+            it?.setChecked(mainViewModel.getShowAll())
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -46,7 +62,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
@@ -54,6 +69,13 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_log_out -> {
               RxBus.publish(RxBusEvent.LogOut(true))
+                mainViewModel.resetAuthTime()
+                navController.navigate(R.id.nav_login)
+                true
+            }
+            R.id.action_show_all -> {
+                item.isChecked = !item.isChecked
+                mainViewModel.setShowAll(item.isChecked)
                 true
             }
             else -> super.onOptionsItemSelected(item)

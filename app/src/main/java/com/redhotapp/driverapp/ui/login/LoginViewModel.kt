@@ -59,6 +59,7 @@ class LoginViewModel
                     Log.e(TAG, "got auth")
                     PrivatePreferences.setAccessToken(context, result.body()?.accessToken)
                     prefs.putAny(context.getString(R.string.token_created), System.currentTimeMillis())
+                    setFcmToken()
                     setDeviceProfile(getCommItem())
                 },
                 { error ->
@@ -116,9 +117,7 @@ class LoginViewModel
                 { error ->
                     Log.e(TAG, error.localizedMessage)
                 }
-
             )
-
     }
 
 
