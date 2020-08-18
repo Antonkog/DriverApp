@@ -450,7 +450,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
                                         .subscribe(result -> {
                                           if (result.getIsSuccess()) {
                                             databaseProfile.setDeviceId(getAndroidQnewID());
-                                            databaseProfile.setDeviceSerial(Build.getSerial());
+                                            databaseProfile.setDeviceSerial(DeviceUtils.getSerial());
                                             mMainViewModel.update(databaseProfile); //that is old implementation to update room table
                                             mMainViewModel.deleteOldTables();
                                             Log.d(TAG, " success, id updatedToNew: " +  result.toString());
@@ -1021,11 +1021,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       deviceProfile.setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
       deviceProfile.setDeviceModel(Build.MODEL);
       deviceProfile.setDeviceManufacturer(Build.MANUFACTURER);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        deviceProfile.setDeviceSerial(Build.getSerial());
-      } else {
-        deviceProfile.setDeviceSerial(Build.SERIAL);
-      }
+      deviceProfile.setDeviceSerial(DeviceUtils.getSerial());
       deviceProfile.setLanguageCode(Locale.getDefault().toString());
       deviceProfile.setVersionCode(BuildConfig.VERSION_CODE);
       deviceProfile.setVersionName(BuildConfig.VERSION_NAME);

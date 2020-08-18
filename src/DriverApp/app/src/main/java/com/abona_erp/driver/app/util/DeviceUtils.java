@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 
 import com.abona_erp.driver.app.logging.Log;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.NetworkInterface;
@@ -19,6 +20,13 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 public class DeviceUtils {
+
+  public static String getUniqueIMEI(Context context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+      return useDeprecatedMac(context);
+    else
+      return getUniqueID(context);
+  }
 
   /**
    * see:
@@ -35,21 +43,11 @@ public class DeviceUtils {
       idBuilder.append(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
       if (!idBuilder.toString().isEmpty()) return idBuilder.toString();
       else {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O //serial is available in this range of api only
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-        ) {
-          idBuilder.append(Build.getSerial());
-        } else if(Build.VERSION.SDK_INT<= Build.VERSION_CODES.N_MR1){
-          idBuilder.append(Build.SERIAL);
-        }
+        appendSerial(idBuilder);
       }
       if (!idBuilder.toString().isEmpty()) return idBuilder.toString();
       else {
-
-        idBuilder .append(Build.BOARD.length() % 10 + Build.BRAND.length() % 10 +
-                Build.DEVICE.length()% 10 + Build.DISPLAY.length() % 10 + Build.HOST.length() % 10 +
-                Build.ID.length() % 10 + Build.MANUFACTURER.length() % 10 + Build.MODEL.length() % 10 +
-                Build.PRODUCT.length() % 10+ Build.TAGS.length() % 10 + Build.TYPE + Build.USER.length() % 10);
+        idBuilder.append(getPseudoId());
       }
     } catch (Exception e) {
       Log.w(DeviceUtils.class.getClass().getCanonicalName(), "getUniqueID Exception: " + e.getMessage());
@@ -57,13 +55,41 @@ public class DeviceUtils {
     return idBuilder.toString();
   }
 
-  public static String getUniqueIMEI(Context context) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-      return useDeprecatedMac(context);
-    else
-      return getUniqueID(context);
+  public static String getSerial(){
+    StringBuilder sb = new StringBuilder();
+    try {
+      appendSerial(sb);
+    } catch (Exception e){
+      Log.d("DeviceUtils", e.toString());
+    } finally {
+      sb.append("N/A on API > 29");
+    }
+    return sb.toString();
+  }
+  private static void appendSerial(StringBuilder idBuilder) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O //serial is available in this range of api only
+            && Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+    ) {
+      idBuilder.append(Build.getSerial());
+    } else if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1){
+      idBuilder.append(Build.SERIAL);
+    }
   }
 
+  @NotNull
+  private static String getPseudoId() {
+    try {
+      return "35" + (Build.BOARD.length() % 10)
+              + (Build.BRAND.length() % 10)
+              + (Build.HOST.length() % 10) //CPU_ABI
+              + (Build.DEVICE.length() % 10)
+              + (Build.MANUFACTURER.length() % 10)
+              + (Build.MODEL.length() % 10)
+              + (Build.PRODUCT.length() % 10);
+    } catch (Exception e){
+      return "";
+    }
+  }
 
   /**
    * that is old method for device identification
