@@ -10,6 +10,7 @@ public interface Constants {
     int REPEAT_TIME = 5;
     int FLEX_TIME = 2;
     int REPEAT_COUNT = 3;
+    int HISTORY_LOGS_COUNT = 250;
     int REPEAT_TIME_MIGRATION = 1500;
     int SUCCESS_CODE = 200;
 

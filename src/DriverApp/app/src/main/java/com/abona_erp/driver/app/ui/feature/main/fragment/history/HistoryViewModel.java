@@ -11,7 +11,7 @@ import com.abona_erp.driver.app.data.repository.DriverRepository;
 import java.util.List;
 
 public class HistoryViewModel extends AndroidViewModel {
-
+  private final String TAG = "HistoryViewModel";
   private DriverRepository _repo;
   private LiveData<List<LogItem>> mAllLogs;
 
@@ -28,5 +28,9 @@ public class HistoryViewModel extends AndroidViewModel {
   
   public void deleteAllLogs() {
     _repo.deleteAllLogs();
+  }
+
+  public void groupLogs(int historyLogsCount) {
+    _repo.groupLogs(historyLogsCount);
   }
 }

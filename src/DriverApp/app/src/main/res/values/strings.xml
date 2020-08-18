@@ -276,6 +276,7 @@
   <string name="log_document_upload" translatable="false">Document uploaded</string>
 
   <string name="log_message_unknown_error" translatable="false">Unknown Error!</string>
+  <string name="clear_log" translatable="false">clear log</string>
 
   <string name="delay_started">Started:</string>
   <string name="delay_finished">Finished:</string>

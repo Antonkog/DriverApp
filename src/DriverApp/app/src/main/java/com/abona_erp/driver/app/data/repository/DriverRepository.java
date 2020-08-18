@@ -32,9 +32,10 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public class DriverRepository {
-
+  private final String TAG  ="DriverRepository" ;
   private NotifyDao mNotifyDao;
   private LiveData<List<Notify>> mAllPendingNotifications;
   private LiveData<List<Notify>> mAllRunningNotifications;
@@ -192,7 +193,17 @@ public class DriverRepository {
   //}
   // DEVICE PROFILE:
   // -----------------------------------------------------------------------------------------------
-  
+
+  public void groupLogs(int maxCount) {
+    mLogDAO.countLogItems().subscribeOn(Schedulers.computation()).observeOn(Schedulers.computation()).map(
+            count -> count > maxCount
+    ).subscribe(
+            toMuchRows -> {
+              if (toMuchRows) mLogDAO.groupResponses();
+            }
+    );
+  }
+
   public long insert(LogItem item) {
     new insertLogAsyncTask(mLogDAO).execute(item);
     return 0;
@@ -419,7 +430,7 @@ public class DriverRepository {
       return null;
     }
   }
-  
+
   static class insertLogAsyncTask extends AsyncTask<LogItem, Void, Void> {
     
     private LogDAO _dao;

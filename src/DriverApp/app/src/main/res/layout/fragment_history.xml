@@ -13,6 +13,19 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent">
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_clear_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/textView"
+        android:layout_marginEnd="16dp"
+        android:drawableStart="@drawable/ic_reset"
+        android:drawablePadding="@dimen/spacing_medium"
+        android:drawableTint="@color/clrIcon"
+        android:text="@string/clear_log"
+        app:backgroundTint="@color/colorPrimary" />
     <!-- BACK BUTTON -->
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_history_back"

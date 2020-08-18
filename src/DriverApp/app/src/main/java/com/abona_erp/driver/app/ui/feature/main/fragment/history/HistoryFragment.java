@@ -6,20 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
-import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
-
-import java.util.List;
 
 public class HistoryFragment extends Fragment {
 
@@ -29,6 +27,7 @@ public class HistoryFragment extends Fragment {
   private RecyclerView recyclerView;
   private HistoryAdapter historyAdapter;
   private RecyclerView.LayoutManager layoutManager;
+  private AppCompatButton btnClearLog;
 
   public HistoryFragment() {
     // Required empty public constructor.
@@ -45,6 +44,7 @@ public class HistoryFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View root = inflater.inflate(R.layout.fragment_history, container, false);
     initComponents(root);
+    historyViewModel.groupLogs(Constants.HISTORY_LOGS_COUNT);
     return root;
   }
 
@@ -64,11 +64,9 @@ public class HistoryFragment extends Fragment {
 
     recyclerView.setAdapter(historyAdapter);
 
-    historyViewModel.getHistoryLogs().observe(getViewLifecycleOwner(), new Observer<List<LogItem>>() {
-      @Override
-      public void onChanged(List<LogItem> logItems) {
-        historyAdapter.swapData(logItems);
-      }
-    });
+    historyViewModel.getHistoryLogs().observe(getViewLifecycleOwner(), logItems -> historyAdapter.swapData(logItems));
+
+    btnClearLog = root.findViewById(R.id.btn_clear_log);
+    btnClearLog.setOnClickListener(v -> historyViewModel.deleteAllLogs());
   }
 }

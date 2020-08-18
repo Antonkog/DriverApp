@@ -10,6 +10,8 @@ import com.abona_erp.driver.app.data.entity.LogItem;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface LogDAO {
 
@@ -24,4 +26,10 @@ public interface LogDAO {
   
   @Query("DELETE FROM logItem")
   void deleteAll();
+
+  @Query("SELECT COUNT(id) from logItem")
+  Flowable<Integer> countLogItems();
+
+  @Query("DELETE FROM logItem WHERE id NOT IN (SELECT  MAX(id) FROM logItem GROUP BY level, title, message,type)")
+  void groupResponses();
 }

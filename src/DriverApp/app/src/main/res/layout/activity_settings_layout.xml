@@ -388,7 +388,7 @@
               android:drawableTint="@color/clrIcon"
               android:drawablePadding="@dimen/spacing_medium"
               android:text="Device Reset"
-              app:backgroundTint="#ffaa00"
+              app:backgroundTint="@color/colorPrimary"
               />
 
           </LinearLayout>
