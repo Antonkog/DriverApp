@@ -108,6 +108,9 @@ dependencies {
     //to get viewModels
     implementation "androidx.fragment:fragment-ktx:1.2.5"
     //networking
+    //image loading
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    kapt "com.github.bumptech.glide:compiler:$glideVersion"
     //json parsing
     implementation 'com.google.code.gson:gson:2.8.5'
     //networkProfiler

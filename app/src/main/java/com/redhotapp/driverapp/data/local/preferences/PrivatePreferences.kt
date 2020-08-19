@@ -46,7 +46,7 @@ class PrivatePreferences {
         }
 
         fun  getAccessToken(context: Context): String? {
-            val sharedPref = getSharedPrefs(
+            getSharedPrefs(
                 context
             ).let {
                 return it?.getString(
@@ -66,7 +66,7 @@ class PrivatePreferences {
         }
 
         fun  getFCMToken(context: Context): String? {
-            val sharedPref = getSharedPrefs(
+            getSharedPrefs(
                 context
             ).let {
                 return it?.getString(

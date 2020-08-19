@@ -30,6 +30,7 @@ allprojects {
 ext {
     archLifecycleVersion = '2.2.0'
     roomVersion = '2.2.2'
+    glideVersion = '4.11.0'
 }
 
 task clean(type: Delete) {

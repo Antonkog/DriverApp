@@ -16,6 +16,7 @@ import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
 import com.redhotapp.driverapp.data.local.preferences.putAny
+import com.redhotapp.driverapp.data.local.preferences.putLong
 import com.redhotapp.driverapp.data.model.abona.CommItem
 import com.redhotapp.driverapp.data.model.abona.DataType
 import com.redhotapp.driverapp.data.model.abona.DeviceProfileItem
@@ -51,19 +52,20 @@ class LoginViewModel
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
-    fun authenticate(username: String, password: String, clientId: String) {
+    fun authenticate(username: String, password: String, clientId: Int) {
+        prefs.putAny(context.resources.getString(R.string.mandantId), clientId)
         api.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> Log.e(TAG, result.body().toString())
                     Log.e(TAG, "got auth")
                     PrivatePreferences.setAccessToken(context, result.body()?.accessToken)
-                    prefs.putAny(context.getString(R.string.token_created), System.currentTimeMillis())
+                    prefs.putLong(context.getString(R.string.token_created), System.currentTimeMillis())
                     setFcmToken()
                     setDeviceProfile(getCommItem())
                 },
                 { error ->
-                    Log.e(TAG, error.localizedMessage)
+                    Log.e(TAG, error?.localizedMessage ?: "INVALID_AUTHENTICATION")
                     authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
                 }
 
@@ -71,7 +73,7 @@ class LoginViewModel
     }
 
     fun getEndpointActive(clientId: String) {
-        api.getClientEndpoint("3")
+        api.getClientEndpoint(clientId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -79,11 +81,10 @@ class LoginViewModel
                     Log.e(TAG, "got endpoint")
                 },
                 { error ->
-                    Log.e(TAG, error.localizedMessage)
+                    Log.e(TAG, error?.localizedMessage ?: "get endpoint error")
                 }
 
             )
-
     }
 
     fun setFcmToken(){

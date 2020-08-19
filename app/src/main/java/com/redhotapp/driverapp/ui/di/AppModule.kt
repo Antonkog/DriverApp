@@ -18,19 +18,17 @@ package com.redhotapp.driverapp.ui.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.drawable.shapes.Shape
 import androidx.preference.PreferenceManager
 import com.google.gson.*
 import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
 import com.redhotapp.driverapp.App
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
-import com.redhotapp.driverapp.data.model.abona.TaskItem
 import com.redhotapp.driverapp.data.remote.*
 import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
+import com.redhotapp.driverapp.data.remote.utils.ResponseInterceptor
 import com.redhotapp.driverapp.data.remote.utils.UnsafeOkHttpClient
 import com.redhotapp.driverapp.data.remote.utils.UserAgentInterceptor
-import com.redhotapp.driverapp.ui.utils.TaskDesirializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -81,6 +79,7 @@ object AppModule {
         okHttpBuilder.writeTimeout(1, TimeUnit.MINUTES)
         okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
 //        okHttpBuilder.addInterceptor(RequestInterceptor())
+//        okHttpBuilder.addInterceptor(ResponseInterceptor(context))
         if (BuildConfig.DEBUG) {
             if(App.isTesting()){
                 okHttpBuilder.addInterceptor(MockInterceptor())

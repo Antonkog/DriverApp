@@ -17,6 +17,7 @@ import com.redhotapp.driverapp.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
 import com.redhotapp.driverapp.data.local.preferences.putAny
+import com.redhotapp.driverapp.data.local.preferences.putLong
 import com.redhotapp.driverapp.data.model.AllTask
 import com.redhotapp.driverapp.ui.RxBus
 import com.redhotapp.driverapp.ui.events.RxBusEvent
@@ -28,12 +29,13 @@ class MainViewModel @ViewModelInject constructor(@ApplicationContext private val
     private val TAG = "MainViewModel"
 
     fun resetAuthTime(){
-        prefs.putAny(context.getString(R.string.token_created),0)
+        prefs.putLong(context.getString(R.string.token_created),0)
     }
 
     fun setShowAll(showAll: Boolean) {
         prefs.putAny(context.getString(R.string.pref_show_all), showAll)
     }
+
     fun getShowAll (): Boolean  {
       return  prefs.getBoolean(context.getString(R.string.pref_show_all), false)
     }

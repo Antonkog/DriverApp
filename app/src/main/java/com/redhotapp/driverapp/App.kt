@@ -10,7 +10,7 @@ import dagger.hilt.android.HiltAndroidApp
 class App : Application(){
     companion object {
         fun isTesting (): Boolean {
-            return true
+            return false
         }
     }
 

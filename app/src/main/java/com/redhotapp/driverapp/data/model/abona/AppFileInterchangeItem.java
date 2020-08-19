@@ -102,4 +102,18 @@ public class AppFileInterchangeItem {
   public void setTaskId(Integer taskId) {
     this.taskId = taskId;
   }
+
+  @Override
+  public String toString() {
+    return "AppFileInterchangeItem{" +
+            "linkToFile='" + linkToFile + '\'' +
+            ", sourceReference=" + sourceReference +
+            ", addedDate=" + addedDate +
+            ", addedUser='" + addedUser + '\'' +
+            ", fileType=" + fileType +
+            ", fileName='" + fileName + '\'' +
+            ", thumbnail='" + thumbnail + '\'' +
+            ", taskId=" + taskId +
+            '}';
+  }
 }

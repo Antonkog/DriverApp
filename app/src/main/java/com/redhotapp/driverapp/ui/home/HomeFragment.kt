@@ -5,25 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import com.kivi.remote.presentation.base.recycler.addItemDivider
-import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import com.redhotapp.driverapp.R
-import com.redhotapp.driverapp.data.model.AllTask
-import com.redhotapp.driverapp.data.model.abona.TaskItem
 import com.redhotapp.driverapp.databinding.HomeFragmentBinding
-import com.redhotapp.driverapp.ui.RxBus
 import com.redhotapp.driverapp.ui.base.BaseFragment
-import com.redhotapp.driverapp.ui.events.RxBusEvent
 import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -83,7 +72,7 @@ class HomeFragment : BaseFragment() {
         })
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
-        else homeViewModel.populateTasks(DeviceUtils.getUniqueID(context))
+        else homeViewModel.getTasks()
         return view
     }
 }

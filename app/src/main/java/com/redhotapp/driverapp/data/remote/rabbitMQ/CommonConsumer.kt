@@ -30,7 +30,7 @@ class CommonConsumer(
             val order: LatestOrder = gson.fromJson(value, LatestOrder::class.java)
             listener?.gotLatestOrder(order)
         } catch (e: Exception) {
-            Log.e(this.javaClass.canonicalName, e.message)
+            Log.e(this.javaClass.canonicalName, e?.message ?: "error in CommonConsumer Rabbit ")
         }
         value?.let {
             listener?.gotMessage(it)

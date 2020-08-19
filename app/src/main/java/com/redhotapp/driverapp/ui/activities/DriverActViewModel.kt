@@ -3,12 +3,8 @@ package com.redhotapp.driverapp.ui.activities
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import android.view.View
-import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
@@ -24,11 +20,11 @@ class DriverActViewModel @ViewModelInject constructor(@ApplicationContext privat
     val mutableTasks  = MutableLiveData<List<Activity>> ()
     val error  = MutableLiveData<String> ()
 
-    fun populateActivities(deviceId: String) {
-        populateActivities(deviceId, prefs.getInt(context.resources.getString(R.string.current_visible_taskId), 0))
+    fun getActivities(deviceId: String) {
+        getActivities(deviceId, prefs.getInt(context.resources.getString(R.string.current_visible_taskId), 0))
     }
 
-    fun populateActivities(deviceId: String, taskID : Int) {
+    private fun getActivities(deviceId: String, taskID : Int) {
         api.getAllTasks(deviceId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

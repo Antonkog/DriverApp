@@ -2,9 +2,11 @@ package com.redhotapp.driverapp.data.remote
 
 import com.redhotapp.driverapp.data.model.CommResponseItem
 import com.redhotapp.driverapp.data.model.TokenResponse
+import com.redhotapp.driverapp.data.model.abona.AppFileInterchangeItem
 import com.redhotapp.driverapp.data.model.abona.CommItem
 import com.redhotapp.driverapp.data.model.abona.ResultOfAction
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -29,15 +31,14 @@ interface ApiService {
     @POST("api/Activity/Activity")
     fun postActivity(deviceId: String): Observable<CommResponseItem>
 
+    @GET("api/uploader/documents")
+    fun getDocuments(@Query("mandantId") mandantId: Int,@Query("orderNo") orderNo: Int, @Query("deviceId") deviceId: String ): Single<List<AppFileInterchangeItem>>
+
 //    @Headers("Content-Type:application/json; charset=UTF-8")
 //    @POST("api/confirmation/confirm")
 //    Call<ResultOfAction> confirm(@Body CommItem commItem);
 //
-//
-//    @Headers("Content-Type:application/json")
-//    @GET("api/uploader/documents")
-//    Call<ArrayList<AppFileInterchangeItem>> getDocuments(@Query("mandantId") int mandantId, @Query("orderNo") int orderNo, @Query("deviceId") String deviceId);
-//
+////
 //
 //    @Streaming
 //    @GET("api/uploader/download")

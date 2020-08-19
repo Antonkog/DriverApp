@@ -9,15 +9,12 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import com.redhotapp.driverapp.R
-import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.model.Activity
-import com.redhotapp.driverapp.data.remote.MockInterceptor
 import com.redhotapp.driverapp.databinding.DriverActFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
 import com.redhotapp.driverapp.ui.utils.DeviceUtils
@@ -61,7 +58,7 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
             if(it.isNotEmpty())  driverActFragmentBinding.textHome.text = it.toString()
         })
 
-        driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
+        driverActViewModel.getActivities(DeviceUtils.getUniqueID(context))
 
 //        if(args ==null) driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
 //        else driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), args.taskId)

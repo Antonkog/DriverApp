@@ -37,7 +37,7 @@
       android:id="@+id/editPassword"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
+      android:layout_marginTop="@dimen/margin_XVI"
       android:ems="10"
       android:inputType="textPassword"
       app:layout_constraintEnd_toEndOf="parent"
@@ -49,14 +49,13 @@
       android:id="@+id/editClientId"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
+      android:layout_marginTop="@dimen/margin_XVI"
       android:ems="10"
-      android:inputType="textPersonName"
+      android:inputType="number"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/editPassword"
-      android:hint="@string/client_id_hint"
-      tools:text="@string/client_id_test" />
+      android:hint="@string/client_id_hint"/>
 
   <Button
       android:id="@+id/button_test"

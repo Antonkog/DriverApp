@@ -5,10 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.redhotapp.driverapp.R
+import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.databinding.LoginFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,13 +41,13 @@ class LoginFragment : BaseFragment() {
         loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> navigateHome()
-//                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Toast.makeText(requireContext(), R.string.need_log_in, Toast.LENGTH_LONG ).show()
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Toast.makeText(requireContext(), R.string.need_log_in, Toast.LENGTH_LONG ).show()
             }
         })
 
 
         loginBinding.buttonTest.setOnClickListener {
-            loginBinding.editClientId.setText(R.string.client_id_test)
+            loginBinding.editClientId.setText(""+ Constant.testMandantId)
             loginBinding.editName.setText(R.string.name_test)
             loginBinding.editPassword.setText(R.string.password_test)
         }
@@ -54,8 +56,7 @@ class LoginFragment : BaseFragment() {
             loginViewModel.authenticate(
                         loginBinding.editName.text.toString(),
                         loginBinding.editPassword.text.toString(),
-                                loginBinding.editClientId.text.toString()
-
+                Integer.parseInt(loginBinding.editClientId.text.toString())
             )
         }
         return view

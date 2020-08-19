@@ -26,12 +26,12 @@
     <string name="pref_show_all">show_all</string>
     <string name="tokenFcm">tokenFcm</string>
     <string name="current_visible_taskId">current_visible_taskId</string>
+    <string name="mandantId">mandantId</string>
 
     <string name="need_log_in">First log in</string>
 
     <string name="name_test">manyvehicles@abona-erp.com</string>
     <string name="password_test">1234qwerQWER,.-</string>
-    <string name="client_id_test">3</string>
     <string name="name_hint">Login</string>
     <string name="password_hint">Password</string>
     <string name="client_id_hint">Client ID</string>

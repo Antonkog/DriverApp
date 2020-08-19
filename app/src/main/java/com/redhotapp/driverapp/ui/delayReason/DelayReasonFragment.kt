@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProviders
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.databinding.DelayReasonFragmentBinding
-import com.redhotapp.driverapp.databinding.DocumentsFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 

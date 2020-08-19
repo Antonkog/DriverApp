@@ -16,6 +16,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
 import com.redhotapp.driverapp.data.local.preferences.putAny
 import com.redhotapp.driverapp.data.model.AllTask
+import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -33,8 +34,8 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
                 && PrivatePreferences.getAccessToken(context) != null)
     }
 
-    fun populateTasks(deviceId: String) {
-        api.getAllTasks(deviceId)
+    fun getTasks() {
+        api.getAllTasks(DeviceUtils.getUniqueID(context))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(

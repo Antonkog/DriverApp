@@ -12,6 +12,9 @@ fun SharedPreferences.putAny(name: String, any: Any) {
         // also accepts StringSet
     }
 }
+fun SharedPreferences.putLong(name: String, long: Long) {
+    edit().putLong(name, long)
+}
 // remove entry from shared preference
 fun SharedPreferences.remove(name:String){
     edit().remove(name).apply()
