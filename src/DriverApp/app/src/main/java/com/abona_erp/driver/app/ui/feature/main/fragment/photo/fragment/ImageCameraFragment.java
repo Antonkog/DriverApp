@@ -205,19 +205,22 @@ public class ImageCameraFragment extends Fragment
     fos.close();
     return f;
   }
-  
+
   private File createImageFile(String mandantId, String orderNo, String taskId) throws IOException {
     // Create an image file name
     String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss",
       Locale.getDefault()).format(new Date());
     String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + ".jpg";
-    
-    File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
-      + APP_FOLDER + mandantId + PATH_SLASH + orderNo, mFileName);
-    
-    return storageDir;
+
+    File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    File image = File.createTempFile(
+            mFileName,  /* prefix */
+            ".jpg",         /* suffix */
+            storageDir      /* directory */
+    );
+    return image;
   }
-  
+
   private void initComponents(@NonNull View root) {
     
     camera = (CameraView)root.findViewById(R.id.camera);
