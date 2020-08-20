@@ -12,4 +12,16 @@ object Constant {
     const val abonaDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     const val abonaTimeZone = "UTC"
     const val tokenUpdateHours = 48
+
+
+    //preferences
+    const val preferencesId = "com.redhotapp.driverapp.preferences"
+    const val preferencesEndpoint = "endpoint"
+    const val token = "token"
+    const val token_created = "token_created"
+    const val prefShowAll = "show_all"
+    const val tokenFcm = "tokenFcm"
+    const val currentVisibleTaskid = "current_visible_taskId"
+    const val mandantId = "mandantId"
+
 }

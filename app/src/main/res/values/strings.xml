@@ -18,16 +18,6 @@
 
     <string name="home_second">Home Second</string>
 
-<!--    preferences     -->
-    <string name="preferences_id">com.redhotapp.driverapp.preferences</string>
-    <string name="preferences_endpoint">endpoint</string>
-    <string name="token">token</string>
-    <string name="token_created">token_created</string>
-    <string name="pref_show_all">show_all</string>
-    <string name="tokenFcm">tokenFcm</string>
-    <string name="current_visible_taskId">current_visible_taskId</string>
-    <string name="mandantId">mandantId</string>
-
     <string name="need_log_in">First log in</string>
 
     <string name="name_test">manyvehicles@abona-erp.com</string>

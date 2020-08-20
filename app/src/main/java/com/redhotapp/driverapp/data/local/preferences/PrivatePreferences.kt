@@ -2,7 +2,6 @@ package com.redhotapp.driverapp.data.local.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Constant
 
 class PrivatePreferences {
@@ -10,7 +9,7 @@ class PrivatePreferences {
     companion object Companion {
         private fun getSharedPrefs(context: Context): SharedPreferences? {
             return context.getSharedPreferences(
-                context.getString(R.string.preferences_id), Context.MODE_PRIVATE
+                Constant.preferencesId, Context.MODE_PRIVATE
             )
         }
 
@@ -20,7 +19,7 @@ class PrivatePreferences {
                 context
             ) ?: return
             with(sharedPref.edit()) {
-                putString(context.getString(R.string.preferences_endpoint), endpoint)
+                putString(Constant.preferencesEndpoint, endpoint)
                 commit()
             }
         }
@@ -30,7 +29,7 @@ class PrivatePreferences {
                 context
             ) ?: return Constant.defaultApiUrl
             return sharedPref.getString(
-                context.getString(R.string.preferences_endpoint),Constant.defaultApiUrl
+                Constant.preferencesEndpoint, Constant.defaultApiUrl
             ) ?: Constant.defaultApiUrl
         }
 
@@ -40,7 +39,7 @@ class PrivatePreferences {
                 context
             ) ?: return
             with(sharedPref.edit()) {
-                putString(context.getString(R.string.token), token)
+                putString(Constant.token, token)
                 commit()
             }
         }
@@ -50,7 +49,7 @@ class PrivatePreferences {
                 context
             ).let {
                 return it?.getString(
-                    context.getString(R.string.token), null
+                    Constant.token, null
                 )
             }
         }
@@ -60,7 +59,7 @@ class PrivatePreferences {
                 context
             ) ?: return
             with(sharedPref.edit()) {
-                putString(context.getString(R.string.tokenFcm), token)
+                putString(Constant.tokenFcm, token)
                 commit()
             }
         }
@@ -70,7 +69,7 @@ class PrivatePreferences {
                 context
             ).let {
                 return it?.getString(
-                    context.getString(R.string.tokenFcm), null
+                    Constant.tokenFcm, null
                 )
             }
         }

@@ -8,7 +8,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.redhotapp.driverapp.App
-import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
@@ -28,7 +27,7 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 
     fun loggedIn(): Boolean {
         val currentTime = System.currentTimeMillis()
-        val difference = currentTime - prefs.getLong(context.getString(R.string.token_created),0)
+        val difference = currentTime - prefs.getLong(Constant. token_created,0)
         Log.i(TAG, "token time difference:  $difference")
         return ((difference < Constant.tokenUpdateHours * 3600 * 1000) // hours to seconds to mills
                 && PrivatePreferences.getAccessToken(context) != null)
@@ -68,7 +67,7 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 
     fun setVisibleTaskID(allTask: AllTask) {
         Log.e(TAG, "saving task " + allTask.taskId)
-        prefs.putAny(context.resources.getString(R.string.current_visible_taskId), allTask.taskId)
+        prefs.putAny(Constant.currentVisibleTaskid, allTask.taskId)
     }
 
 }

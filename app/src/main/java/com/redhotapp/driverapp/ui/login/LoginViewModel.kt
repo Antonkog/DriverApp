@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
@@ -44,7 +45,7 @@ class LoginViewModel
 
     val authenticationState = MutableLiveData<AuthenticationState>()
     init {
-        // In this example, the user is always unauthenticated when MainActivity is launched
+        // In this example, the user is always unauthenticated when LoginViewModel is launched
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
 
@@ -53,14 +54,15 @@ class LoginViewModel
     }
 
     fun authenticate(username: String, password: String, clientId: Int) {
-        prefs.putAny(context.resources.getString(R.string.mandantId), clientId)
+        prefs.putAny(Constant.mandantId, clientId)
         api.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> Log.e(TAG, result.body().toString())
                     Log.e(TAG, "got auth")
                     PrivatePreferences.setAccessToken(context, result.body()?.accessToken)
-                    prefs.putLong(context.getString(R.string.token_created), System.currentTimeMillis())
+
+                    prefs.putLong(Constant.token_created, System.currentTimeMillis())
                     setFcmToken()
                     setDeviceProfile(getCommItem())
                 },

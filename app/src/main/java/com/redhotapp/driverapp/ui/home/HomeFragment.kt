@@ -1,7 +1,6 @@
 package com.redhotapp.driverapp.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.databinding.HomeFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
-import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -64,7 +62,7 @@ class HomeFragment : BaseFragment() {
         homeViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty())
             adapter.swapData(it)
-            Log.e(TAG, "got tasks ${it}")
+//            Log.e(TAG, "got tasks ${it}")
         })
 
         homeViewModel.error.observe(viewLifecycleOwner, Observer {

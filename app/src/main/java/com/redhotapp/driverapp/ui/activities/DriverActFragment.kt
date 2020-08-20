@@ -50,7 +50,7 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
         driverActViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
             if(it!= null && it.isNotEmpty()){
                 adapter.swapData(it)
-                Log.e(TAG, "got tasks")
+//                Log.e(TAG, "got tasks")
             }
         })
 

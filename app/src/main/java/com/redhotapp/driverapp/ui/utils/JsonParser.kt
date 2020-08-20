@@ -43,7 +43,7 @@ object JsonParser {
                         )
                     }
                     else -> {
-                        Log.e(TAG, " adding to map: $key $jobject")
+//                        Log.e(TAG, " adding to map: $key $jobject")
                         map[key] = jobject.toString()
                     }
                 }
