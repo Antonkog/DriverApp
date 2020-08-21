@@ -35,18 +35,18 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.nav_activities, R.id.nav_documents, R.id.nav_delay_reason,  R.id.nav_settings), drawerLayout)
 
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        val isTablet = resources.getBoolean(R.bool.isTabletLandscape)
+
+        if(!isTablet){
+            setupActionBarWithNavController(navController, appBarConfiguration)
+        } else{
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                supportActionBar!!.title = destination.label
+            }
+        }
+
         navView.setupWithNavController(navController)
     }
-//
-//    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-//        for (i in 0 until menu.size()) {
-//            val item = menu.getItem(i)
-//            if (item.itemId == 0) item.isChecked = somevar
-//        }
-//        return super.onPrepareOptionsMenu(menu)
-//    }
-
 
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
