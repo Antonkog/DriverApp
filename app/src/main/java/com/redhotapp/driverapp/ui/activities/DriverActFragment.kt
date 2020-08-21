@@ -1,7 +1,6 @@
 package com.redhotapp.driverapp.ui.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import com.redhotapp.driverapp.R
 import com.redhotapp.driverapp.data.model.Activity
@@ -21,10 +19,10 @@ import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activity>{
+class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activity> {
     val TAG = "DriverActFragment"
 
-    private val driverActViewModel by viewModels<DriverActViewModel> ()
+    private val driverActViewModel by viewModels<DriverActViewModel>()
 
     private lateinit var driverActFragmentBinding: DriverActFragmentBinding
 
@@ -48,14 +46,14 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
 
 
         driverActViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
-            if(it!= null && it.isNotEmpty()){
+            if (it != null && it.isNotEmpty()) {
                 adapter.swapData(it)
 //                Log.e(TAG, "got tasks")
             }
         })
 
         driverActViewModel.error.observe(viewLifecycleOwner, Observer {
-            if(it.isNotEmpty())  driverActFragmentBinding.textHome.text = it.toString()
+            if (it.isNotEmpty()) driverActFragmentBinding.textHome.text = it.toString()
         })
 
         driverActViewModel.getActivities(DeviceUtils.getUniqueID(context))
@@ -69,8 +67,12 @@ class DriverActFragment : BaseFragment(),  LazyAdapter.OnItemClickListener<Activ
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // recyclerview init
-        driverActFragmentBinding.tasksRecycler.initWithLinLay(LinearLayoutManager.VERTICAL, adapter, listOf())
-        driverActFragmentBinding.tasksRecycler.addItemDivider()
+        driverActFragmentBinding.tasksRecycler.initWithLinLay(
+            LinearLayoutManager.VERTICAL,
+            adapter,
+            listOf()
+        )
+//        driverActFragmentBinding.tasksRecycler.addItemDivider()
 
     }
 

@@ -9,4 +9,5 @@
     <dimen name="margin_XXXII">32dp</dimen>
     <dimen name="margin_XVI">16dp</dimen>
     <dimen name="margin_VIII">8dp</dimen>
+    <dimen name="elevation_IV">4dp</dimen>
 </resources>

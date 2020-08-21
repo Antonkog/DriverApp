@@ -7,23 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import com.redhotapp.driverapp.R
-import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.databinding.DocumentsFragmentBinding
-import com.redhotapp.driverapp.databinding.LoginFragmentBinding
-import com.redhotapp.driverapp.ui.activities.ActivityAdapter
 import com.redhotapp.driverapp.ui.base.BaseFragment
-import com.redhotapp.driverapp.ui.delayReason.DelayReasonViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DocumentsFragment : BaseFragment() {
     val TAG = "DocumentsFragment"
-    private val docViewModel by viewModels<DocumentsViewModel> ()
+    private val docViewModel by viewModels<DocumentsViewModel>()
     private var adapter = DocumentsAdapter()
     private lateinit var docBinding: DocumentsFragmentBinding
 

@@ -3,8 +3,10 @@ package com.redhotapp.driverapp.data.remote
 import android.util.Log
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
-import okhttp3.*
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Protocol
+import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import java.io.IOException
 
@@ -35,8 +37,8 @@ class MockInterceptor : Interceptor {
     }
 
     //    /**
-    private val testResponse: String
-        private get() = "{\"IsSuccess\":true,\"IsException\":false,\"Text\":null,\"ExceptionText\":null,\"CommunicationItem\":null,\"AllTask\":[{\"MandantId\":3,\"MandantName\":\"Hegelmann Express GmbH\",\"TaskId\":1213,\"TaskChangeId\":2331,\"AbonaTransferNr\":\"\",\"PreviousTaskId\":0,\"NextTaskId\":1215,\"VehiclePreviousTaskId\":0,\"VehicleNextTaskId\":0,\"ChangeReason\":1,\"ActionType\":0,\"OrderNo\":202023123,\"Description\":null,\"KundenName\":\"Amazon\",\"KundenNr\":30118,\"ReferenceIdCustomer1\":\"a\",\"ReferenceIdCustomer2\":null,\"PalletsAmount\":0,\"TaskDueDateStart\":\"0001-01-01T00:00:00\"," +
+    private val testResponse: String =
+        "{\"IsSuccess\":true,\"IsException\":false,\"Text\":null,\"ExceptionText\":null,\"CommunicationItem\":null,\"AllTask\":[{\"MandantId\":3,\"MandantName\":\"Hegelmann Express GmbH\",\"TaskId\":1213,\"TaskChangeId\":2331,\"AbonaTransferNr\":\"\",\"PreviousTaskId\":0,\"NextTaskId\":1215,\"VehiclePreviousTaskId\":0,\"VehicleNextTaskId\":0,\"ChangeReason\":1,\"ActionType\":0,\"OrderNo\":202023123,\"Description\":null,\"KundenName\":\"Amazon\",\"KundenNr\":30118,\"ReferenceIdCustomer1\":\"a\",\"ReferenceIdCustomer2\":null,\"PalletsAmount\":0,\"TaskDueDateStart\":\"0001-01-01T00:00:00\"," +
                 "\"TaskDueDateFinish\":\"" +
                 "2020-09-20T17:27:00" +
                 "\",\"Status\":0,\"PercentFinishedActivities\":0,\"OrderDetails\":{\"OrderNo\":202023123,\"CustomerName\":\"Amazon\",\"CustomerNo\":30118,\"ReferenceIdCustomer1\":\"a\",\"ReferenceIdCustomer2\":null},\"TaskDetails\":{\"Description\":null,\"LoadingOrder\":0,\"ReferenceId1\":null,\"ReferenceId2\":null},\"Address\":{\"Name1\":null,\"Name2\":null,\"Street\":\"Vulytsia Balzaka\",\"ZIP\":null,\"City\":\"Kyiv\",\"State\":null,\"Nation\":\"UA\",\"Longitude\":30.59955,\"Latitude\":50.51487,\"Note\":null},\"SwapInfoItem\":null,\"PalletExchange\":{\"ExchangeType\":0,\"PalletsAmount\":0,\"IsDPL\":false},\"DangerousGoods\":{\"IsGoodsDangerous\":false,\"ADRClass\":null,\"DangerousGoodsClassType\":0,\"UNNo\":null},\"Activities\":[{\"MandantId\":3,\"TaskId\":1213,\"ActivityId\":12,\"Name\":\"Driving to loading\",\"Description\":null,\"Started\":\"2020-06-02T12:47:08\",\"Finished\":\"2020-06-02T12:47:09\",\"Status\":2,\"Sequence\":0,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null},{\"MandantId\":3,\"TaskId\":1213,\"ActivityId\":13,\"Name\":\"Waiting for loading\",\"Description\":null,\"Started\":\"2020-06-02T12:47:09\",\"Finished\":\"2020-06-02T12:47:12\",\"Status\":2,\"Sequence\":1,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null},{\"MandantId\":3,\"TaskId\":1213,\"ActivityId\":14,\"Name\":\"Loading\",\"Description\":null,\"Started\":\"2020-06-02T12:47:12\",\"Finished\":\"2020-06-02T12:47:14\",\"Status\":2,\"Sequence\":2,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null}],\"Contacts\":[{\"ContactType\":0,\"NumberType\":0,\"Name\":null,\"Number\":null}],\"Notes\":null,\"ChangedItems\":[1]},{\"MandantId\":3,\"MandantName\":\"Hegelmann Express GmbH\",\"TaskId\":1218,\"TaskChangeId\":2343,\"AbonaTransferNr\":\"\",\"PreviousTaskId\":0,\"NextTaskId\":1220,\"VehiclePreviousTaskId\":0,\"VehicleNextTaskId\":0,\"ChangeReason\":0,\"ActionType\":0,\"OrderNo\":202023125,\"Description\":null,\"KundenName\":\"Amazon\",\"KundenNr\":30118,\"ReferenceIdCustomer1\":\"a\",\"ReferenceIdCustomer2\":null,\"PalletsAmount\":0,\"TaskDueDateStart\":\"0001-01-01T00:00:00\"," +
