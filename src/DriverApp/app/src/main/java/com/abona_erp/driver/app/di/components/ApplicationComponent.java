@@ -22,7 +22,7 @@ public interface ApplicationComponent {
     void inject(App app);// just for now to avoid big merge - in future need to inject where we need.
     void inject(MainActivity mainActivity);
     void inject(NotifyWorker notifyWorker);
-    void inject(DeviceProfileWorker profileWorker);
+    /*void inject(DeviceProfileWorker profileWorker);*/
 
     void inject(ForegroundAlarmService foregroundAlarmService);
     void inject(NotificationService notificationService);

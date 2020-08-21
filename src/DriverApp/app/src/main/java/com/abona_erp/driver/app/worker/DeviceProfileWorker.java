@@ -42,7 +42,7 @@ public class DeviceProfileWorker extends Worker implements ProfileUpdater {
             @NonNull Context context,
             @NonNull WorkerParameters params) {
         super(context, params);
-        App.getInstance().getApplicationComponent().inject(this);
+        /*App.getInstance().getApplicationComponent().inject(this);*/
     }
 
     @Override

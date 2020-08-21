@@ -56,8 +56,21 @@ public class TextSecurePreferences {
   public static final String UPDATE_DELAY_REASON = "pref_update_delay_reason";
   
   public static final String PREF_MANDANT_ID = "pref_mandant_id";
+  
+  public static final String PREF_STOP_SERVICE = "pref_stop_service";
+  public static final String PREF_REGISTRATION_STARTED = "pref_registration_started";
 
 
+  public static boolean isRegistrationStarted() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_REGISTRATION_STARTED, false);
+  }
+  
+  public static void setRegistrationStarted(boolean started) {
+    setBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_REGISTRATION_STARTED, started);
+  }
+  
   public static boolean enableLoginPage() {
     return getBooleanPreference(ContextUtils.getApplicationContext(),
       PREF_LOGIN, true);
@@ -101,6 +114,16 @@ public class TextSecurePreferences {
   public static void setClientID(String clientID) {
     setStringPreference(ContextUtils.getApplicationContext(),
       PREF_CLIENT_ID, clientID);
+  }
+  
+  public static void setStopService(boolean stop) {
+    setBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_STOP_SERVICE, stop);
+  }
+  
+  public static boolean isStopService() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+      PREF_STOP_SERVICE, false);
   }
   
   public static boolean isDeviceRegistrated() {
