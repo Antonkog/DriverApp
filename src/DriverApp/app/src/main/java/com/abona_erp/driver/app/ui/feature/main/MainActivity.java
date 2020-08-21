@@ -292,7 +292,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     observeConfirmations();
 
 
-    if (!TextSecurePreferences.isDeviceRegistrated()) {
+    if (!TextSecurePreferences.isDeviceRegistrated() || TextSecurePreferences.isRegistrationStarted()) {
       loadMainFragment(DeviceNotRegistratedFragment.newInstance());
     } else {
       loadMainFragment(MainFragment.newInstance());

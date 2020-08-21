@@ -15,6 +15,7 @@ import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ThreadUtils;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -58,6 +59,9 @@ public class DeviceNotRegistratedFragment extends Fragment {
     mProgressDialog.show();
     
     mProgressDialog.setProgress(10);
+  
+    TextSecurePreferences.setStopService(false);
+    TextSecurePreferences.setRegistrationStarted(true);
   }
   
   @Subscribe

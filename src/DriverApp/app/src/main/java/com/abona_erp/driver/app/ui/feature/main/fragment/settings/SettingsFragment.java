@@ -1,5 +1,8 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.settings;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -35,6 +38,7 @@ import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
+import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
@@ -107,11 +111,14 @@ public class SettingsFragment extends Fragment {
    * that is wrong.
    */
   private void startUpdateDeviceWork() {
+    /*
     OneTimeWorkRequest taskAlarmRequest =
             new OneTimeWorkRequest.Builder(DeviceProfileWorker.class)
                     .addTag(Constants.WORK_TAG_DEVICE_UPDATE)
                     .build();
     WorkManager.getInstance(getContext()).enqueue(taskAlarmRequest);
+    
+     */
   }
 
   private void updateLanguage() {
@@ -297,9 +304,24 @@ public class SettingsFragment extends Fragment {
                         //int server_port = Integer.valueOf(mTeServerPort.getText().toString());
                         //TextSecurePreferences.setServerPort(server_port);
 
-                        TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
+                        //TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
                         TextSecurePreferences.setLoginPageEnable(true);
+                        TextSecurePreferences.setDeviceFirstTimeRun(false);
                         TextSecurePreferences.setDeviceRegistrated(false);
+                        TextSecurePreferences.setStopService(true);
+               /*
+                        getActivity().runOnUiThread(() -> {
+                          Intent restartIntent =
+                            getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
+                          PendingIntent intent = PendingIntent.getActivity(getContext(), 0, restartIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT);
+                          AlarmManager manager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
+                          manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, intent);
+                          getActivity().finish();
+                          Runtime.getRuntime().exit(0);
+                        });
+                        
+                */
 
                         getActivity().runOnUiThread(() -> {
 

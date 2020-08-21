@@ -3,6 +3,7 @@ package com.abona_erp.driver.app.ui.feature.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -70,7 +71,7 @@ public class LoginActivity extends BaseActivity {
           new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-              //Log.i(">>>>>>>>>>", "Response: " + response.toString());
+              Log.i(">>>>>>>>>>", "Response: " + response.toString());
 
               try {
                 boolean active = response.getBoolean("IsActive");
