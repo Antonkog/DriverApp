@@ -137,18 +137,23 @@ public class BackgroundServiceWorker extends Service {
             mHandler.postDelayed(this, delay);
             return;
           }
-  
+          
+          if (TextSecurePreferences.isStopService())
+            return;
+          
           if (!isDeviceRegistrated()) {
             allowRequest = true;
             mHandler.postDelayed(this, delay);
             return;
           }
-  
+          
           if (!isDeviceUpdateToken()) {
             allowRequest = true;
             mHandler.postDelayed(this, delay);
             return;
           }
+          
+          
           
           if (TextSecurePreferences.isUpdateLangCode()) {
             updateLangCode();
@@ -843,6 +848,8 @@ public class BackgroundServiceWorker extends Service {
                   if (response.body() != null && response.body().getIsSuccess() && !response.body().getIsException()) {
                     Log.d(TAG, ">>>>>>> DEVICE REGISTRATION WAS SUCCESSFULLY!!!");
                     TextSecurePreferences.setDeviceRegistrated(true);
+                    TextSecurePreferences.setRegistrationStarted(false);
+                    
                     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DEVICE_REGISTRATED), null));
                     App.eventBus.post(new RegistrationFinishedEvent());
                   } else {
