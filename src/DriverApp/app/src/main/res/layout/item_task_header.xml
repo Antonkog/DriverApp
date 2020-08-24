@@ -197,8 +197,7 @@
           android:backgroundTint="#AEBBCF"
           android:tint="@color/clrFont"
           android:src="@drawable/ic_work"
-          android:visibility="gone"
-          tools:visibility="visible"
+          android:visibility="visible"
           />
 
         <androidx.appcompat.widget.AppCompatImageButton

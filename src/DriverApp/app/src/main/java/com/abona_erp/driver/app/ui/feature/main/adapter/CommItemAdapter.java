@@ -579,11 +579,6 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
   }
   
   private void applyDocuments(DocumentItem document) {
-    if (document == null) {
-      btn_document_info.setVisibility(View.GONE);
-      return;
-    }
-    
     btn_document_info.setVisibility(View.VISIBLE);
   }
   
