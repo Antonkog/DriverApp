@@ -754,7 +754,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               if (response.body() != null) {
                 Gson gson = new Gson();
                 String raw = gson.toJson(response.body());
-                mMainViewModel.addLog(getString(R.string.log_document_got_links) + " : " + raw, LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
+                mMainViewModel.addLog(getString(R.string.log_document_got_links), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
 
 
                 final List<AppFileInterchangeItem> appFileInterchangeItems;
