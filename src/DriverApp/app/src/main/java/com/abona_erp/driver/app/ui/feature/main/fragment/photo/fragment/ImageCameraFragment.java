@@ -212,7 +212,7 @@ public class ImageCameraFragment extends Fragment
       Locale.getDefault()).format(new Date());
     String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + ".jpg";
 
-    File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
     File image = File.createTempFile(
             mFileName,  /* prefix */
             ".jpg",         /* suffix */
