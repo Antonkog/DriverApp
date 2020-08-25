@@ -100,6 +100,7 @@ public class PhotoFragment extends Fragment
   private File mEditFile = null;
   
   private MainFragmentViewModel mViewModel;
+  private Context context;
   
   public PhotoFragment() {
     // Required empty public constructor.
@@ -112,7 +113,7 @@ public class PhotoFragment extends Fragment
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-  
+    context = getActivity().getBaseContext();
     mDocumentType = DMSDocumentType.NA;
     mNotify = new Notify();
     
@@ -517,8 +518,8 @@ public class PhotoFragment extends Fragment
                           public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
                       
                             if (response.isSuccessful()) {
-                              EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_document_upload),
-                                      LogType.SERVER_TO_APP, LogLevel.INFO, getContext().getString(R.string.log_title_docs), mNotify.getTaskId()));
+                              EventBus.getDefault().post(new LogEvent(context.getString(R.string.log_document_upload),
+                                      LogType.SERVER_TO_APP, LogLevel.INFO, context.getString(R.string.log_title_docs), mNotify.getTaskId()));
 
                               uploadItem.setUploaded(true);
                               mPhotoUrls.set(j, App.getInstance().gson.toJson(uploadItem));
