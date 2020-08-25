@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
@@ -23,10 +24,11 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
-import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
+//import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
+import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapterExt;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
 import com.abona_erp.driver.app.ui.feature.main.view_model.PendingViewModel;
-import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
+//import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -34,7 +36,8 @@ import java.util.List;
 
 public class PendingFragment extends Fragment implements CommonItemClickListener<Notify> {
   
-  private ExpandableRecyclerView listView;
+  //private ExpandableRecyclerView listView;
+  private RecyclerView listView;
   private PendingViewModel viewModel;
 
   public PendingFragment() {
@@ -56,11 +59,13 @@ public class PendingFragment extends Fragment implements CommonItemClickListener
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View root = inflater.inflate(R.layout.fragment_pending, container, false);
     
-    listView = (ExpandableRecyclerView)root.findViewById(R.id.rv_list);
+    //listView = (ExpandableRecyclerView)root.findViewById(R.id.rv_list);
+    listView = (RecyclerView)root.findViewById(R.id.rv_list);
     LinearLayoutManager llm = new LinearLayoutManager(getContext());
     listView.setLayoutManager(llm);
     listView.setNestedScrollingEnabled(true);
-    CommItemAdapter adapter = new CommItemAdapter(getContext(), this);
+    //CommItemAdapter adapter = new CommItemAdapter(getContext(), this);
+    CommItemAdapterExt adapter = new CommItemAdapterExt(getContext());
     listView.setAdapter(adapter);
     
     viewModel.getAllPendingNotifications().observe(getViewLifecycleOwner(),
@@ -68,9 +73,11 @@ public class PendingFragment extends Fragment implements CommonItemClickListener
 
       @Override
       public void onChanged(List<Notify> notifies) {
-        if (notifies == null) return;
-        adapter.setList(notifies);
-        App.eventBus.post(new BadgeCountEvent(0, notifies.size()));
+        if (notifies != null && notifies.size() > 0) {
+          //adapter.setList(notifies);
+          adapter.setDataList(notifies);
+          App.eventBus.post(new BadgeCountEvent(0, notifies.size()));
+        }
       }
     });
 

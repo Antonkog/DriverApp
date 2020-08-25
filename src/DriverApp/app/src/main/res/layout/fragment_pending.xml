@@ -6,7 +6,15 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
+  <!--
   <com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView
+    android:id="@+id/rv_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    />
+  -->
+  <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/rv_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
