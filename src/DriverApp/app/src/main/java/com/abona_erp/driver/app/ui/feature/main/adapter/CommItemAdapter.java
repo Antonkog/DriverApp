@@ -38,7 +38,6 @@ import com.abona_erp.driver.app.data.model.PalletExchange;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
-import com.abona_erp.driver.app.ui.event.HistoryClick;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.DueInCounterRunnable;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -62,8 +61,6 @@ import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.flag_kit.FlagKit;
 import com.lid.lib.LabelImageView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -358,13 +355,13 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
         }
       });
       
-      btn_task_history = (AppCompatImageButton)expandableItem.getHeaderLayout().findViewById(R.id.btn_task_history);
-      btn_task_history.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          EventBus.getDefault().post(new HistoryClick());
-        }
-      });
+//      btn_task_history = (AppCompatImageButton)expandableItem.getHeaderLayout().findViewById(R.id.btn_task_history);
+//      btn_task_history.setOnClickListener(new View.OnClickListener() {
+//        @Override
+//        public void onClick(View view) {
+//          EventBus.getDefault().post(new HistoryClick());
+//        }
+//      });
       
       btn_task_info = (AppCompatImageButton)expandableItem.getHeaderLayout().findViewById(R.id.btn_task_info);
       btn_task_info.setOnClickListener(new View.OnClickListener() {

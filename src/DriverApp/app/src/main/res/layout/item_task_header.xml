@@ -207,7 +207,7 @@
           android:backgroundTint="#AEBBCF"
           android:src="@drawable/ic_delay_reasons_history"
           android:tint="@color/clrFont"
-          />
+          android:visibility="gone"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
           android:id="@+id/btn_task_info"

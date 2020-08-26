@@ -120,6 +120,8 @@ import retrofit2.Callback;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
+import static com.abona_erp.driver.app.data.converters.LogType.FCM;
+
 public class MainActivity extends BaseActivity /*implements OnCompleteListener<Void>*/ {
 
   private static final String TAG = MainActivity.class.getSimpleName();
@@ -596,6 +598,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Subscribe
   public void onMessageEvent(LogEvent event) {
+    if(event.getLog().getType() == FCM) // hide History fragment for now, log only this events
     mMainViewModel.addLog(event.getLog());
   }
 
@@ -754,7 +757,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               if (response.body() != null) {
                 Gson gson = new Gson();
                 String raw = gson.toJson(response.body());
-                mMainViewModel.addLog(getString(R.string.log_document_got_links), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
+//                mMainViewModel.addLog(getString(R.string.log_document_got_links), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
 
 
                 final List<AppFileInterchangeItem> appFileInterchangeItems;
