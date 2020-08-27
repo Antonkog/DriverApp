@@ -19,11 +19,13 @@ package com.redhotapp.driverapp.ui.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import androidx.room.Room
 import com.google.gson.*
 import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
 import com.redhotapp.driverapp.App
 import com.redhotapp.driverapp.BuildConfig
 import com.redhotapp.driverapp.data.Constant
+import com.redhotapp.driverapp.data.local.db.AppDatabase
 import com.redhotapp.driverapp.data.remote.*
 import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.redhotapp.driverapp.data.remote.utils.ResponseInterceptor
@@ -62,6 +64,14 @@ object AppModule {
 //            .create()
         return Gson()
 
+    }
+
+    @Singleton
+    @Provides
+    fun provideDataBase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(context,
+            AppDatabase::class.java,
+            "driver_db").build()
     }
 
     @Singleton
@@ -142,11 +152,12 @@ object TasksRepositoryModule {
     @Singleton
     @Provides
     fun provideApiRepository(
+         appDatabase: AppDatabase,
          rabbitService: RabbitService,
          apiService: ApiService, authService: AuthService
     ): ApiRepository {
         return ApiRepositoryImpl(
-            rabbitService, apiService, authService
+            appDatabase,  rabbitService, apiService, authService
         )
     }
 }

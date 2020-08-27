@@ -5,4 +5,11 @@
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="Button" parent="AppTheme">
+        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="color">@color/colorPrimary</item>
+    </style>
+
 </resources>

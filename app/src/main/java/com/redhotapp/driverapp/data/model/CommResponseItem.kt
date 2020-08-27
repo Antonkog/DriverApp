@@ -2,15 +2,12 @@ package com.redhotapp.driverapp.data.model
 
 
 import com.google.gson.annotations.SerializedName
-import com.redhotapp.driverapp.data.model.abona.CommItem
-import com.redhotapp.driverapp.data.model.abona.DelayReasonItem
-import com.redhotapp.driverapp.data.model.abona.DocumentItem
 
 data class CommResponseItem(
     @SerializedName("AllAppFileInterchangeItem")
     val allAppFileInterchangeItem: Any,
     @SerializedName("AllDocumentCommItem")
-    val allDocumentCommItem: List<DocumentItem>,
+    val allDocumentCommItem: List<Any>,
     @SerializedName("AllTask")
     val allTask: List<AllTask>,
     @SerializedName("AllTaskCommItem")
@@ -20,15 +17,15 @@ data class CommResponseItem(
     @SerializedName("DelayReasons")
     val delayReasons: List<DelayReasonItem>,
     @SerializedName("ExceptionText")
-    val exceptionText: Any,
+    val exceptionText: String,
     @SerializedName("HttpResponseMessage")
-    val httpResponseMessage: Any,
+    val httpResponseMessage: String,
     @SerializedName("IsException")
     val isException: Boolean,
     @SerializedName("IsSuccess")
     val isSuccess: Boolean,
     @SerializedName("LogText")
-    val logText: Any,
+    val logText: String,
     @SerializedName("Text")
     val text: String,
     @SerializedName("TransportAuftragOid")

@@ -9,6 +9,11 @@
     <string name="action_log_out">Log out</string>
     <string name="action_show_all">Show all</string>
 
+<!--    activity-->
+    <string name="activity_next">Next</string>
+    <string name="activity_start">Start</string>
+    <string name="activity_finish">Finish</string>
+
     <string name="screen_login">Login</string>
     <string name="screen_home">Tasks</string>
     <string name="screen_activities">Activities</string>

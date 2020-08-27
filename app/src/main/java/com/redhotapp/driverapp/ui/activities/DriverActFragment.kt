@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import com.redhotapp.driverapp.R
+import com.redhotapp.driverapp.data.local.db.ActivityEntity
 import com.redhotapp.driverapp.data.model.Activity
 import com.redhotapp.driverapp.databinding.DriverActFragmentBinding
 import com.redhotapp.driverapp.ui.base.BaseFragment
@@ -19,7 +20,7 @@ import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activity> {
+class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<ActivityEntity> {
     val TAG = "DriverActFragment"
 
     private val driverActViewModel by viewModels<DriverActViewModel>()
@@ -76,7 +77,7 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     }
 
-    override fun onLazyItemClick(data: Activity) {
+    override fun onLazyItemClick(data: ActivityEntity) {
         Toast.makeText(context, " on activity click : ${data.activityId}", Toast.LENGTH_LONG).show()
     }
 }

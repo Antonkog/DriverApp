@@ -1,4 +1,4 @@
-package com.redhotapp.driverapp.data.model.abona;
+package com.redhotapp.driverapp.data.model;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

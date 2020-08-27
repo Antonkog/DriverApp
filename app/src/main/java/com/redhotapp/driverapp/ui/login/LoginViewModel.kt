@@ -3,6 +3,7 @@ package com.redhotapp.driverapp.ui.login
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
+import android.renderscript.Element
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -18,6 +19,10 @@ import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
 import com.redhotapp.driverapp.data.local.preferences.putAny
 import com.redhotapp.driverapp.data.local.preferences.putLong
+import com.redhotapp.driverapp.data.model.CommItem
+import com.redhotapp.driverapp.data.model.CommResponseItem
+import com.redhotapp.driverapp.data.model.DataType
+import com.redhotapp.driverapp.data.model.Header
 import com.redhotapp.driverapp.data.model.abona.CommItem
 import com.redhotapp.driverapp.data.model.abona.DataType
 import com.redhotapp.driverapp.data.model.abona.DeviceProfileItem
@@ -126,10 +131,7 @@ class LoginViewModel
 
     private fun getCommItem(): CommItem {
         val commItem = CommItem()
-        val header = Header()
-        header.dataType = DataType.DEVICE_PROFILE
-        header.deviceId = DeviceUtils.getUniqueID(context)
-        commItem.header = header
+        val header = Header(DataType.DEVICE_PROFILE.dataType, DeviceUtils.getUniqueID(context))
 
         val deviceProfileItem = DeviceProfileItem()
         deviceProfileItem.instanceId = PrivatePreferences.getFCMToken(context)
