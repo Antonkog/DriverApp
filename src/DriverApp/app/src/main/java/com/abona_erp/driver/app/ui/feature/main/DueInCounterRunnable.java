@@ -8,10 +8,12 @@ import android.widget.LinearLayout;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DueInCounterRunnable implements Runnable {
   
@@ -50,11 +52,8 @@ public class DueInCounterRunnable implements Runnable {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(endDate);
       
-    long diff = (calendar.getTimeInMillis() - now) / 1000 / 60;
-    //tv_Minutes.setText(String.format("%02d", Math.abs(diff % 60)));
-      
+    long diff = (calendar.getTimeInMillis() - now - TimeZone.getDefault().getOffset(now)) / 1000 / 60;
     long hours = diff / 60;
-    //tv_Hours.setText(String.format("%02d", Math.abs(hours % 24)));
       
     long days = hours / 24;
     String d = diff < 0 ? "- " : "";
