@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
@@ -24,18 +25,21 @@ import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
+import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapterExt;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommonItemClickListener;
 import com.abona_erp.driver.app.ui.feature.main.view_model.RunningViewModel;
 import com.abona_erp.driver.app.ui.widget.recyclerview.ExpandableRecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RunningFragment extends Fragment implements CommonItemClickListener<Notify> {
   
-  private CommItemAdapter adapter;
-  private ExpandableRecyclerView listView;
+  //private CommItemAdapter adapter;
+  //private ExpandableRecyclerView listView;
+  private RecyclerView listView;
   private RunningViewModel viewModel;
   
   public RunningFragment() {
@@ -67,10 +71,11 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View root = inflater.inflate(R.layout.fragment_running, container, false);
   
-    listView = (ExpandableRecyclerView)root.findViewById(R.id.rv_list);
+    //listView = (ExpandableRecyclerView)root.findViewById(R.id.rv_list);
+    listView = (RecyclerView)root.findViewById(R.id.rv_list);
     LinearLayoutManager llm = new LinearLayoutManager(getContext());
     listView.setLayoutManager(llm);
-    adapter = new CommItemAdapter(getContext(), this);
+    CommItemAdapterExt adapter = new CommItemAdapterExt(getContext(), this);
 
     listView.setAdapter(adapter);
   
@@ -78,9 +83,12 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
       new Observer<List<Notify>>() {
         @Override
         public void onChanged(List<Notify> notifies) {
-          if (notifies == null) return;
-          adapter.setList(notifies);
-          App.eventBus.post(new BadgeCountEvent(1, notifies.size()));
+          if (notifies != null && notifies.size() > 0) {
+            adapter.setDataList(notifies);
+            App.eventBus.post(new BadgeCountEvent(1, notifies.size()));
+          } else {
+            adapter.setDataList(new ArrayList<>());
+          }
         }
       });
     

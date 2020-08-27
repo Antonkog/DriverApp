@@ -772,10 +772,10 @@ public class BackgroundServiceWorker extends Service {
         commItem.setHeader(header);
         
         DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
-        deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
+        //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
         deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
-        deviceProfileItem.setModel(deviceProfiles.get(0).getDeviceModel());
-        deviceProfileItem.setManufacturer(deviceProfiles.get(0).getDeviceManufacturer());
+        //deviceProfileItem.setModel(deviceProfiles.get(0).getDeviceModel());
+        //deviceProfileItem.setManufacturer(deviceProfiles.get(0).getDeviceManufacturer());
         //deviceProfileItem.setUpdatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getModifiedAt()));
         deviceProfileItem.setLanguageCode(TextSecurePreferences.getLanguage(ContextUtils.getApplicationContext()));
         commItem.setDeviceProfileItem(deviceProfileItem);

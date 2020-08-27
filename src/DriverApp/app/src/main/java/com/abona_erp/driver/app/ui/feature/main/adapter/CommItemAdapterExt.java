@@ -1,8 +1,11 @@
 package com.abona_erp.driver.app.ui.feature.main.adapter;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,8 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,19 +28,40 @@ import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.ActivityStep;
 import com.abona_erp.driver.app.data.model.AddressItem;
 import com.abona_erp.driver.app.data.model.CommItem;
+import com.abona_erp.driver.app.data.model.ContactItem;
+import com.abona_erp.driver.app.data.model.DangerousGoods;
+import com.abona_erp.driver.app.data.model.DangerousGoodsClass;
+import com.abona_erp.driver.app.data.model.DocumentItem;
+import com.abona_erp.driver.app.data.model.EnumNoteType;
+import com.abona_erp.driver.app.data.model.EnumPalletExchangeType;
+import com.abona_erp.driver.app.data.model.NotesItem;
+import com.abona_erp.driver.app.data.model.PalletExchange;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.ui.event.HistoryClick;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.DueInCounterRunnable;
+import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.app.ui.widget.ContactDataAdapter;
+import com.abona_erp.driver.app.ui.widget.CustomContactDialog;
+import com.abona_erp.driver.app.ui.widget.CustomDangerousGoodsDialog;
+import com.abona_erp.driver.app.ui.widget.CustomNotesDialog;
+import com.abona_erp.driver.app.ui.widget.CustomPaletteDialog;
+import com.abona_erp.driver.app.ui.widget.CustomTaskInfoDialog;
+import com.abona_erp.driver.app.ui.widget.DangerousGoodsDataAdapter;
+import com.abona_erp.driver.app.ui.widget.NotesDataAdapter;
+import com.abona_erp.driver.app.ui.widget.PaletteDataAdapter;
 import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.flag_kit.FlagKit;
 import com.lid.lib.LabelImageView;
 
-import java.lang.reflect.Array;
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,9 +82,12 @@ public class CommItemAdapterExt extends
   private Handler _handler = new Handler();
   private DueInCounterRunnable dueInCounter;
   public  AsapTextView tv_due_in;
+  public AppCompatImageView iv_warning;
   
   private List<Notify> mDataList;
   private CommItem     mCommItem;
+  
+  private CommonItemClickListener<Notify> mListener;
   
   private List<ActivityStep> mActivityList = new ArrayList<>();
   
@@ -74,8 +101,13 @@ public class CommItemAdapterExt extends
   SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
     Locale.getDefault());
   
-  public CommItemAdapterExt(Context ctx) {
+  public CommonItemClickListener<Notify> getListener() {
+    return mListener;
+  }
+  
+  public CommItemAdapterExt(Context ctx, CommonItemClickListener listener) {
     mContext  = ctx;
+    mListener = listener;
     mResources = mContext.getResources();
     mInflater = LayoutInflater.from(mContext);
     
@@ -100,14 +132,116 @@ public class CommItemAdapterExt extends
     TaskItem taskItem = mCommItem.getTaskItem();
     if (taskItem == null) return;
   
+    if (notify.isCurrentlySelected() && holder.root_content.getVisibility() != View.VISIBLE) {
+      holder.root_content.setVisibility(View.VISIBLE);
+    }
     holder.root_header.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         if (holder.root_content.getVisibility() == View.VISIBLE) {
           holder.root_content.setVisibility(View.GONE);
+          getListener().onClick(view, position, notify, false);
         } else if (holder.root_content.getVisibility() == View.GONE) {
           holder.root_content.setVisibility(View.VISIBLE);
+          getListener().onClick(view, position, notify, true);
         }
+      }
+    });
+    
+    holder.btn_contact_info.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (taskItem.getContacts() != null && taskItem.getContacts().size() > 0) {
+          ContactDataAdapter dataAdapter = new ContactDataAdapter(taskItem.getContacts());
+          CustomContactDialog dialog = new CustomContactDialog((Activity)mContext,
+            dataAdapter, AppUtils.parseOrderNo(taskItem.getOrderNo()),
+            getActionTypeColor(taskItem.getActionType()));
+          dialog.show();
+          dialog.setCanceledOnTouchOutside(false);
+        }
+      }
+    });
+    
+    holder.btn_notes_info.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (taskItem.getNotes() != null && taskItem.getNotes().size() > 0) {
+          NotesDataAdapter dataAdapter = new NotesDataAdapter(taskItem.getNotes());
+          CustomNotesDialog dialog = new CustomNotesDialog((Activity)mContext,
+            dataAdapter, AppUtils.parseOrderNo(taskItem.getOrderNo()),
+            getActionTypeColor(taskItem.getActionType()));
+          dialog.show();
+          dialog.setCanceledOnTouchOutside(false);
+        }
+      }
+    });
+    
+    holder.btn_dangerous_goods_info.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (taskItem.getDangerousGoods() != null && taskItem.getDangerousGoods().isGoodsDangerous()) {
+          List<DangerousGoods> _items = new ArrayList<>();
+          _items.add(taskItem.getDangerousGoods());
+          DangerousGoodsDataAdapter dataAdapter = new DangerousGoodsDataAdapter(_items);
+          CustomDangerousGoodsDialog dialog = new CustomDangerousGoodsDialog((Activity)mContext,
+            dataAdapter, AppUtils.parseOrderNo(taskItem.getOrderNo()),
+            getActionTypeColor(taskItem.getActionType()));
+          dialog.show();
+          dialog.setCanceledOnTouchOutside(false);
+        }
+      }
+    });
+    
+    holder.btn_palette_info.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (taskItem.getPalletExchange() != null) {
+          List<PalletExchange> _items = new ArrayList<>();
+          _items.add(taskItem.getPalletExchange());
+          PaletteDataAdapter dataAdapter = new PaletteDataAdapter(_items);
+          CustomPaletteDialog dialog = new CustomPaletteDialog((Activity)mContext,
+            dataAdapter, AppUtils.parseOrderNo(taskItem.getOrderNo()),
+            getActionTypeColor(taskItem.getActionType()));
+          dialog.show();
+          dialog.setCanceledOnTouchOutside(false);
+        }
+      }
+    });
+    
+    holder.btn_document_info.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DOCUMENT), notify));
+      }
+    });
+    
+    holder.btn_task_history.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        EventBus.getDefault().post(new HistoryClick());
+      }
+    });
+    
+    holder.btn_task_info.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        CustomTaskInfoDialog dialog = new CustomTaskInfoDialog((Activity)mContext, mCommItem, 0);
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+      }
+    });
+    
+    holder.btn_camera.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        getListener().onCameraClick(notify);
+      }
+    });
+    
+    holder.btn_map.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        getListener().onMapClick(notify);
       }
     });
     
@@ -131,9 +265,9 @@ public class CommItemAdapterExt extends
         holder.tv_task_finish.setText(sdf.format(taskItem.getTaskDueDateFinish()));
         if (taskItem.getTaskStatus() != null) {
           if (taskItem.getTaskStatus().equals(TaskStatus.PENDING) || taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
-            enableDueInTimer(true, tv_due_in, holder.iv_warning, null);
+            enableDueInTimer(true, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
           } else {
-            enableDueInTimer(false, tv_due_in, holder.iv_warning, null);
+            enableDueInTimer(false, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
           }
         }
       }
@@ -229,6 +363,12 @@ public class CommItemAdapterExt extends
       holder.pb_activity_step.setProgress(0);
       holder.pb_activity_step.setVisibility(View.GONE);
     }
+  
+    applyDangerousGoods(holder, taskItem.getDangerousGoods());
+    applyPallets(holder, taskItem.getPalletExchange());
+    applyNotes(holder, taskItem.getNotes());
+    applyContacts(holder, taskItem.getContacts());
+    applyDocuments(holder, mCommItem.getDocumentItem());
   }
   
   @Override
@@ -236,6 +376,9 @@ public class CommItemAdapterExt extends
   onCreateViewHolder(ViewGroup parent, int viewType) {
     
     View itemView = mInflater.inflate(R.layout.step_activity_ext, parent, false);
+    
+    dueInCounter = new DueInCounterRunnable(_handler, mContext, tv_due_in, iv_warning, null, new Date());
+    
     return new CommItemAdapterExt.ViewHolder(itemView);
   }
   
@@ -257,7 +400,6 @@ public class CommItemAdapterExt extends
   class ViewHolder extends RecyclerView.ViewHolder {
     
     final AppCompatImageView iv_confirmation;
-    final AppCompatImageView iv_warning;
     final AsapTextView tv_task_finish;
     final AsapTextView tv_order_no;
     final LabelImageView status_label_view;
@@ -269,9 +411,28 @@ public class CommItemAdapterExt extends
     final AsapTextView tv_activity_step_status;
     final AsapTextView tv_activity_step_status_message;
     final RecyclerView rv_sub_list;
+  
+    final AsapTextView tv_header_notes;
+    final AsapTextView tv_header_notes_minus;
     
     final LinearLayout root_header;
     final LinearLayout root_content;
+  
+    //final AppCompatImageView iv_dangerous_goods;
+    //final AppCompatImageView iv_palette_info;
+    //final AppCompatImageView iv_notes;
+    //final AppCompatImageView iv_contacts;
+  
+    final AppCompatImageButton btn_contact_info;
+    final AppCompatImageButton btn_notes_info;
+    final AppCompatImageButton btn_dangerous_goods_info;
+    final AppCompatImageButton btn_palette_info;
+    final AppCompatImageButton btn_document_info;
+    final AppCompatImageButton btn_task_history;
+    final AppCompatImageButton btn_task_info;
+  
+    private AppCompatImageButton btn_camera;
+    private AppCompatImageButton btn_map;
     
     CommItemSubAdapterExt adapterExt;
     
@@ -299,6 +460,19 @@ public class CommItemAdapterExt extends
       rv_sub_list.setNestedScrollingEnabled(true);
       adapterExt = new CommItemSubAdapterExt(mContext);
       rv_sub_list.setAdapter(adapterExt);
+      tv_header_notes = (AsapTextView)itemView.findViewById(R.id.tv_header_notes);
+      tv_header_notes_minus = (AsapTextView)itemView.findViewById(R.id.tv_header_notes_minus);
+  
+      btn_contact_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_contact_info);
+      btn_notes_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_message_info);
+      btn_dangerous_goods_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_dangerous_goods_info);
+      btn_palette_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_palette_info);
+      btn_document_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_document_info);
+      btn_task_history = (AppCompatImageButton)itemView.findViewById(R.id.btn_task_history);
+      btn_task_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_task_info);
+  
+      btn_camera = (AppCompatImageButton)itemView.findViewById(R.id.btn_camera);
+      btn_map = (AppCompatImageButton)itemView.findViewById(R.id.btn_map);
     }
   }
   
@@ -381,15 +555,16 @@ public class CommItemAdapterExt extends
     }
   }
   
+  @SuppressLint({"DefaultLocale", "SetTextI18n"})
   private void enableDueInTimer(boolean enable, AsapTextView dueIn, AppCompatImageView ivWarning, Date finishDate) {
-    /*
+    
     if (enable) {
       _handler.removeCallbacks(dueInCounter);
       dueInCounter.tv_DueIn = dueIn;
       dueInCounter.iv_Warning = ivWarning;
       dueInCounter.ll_Background = null;
       dueInCounter.endDate = finishDate;
-      _handler.postDelayed(dueInCounter, 1000);
+      _handler.postDelayed(dueInCounter, 250);
     } else {
       _handler.removeCallbacks(dueInCounter);
       
@@ -404,22 +579,114 @@ public class CommItemAdapterExt extends
       Calendar finishCalendar = Calendar.getInstance();
       finishCalendar.setTime(finishDate);
   
-      long diff = (finishCalendar.getTimeInMillis() - endTaskCalendar.getTimeInMillis()) / 1000 / 60;
+      long diff = (finishCalendar.getTimeInMillis() - endTaskCalendar.getTimeInMillis() - TimeZone.getDefault().getOffset(System.currentTimeMillis())) / 1000 / 60;
       long hours = diff / 60;
   
       long days = hours / 24;
       String d = diff < 0 ? "-" : "";
       d += String.valueOf(Math.abs(days));
-      dueInCounter.tv_DueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
+      dueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
   
       if (diff < 0) {
-        dueInCounter.iv_Warning.setVisibility(View.VISIBLE);
-        //dueInCounter.ll_Background.setBackground(context.getResources().getDrawable(R.drawable.warning_header_bg));
+        ivWarning.setVisibility(View.VISIBLE);
       } else {
-        dueInCounter.iv_Warning.setVisibility(View.GONE);
-        //dueInCounter.ll_Background.setBackground(context.getResources().getDrawable(R.drawable.header_bg));
+        ivWarning.setVisibility(View.GONE);
       }
     }
-     */
+  }
+  
+  private void applyDangerousGoods(ViewHolder holder, DangerousGoods dangerousGoods) {
+    if (dangerousGoods == null) {
+      holder.btn_dangerous_goods_info.setVisibility(View.GONE);
+      holder.btn_dangerous_goods_info.setImageDrawable(null);
+      return;
+    }
+    if (dangerousGoods.isGoodsDangerous() != null) {
+      if (dangerousGoods.isGoodsDangerous()) {
+        holder.btn_dangerous_goods_info.setVisibility(View.VISIBLE);
+        holder.btn_dangerous_goods_info.setImageDrawable(null);
+        
+        if (dangerousGoods.getDangerousGoodsClassType() != null) {
+          holder.btn_dangerous_goods_info.setImageDrawable(getDangerousGoodsClass(dangerousGoods.getDangerousGoodsClassType()));
+        }
+      } else {
+        holder.btn_dangerous_goods_info.setVisibility(View.GONE);
+        holder.btn_dangerous_goods_info.setImageDrawable(null);
+      }
+    }
+  }
+  
+  private void applyDocuments(ViewHolder holder, DocumentItem document) {
+    holder.btn_document_info.setVisibility(View.VISIBLE);
+  }
+  
+  private void applyPallets(ViewHolder holder, PalletExchange palletExchange) {
+    if (palletExchange == null) {
+      holder.btn_palette_info.setVisibility(View.GONE);
+      return;
+    }
+    if(palletExchange.getPalletExchangeType().equals(EnumPalletExchangeType.YES)) {
+      holder.btn_palette_info.setVisibility(View.VISIBLE);
+    } else {
+      holder.btn_palette_info.setVisibility(View.GONE);
+    }
+  }
+  
+  private void applyNotes(ViewHolder holder, List<NotesItem> notes) {
+    if (notes == null || notes.size() <= 0) {
+      holder.btn_notes_info.setVisibility(View.GONE);
+      return;
+    }
+    holder.btn_notes_info.setVisibility(View.VISIBLE);
+    
+    String comment_text = mResources.getQuantityString(R.plurals.numberOfNotesAvailable, notes.size(), notes.size());
+    
+    for (int i = 0; i < notes.size(); i++) {
+      if (notes.get(i).getNoteType().equals(EnumNoteType.HIGH)) {
+        holder.tv_header_notes_minus.setVisibility(View.VISIBLE);
+        holder.tv_header_notes.setVisibility(View.VISIBLE);
+        holder.tv_header_notes.setText(comment_text);
+        break;
+      }
+    }
+  }
+  
+  private void applyContacts(ViewHolder holder, List<ContactItem> contacts) {
+    if (contacts == null || contacts.size() <= 0) {
+      holder.btn_contact_info.setVisibility(View.GONE);
+      return;
+    }
+    
+    holder.btn_contact_info.setVisibility(View.VISIBLE);
+  }
+  
+  private Drawable getDangerousGoodsClass(DangerousGoodsClass dangerousGoodsClass) {
+    switch (dangerousGoodsClass) {
+      case CLASS_1_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives);
+      case CLASS_1_1_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_1);
+      case CLASS_1_2_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_2);
+      case CLASS_1_3_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_3);
+      case CLASS_1_4_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_4);
+      case CLASS_1_5_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_5);
+      case CLASS_1_6_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_6);
+      case CLASS_2_FLAMMABLE_GAS: return mResources.getDrawable(R.drawable.ic_class_2_flammable_gas);
+      case CLASS_2_NON_FLAMMABLE_GAS: return mResources.getDrawable(R.drawable.ic_class_2_non_flammable_gas);
+      case CLASS_2_POISON_GAS: return mResources.getDrawable(R.drawable.ic_class_2_poison_gas);
+      case CLASS_3_FLAMMABLE_LIQUID: return mResources.getDrawable(R.drawable.ic_class_3_flammable_liquid);
+      case CLASS_4_1_FLAMMABLE_SOLIDS: return mResources.getDrawable(R.drawable.ic_class_4_flammable_solid);
+      case CLASS_4_2_SPONTANEOUSLY_COMBUSTIBLE: return mResources.getDrawable(R.drawable.ic_class_4_spontaneously_combustible);
+      case CLASS_4_3_DANGEROUSE_WHEN_WET: return mResources.getDrawable(R.drawable.ic_class_4_dangerous_when_wet);
+      case CLASS_5_1_OXIDIZER: return mResources.getDrawable(R.drawable.ic_class_5_1_oxidizer);
+      case CLASS_5_2_ORAGNIC_PEROXIDES: return mResources.getDrawable(R.drawable.ic_class_5_2_organic_peroxides);
+      case CLASS_6_1_POISON: return mResources.getDrawable(R.drawable.ic_class_6_poison);
+      case CLASS_6_2_INFECTIOUS_SUBSTANCE: return mResources.getDrawable(R.drawable.ic_class_6_2_infectious_substance);
+      case CLASS_7_FISSILE: return mResources.getDrawable(R.drawable.ic_class_7_fissile);
+      case CLASS_7_RADIOACTIVE_I: return mResources.getDrawable(R.drawable.ic_class_7_radioactive_i);
+      case CLASS_7_RADIOACTIVE_II: return mResources.getDrawable(R.drawable.ic_class_7_radioactive_ii);
+      case CLASS_7_RADIOACTIVE_III: return mResources.getDrawable(R.drawable.ic_class_7_radioactive_iii);
+      case CLASS_8_CORROSIVE: return mResources.getDrawable(R.drawable.ic_class_8_corrosive);
+      case CLASS_9_MISCELLANEOUS: return mResources.getDrawable(R.drawable.ic_class_9_miscellaneus);
+      default: return mResources.getDrawable(R.drawable.ic_risk);
+    }
   }
 }

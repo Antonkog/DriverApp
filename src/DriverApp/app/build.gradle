@@ -1,45 +1,41 @@
-import dependencies.Dep
-import dependencies.Packages
-import dependencies.Versions
-
 apply plugin: 'com.android.application'
 
 android {
-logger.quiet("Build variable Major:$System.env.Major")
-/* Set the build version first */
-	Properties properties = new Properties()
-	def propertiesFile = project.rootProject.file('local.properties')
-	if (propertiesFile.exists()) {
-		 properties.load(propertiesFile.newDataInputStream())
-	}
+    logger.quiet("Build variable Major:$System.env.Major")
+    /* Set the build version first */
+	  Properties properties = new Properties()
+	  def propertiesFile = project.rootProject.file('local.properties')
+	  if (propertiesFile.exists()) {
+		    properties.load(propertiesFile.newDataInputStream())
+	  }
 
-	def localbuildMajor = properties.getProperty('Major') 
-	def systemEnvbuildMajor = System.getenv('Major')
-	ext."build.Major" = localbuildMajor != null ? localbuildMajor : systemEnvbuildMajor
+	  def localbuildMajor = properties.getProperty('Major')
+	  def systemEnvbuildMajor = System.getenv('Major')
+	  ext."build.Major" = localbuildMajor != null ? localbuildMajor : systemEnvbuildMajor
 
-	def localbuildMinor = properties.getProperty('Minor')
-	def systemEnvbuildMinor = System.getenv('Minor')
-	ext."build.Minor" = localbuildMinor != null ? localbuildMinor : systemEnvbuildMinor
+	  def localbuildMinor = properties.getProperty('Minor')
+	  def systemEnvbuildMinor = System.getenv('Minor')
+	  ext."build.Minor" = localbuildMinor != null ? localbuildMinor : systemEnvbuildMinor
 
-	def localbuildRevision = properties.getProperty('Revision') 
-	def systemEnvbuildRevision = System.getenv('Revision')
-	ext."build.Revision" = localbuildRevision != null ? localbuildRevision : systemEnvbuildRevision
+	  def localbuildRevision = properties.getProperty('Revision')
+	  def systemEnvbuildRevision = System.getenv('Revision')
+	  ext."build.Revision" = localbuildRevision != null ? localbuildRevision : systemEnvbuildRevision
 
-	def localbuildOffset = properties.getProperty('Offset') 
-	def systemEnvbuildOffset = System.getenv('Offset')
-	ext."build.Offset" = localbuildOffset != null ? localbuildOffset : systemEnvbuildOffset
-        def Versions=new Versions(ext."build.Major",ext."build.Minor",ext."build.Revision",ext."build.Offset")
-	logger.quiet("Configured versions Name:$Versions.androidVersionName Code:$Versions.androidVersionCode") 
+	  def localbuildOffset = properties.getProperty('Offset')
+	  def systemEnvbuildOffset = System.getenv('Offset')
+	  ext."build.Offset" = localbuildOffset != null ? localbuildOffset : systemEnvbuildOffset
+//    def Versions=new Versions(ext."build.Major",ext."build.Minor",ext."build.Revision",ext."build.Offset")
+//	  logger.quiet("Configured versions Name:$Versions.androidVersionName Code:$Versions.androidVersionCode")
   
-    compileSdkVersion Versions.androidCompileSdkVersion
+    compileSdkVersion 29
 
     defaultConfig {
-        applicationId Packages.name
-        minSdkVersion Versions.androidMinSdkVersion
+        applicationId "com.abona_erp.driver.app"
+        minSdkVersion 23
         targetSdkVersion 29
 
-        versionCode Versions.androidVersionCode
-        versionName Versions.androidVersionName
+        versionCode 1041600
+        versionName "1.4.16"
 	logger.quiet("Using versions for building name:$versionName code:$versionCode") 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -120,10 +116,10 @@ dependencies {
     // Logify
     implementation 'com.devexpress.logify:logify-alert-android:1.0.2'
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0'
 
-    implementation "com.google.android.material:material:1.3.0-alpha01"
+    implementation "com.google.android.material:material:1.3.0-alpha02"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -133,25 +129,24 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
-    implementation "androidx.work:work-runtime:2.3.4"
 
     // Room
     implementation "androidx.room:room-runtime:2.2.5"
     implementation 'androidx.room:room-rxjava2:2.2.5'
     annotationProcessor "androidx.room:room-compiler:2.2.5"
 
-    implementation 'com.google.firebase:firebase-analytics:17.4.4'
-    implementation 'com.google.firebase:firebase-messaging:20.2.3'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-messaging:20.2.4'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     // WorkManager:
-    implementation 'androidx.work:work-runtime:2.3.4'
+    implementation 'androidx.work:work-runtime:2.4.0'
 
     // Dagger2
-    implementation Dep.Dagger.core
-    annotationProcessor Dep.Dagger.compiler
-    implementation Dep.Dagger.androidSupport
-    annotationProcessor Dep.Dagger.androidProcessor
+    implementation "com.google.dagger:dagger:2.13"
+    annotationProcessor "com.google.dagger:dagger-compiler:2.13"
+    implementation "com.google.dagger:dagger-android-support:2.13"
+    annotationProcessor "com.google.dagger:dagger-android-processor:2.13"
 
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
@@ -172,10 +167,9 @@ dependencies {
     implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.7'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'de.hdodenhof:circleimageview:3.0.2'
-    implementation 'com.github.zurche:plain-pie:v0.2.9'
+    //implementation 'com.github.zurche:plain-pie:v0.2.9'
     implementation 'com.github.linger1216:labelview:v1.1.2'
     implementation 'com.github.shivam301296:Android-CustomToast:1.0.1'
-    implementation 'com.shuhart.stepview:stepview:1.5.0'
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
@@ -189,8 +183,6 @@ dependencies {
     implementation 'com.ramijemli.percentagechartview:percentagechartview:0.3.0'
     implementation 'com.pnikosis:materialish-progress:1.7'
     implementation 'com.jaredrummler:colorpicker:1.1.0'
-    //implementation 'com.github.iamutkarshtiwari:Ananas:1.2.3'
-    //implementation 'me.jfenn.ColorPickerDialog:base:0.2.1'
     implementation 'com.github.chivorns.androidx:smartmaterialspinner:1.2.1'
 
     testImplementation 'junit:junit:4.13'

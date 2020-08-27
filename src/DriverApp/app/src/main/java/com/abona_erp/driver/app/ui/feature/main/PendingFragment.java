@@ -32,6 +32,7 @@ import com.abona_erp.driver.app.ui.feature.main.view_model.PendingViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PendingFragment extends Fragment implements CommonItemClickListener<Notify> {
@@ -65,7 +66,7 @@ public class PendingFragment extends Fragment implements CommonItemClickListener
     listView.setLayoutManager(llm);
     listView.setNestedScrollingEnabled(true);
     //CommItemAdapter adapter = new CommItemAdapter(getContext(), this);
-    CommItemAdapterExt adapter = new CommItemAdapterExt(getContext());
+    CommItemAdapterExt adapter = new CommItemAdapterExt(getContext(), this);
     listView.setAdapter(adapter);
     
     viewModel.getAllPendingNotifications().observe(getViewLifecycleOwner(),
@@ -77,6 +78,8 @@ public class PendingFragment extends Fragment implements CommonItemClickListener
           //adapter.setList(notifies);
           adapter.setDataList(notifies);
           App.eventBus.post(new BadgeCountEvent(0, notifies.size()));
+        } else {
+          adapter.setDataList(new ArrayList<>());
         }
       }
     });

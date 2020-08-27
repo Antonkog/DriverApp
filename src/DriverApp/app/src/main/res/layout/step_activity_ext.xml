@@ -438,7 +438,6 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="3dp"
     android:descendantFocusability="blocksDescendants"
     android:visibility="gone"
     tools:visibility="visible">
@@ -447,7 +446,10 @@
       android:id="@+id/rv_sub_list"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="7dp"
+      android:layout_marginBottom="5dp"
+      android:layout_marginStart="5dp"
+      android:layout_marginEnd="5dp"
+      android:background="#fff"
       tools:listitem="@layout/step_activity_with_delay_reasons"
       />
 
