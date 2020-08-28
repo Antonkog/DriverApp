@@ -3,7 +3,7 @@ package com.redhotapp.driverapp.data.local.db
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 
-@Entity(tableName = "activity_entity", indices = arrayOf(Index(value = ["activityId", "mandantId", "taskpId"])),
+@Entity(tableName = "activity_entity", indices = arrayOf(Index(value = ["taskpId"])),
     foreignKeys = [
         ForeignKey(entity = TaskEntity::class,
             parentColumns = ["taskId"],

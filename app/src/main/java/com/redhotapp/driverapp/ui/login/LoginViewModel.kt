@@ -19,14 +19,7 @@ import com.redhotapp.driverapp.data.Constant
 import com.redhotapp.driverapp.data.local.preferences.PrivatePreferences
 import com.redhotapp.driverapp.data.local.preferences.putAny
 import com.redhotapp.driverapp.data.local.preferences.putLong
-import com.redhotapp.driverapp.data.model.CommItem
-import com.redhotapp.driverapp.data.model.CommResponseItem
-import com.redhotapp.driverapp.data.model.DataType
-import com.redhotapp.driverapp.data.model.Header
-import com.redhotapp.driverapp.data.model.abona.CommItem
-import com.redhotapp.driverapp.data.model.abona.DataType
-import com.redhotapp.driverapp.data.model.abona.DeviceProfileItem
-import com.redhotapp.driverapp.data.model.abona.Header
+import com.redhotapp.driverapp.data.model.*
 import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
 import com.redhotapp.driverapp.ui.utils.DeviceUtils
@@ -130,16 +123,15 @@ class LoginViewModel
 
 
     private fun getCommItem(): CommItem {
-        val commItem = CommItem()
-        val header = Header(DataType.DEVICE_PROFILE.dataType, DeviceUtils.getUniqueID(context))
 
+        val header = Header(DataType.DEVICE_PROFILE.dataType, DeviceUtils.getUniqueID(context))
+        val commItem = CommItem(header = header)
         val deviceProfileItem = DeviceProfileItem()
         deviceProfileItem.instanceId = PrivatePreferences.getFCMToken(context)
         deviceProfileItem.deviceId =  DeviceUtils.getUniqueID(context)
         deviceProfileItem.model = Build.MODEL
         deviceProfileItem.manufacturer = Build.MANUFACTURER
         val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaDateFormat, Locale.getDefault())
-
         dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
         val currentTimestamp = Date()
         deviceProfileItem.createdDate = dfUtc.format(currentTimestamp)

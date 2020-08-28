@@ -13,5 +13,5 @@ data class OrderDetails(
     @SerializedName("ReferenceIdCustomer1")
     val referenceIdCustomer1: String,
     @SerializedName("ReferenceIdCustomer2")
-    val referenceIdCustomer2: Any
+    val referenceIdCustomer2: String
 )

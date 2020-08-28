@@ -1,10 +1,6 @@
 package com.redhotapp.driverapp.data.remote
 
-import com.redhotapp.driverapp.data.model.CommResponseItem
-import com.redhotapp.driverapp.data.model.TokenResponse
-import com.redhotapp.driverapp.data.model.abona.AppFileInterchangeItem
-import com.redhotapp.driverapp.data.model.abona.CommItem
-import com.redhotapp.driverapp.data.model.abona.ResultOfAction
+import com.redhotapp.driverapp.data.model.*
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
@@ -30,7 +26,7 @@ interface ApiService {
 //
     @POST("api/Activity/Activity")
     fun postActivity(deviceId: String): Observable<CommResponseItem>
-
+//
     @GET("api/uploader/documents")
     fun getDocuments(@Query("mandantId") mandantId: Int,@Query("orderNo") orderNo: Int, @Query("deviceId") deviceId: String ): Single<List<AppFileInterchangeItem>>
 

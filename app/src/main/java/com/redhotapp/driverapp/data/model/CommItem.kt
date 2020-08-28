@@ -3,13 +3,17 @@ package com.redhotapp.driverapp.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class CommItem(
+data class  CommItem @JvmOverloads constructor(
     @SerializedName("CompressedTasksCount")
-    val compressedTasksCount: Int,
+    val compressedTasksCount: Int? = null,
     @SerializedName("Header")
     val header: Header,
     @SerializedName("PercentItem")
-    val percentItem: PercentItem,
+    var percentItem: PercentItem? = null,
     @SerializedName("TaskItem")
-    val taskItem: TaskItem
+    var taskItem: TaskItem? = null,
+    @SerializedName("ActivityItem")
+    var activityItem: Activity? = null,
+    @SerializedName("DeviceProfileItem")
+    var deviceProfileItem: DeviceProfileItem? = null
 )

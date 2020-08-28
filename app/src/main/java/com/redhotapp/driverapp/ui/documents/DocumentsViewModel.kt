@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import com.redhotapp.driverapp.data.Constant
-import com.redhotapp.driverapp.data.model.abona.AppFileInterchangeItem
+import com.redhotapp.driverapp.data.model.AppFileInterchangeItem
 import com.redhotapp.driverapp.data.remote.ApiRepository
 import com.redhotapp.driverapp.ui.base.BaseViewModel
 import com.redhotapp.driverapp.ui.utils.DeviceUtils

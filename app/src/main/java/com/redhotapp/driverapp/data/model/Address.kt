@@ -13,13 +13,13 @@ data class Address(
     @SerializedName("Name1")
     val name1: String,
     @SerializedName("Name2")
-    val name2: Any,
+    val name2: String,
     @SerializedName("Nation")
     val nation: String,
     @SerializedName("Note")
-    val note: Any,
+    val note: String,
     @SerializedName("State")
-    val state: Any,
+    val state: String,
     @SerializedName("Street")
     val street: String,
     @SerializedName("ZIP")

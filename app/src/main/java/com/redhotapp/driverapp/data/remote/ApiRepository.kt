@@ -27,5 +27,5 @@ interface ApiRepository {
     fun registerDevice(commItem: CommItem): Observable<ResultOfAction>
     fun getClientEndpoint(clientId: String): Observable<JsonObject>
     fun getAuthToken(grantType : String, userName : String, password : String) : Observable<Response<TokenResponse>>
-
+    fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String ): Single<List<AppFileInterchangeItem>>
 }

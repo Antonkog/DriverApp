@@ -12,6 +12,7 @@ import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.redhotapp.driverapp.ui.utils.DeviceUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -70,5 +71,13 @@ class ApiRepositoryImpl(val appDataBase: AppDatabase, val rabbit : RabbitService
 
     override fun getAuthToken(grantType : String, userName : String, password : String): Observable<Response<TokenResponse>> {
         return  api.authentication(grantType, userName, password)
+    }
+
+    override fun getDocuments(
+        mandantId: Int,
+        orderNo: Int,
+        deviceId: String
+    ): Single<List<AppFileInterchangeItem>> {
+        return api.getDocuments(mandantId,orderNo,deviceId)
     }
 }

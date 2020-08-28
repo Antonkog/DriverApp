@@ -54,9 +54,9 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 //        return dataSource.insertUser(user)
 //    }
 
-    fun setVisibleTaskID(allTask: AllTask) {
-        Log.e(TAG, "saving task " + allTask.taskId)
-        prefs.putAny(Constant.currentVisibleTaskid, allTask.taskId)
+    fun setVisibleTaskID(taskEntity: TaskEntity) {
+        Log.e(TAG, "saving task " + taskEntity.taskId)
+        prefs.putAny(Constant.currentVisibleTaskid, taskEntity.taskId)
     }
 
 }

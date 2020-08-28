@@ -1,7 +1,6 @@
 package com.redhotapp.driverapp.data.remote
 
 import com.google.gson.JsonObject
-import com.redhotapp.driverapp.data.model.abona.ResultOfAction
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.Call
 import retrofit2.http.GET
