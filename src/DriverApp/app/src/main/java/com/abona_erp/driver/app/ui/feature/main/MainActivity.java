@@ -239,6 +239,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     // LOGIFY, AppCenter
     initializeLogify();
     initializeAppCenter();
+    Analytics.setEnabled(true);
   
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // GET A NEW OR EXISTING VIEWMODEL FROM THE VIEWMODELPROVIDER.
