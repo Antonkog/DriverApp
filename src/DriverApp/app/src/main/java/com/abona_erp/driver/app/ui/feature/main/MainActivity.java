@@ -143,6 +143,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   public void onResume() {
     super.onResume();
     isActivityVisible = true;
+    Analytics.trackEvent("App Active");
   }
 
   public void onPause() {
@@ -1108,7 +1109,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     AppCenter.start(getApplication(), "317a6cfb-0f3e-4810-bbc1-13dfa263c2eb",
       Analytics.class, Crashes.class);
     Analytics.setEnabled(true);
-    Analytics.trackEvent("App started");
   }
   
   private void showOkDialog(String title, String message) {
