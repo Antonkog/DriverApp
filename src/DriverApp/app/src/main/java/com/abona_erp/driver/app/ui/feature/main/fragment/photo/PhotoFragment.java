@@ -434,7 +434,8 @@ public class PhotoFragment extends Fragment
       
       @Override
       public void onClick(View view) {
-        
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+     /*
         if (mNotify == null || mNotify.getPhotoUrls() == null) return;
         
         int photoSize = mPhotoUrls.size();
@@ -577,6 +578,7 @@ public class PhotoFragment extends Fragment
         } else {
           App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         }
+        */
       }
     });
     
