@@ -37,6 +37,7 @@ import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
+import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.data.model.DelayReasonItem;
 import com.abona_erp.driver.app.data.model.DelaySource;
@@ -46,6 +47,8 @@ import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.data.model.UploadItem;
+import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.LogEvent;
@@ -67,6 +70,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,6 +84,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -120,7 +125,7 @@ public class BackgroundServiceWorker extends Service {
     }
   }
   
-  private volatile static int delay = 3000;
+  private volatile static int delay = 7000;
   public volatile static boolean allowRequest = true;
   public class Runner implements Runnable {
     @Override
@@ -206,6 +211,7 @@ public class BackgroundServiceWorker extends Service {
   
     handleConfirmationJob();
     handleDelayReasonJob();
+    handleUploadJob();
   }
   
   private void handleDelayReasonJob() {
@@ -303,6 +309,9 @@ public class BackgroundServiceWorker extends Service {
         if (offlineConfirmations.size() > 0) {
           Log.i(TAG, ">>>>>>> NOCH ZU BEARBEITEN......: " + offlineConfirmations.size() + " JOBS");
           Log.i(TAG, ">>>>>>> ID......................: " + offlineConfirmations.get(0).getId());
+          
+          if (offlineConfirmations.get(0).getUploadFlag())
+            return;
   
           mNotifyDAO.loadNotifyById(offlineConfirmations.get(0).getNotifyId())
             .observeOn(AndroidSchedulers.mainThread())
@@ -659,6 +668,188 @@ public class BackgroundServiceWorker extends Service {
           
         } else {
           Log.i(TAG, ">>>>>>> NO JOB DO WORK");
+        }
+      }
+    });
+  }
+  
+  private void handleUploadJob() {
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        List<OfflineConfirmation> offlineConfirmations = mOfflineConfirmationDAO.getAllOfflineConfirmations();
+        if (offlineConfirmations.size() > 0 && offlineConfirmations.get(0).getUploadFlag()) {
+          
+          Log.i(TAG, ">>>>>>>>>> Prepare Upload..: " + offlineConfirmations.get(0).getId());
+          
+          mNotifyDAO.loadNotifyById(offlineConfirmations.get(0).getNotifyId())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(new DisposableSingleObserver<Notify>() {
+              @Override
+              public void onSuccess(Notify notify) {
+    
+                if (notify == null || notify.getPhotoUrls() == null) {
+                  // Entfernen:
+                  AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                      mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                    }
+                  });
+                } else {
+                
+                  int photoSize = notify.getPhotoUrls().size();
+                  if (photoSize > 0) {
+                  
+                    boolean uploadFiles = false;
+                    for (int i = 0; i < photoSize; i++) {
+                      UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(i), UploadItem.class);
+                      if (!uploadItem.getUploaded()) {
+                        uploadFiles = true;
+                      }
+                    }
+                    if (uploadFiles) {
+                      
+                      // UPLOADING FILES....BEGIN
+                      
+                      for (int i = 0; i < notify.getPhotoUrls().size(); i++) {
+                        
+                        UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(i), UploadItem.class);
+                        if (uploadItem.getUploaded()) continue;
+                        
+                        if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
+  
+                          File file = new File(uploadItem.getUri());
+  
+                          RequestBody requestFile = RequestBody
+                            .create(MediaType.parse("multipart/form-data"), file);
+  
+                          MultipartBody.Part body =
+                            MultipartBody.Part.createFormData("",
+                              file.getName(), requestFile);
+  
+                          RequestBody mandantId = RequestBody.create(MediaType
+                            .parse("multipart/form-data"), String.valueOf(notify.getMandantId()));
+                          RequestBody orderNo = RequestBody.create(MediaType
+                            .parse("multipart/form-data"), String.valueOf(notify.getOrderNo()));
+                          RequestBody taskId = RequestBody.create(MediaType
+                            .parse("multipart/form-data"), String.valueOf(notify.getTaskId()));
+  
+                          RequestBody driverNo = RequestBody.create(MediaType
+                            .parse("multipart/form-data"), String.valueOf(-1));
+  
+                          String dmsType = "0";
+                          if (uploadItem.getDocumentType().equals(DMSDocumentType.NA)) {
+                            dmsType = "0";
+                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.POD_CMR)) {
+                            dmsType = "24";
+                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.PALLETS_NOTE)) {
+                            dmsType = "26";
+                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SAFETY_CERTIFICATE)) {
+                            dmsType = "27";
+                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SHIPMENT_IMAGE)) {
+                            dmsType = "28";
+                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_SHIPMENT_IMAGE)) {
+                            dmsType = "29";
+                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_VEHICLE_IMAGE)) {
+                            dmsType = "30";
+                          }
+  
+                          RequestBody documentType = RequestBody.create(MediaType
+                            .parse("multipart/form-data"), dmsType);
+  
+                          final int j = i;
+                          Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
+                            .upload(mandantId,orderNo,taskId,driverNo,documentType, body);
+                          call.enqueue(new Callback<UploadResult>() {
+                            @Override
+                            public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
+                              
+                              if (response.isSuccessful()) {
+  
+                                EventBus.getDefault().post(new LogEvent(getApplicationContext().getString(R.string.log_document_upload),
+                                  LogType.SERVER_TO_APP, LogLevel.INFO, getApplicationContext().getString(R.string.log_title_docs), notify != null? notify.getTaskId() : 0));
+  
+                                uploadItem.setUploaded(true);
+                                notify.getPhotoUrls().set(j, App.getInstance().gson.toJson(uploadItem));
+                                notify.setPhotoUrls(notify.getPhotoUrls());
+                                mNotifyDAO.updateNotify(notify);
+                                //mViewModel.update(mNotify);
+                                
+                                if (j >= photoSize-1) {
+                                  // Entfernen:
+                                  AsyncTask.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                      mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                                    }
+                                  });
+                                }
+                              
+                              } else {
+                                
+                                switch (response.code()) {
+                                  case 401:
+                                    handleAccessToken();
+                                    break;
+                                  default:
+                                    break;
+                                }
+                              }
+                            }
+  
+                            @Override
+                            public void onFailure(Call<UploadResult> call, Throwable t) {
+    
+                            }
+                          });
+                        
+                        } else {
+                          // Entfernen:
+                          AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                              mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                            }
+                          });
+                        }
+                      }
+                      
+                      // UPLOADING FILES....END
+                    
+                    } else {
+                      // Entfernen:
+                      AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                          mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                        }
+                      });
+                    }
+                  } else {
+                    // Entfernen:
+                    AsyncTask.execute(new Runnable() {
+                      @Override
+                      public void run() {
+                        mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                      }
+                    });
+                  }
+                }
+              }
+  
+              @Override
+              public void onError(Throwable e) {
+                // Entfernen:
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                  }
+                });
+              }
+            });
         }
       }
     });

@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -134,6 +135,8 @@ public class CommItemAdapterExt extends
   
     if (notify.isCurrentlySelected() && holder.root_content.getVisibility() != View.VISIBLE) {
       holder.root_content.setVisibility(View.VISIBLE);
+    } else if (!notify.isCurrentlySelected()) {
+      holder.root_content.setVisibility(View.GONE);
     }
     holder.root_header.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -662,31 +665,31 @@ public class CommItemAdapterExt extends
   
   private Drawable getDangerousGoodsClass(DangerousGoodsClass dangerousGoodsClass) {
     switch (dangerousGoodsClass) {
-      case CLASS_1_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives);
-      case CLASS_1_1_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_1);
-      case CLASS_1_2_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_2);
-      case CLASS_1_3_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_3);
-      case CLASS_1_4_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_4);
-      case CLASS_1_5_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_5);
-      case CLASS_1_6_EXPLOSIVES: return mResources.getDrawable(R.drawable.ic_class_1_explosives_1_6);
-      case CLASS_2_FLAMMABLE_GAS: return mResources.getDrawable(R.drawable.ic_class_2_flammable_gas);
-      case CLASS_2_NON_FLAMMABLE_GAS: return mResources.getDrawable(R.drawable.ic_class_2_non_flammable_gas);
-      case CLASS_2_POISON_GAS: return mResources.getDrawable(R.drawable.ic_class_2_poison_gas);
-      case CLASS_3_FLAMMABLE_LIQUID: return mResources.getDrawable(R.drawable.ic_class_3_flammable_liquid);
-      case CLASS_4_1_FLAMMABLE_SOLIDS: return mResources.getDrawable(R.drawable.ic_class_4_flammable_solid);
-      case CLASS_4_2_SPONTANEOUSLY_COMBUSTIBLE: return mResources.getDrawable(R.drawable.ic_class_4_spontaneously_combustible);
-      case CLASS_4_3_DANGEROUSE_WHEN_WET: return mResources.getDrawable(R.drawable.ic_class_4_dangerous_when_wet);
-      case CLASS_5_1_OXIDIZER: return mResources.getDrawable(R.drawable.ic_class_5_1_oxidizer);
-      case CLASS_5_2_ORAGNIC_PEROXIDES: return mResources.getDrawable(R.drawable.ic_class_5_2_organic_peroxides);
-      case CLASS_6_1_POISON: return mResources.getDrawable(R.drawable.ic_class_6_poison);
-      case CLASS_6_2_INFECTIOUS_SUBSTANCE: return mResources.getDrawable(R.drawable.ic_class_6_2_infectious_substance);
-      case CLASS_7_FISSILE: return mResources.getDrawable(R.drawable.ic_class_7_fissile);
-      case CLASS_7_RADIOACTIVE_I: return mResources.getDrawable(R.drawable.ic_class_7_radioactive_i);
-      case CLASS_7_RADIOACTIVE_II: return mResources.getDrawable(R.drawable.ic_class_7_radioactive_ii);
-      case CLASS_7_RADIOACTIVE_III: return mResources.getDrawable(R.drawable.ic_class_7_radioactive_iii);
-      case CLASS_8_CORROSIVE: return mResources.getDrawable(R.drawable.ic_class_8_corrosive);
-      case CLASS_9_MISCELLANEOUS: return mResources.getDrawable(R.drawable.ic_class_9_miscellaneus);
-      default: return mResources.getDrawable(R.drawable.ic_risk);
+      case CLASS_1_EXPLOSIVES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_1_explosives, null);
+      case CLASS_1_1_EXPLOSIVES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_1_explosives_1_1, null);
+      case CLASS_1_2_EXPLOSIVES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_1_explosives_1_2, null);
+      case CLASS_1_3_EXPLOSIVES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_1_explosives_1_3, null);
+      case CLASS_1_4_EXPLOSIVES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_1_explosives_1_4, null);
+      case CLASS_1_5_EXPLOSIVES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_1_explosives_1_5, null);
+      case CLASS_1_6_EXPLOSIVES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_1_explosives_1_6, null);
+      case CLASS_2_FLAMMABLE_GAS: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_2_flammable_gas, null);
+      case CLASS_2_NON_FLAMMABLE_GAS: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_2_non_flammable_gas, null);
+      case CLASS_2_POISON_GAS: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_2_poison_gas, null);
+      case CLASS_3_FLAMMABLE_LIQUID: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_3_flammable_liquid, null);
+      case CLASS_4_1_FLAMMABLE_SOLIDS: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_4_flammable_solid, null);
+      case CLASS_4_2_SPONTANEOUSLY_COMBUSTIBLE: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_4_spontaneously_combustible, null);
+      case CLASS_4_3_DANGEROUSE_WHEN_WET: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_4_dangerous_when_wet, null);
+      case CLASS_5_1_OXIDIZER: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_5_1_oxidizer, null);
+      case CLASS_5_2_ORAGNIC_PEROXIDES: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_5_2_organic_peroxides, null);
+      case CLASS_6_1_POISON: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_6_poison, null);
+      case CLASS_6_2_INFECTIOUS_SUBSTANCE: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_6_2_infectious_substance, null);
+      case CLASS_7_FISSILE: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_7_fissile, null);
+      case CLASS_7_RADIOACTIVE_I: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_7_radioactive_i, null);
+      case CLASS_7_RADIOACTIVE_II: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_7_radioactive_ii, null);
+      case CLASS_7_RADIOACTIVE_III: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_7_radioactive_iii, null);
+      case CLASS_8_CORROSIVE: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_8_corrosive, null);
+      case CLASS_9_MISCELLANEOUS: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_class_9_miscellaneus, null);
+      default: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_risk, null);
     }
   }
 }

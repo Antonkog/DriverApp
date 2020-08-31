@@ -19,6 +19,9 @@ public class OfflineConfirmation {
   @ColumnInfo(name = "confirm_type")
   private int confirmType;
   
+  @ColumnInfo(name = "upload_flag")
+  private boolean uploadFlag;
+  
   public int getId() {
     return id;
   }
@@ -50,4 +53,13 @@ public class OfflineConfirmation {
   public void setConfirmType(int confirmType) {
     this.confirmType = confirmType;
   }
+  
+  public boolean getUploadFlag() {
+    return uploadFlag;
+  }
+  
+  public void setUploadFlag(boolean enableFlag) {
+    this.uploadFlag = enableFlag;
+  }
+  
 }
