@@ -36,7 +36,7 @@ import com.abona_erp.driver.core.base.ContextUtils;
   LogItem.class,
   DelayReasonEntity.class,
   OfflineDelayReasonEntity.class
-}, version = 6, exportSchema = false)
+}, version = 7, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class DriverDatabase extends RoomDatabase {
 
@@ -58,13 +58,21 @@ public abstract class DriverDatabase extends RoomDatabase {
           INSTANCE = Room.databaseBuilder(ContextUtils.getApplicationContext(),
             DriverDatabase.class, "abona_driver77")
             .allowMainThreadQueries()
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .build();
         }
       }
     }
     return INSTANCE;
   }
+  
+  static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+    @Override
+    public void migrate(@NonNull SupportSQLiteDatabase database) {
+      database.execSQL("ALTER TABLE offline_confirmation "
+        + " ADD COLUMN update_flag BOOLEAN NOT NULL DEFAULT 0");
+    }
+  };
 
   static final Migration MIGRATION_5_6 = new Migration(5, 6) {
     @Override

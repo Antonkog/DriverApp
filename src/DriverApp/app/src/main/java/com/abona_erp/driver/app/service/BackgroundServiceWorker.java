@@ -206,6 +206,7 @@ public class BackgroundServiceWorker extends Service {
   
     handleConfirmationJob();
     handleDelayReasonJob();
+    handleUploadJob();
   }
   
   private void handleDelayReasonJob() {
@@ -303,6 +304,9 @@ public class BackgroundServiceWorker extends Service {
         if (offlineConfirmations.size() > 0) {
           Log.i(TAG, ">>>>>>> NOCH ZU BEARBEITEN......: " + offlineConfirmations.size() + " JOBS");
           Log.i(TAG, ">>>>>>> ID......................: " + offlineConfirmations.get(0).getId());
+          
+          if (offlineConfirmations.get(0).getUploadFlag())
+            return;
   
           mNotifyDAO.loadNotifyById(offlineConfirmations.get(0).getNotifyId())
             .observeOn(AndroidSchedulers.mainThread())
@@ -659,6 +663,20 @@ public class BackgroundServiceWorker extends Service {
           
         } else {
           Log.i(TAG, ">>>>>>> NO JOB DO WORK");
+        }
+      }
+    });
+  }
+  
+  private void handleUploadJob() {
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        List<OfflineConfirmation> offlineConfirmations = mOfflineConfirmationDAO.getAllOfflineConfirmations();
+        if (offlineConfirmations.size() > 0 && offlineConfirmations.get(0).getUploadFlag()) {
+          
+          Log.i(TAG, ">>>>>>>>>> Prepare Upload..: " + offlineConfirmations.get(0).getId());
+          
         }
       }
     });
