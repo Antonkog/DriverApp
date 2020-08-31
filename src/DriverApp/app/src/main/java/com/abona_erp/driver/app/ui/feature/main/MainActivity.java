@@ -95,6 +95,9 @@ import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
 import com.kongzue.dialog.v3.MessageDialog;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -233,8 +236,9 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     registerNetworkChangeReceiver();
     registerLocaleReceiver();
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // LOGIFY
+    // LOGIFY, AppCenter
     initializeLogify();
+    initializeAppCenter();
   
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // GET A NEW OR EXISTING VIEWMODEL FROM THE VIEWMODELPROVIDER.
@@ -1098,8 +1102,12 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     client.setContext(this.getApplicationContext());
     client.startExceptionsHandling();
   }
-
-
+  
+  private void initializeAppCenter() {
+    // Initialize the AppCenter.
+    AppCenter.start(getApplication(), "317a6cfb-0f3e-4810-bbc1-13dfa263c2eb",
+      Analytics.class, Crashes.class);
+  }
   
   private void showOkDialog(String title, String message) {
     runOnUiThread(new Runnable() {
