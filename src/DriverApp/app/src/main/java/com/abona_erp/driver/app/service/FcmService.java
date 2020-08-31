@@ -36,6 +36,7 @@ import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.microsoft.appcenter.analytics.Analytics;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -74,6 +75,7 @@ public class FcmService extends FirebaseMessagingService {
     Log.d(TAG, "++ FCM Message... latency (" + (System.currentTimeMillis() - message.getSentTime()) + " ms)");
     mNotifyData.add(message);
     addLog(LogLevel.INFO, LogType.FCM,  getBaseContext().getString(R.string.log_title_fcm), message.getData().toString());
+    Analytics.trackEvent("FCM-Task");
   }
   
   @Override

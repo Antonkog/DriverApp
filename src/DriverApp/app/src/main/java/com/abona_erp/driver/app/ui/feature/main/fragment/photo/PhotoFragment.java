@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -26,9 +27,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
+import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
@@ -434,7 +438,36 @@ public class PhotoFragment extends Fragment
       
       @Override
       public void onClick(View view) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+        if (mNotify == null || mNotify.getPhotoUrls() == null) {
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+        } else {
+  
+          int photoSize = mPhotoUrls.size();
+          boolean uploadFiles = false;
+          for (int i = 0; i < photoSize; i++) {
+            UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(i), UploadItem.class);
+            if (!uploadItem.getUploaded()) {
+              uploadFiles = true;
+            }
+          }
+          if (uploadFiles) {
+            OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
+  
+            OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+            offlineConfirmation.setNotifyId(mNotify.getId());
+            offlineConfirmation.setUploadFlag(true);
+            AsyncTask.execute(new Runnable() {
+              @Override
+              public void run() {
+                dao.insert(offlineConfirmation);
+              }
+            });
+          }
+          
+          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+        }
+        
+        
      /*
         if (mNotify == null || mNotify.getPhotoUrls() == null) return;
         
