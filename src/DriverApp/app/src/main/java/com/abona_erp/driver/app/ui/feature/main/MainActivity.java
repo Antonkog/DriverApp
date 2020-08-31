@@ -239,7 +239,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     // LOGIFY, AppCenter
     initializeLogify();
     initializeAppCenter();
-    Analytics.setEnabled(true);
   
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // GET A NEW OR EXISTING VIEWMODEL FROM THE VIEWMODELPROVIDER.
@@ -1108,6 +1107,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     // Initialize the AppCenter.
     AppCenter.start(getApplication(), "317a6cfb-0f3e-4810-bbc1-13dfa263c2eb",
       Analytics.class, Crashes.class);
+    Analytics.setEnabled(true);
+    Analytics.trackEvent("App started");
   }
   
   private void showOkDialog(String title, String message) {
