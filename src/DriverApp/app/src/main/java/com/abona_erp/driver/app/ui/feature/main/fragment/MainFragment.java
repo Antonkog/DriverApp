@@ -11,13 +11,20 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
+import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
+import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.event.TabChangeEvent;
 import com.abona_erp.driver.app.ui.feature.main.TabsPagerAdapter;
 import com.abona_erp.driver.app.ui.widget.badges.Badge;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeSpan;
 import com.abona_erp.driver.app.ui.widget.badges.BadgeType;
 import com.google.android.material.tabs.TabLayout;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -54,8 +61,26 @@ public class MainFragment extends Fragment {
   }
   
   @Override
+  public void onStart() {
+    super.onStart();
+    App.eventBus.register(this);
+  }
+  
+  @Override
   public void onResume() {
     super.onResume();
+  }
+  
+  @Override
+  public void onStop() {
+    super.onStop();
+    App.eventBus.unregister(this);
+  }
+  
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onMessageEvent(TabChangeEvent event) {
+    Log.i("MainFragment", ">>>>>>>>>> " + " TAB CHANGE EVENT");
+    mViewPager.setCurrentItem(1);
   }
   
   private void initComponents(@NonNull View root) {

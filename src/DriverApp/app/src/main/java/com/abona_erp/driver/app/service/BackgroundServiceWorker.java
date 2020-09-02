@@ -310,7 +310,7 @@ public class BackgroundServiceWorker extends Service {
           Log.i(TAG, ">>>>>>> NOCH ZU BEARBEITEN......: " + offlineConfirmations.size() + " JOBS");
           Log.i(TAG, ">>>>>>> ID......................: " + offlineConfirmations.get(0).getId());
           
-          if (offlineConfirmations.get(0).getUploadFlag())
+          if (offlineConfirmations.get(0).getUploadFlag() == 1)
             return;
   
           mNotifyDAO.loadNotifyById(offlineConfirmations.get(0).getNotifyId())
@@ -678,7 +678,7 @@ public class BackgroundServiceWorker extends Service {
       @Override
       public void run() {
         List<OfflineConfirmation> offlineConfirmations = mOfflineConfirmationDAO.getAllOfflineConfirmations();
-        if (offlineConfirmations.size() > 0 && offlineConfirmations.get(0).getUploadFlag()) {
+        if (offlineConfirmations.size() > 0 && offlineConfirmations.get(0).getUploadFlag() == 1) {
           
           Log.i(TAG, ">>>>>>>>>> Prepare Upload..: " + offlineConfirmations.get(0).getId());
           
