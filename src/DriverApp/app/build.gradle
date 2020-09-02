@@ -34,8 +34,8 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
 
-        versionCode 1050000
-        versionName "1.05.00"
+        versionCode 1051800
+        versionName "1.05.18"
 	logger.quiet("Using versions for building name:$versionName code:$versionCode") 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -77,6 +77,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            if (keystore_password && key_alias && key_password) {
+                signingConfig signingConfigs.release
+            } else {
+                logger.error("You need to define KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD to enable debug and release signing!")
+            }
+        }
         release {
             lintOptions {
                 checkReleaseBuilds false

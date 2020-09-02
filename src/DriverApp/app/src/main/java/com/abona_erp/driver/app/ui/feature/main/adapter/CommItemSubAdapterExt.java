@@ -40,6 +40,7 @@ import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.TabChangeEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.CustomDelayReasonDialog;
@@ -195,6 +196,8 @@ public class CommItemSubAdapterExt
                 mData.setStatus(50);
                 mData.setData(App.getInstance().gsonUtc.toJson(commItem));
                 updateNotify(mData);
+                
+                App.eventBus.post(new TabChangeEvent());
             
                 EventBus.getDefault().post(new LogEvent(v.getContext().getString(R.string.log_activity_start_pressed),
                   LogType.APP_TO_SERVER, LogLevel.INFO, v.getContext().getString(R.string.log_title_activity), commItem.getTaskItem().getTaskId()));

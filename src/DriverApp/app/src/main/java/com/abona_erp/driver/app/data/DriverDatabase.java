@@ -70,7 +70,7 @@ public abstract class DriverDatabase extends RoomDatabase {
     @Override
     public void migrate(@NonNull SupportSQLiteDatabase database) {
       database.execSQL("ALTER TABLE offline_confirmation "
-        + " ADD COLUMN update_flag BOOLEAN NOT NULL DEFAULT 0");
+        + " ADD COLUMN upload_flag INTEGER DEFAULT 0 NOT NULL");
     }
   };
 

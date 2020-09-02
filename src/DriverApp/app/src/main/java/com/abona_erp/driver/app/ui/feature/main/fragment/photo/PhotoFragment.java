@@ -455,7 +455,7 @@ public class PhotoFragment extends Fragment
   
             OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
             offlineConfirmation.setNotifyId(mNotify.getId());
-            offlineConfirmation.setUploadFlag(true);
+            offlineConfirmation.setUploadFlag(1);
             AsyncTask.execute(new Runnable() {
               @Override
               public void run() {
