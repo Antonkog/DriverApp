@@ -198,6 +198,14 @@
 
     </LinearLayout>
 
+    <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/btn_add_delay_reason"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/ic_plus"
+      />
+
     <com.abona_erp.driver.app.ui.widget.AsapTextView
       android:id="@+id/tv_delay_reason_in_minutes"
       android:layout_width="wrap_content"
@@ -210,21 +218,6 @@
       android:text="0 min"
       android:textColor="#10ac84"
       android:textSize="18sp"
-      />
-
-    <View
-      android:layout_width="1dp"
-      android:layout_height="match_parent"
-      android:background="@color/grey_10"
-      android:layout_margin="5dp"
-      />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-      android:id="@+id/btn_add_delay_reason"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_vertical"
-      android:src="@drawable/ic_plus"
       />
 
   </LinearLayout>
