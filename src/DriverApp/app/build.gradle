@@ -35,7 +35,7 @@ android {
         targetSdkVersion 29
 
         versionCode 1051800
-        versionName "1.05.18"
+        versionName "1.05.00"
 	logger.quiet("Using versions for building name:$versionName code:$versionCode") 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -95,7 +95,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // Set signing config if keystore variables are set.
             if (keystore_password && key_alias && key_password) {
-                signingConfig signingConfigs.release
+                    signingConfig signingConfigs.release
             } else {
                 logger.error("You need to define KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD to enable debug and release signing!")
             }
