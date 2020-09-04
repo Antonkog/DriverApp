@@ -232,8 +232,10 @@ public class CommItemSubAdapterExt
               commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mData);
+              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
           
               //CommItem currItem = App.getInstance().gsonUtc.fromJson(mNotify.getData(), CommItem.class);
+              /*
               if (i == mDataList.size() -1) {
             
                 if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
@@ -254,6 +256,7 @@ public class CommItemSubAdapterExt
                         updateNotify(notify);
                     
                         addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                        notifyDataSetChanged();
                       }
                   
                       @Override
@@ -262,7 +265,7 @@ public class CommItemSubAdapterExt
                       }
                     });
                 }
-              }
+              }*/
             }
             continue;
           }
@@ -282,6 +285,33 @@ public class CommItemSubAdapterExt
               updateNotify(mData);
           
               addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
+              if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
+                NotifyDao dao = DriverDatabase.getDatabase().notifyDao();
+                dao.loadNotifyByTaskId(commItem.getTaskItem().getNextTaskId())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new DisposableSingleObserver<Notify>() {
+                    @Override
+                    public void onSuccess(Notify notify) {
+        
+                      // I found next task and start it.
+                      CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
+                      //nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                      //nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                      notify.setStatus(50);
+                      notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
+                      updateNotify(notify);
+        
+                      //addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    }
+      
+                    @Override
+                    public void onError(Throwable e) {
+                      // IGNORE.
+                    }
+                  });
+              }
             }
             break;
           }
@@ -481,6 +511,7 @@ public class CommItemSubAdapterExt
           //holder.btn_activity_next.setText("Finish");
       
           CommItem currItem = App.getInstance().gsonUtc.fromJson(mData.getData(), CommItem.class);
+          
           if (i == mDataList.size() -1) {
             mData.setStatus(100);
             currItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
@@ -498,13 +529,13 @@ public class CommItemSubAdapterExt
                 
                     // I found next task and start it.
                     CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
-                    nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                    nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                    //nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                    //nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
                     notify.setStatus(50);
                     notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                     updateNotify(notify);
                 
-                    addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    //addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                   }
               
                   @Override
@@ -512,6 +543,7 @@ public class CommItemSubAdapterExt
                     // IGNORE.
                   }
                 });
+              continue;
             }
           }
           continue;
