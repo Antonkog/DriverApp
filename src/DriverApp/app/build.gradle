@@ -34,8 +34,8 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
 
-        versionCode 1051800
-        versionName "1.05.18"
+        versionCode 1050000
+        versionName "1.05.00"
 	logger.quiet("Using versions for building name:$versionName code:$versionCode") 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
