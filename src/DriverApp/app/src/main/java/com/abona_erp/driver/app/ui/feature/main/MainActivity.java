@@ -66,6 +66,7 @@ import com.abona_erp.driver.app.ui.event.HistoryClick;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
+import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.fragment.DetailFragment;
@@ -739,6 +740,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   public void onMessageEvent(ProtocolEvent event) {
     loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_PROTOCOL),
       null), ProtocolFragment.newInstance());
+  }
+  
+  @Subscribe
+  public void onMessageEvent(RestApiErrorEvent event) {
+    showOkDialog("Warning", event.getMessage());
   }
   
   @Subscribe

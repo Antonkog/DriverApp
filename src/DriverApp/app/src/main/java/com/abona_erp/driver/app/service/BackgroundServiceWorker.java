@@ -12,8 +12,10 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.abona_erp.driver.app.App;
@@ -56,6 +58,7 @@ import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
+import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
@@ -64,6 +67,10 @@ import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
+import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
+import com.kongzue.dialog.util.BaseDialog;
+import com.kongzue.dialog.util.DialogSettings;
+import com.kongzue.dialog.v3.MessageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
@@ -373,6 +380,9 @@ public class BackgroundServiceWorker extends Service {
 
                       allowRequest = true;
                       if (response.isSuccessful()) {
+                        if (!response.body().getIsSuccess() && !response.body().getIsException()) {
+                          showErrorMessage(response.body().getText());
+                        }
                         if (response.body() != null && response.body().getIsSuccess()) {
                           
                           if (response.body().getCommItem().getPercentItem() != null) {
@@ -404,8 +414,11 @@ public class BackgroundServiceWorker extends Service {
                           });
                         } else {
             
-                          if (response.body().getIsException())
+                          if (response.body().getIsException()) {
+                            showErrorMessage(response.body().getText());
                             return;
+                          }
+                          
   
                           if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
@@ -518,7 +531,13 @@ public class BackgroundServiceWorker extends Service {
                           EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_error),
                                   LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
                                   confirmationItem.getTaskId()));
+  
+                          showErrorMessage(response.body().getText());
                           return;
+                        }
+                        
+                        if (!response.body().getIsSuccess() && !response.body().getIsException()) {
+                          showErrorMessage(response.body().getText());
                         }
 
 
@@ -574,6 +593,8 @@ public class BackgroundServiceWorker extends Service {
                             }
                           });
                         } else {
+                          
+                          
   
                           if (response.body() != null && response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
@@ -1278,6 +1299,10 @@ public class BackgroundServiceWorker extends Service {
     } catch (Exception e) {
       Log.d(TAG, e.getMessage());
     }
+  }
+  
+  private void showErrorMessage(String message) {
+    App.eventBus.post(new RestApiErrorEvent(message));
   }
   
   private void handleAccessToken() {
