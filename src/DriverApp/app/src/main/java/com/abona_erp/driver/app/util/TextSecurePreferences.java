@@ -34,7 +34,7 @@ public class TextSecurePreferences {
   private static final String PREF_ENDPOINT                    = "pref_endpoint";
   private static final String PREF_CLIENT_ID                   = "pref_client_id";
   
-  
+  private static final String PREF_REST_API_VERSION            = "pref_rest_api_version";
   
   
   
@@ -59,7 +59,16 @@ public class TextSecurePreferences {
   
   public static final String PREF_STOP_SERVICE = "pref_stop_service";
   public static final String PREF_REGISTRATION_STARTED = "pref_registration_started";
+  
+  public static String getRestApiVersion() {
+    return getStringPreference(ContextUtils.getApplicationContext(),
+      PREF_REST_API_VERSION, "");
+  }
 
+  public static void setRestApiVersion(String restApiVersion) {
+    setStringPreference(ContextUtils.getApplicationContext(),
+      PREF_REST_API_VERSION, restApiVersion);
+  }
 
   public static boolean isRegistrationStarted() {
     return getBooleanPreference(ContextUtils.getApplicationContext(),

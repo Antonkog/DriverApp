@@ -14,6 +14,7 @@ import com.abona_erp.driver.app.data.remote.FCMService;
 import com.abona_erp.driver.app.data.remote.FileDownloadService;
 import com.abona_erp.driver.app.data.remote.FileUploadService;
 import com.abona_erp.driver.app.data.remote.RemoteConstants;
+import com.abona_erp.driver.app.data.remote.RestService;
 import com.abona_erp.driver.app.data.remote.TaskService;
 import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
@@ -56,6 +57,7 @@ public class ApiManager implements Manager {
   private FileDownloadService mFileDownloadService;
   private TaskService mTaskService;
   private DelayReasonService mDelayReasonService;
+  private RestService mRestService;
 
   static OkHttpClient.Builder apiClientBuilder;
   static OkHttpClient.Builder authClientBuilder;
@@ -71,6 +73,16 @@ public class ApiManager implements Manager {
   
   public static Request provideAuthRequest() {
     return makeAuthRequestBuilder().build();
+  }
+  
+  public RestService getRestApi() {
+    if (mRestService == null) {
+      mRestService = provideRetrofit(
+        TextSecurePreferences.getEndpoint()
+        + "api/AbonaApi/")
+        .create(RestService.class);
+    }
+    return mRestService;
   }
   
   public TaskService getTaskApi() {
@@ -199,8 +211,10 @@ public class ApiManager implements Manager {
     //String UA = System.getProperty("http.agent");
     httpClient.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", versionName));
     httpClient.addInterceptor(new RequestInterceptor());
+    /*
     if(BuildConfig.DEBUG && App.isTesting())
     httpClient.addInterceptor(new MockInterceptor());
+     */
     httpClient.addInterceptor(new NetworkConnectionInterceptor() {
       @Override
       public boolean isInternetAvailable() {

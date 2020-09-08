@@ -93,9 +93,9 @@
             android:layout_height="24dp"
             android:layout_gravity="center"
             android:rotation="90"
-            android:tint="@color/clrFont"
             android:src="@drawable/ic_arrow_right"
-            android:contentDescription="TODO" />
+            android:contentDescription="TODO"
+            app:tint="@color/clrFont" />
 
         </LinearLayout>
 
@@ -186,6 +186,29 @@
                 android:textStyle="bold"
                 android:textColor="@color/clrFont"
                 />
+
+          </LinearLayout>
+
+          <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="12sp"
+              android:text="REST-API"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/rest_api_version"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="14sp"
+              android:textStyle="bold"
+              android:textColor="@color/clrFont"
+              />
 
           </LinearLayout>
 
