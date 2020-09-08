@@ -66,6 +66,7 @@ public class SettingsFragment extends Fragment {
   //private TextInputEditText mTeIpAddress;
   
   private AsapTextView versionName;
+  private AsapTextView restApiVersion;
   private AsapTextView mDeviceId;
   private AsapTextView mDeviceModel;
   private AsapTextView mDeviceManufacturer;
@@ -146,6 +147,7 @@ public class SettingsFragment extends Fragment {
     
     mDeviceId = (AsapTextView)root.findViewById(R.id.tv_device_id);
     versionName = (AsapTextView)root.findViewById(R.id.app_version_name);
+    restApiVersion = (AsapTextView)root.findViewById(R.id.rest_api_version);
     mDeviceModel = (AsapTextView)root.findViewById(R.id.tv_device_model);
     mDeviceManufacturer = (AsapTextView)root.findViewById(R.id.tv_device_manufacturer);
     mDeviceSerial = (AsapTextView)root.findViewById(R.id.tv_device_serial);
@@ -154,6 +156,7 @@ public class SettingsFragment extends Fragment {
     
     try {
       versionName.setText(BuildConfig.VERSION_NAME);
+      restApiVersion.setText(TextSecurePreferences.getRestApiVersion());
       List<DeviceProfile> deviceProfiles = mDeviceDao.getDeviceProfiles();
       if (deviceProfiles.size() > 0) {
         DeviceProfile devProf = deviceProfiles.get(0);

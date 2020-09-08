@@ -310,6 +310,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       hideMainActivityItems();
     }
     startBackgroundWorkerService();
+    
+    fetchRestApiVersion();
   }
 
   private void observeConfirmations() {
@@ -1128,6 +1130,31 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               }
             })
           .show();
+      }
+    });
+  }
+  
+  private void fetchRestApiVersion() {
+    Call<String> call = App.getInstance().apiManager.getRestApi().getVersion();
+    call.enqueue(new Callback<String>() {
+      @Override
+      public void onResponse(Call<String> call, Response<String> response) {
+        if (response.isSuccessful() && response.body() != null) {
+          TextSecurePreferences.setRestApiVersion(response.body().toString());
+        } else {
+          
+          switch (response.code()) {
+            case 401:
+              handleAccessToken();
+              fetchRestApiVersion();
+              break;
+          }
+        }
+      }
+  
+      @Override
+      public void onFailure(Call<String> call, Throwable t) {
+    
       }
     });
   }
