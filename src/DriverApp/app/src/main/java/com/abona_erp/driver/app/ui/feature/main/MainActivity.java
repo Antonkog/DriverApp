@@ -60,6 +60,7 @@ import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.service.ForegroundAlarmService;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
+import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
@@ -607,7 +608,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   @Subscribe
   public void onMessageEvent(LogEvent event) {
     if(event.getLog().getType() == FCM) // hide History fragment for now, log only this events
-    mMainViewModel.addLog(event.getLog());
+      mMainViewModel.addLog(event.getLog());
+  }
+
+
+
+  @Subscribe
+  public void onMessageEvent(ChangeHistoryEvent event) {
+      mMainViewModel.addChangeHistory(event.getChangeHistory());
   }
 
 

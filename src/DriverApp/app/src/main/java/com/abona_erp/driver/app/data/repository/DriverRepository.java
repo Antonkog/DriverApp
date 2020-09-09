@@ -7,12 +7,14 @@ import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.ChangeHistoryDao;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
@@ -55,7 +57,8 @@ public class DriverRepository {
   
   private LogDAO mLogDAO;
   private DelayReasonDAO mDelayReasonDAO;
-  
+  private ChangeHistoryDao changeHistoryDao;
+
   public DriverRepository(Application application) {
     DriverDatabase db = DriverDatabase.getDatabase();
     mNotifyDao = db.notifyDao();
@@ -79,6 +82,8 @@ public class DriverRepository {
     mLogDAO = db.logDAO();
 
     mDelayReasonDAO = db.delayReasonDAO();
+
+    changeHistoryDao = db.changeHistoryDao();
   }
 
   public DeviceProfileDAO getmDeviceProfileDAO() {
@@ -226,7 +231,11 @@ public class DriverRepository {
     return mDelayReasonDAO.getDelayReasonByMandantId(mandantId, activityId, waitingReasonCode);
   }
 
-  private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
+  public void insert(ChangeHistory changeHistory) {
+    changeHistoryDao.insert(changeHistory);
+  }
+
+    private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
 
     private NotifyDao mDAO;
 

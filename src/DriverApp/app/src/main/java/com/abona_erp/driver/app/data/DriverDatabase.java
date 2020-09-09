@@ -9,6 +9,7 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.abona_erp.driver.app.data.converters.Converters;
+import com.abona_erp.driver.app.data.dao.ChangeHistoryDao;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
@@ -45,6 +46,7 @@ public abstract class DriverDatabase extends RoomDatabase {
   public abstract DeviceProfileDAO deviceProfileDAO();
   public abstract OfflineConfirmationDAO offlineConfirmationDAO();
   public abstract LogDAO logDAO();
+  public abstract ChangeHistoryDao changeHistoryDao();
   public abstract DelayReasonDAO delayReasonDAO();
   public abstract OfflineDelayReasonDAO offlineDelayReasonDAO();
 
