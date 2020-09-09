@@ -27,6 +27,8 @@ import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
+import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
@@ -38,6 +40,7 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.DelayReasonItem;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.TabChangeEvent;
@@ -77,7 +80,6 @@ public class CommItemSubAdapterExt
   private static final String NOT_SET_TIMESTAMP_GLYPH = "--.--.---- --:--:--";
   
   private final Context mContext;
-  private final Resources mResources;
   private final LayoutInflater mInflater;
   
   private Notify mData;
@@ -91,7 +93,6 @@ public class CommItemSubAdapterExt
   
   public CommItemSubAdapterExt(Context ctx) {
     mContext = ctx;
-    mResources = mContext.getResources();
     mInflater = LayoutInflater.from(mContext);
   
     mSdfIn = new SimpleDateFormat(DATE_FORMAT_IN, Locale.getDefault());
@@ -201,8 +202,10 @@ public class CommItemSubAdapterExt
             
                 EventBus.getDefault().post(new LogEvent(v.getContext().getString(R.string.log_activity_start_pressed),
                   LogType.APP_TO_SERVER, LogLevel.INFO, v.getContext().getString(R.string.log_title_activity), commItem.getTaskItem().getTaskId()));
-            
-                addOfflineWork(mData.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+
+
+
+                addOfflineWork(commItem, mData.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                 return false;
               }
             })
@@ -232,7 +235,7 @@ public class CommItemSubAdapterExt
               commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mData);
-              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addOfflineWork(commItem, mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
           
               //CommItem currItem = App.getInstance().gsonUtc.fromJson(mNotify.getData(), CommItem.class);
               /*
@@ -276,7 +279,7 @@ public class CommItemSubAdapterExt
             mData.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mData);
         
-            addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            addOfflineWork(commItem, mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
         
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
               commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
@@ -284,7 +287,7 @@ public class CommItemSubAdapterExt
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mData);
           
-              addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addOfflineWork(commItem, mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
             } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
               if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
                 NotifyDao dao = DriverDatabase.getDatabase().notifyDao();
@@ -324,7 +327,7 @@ public class CommItemSubAdapterExt
             updateNotify(mData);
         
             if (i != 0)
-              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addOfflineWork(commItem, mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
             break;
           }
         }
@@ -706,12 +709,21 @@ public class CommItemSubAdapterExt
     });
   }
   
-  private void addOfflineWork(int notifyId, int activityId, int confirmationType) {
+  private void addOfflineWork(CommItem commItem, int notifyId, int activityId, int confirmationType) {
     OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
-    
+
     OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
     offlineConfirmation.setNotifyId(notifyId);
     offlineConfirmation.setActivityId(activityId);
+
+    try {
+      EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_open_confirm), mContext.getString(R.string.log_activity_start_pressed),
+              LogType.APP_TO_SERVER, ActionType.START_ACTIVITY, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+              commItem.getTaskItem().getTaskId(), 0, commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), offlineConfirmation.getId()));
+    } catch (Exception e) {
+      Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commitem" + commItem.toString());
+    }
+
     offlineConfirmation.setConfirmType(confirmationType);
     AsyncTask.execute(new Runnable() {
       @Override

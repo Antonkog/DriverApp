@@ -18,10 +18,13 @@ import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
+import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.ui.event.BadgeCountEvent;
+import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.adapter.CommItemAdapter;
@@ -102,13 +105,13 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
     if (!notify.getRead()) {
       notify.setRead(true);
       viewModel.update(notify);
-      EventBus.getDefault().post(new LogEvent(getContext().getString(R.string.log_confirm_open), LogType.APP_TO_SERVER, LogLevel.INFO, getContext().getString(R.string.log_title_open_confirm), notify.getTaskId()));
       DriverDatabase db = DriverDatabase.getDatabase();
       OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
   
       OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
       offlineConfirmation.setNotifyId((int)notify.getId());
       offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
+      postHistoryEvent(notify, offlineConfirmation);
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
@@ -117,7 +120,13 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
       });
     }
   }
-  
+
+  private void postHistoryEvent(Notify notify, OfflineConfirmation offlineConfirmation) {
+    EventBus.getDefault().post(new ChangeHistoryEvent(getContext().getString(R.string.log_title_open_confirm), getContext().getString(R.string.log_confirm_open),
+            LogType.APP_TO_SERVER, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+            notify.getTaskId(), notify.getId(), notify.getOrderNo(), notify.getMandantId(), offlineConfirmation.getId()));
+  }
+
   @Override
   public void onDblClick(View view, int position, Notify notify) {
     if (notify != null) {
@@ -130,6 +139,7 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
         OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
         offlineConfirmation.setNotifyId((int)notify.getId());
         offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
+        postHistoryEvent(notify, offlineConfirmation);
         AsyncTask.execute(new Runnable() {
           @Override
           public void run() {

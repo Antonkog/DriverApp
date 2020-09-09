@@ -13,7 +13,10 @@ import android.util.Log;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
+import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
@@ -24,6 +27,7 @@ import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
+import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.ProfileEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
@@ -35,6 +39,8 @@ import com.abona_erp.driver.app.util.concurrent.ThreadExecutor;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -267,6 +273,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
                     OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
                     offlineConfirmation.setNotifyId(notify.getId());
                     offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal());
+                    postHistoryEvent(notify, offlineConfirmation);
                     AsyncTask.execute(new Runnable() {
                       @Override
                       public void run() {
@@ -347,7 +354,15 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
     }
     mMediaPlayer.setOnPreparedListener(this);
   }
-  
+
+
+  private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
+    EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_task_updated_fcm),
+            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER,
+            item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
+  }
+
+
   private void startRingtone(Uri uri) {
     try {
       mMediaPlayer.reset();

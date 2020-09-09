@@ -100,4 +100,60 @@ public class ChangeHistory /*implements Serializable*/ {
   public void setCreatedAt(Date createdAt) {
     this.createdAt = createdAt;
   }
+
+  public void setActionType(ActionType actionType) {
+    this.actionType = actionType;
+  }
+
+  public void setState(ChangeHistoryState state) {
+    this.state = state;
+  }
+
+  public void setModifiedAt(Date modifiedAt) {
+    this.modifiedAt = modifiedAt;
+  }
+
+  public void setActivityId(int activityId) {
+    this.activityId = activityId;
+  }
+
+  public void setOrderNumber(int orderNumber) {
+    this.orderNumber = orderNumber;
+  }
+
+  public void setMandantID(int mandantID) {
+    this.mandantID = mandantID;
+  }
+
+  public void setOfflineConfirmationID(int offlineConfirmationID) {
+    this.offlineConfirmationID = offlineConfirmationID;
+  }
+
+  public ActionType getActionType() {
+    return actionType;
+  }
+
+  public ChangeHistoryState getState() {
+    return state;
+  }
+
+  public Date getModifiedAt() {
+    return modifiedAt;
+  }
+
+  public int getActivityId() {
+    return activityId;
+  }
+
+  public int getOrderNumber() {
+    return orderNumber;
+  }
+
+  public int getMandantID() {
+    return mandantID;
+  }
+
+  public int getOfflineConfirmationID() {
+    return offlineConfirmationID;
+  }
 }

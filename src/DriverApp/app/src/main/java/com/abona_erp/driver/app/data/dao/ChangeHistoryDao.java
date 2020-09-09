@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
-import com.abona_erp.driver.app.data.entity.LogItem;
 
 import java.util.List;
 

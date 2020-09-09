@@ -45,6 +45,8 @@ import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
+import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
@@ -670,6 +672,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
           OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
           offlineConfirmation.setNotifyId((int)notify.getId());
           offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
+          postHistoryEvent(notify, offlineConfirmation);
           AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -725,6 +728,12 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     }
   }
 
+
+  private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
+    EventBus.getDefault().post(new ChangeHistoryEvent(getResources().getString(R.string.log_title_open_confirm), getResources().getString(R.string.log_confirm_open),
+            LogType.APP_TO_SERVER, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+            item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
+  }
 
   @Subscribe
   public void onMessageEvent(VehicleRegistrationEvent event) {

@@ -17,6 +17,7 @@ import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.dao.OfflineDelayReasonDAO;
+import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
@@ -36,7 +37,8 @@ import com.abona_erp.driver.core.base.ContextUtils;
   OfflineConfirmation.class,
   LogItem.class,
   DelayReasonEntity.class,
-  OfflineDelayReasonEntity.class
+  OfflineDelayReasonEntity.class,
+  ChangeHistory.class
 }, version = 8, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class DriverDatabase extends RoomDatabase {
@@ -72,9 +74,9 @@ public abstract class DriverDatabase extends RoomDatabase {
   static final Migration MIGRATION_7_8 = new Migration(7, 8) {
     @Override
     public void migrate(@NonNull SupportSQLiteDatabase database) {
-      database.execSQL("CREATE TABLE IF NOT EXISTS `change_history` (`id` integer NOT NULL primary key autoincrement, " +
-              "`title` varchar(255), `message` text, `direction` integer,  `action_type` integer, `state` integer, `created_at` varchar(255), `modified_at` varchar(255), " +
-              "`task_id` integer, `activity_id` integer, `order_number` integer, `mandant_id` integer, `confirmation_id` integer)");
+      database.execSQL("CREATE TABLE IF NOT EXISTS `change_history` (`id` INTEGER NOT NULL primary key autoincrement, " +
+              "`title` varchar(255), `message` text, `direction` integer,  `action_type` integer, `state` integer, `created_at` text, `modified_at` text, " +
+              "`task_id` integer  NOT NULL, `activity_id` integer  NOT NULL, `order_number` integer NOT NULL, `mandant_id` integer NOT NULL, `confirmation_id` integer  NOT NULL)");
 
     }
   };

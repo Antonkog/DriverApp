@@ -26,6 +26,8 @@ import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
+import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
@@ -37,6 +39,7 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.DelayReasonItem;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -344,8 +347,8 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                     notify.setStatus(50);
                     notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                     updateNotify(notify);
-                    
-                    addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+
+                    addOfflineWork(currItem, notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                   }
   
                   @Override
@@ -525,11 +528,14 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                 mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
                 updateNotify(mNotify);
 
-                boolean exist = (commItem!= null && commItem.getTaskItem()!= null && commItem.getTaskItem().getTaskId()!= null);
-                EventBus.getDefault().post(new LogEvent(v.getContext().getString(R.string.log_activity_start_pressed),
-                        LogType.APP_TO_SERVER, LogLevel.INFO, v.getContext().getString(R.string.log_title_activity), exist? commItem.getTaskItem().getTaskId() : 0));
+                OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
 
-                addOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+                offlineConfirmation.setNotifyId(mNotify.getId());
+                offlineConfirmation.setActivityId(0);
+                offlineConfirmation.setConfirmType(ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+
+                addOfflineWork(commItem, mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                 return false;
               }
             })
@@ -580,7 +586,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                         notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                         updateNotify(notify);
             
-                        addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                        addOfflineWork(commItem, notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                       }
           
                       @Override
@@ -600,7 +606,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
             mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mNotify);
   
-            addOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            addOfflineWork(commItem, mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
             
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
               commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
@@ -608,7 +614,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
               mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mNotify);
               
-              addOfflineWork(mNotify.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addOfflineWork(commItem, mNotify.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
             }
             break;
           }
@@ -621,7 +627,7 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
             updateNotify(mNotify);
             
             if (i != 0)
-              addOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addOfflineWork(commItem, mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
             break;
           }
         }
@@ -643,13 +649,22 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
   
   }
   
-  private void addOfflineWork(int notifyId, int activityId, int confirmationType) {
+  private void addOfflineWork(CommItem commItem, int notifyId, int activityId, int confirmationType) {
     OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
     
     OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
     offlineConfirmation.setNotifyId(notifyId);
     offlineConfirmation.setActivityId(activityId);
     offlineConfirmation.setConfirmType(confirmationType);
+
+    try {
+      EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_open_confirm), mContext.getString(R.string.log_activity_start_pressed),
+              LogType.APP_TO_SERVER, ActionType.START_ACTIVITY, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+              commItem.getTaskItem().getTaskId(), 0, commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), offlineConfirmation.getId()));
+    } catch (Exception e) {
+      Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commitem" + commItem.toString());
+    }
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
