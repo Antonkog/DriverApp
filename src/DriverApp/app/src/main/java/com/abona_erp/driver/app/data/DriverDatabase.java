@@ -36,7 +36,7 @@ import com.abona_erp.driver.core.base.ContextUtils;
   LogItem.class,
   DelayReasonEntity.class,
   OfflineDelayReasonEntity.class
-}, version = 7, exportSchema = false)
+}, version = 8, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class DriverDatabase extends RoomDatabase {
 
@@ -58,14 +58,25 @@ public abstract class DriverDatabase extends RoomDatabase {
           INSTANCE = Room.databaseBuilder(ContextUtils.getApplicationContext(),
             DriverDatabase.class, "abona_driver77")
             .allowMainThreadQueries()
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
             .build();
         }
       }
     }
     return INSTANCE;
   }
-  
+
+
+  static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+    @Override
+    public void migrate(@NonNull SupportSQLiteDatabase database) {
+      database.execSQL("CREATE TABLE IF NOT EXISTS `change_history` (`id` integer NOT NULL primary key autoincrement, " +
+              "`title` varchar(255), `message` text, `direction` integer,  `action_type` integer, `state` integer, `created_at` varchar(255), `modified_at` varchar(255), " +
+              "`task_id` integer, `activity_id` integer, `order_number` integer, `mandant_id` integer, `confirmation_id` integer)");
+
+    }
+  };
+
   static final Migration MIGRATION_6_7 = new Migration(6, 7) {
     @Override
     public void migrate(@NonNull SupportSQLiteDatabase database) {

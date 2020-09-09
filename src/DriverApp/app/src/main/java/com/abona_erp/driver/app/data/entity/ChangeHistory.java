@@ -10,7 +10,7 @@ import com.abona_erp.driver.app.data.converters.LogType;
 
 import java.util.Date;
 
-@Entity(tableName = "logItem")
+@Entity(tableName = "change_history")
 @TypeConverters({ChangeHistoryState.class, ActionType.class, LogType.class, DateConverter.class})
 public class ChangeHistory /*implements Serializable*/ {
   
