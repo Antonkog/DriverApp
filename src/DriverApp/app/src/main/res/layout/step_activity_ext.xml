@@ -198,15 +198,31 @@
             tools:visibility="visible"
             />
 
-          <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btn_document_info"
+          <RelativeLayout
             android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:backgroundTint="#AEBBCF"
-            android:tint="@color/clrFont"
-            android:src="@drawable/ic_work"
-            android:visibility="visible"
-            />
+            android:layout_height="48dp">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+              android:id="@+id/btn_document_info"
+              android:layout_width="48dp"
+              android:layout_height="48dp"
+              android:backgroundTint="#AEBBCF"
+              android:tint="@color/clrFont"
+              android:src="@drawable/ic_work"
+              android:visibility="visible"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/tv_document_badge"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@drawable/badge_item_count"
+              android:layout_alignParentEnd="true"
+              android:textColor="@color/clrWhite"
+              android:textSize="12sp"
+              />
+
+          </RelativeLayout>
 
           <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_task_history"

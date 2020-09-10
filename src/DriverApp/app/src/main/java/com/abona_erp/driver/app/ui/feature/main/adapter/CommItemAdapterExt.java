@@ -28,6 +28,7 @@ import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.ActivityStep;
 import com.abona_erp.driver.app.data.model.AddressItem;
+import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ContactItem;
 import com.abona_erp.driver.app.data.model.DangerousGoods;
@@ -59,6 +60,7 @@ import com.abona_erp.driver.app.ui.widget.ProgressBarDrawable;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.flag_kit.FlagKit;
+import com.google.gson.Gson;
 import com.lid.lib.LabelImageView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -372,6 +374,27 @@ public class CommItemAdapterExt extends
     applyNotes(holder, taskItem.getNotes());
     applyContacts(holder, taskItem.getContacts());
     applyDocuments(holder, mCommItem.getDocumentItem());
+    
+    if (notify.getDocumentUrls() != null) {
+      ArrayList<String> documents = notify.getDocumentUrls();
+      if (documents != null && documents.size() > 0) {
+        Gson gson = new Gson();
+        AppFileInterchangeItem[] items = gson.fromJson(documents.get(0), AppFileInterchangeItem[].class);
+        if (items != null && items.length > 0) {
+          holder.tv_document_badge.setText(String.valueOf(items.length));
+          holder.tv_document_badge.setVisibility(View.VISIBLE);
+        } else {
+          holder.tv_document_badge.setText("0");
+          holder.tv_document_badge.setVisibility(View.GONE);
+        }
+      } else {
+        holder.tv_document_badge.setText("0");
+        holder.tv_document_badge.setVisibility(View.GONE);
+      }
+    } else {
+      holder.tv_document_badge.setText("0");
+      holder.tv_document_badge.setVisibility(View.GONE);
+    }
   }
   
   @Override
@@ -414,6 +437,7 @@ public class CommItemAdapterExt extends
     final AsapTextView tv_activity_step_status;
     final AsapTextView tv_activity_step_status_message;
     final RecyclerView rv_sub_list;
+    final AsapTextView tv_document_badge;
   
     final AsapTextView tv_header_notes;
     final AsapTextView tv_header_notes_minus;
@@ -465,6 +489,7 @@ public class CommItemAdapterExt extends
       rv_sub_list.setAdapter(adapterExt);
       tv_header_notes = (AsapTextView)itemView.findViewById(R.id.tv_header_notes);
       tv_header_notes_minus = (AsapTextView)itemView.findViewById(R.id.tv_header_notes_minus);
+      tv_document_badge = (AsapTextView)itemView.findViewById(R.id.tv_document_badge);
   
       btn_contact_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_contact_info);
       btn_notes_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_message_info);
