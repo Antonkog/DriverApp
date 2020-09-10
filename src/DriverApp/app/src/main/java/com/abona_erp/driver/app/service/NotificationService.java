@@ -358,7 +358,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
 
   private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
     EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_task_updated_fcm),
-            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER,
+            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
   }
 

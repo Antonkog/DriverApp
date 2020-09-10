@@ -16,7 +16,7 @@ import io.reactivex.Flowable;
 @Dao
 public interface ChangeHistoryDao {
 
-  @Query("SELECT * FROM change_history ORDER BY id DESC")
+  @Query("SELECT * FROM change_history ORDER BY modified_long DESC")
   LiveData<List<ChangeHistory>> getLogs();
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)

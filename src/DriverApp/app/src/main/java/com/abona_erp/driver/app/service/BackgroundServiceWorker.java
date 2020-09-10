@@ -691,7 +691,7 @@ public class BackgroundServiceWorker extends Service {
 
   private void postFcmTaskConfirmed(LastActivity lastActivity, CommItem commItemDB, List<OfflineConfirmation> offlineConfirmations) {
     EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_task_updated_fcm),
-            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.CONFIRMED,
+            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER,
             commItemDB.getTaskItem().getTaskId(), lastActivity.getId(), commItemDB.getTaskItem().getOrderNo(), commItemDB.getTaskItem().getMandantId(), offlineConfirmations.get(0).getId()));
   }
 

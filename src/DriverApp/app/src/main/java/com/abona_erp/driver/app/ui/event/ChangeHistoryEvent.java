@@ -16,8 +16,10 @@ public class ChangeHistoryEvent {
         ChangeHistory history = new ChangeHistory();
         history.setTitle(title);
         history.setMessage(message);
-        history.setCreatedAt(new Date());
-        history.setModifiedAt(new Date());
+        Date now  = new Date();
+        history.setCreatedAt(now);
+        history.setModifiedAt(now);
+        history.setTimeModifyLong(now.getTime());
         history.setType(type);
         history.setActionType(actionType);
         history.setState(state);

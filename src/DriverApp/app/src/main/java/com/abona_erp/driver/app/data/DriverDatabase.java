@@ -76,7 +76,7 @@ public abstract class DriverDatabase extends RoomDatabase {
     public void migrate(@NonNull SupportSQLiteDatabase database) {
       database.execSQL("CREATE TABLE IF NOT EXISTS `change_history` (`id` INTEGER NOT NULL primary key autoincrement, " +
               "`title` varchar(255), `message` text, `direction` integer,  `action_type` integer, `state` integer, `created_at` text, `modified_at` text, " +
-              "`task_id` integer  NOT NULL, `activity_id` integer  NOT NULL, `order_number` integer NOT NULL, `mandant_id` integer NOT NULL, `confirmation_id` integer  NOT NULL)");
+              "`modified_long` INTEGER  NOT NULL, `task_id` integer  NOT NULL, `activity_id` integer  NOT NULL, `order_number` integer NOT NULL, `mandant_id` integer NOT NULL, `confirmation_id` integer  NOT NULL)");
 
     }
   };

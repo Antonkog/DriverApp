@@ -38,6 +38,9 @@ public class ChangeHistory /*implements Serializable*/ {
   @ColumnInfo(name = "modified_at")
   private Date modifiedAt;
 
+  @ColumnInfo(name = "modified_long")
+  private long timeModifyLong;
+
   @ColumnInfo(name = "task_id")
   private int taskId;
 
@@ -127,6 +130,14 @@ public class ChangeHistory /*implements Serializable*/ {
 
   public void setOfflineConfirmationID(int offlineConfirmationID) {
     this.offlineConfirmationID = offlineConfirmationID;
+  }
+
+  public void setTimeModifyLong(long timeModifyLong) {
+    this.timeModifyLong = timeModifyLong;
+  }
+
+  public long getTimeModifyLong() {
+    return timeModifyLong;
   }
 
   public ActionType getActionType() {
