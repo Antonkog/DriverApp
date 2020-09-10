@@ -98,7 +98,7 @@ public class MainViewModel extends AndroidViewModel {
   }
 
   public void addChangeHistory(ChangeHistory item){
-    insert(item);
+    updateOrInsert(item);
   }
 
   public void addLog(String message, LogType type, LogLevel level, String title){
@@ -120,8 +120,8 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.insert(item);
   }
 
-  void insert(ChangeHistory changeHistory) {
-    mRepository.insert(changeHistory);
+  void updateOrInsert(ChangeHistory changeHistory) {
+    mRepository.updateOrInsert(changeHistory);
   }
 
   void insert(Notify notify) {

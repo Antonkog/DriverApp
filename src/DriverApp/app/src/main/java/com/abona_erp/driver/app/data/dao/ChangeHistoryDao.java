@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
 
@@ -23,6 +24,12 @@ public interface ChangeHistoryDao {
   
   @Query("DELETE FROM change_history")
   void deleteAll();
+
+  @Query("SELECT * FROM change_history WHERE task_id == :taskID  and order_number = :orderNumber and mandant_id = :mandantId LIMIT 1")
+  ChangeHistory selectByTaskOrderMandant(int taskID, int orderNumber, int mandantId);
+
+  @Update
+  void updateHistory(ChangeHistory changeHistory);
 
   @Query("SELECT COUNT(id) from change_history")
   Flowable<Integer> countLogItems();

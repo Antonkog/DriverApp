@@ -240,8 +240,14 @@ public class DriverRepository {
     return mDelayReasonDAO.getDelayReasonByMandantId(mandantId, activityId, waitingReasonCode);
   }
 
-  public void insert(ChangeHistory changeHistory) {
-    changeHistoryDao.insert(changeHistory);
+  public void updateOrInsert(ChangeHistory changeHistory) {
+    ChangeHistory existingHistoryItem = changeHistoryDao.selectByTaskOrderMandant(changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
+      if (existingHistoryItem != null){
+        changeHistory.setId(existingHistoryItem.getId());
+        changeHistoryDao.updateHistory(changeHistory);
+      } else {
+        changeHistoryDao.insert(changeHistory);
+      }
   }
 
     private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
