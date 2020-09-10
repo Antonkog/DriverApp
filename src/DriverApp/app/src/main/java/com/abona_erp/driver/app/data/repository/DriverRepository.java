@@ -93,7 +93,11 @@ public class DriverRepository {
   public LogDAO getLogsDAO() {
     return mLogDAO;
   }
-  
+
+  public ChangeHistoryDao getChangeHistoryDao() {
+    return changeHistoryDao;
+  }
+
   public LiveData<List<OfflineConfirmation>> getAllLiveDataConfirmations() {
     return mAllOfflineConfirmation;
   }
@@ -217,6 +221,11 @@ public class DriverRepository {
   public void deleteAllLogs() {
     new deleteAllLogsAsyncTask(mLogDAO).execute();
   }
+
+  public void deleteChangeHistory() {
+    new deleteHistoryAsyncTask(changeHistoryDao).execute();
+  }
+
   
   public long insert(DelayReasonEntity item) {
     new insertDelayReasonAsyncTask(mDelayReasonDAO).execute(item);
@@ -454,22 +463,37 @@ public class DriverRepository {
       return null;
     }
   }
-  
+
   static class deleteAllLogsAsyncTask extends AsyncTask<Void, Void, Void> {
-    
+
     private LogDAO _dao;
-    
+
     deleteAllLogsAsyncTask(LogDAO dao) {
       this._dao = dao;
     }
-    
+
     @Override
     protected Void doInBackground(Void... params) {
       _dao.deleteAll();
       return null;
     }
   }
-  
+
+  static class deleteHistoryAsyncTask extends AsyncTask<Void, Void, Void> {
+
+    private ChangeHistoryDao _dao;
+
+    deleteHistoryAsyncTask(ChangeHistoryDao dao) {
+      this._dao = dao;
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      _dao.deleteAll();
+      return null;
+    }
+  }
+
   static class insertDelayReasonAsyncTask extends AsyncTask<DelayReasonEntity, Void, Void> {
     
     private DelayReasonDAO dao;

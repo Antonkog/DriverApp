@@ -10,9 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.R;
-import com.abona_erp.driver.app.data.converters.LogLevel;
-import com.abona_erp.driver.app.data.converters.LogType;
-import com.abona_erp.driver.app.data.entity.LogItem;
+import com.abona_erp.driver.app.data.entity.ChangeHistory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,9 +20,9 @@ import java.util.TimeZone;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
     private final String TAG = "HistoryAdapter";
-    ArrayList<LogItem> history;
+    ArrayList<ChangeHistory> history;
 
-    public void swapData(List<LogItem> logItems) {
+    public void swapData(List<ChangeHistory> logItems) {
         history.clear();
         history.addAll(logItems);
         notifyDataSetChanged();
@@ -65,28 +63,22 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        holder.checkers.setVisibility(View.INVISIBLE);
+        ChangeHistory  changeHistory = history.get(position);
+        switch (changeHistory.getState()){
+            case TO_BE_CONFIRMED_BY_APP:
+                holder.checkers.setColorFilter(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrConfirmationTypeReceived));
+                break;
 
-        if(history.get(position).getLevel() == LogLevel.ERROR){
-            holder.checkers.setVisibility(View.VISIBLE);
-            holder.checkers.setColorFilter(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrLabelDeleted));
-            holder.txtWhen.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrLabelDeleted));
-            holder.txtWhat.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrLabelDeleted));
-            holder.title.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrLabelDeleted));
-            holder.txtId.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrLabelDeleted));
-        } else {
-            holder.txtWhen.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.dark));
-            holder.txtWhat.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.dark));
-            holder.title.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.dark));
-            holder.txtId.setTextColor(ContextCompat.getColor(holder.checkers.getContext(), R.color.dark));
-            if(history.get(position).getType() == LogType.APP_TO_SERVER){
-                holder.checkers.setColorFilter(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrLabelChanged));
-                holder.checkers.setVisibility(View.VISIBLE);
-            }// R.color.clrLabelChanged, R.color.grey_40
-            else if(history.get(position).getType() == LogType.SERVER_TO_APP){
-                holder.checkers.setColorFilter(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrTaskFinished));
-                holder.checkers.setVisibility(View.VISIBLE);
-            }
+            case TO_BE_CONFIRMED_BY_DRIVER:
+                holder.checkers.setColorFilter(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrConfirmationTypeUser));
+                break;
+
+            case CONFIRMED:
+                holder.checkers.setColorFilter(ContextCompat.getColor(holder.checkers.getContext(), R.color.clrConfirmationTypeAbona));
+                break;
+            default:
+            case NO_SYNC:
+                holder.checkers.setColorFilter(ContextCompat.getColor(holder.checkers.getContext(), R.color.smsp_transparent_color));
         }
 
         holder.txtWhen.setText(formatUTCTZ(history.get(position).getCreatedAt()));

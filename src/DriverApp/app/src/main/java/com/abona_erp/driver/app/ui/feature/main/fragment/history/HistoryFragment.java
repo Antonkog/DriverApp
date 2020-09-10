@@ -44,7 +44,6 @@ public class HistoryFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View root = inflater.inflate(R.layout.fragment_history, container, false);
     initComponents(root);
-    historyViewModel.groupLogs(Constants.HISTORY_LOGS_COUNT);
     return root;
   }
 
@@ -67,6 +66,6 @@ public class HistoryFragment extends Fragment {
     historyViewModel.getHistoryLogs().observe(getViewLifecycleOwner(), logItems -> historyAdapter.swapData(logItems));
 
     btnClearLog = root.findViewById(R.id.btn_clear_log);
-    btnClearLog.setOnClickListener(v -> historyViewModel.deleteAllLogs());
+    btnClearLog.setOnClickListener(v -> historyViewModel.deleteChangeHistory());
   }
 }
