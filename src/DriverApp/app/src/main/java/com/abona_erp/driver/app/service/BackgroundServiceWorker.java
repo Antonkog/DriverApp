@@ -521,7 +521,7 @@ public class BackgroundServiceWorker extends Service {
                         if (response.body().getIsException())
                         {
                           EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_error),
-                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
+                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
                                   confirmationItem.getTaskId()));
   
                           showErrorMessage(response.body().getText());
@@ -647,7 +647,7 @@ public class BackgroundServiceWorker extends Service {
                           case 401:
                           {
                             EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
-                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
+                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
                                     confirmationItem.getTaskId()));
                             handleAccessToken();
                           }

@@ -248,17 +248,18 @@
   <string name="log_tasks_error" translatable="false">Tasks update error</string>
 
 
-  <string name="log_title_open_confirm" translatable="false">Confirmation: fcm synced</string>
+  <string name="log_title_confirm_error" translatable="false">Confirmation error:</string>
 
   <string name="log_confirm_open" translatable="false">Driver read task</string>
-  <string name="log_confirm_error" translatable="false">Error while sending confirmation</string>
   <string name="log_confirm_send" translatable="false">Task read: sent to server</string>
+
+  <string name="log_confirm_error" translatable="false">Error while sending confirmation</string>
 
 
   <string name="log_title_activity" translatable="false">Activity change</string>
 
-  <string name="log_activity_start_pressed" translatable="false">Driver pressed activity start</string>
-  <string name="log_activity_status_change" translatable="false">Activity change was sent to server</string>
+  <string name="log_activity_start_pressed" translatable="false">Driver changed activity</string>
+  <string name="log_activity_status_change" translatable="false">Activity change: sent to server</string>
   <string name="log_activity_sent_error" translatable="false">Error while sending activity change</string>
 
   <string name="log_token_error" translatable="false">No token</string>
