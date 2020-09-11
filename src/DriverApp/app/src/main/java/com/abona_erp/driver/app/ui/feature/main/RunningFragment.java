@@ -122,8 +122,8 @@ public class RunningFragment extends Fragment implements CommonItemClickListener
   }
 
   private void postHistoryEvent(Notify notify, OfflineConfirmation offlineConfirmation) {
-    EventBus.getDefault().post(new ChangeHistoryEvent(getContext().getString(R.string.log_title_open_confirm), getContext().getString(R.string.log_confirm_open),
-            LogType.APP_TO_SERVER, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+    EventBus.getDefault().post(new ChangeHistoryEvent(getContext().getString(R.string.log_title_fcm), getContext().getString(R.string.log_confirm_open),
+            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             notify.getTaskId(), notify.getId(), notify.getOrderNo(), notify.getMandantId(), offlineConfirmation.getId()));
   }
 

@@ -348,7 +348,8 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                     notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                     updateNotify(notify);
 
-                    addOfflineWork(currItem, notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    int id = addOfflineWork( notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    addHistoryLog(ActionType.START_ACTIVITY, currItem, id);
                   }
   
                   @Override
@@ -535,7 +536,8 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                 offlineConfirmation.setActivityId(0);
                 offlineConfirmation.setConfirmType(ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
 
-                addOfflineWork(commItem, mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                int id = addOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                addHistoryLog(ActionType.START_ACTIVITY, commItem, id);
                 return false;
               }
             })
@@ -586,7 +588,8 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                         notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                         updateNotify(notify);
             
-                        addOfflineWork(commItem, notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                        int id = addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                        addHistoryLog(ActionType.START_ACTIVITY, commItem, id);
                       }
           
                       @Override
@@ -606,15 +609,17 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
             mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mNotify);
   
-            addOfflineWork(commItem, mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-            
+            int id = addOfflineWork( mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            addHistoryLog(ActionType.FINISH_ACTIVITY, commItem, id);
+
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
               commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
               commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
               mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mNotify);
-              
-              addOfflineWork(commItem, mNotify.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+
+              int nextId = addOfflineWork(mNotify.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addHistoryLog(ActionType.START_ACTIVITY, commItem, nextId);
             }
             break;
           }
@@ -626,8 +631,10 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
             mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mNotify);
             
-            if (i != 0)
-              addOfflineWork(commItem, mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            if (i != 0){
+            int id = addOfflineWork(mNotify.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addHistoryLog(ActionType.START_ACTIVITY, commItem, id);
+            }
             break;
           }
         }
@@ -648,31 +655,40 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
   private void openDelayReasonDialog(DelayReasonItem delayReasonItem) {
   
   }
-  
-  private void addOfflineWork(CommItem commItem, int notifyId, int activityId, int confirmationType) {
+
+  /**
+   *
+   * @param notifyId
+   * @param activityId
+   * @param confirmationType
+   * @return offline confirmation Id
+   */
+  private int addOfflineWork(int notifyId, int activityId, int confirmationType) {
     OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
     
     OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
     offlineConfirmation.setNotifyId(notifyId);
     offlineConfirmation.setActivityId(activityId);
     offlineConfirmation.setConfirmType(confirmationType);
-
-    try {
-      EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_open_confirm), mContext.getString(R.string.log_activity_start_pressed),
-              LogType.APP_TO_SERVER, ActionType.START_ACTIVITY, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
-              commItem.getTaskItem().getTaskId(), 0, commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), offlineConfirmation.getId()));
-    } catch (Exception e) {
-      Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commitem" + commItem.toString());
-    }
-
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
         dao.insert(offlineConfirmation);
       }
     });
+    return offlineConfirmation.getId();
   }
-  
+
+  private void addHistoryLog(ActionType actionType, CommItem commItem, int offlineConfirmationId) {
+    try {
+      EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_activity), mContext.getString(R.string.log_activity_start_pressed),
+              LogType.APP_TO_SERVER, actionType, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+              commItem.getTaskItem().getTaskId(), 0, commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), offlineConfirmationId));
+    } catch (Exception e) {
+      Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commitem" + commItem.toString());
+    }
+  }
+
   private void updateNotify(Notify notify) {
     if (notify == null) return;
   

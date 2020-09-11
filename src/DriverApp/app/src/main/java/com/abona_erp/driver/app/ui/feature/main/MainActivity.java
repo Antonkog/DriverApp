@@ -607,13 +607,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     return false;
   }
 
-  @Subscribe
-  public void onMessageEvent(LogEvent event) {
-    if(event.getLog().getType() == FCM) // hide History fragment for now, log only this events
-      mMainViewModel.addLog(event.getLog());
-  }
-
-
 
   @Subscribe
   public void onMessageEvent(ChangeHistoryEvent event) {
@@ -730,8 +723,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
 
   private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
-    EventBus.getDefault().post(new ChangeHistoryEvent(getResources().getString(R.string.log_title_open_confirm), getResources().getString(R.string.log_confirm_open),
-            LogType.APP_TO_SERVER, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+    EventBus.getDefault().post(new ChangeHistoryEvent(getResources().getString(R.string.log_title_fcm), getResources().getString(R.string.log_confirm_open),
+            FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
   }
 

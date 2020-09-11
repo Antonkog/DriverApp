@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.ChangeHistoryDao;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
@@ -244,7 +245,7 @@ public class DriverRepository {
   }
 
   public void updateOrInsert(ChangeHistory changeHistory) {
-    ChangeHistory existingHistoryItem = changeHistoryDao.selectByTaskOrderMandant(changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
+    ChangeHistory existingHistoryItem = changeHistoryDao.selectByTypeTaskOrderMandant(LogType.getTypeInt(changeHistory.getType()), changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
       // here is our requirement NOT to show gray color after orange
     if(existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP  && existingHistoryItem.getState() == TO_BE_CONFIRMED_BY_DRIVER) return;
     //here is update or insert flow

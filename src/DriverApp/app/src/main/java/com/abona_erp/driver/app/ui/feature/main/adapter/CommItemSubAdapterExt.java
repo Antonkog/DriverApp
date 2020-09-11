@@ -199,13 +199,9 @@ public class CommItemSubAdapterExt
                 updateNotify(mData);
                 
                 App.eventBus.post(new TabChangeEvent());
-            
-                EventBus.getDefault().post(new LogEvent(v.getContext().getString(R.string.log_activity_start_pressed),
-                  LogType.APP_TO_SERVER, LogLevel.INFO, v.getContext().getString(R.string.log_title_activity), commItem.getTaskItem().getTaskId()));
 
-
-
-                addOfflineWork(commItem, mData.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                int id = addOfflineWork(mData.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                addHistoryLog(ActionType.START_ACTIVITY, commItem, id);
                 return false;
               }
             })
@@ -235,8 +231,8 @@ public class CommItemSubAdapterExt
               commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mData);
-              addOfflineWork(commItem, mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-          
+              int id  = addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addHistoryLog(ActionType.FINISH_ACTIVITY, commItem, id);
               //CommItem currItem = App.getInstance().gsonUtc.fromJson(mNotify.getData(), CommItem.class);
               /*
               if (i == mDataList.size() -1) {
@@ -279,15 +275,16 @@ public class CommItemSubAdapterExt
             mData.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mData);
         
-            addOfflineWork(commItem, mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-        
+            int finishId = addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            addHistoryLog(ActionType.FINISH_ACTIVITY, commItem, finishId);
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
               commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
               commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mData);
           
-              addOfflineWork(commItem, mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              int startId = addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addHistoryLog(ActionType.START_ACTIVITY, commItem, startId);
             } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
               if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
                 NotifyDao dao = DriverDatabase.getDatabase().notifyDao();
@@ -326,8 +323,10 @@ public class CommItemSubAdapterExt
             mData.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mData);
         
-            if (i != 0)
-              addOfflineWork(commItem, mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            if (i != 0){
+              int runningId = addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addHistoryLog(ActionType.START_ACTIVITY, commItem, runningId);
+            }
             break;
           }
         }
@@ -709,20 +708,12 @@ public class CommItemSubAdapterExt
     });
   }
   
-  private void addOfflineWork(CommItem commItem, int notifyId, int activityId, int confirmationType) {
+  private int addOfflineWork(int notifyId, int activityId, int confirmationType) {
     OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
 
     OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
     offlineConfirmation.setNotifyId(notifyId);
     offlineConfirmation.setActivityId(activityId);
-
-    try {
-      EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_open_confirm), mContext.getString(R.string.log_activity_start_pressed),
-              LogType.APP_TO_SERVER, ActionType.START_ACTIVITY, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
-              commItem.getTaskItem().getTaskId(), 0, commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), offlineConfirmation.getId()));
-    } catch (Exception e) {
-      Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commitem" + commItem.toString());
-    }
 
     offlineConfirmation.setConfirmType(confirmationType);
     AsyncTask.execute(new Runnable() {
@@ -731,5 +722,18 @@ public class CommItemSubAdapterExt
         dao.insert(offlineConfirmation);
       }
     });
+    return offlineConfirmation.getId();
   }
+
+
+  private void addHistoryLog(ActionType actionType, CommItem commItem, int offlineConfirmationId) {
+    try {
+      EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_activity), mContext.getString(R.string.log_activity_start_pressed),
+              LogType.APP_TO_SERVER, actionType, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+              commItem.getTaskItem().getTaskId(), 0, commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), offlineConfirmationId));
+    } catch (Exception e) {
+      Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commitem" + commItem.toString());
+    }
+  }
+
 }

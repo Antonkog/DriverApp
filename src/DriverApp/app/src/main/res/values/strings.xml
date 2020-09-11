@@ -239,16 +239,16 @@
   <string name="theme_light" translatable="false">White</string>
   <string name="theme_dark" translatable="false">Dark</string>
 
+  <string name="log_tasks_come" translatable="false">Tasks: got server response</string>
   <string name="log_title_get_tasks" translatable="false">Get Tasks by user</string>
   <string name="log_title_get_tasks_bg" translatable="false">Get Tasks background</string>
 
   <string name="log_update_schedule" translatable="false">Update tasks scheduled</string>
   <string name="log_update_pressed" translatable="false">Update tasks pressed</string>
-  <string name="log_tasks_come" translatable="false">Tasks: got server response</string>
   <string name="log_tasks_error" translatable="false">Tasks update error</string>
 
 
-  <string name="log_title_open_confirm" translatable="false">Confirmation: open</string>
+  <string name="log_title_open_confirm" translatable="false">Confirmation: fcm synced</string>
 
   <string name="log_confirm_open" translatable="false">Driver read task</string>
   <string name="log_confirm_error" translatable="false">Error while sending confirmation</string>
@@ -268,12 +268,6 @@
   <string name="log_task_updated_fcm" translatable="false">Task was updated via FCM</string>
   <string name="log_document_fcm" translatable="false">Document from Abona via FCM</string>
   <string name="log_vehicle_fcm" translatable="false">Vehicle from Abona via FCM</string>
-
-
-
-  <string name="log_title_docs" translatable="false">Documents</string>
-  <string name="log_document_got_links" translatable="false">Got links to documents</string>
-  <string name="log_document_upload" translatable="false">Document uploaded</string>
 
   <string name="log_message_unknown_error" translatable="false">Unknown Error!</string>
   <string name="clear_log" translatable="false">clear log</string>

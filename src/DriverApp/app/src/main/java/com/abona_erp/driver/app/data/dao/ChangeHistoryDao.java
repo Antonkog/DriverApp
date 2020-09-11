@@ -25,8 +25,8 @@ public interface ChangeHistoryDao {
   @Query("DELETE FROM change_history")
   void deleteAll();
 
-  @Query("SELECT * FROM change_history WHERE task_id == :taskID  and order_number = :orderNumber and mandant_id = :mandantId LIMIT 1")
-  ChangeHistory selectByTaskOrderMandant(int taskID, int orderNumber, int mandantId);
+  @Query("SELECT * FROM change_history WHERE direction = :logType and task_id == :taskID  and order_number = :orderNumber and mandant_id = :mandantId LIMIT 1")
+  ChangeHistory selectByTypeTaskOrderMandant(int logType, int taskID, int orderNumber, int mandantId);
 
   @Update
   void updateHistory(ChangeHistory changeHistory);
