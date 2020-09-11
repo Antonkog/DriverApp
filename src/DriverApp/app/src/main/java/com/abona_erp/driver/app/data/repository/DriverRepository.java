@@ -36,6 +36,9 @@ import java.util.Locale;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.TO_BE_CONFIRMED_BY_APP;
+import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER;
+
 public class DriverRepository {
   private final String TAG  ="DriverRepository" ;
   private NotifyDao mNotifyDao;
@@ -242,6 +245,9 @@ public class DriverRepository {
 
   public void updateOrInsert(ChangeHistory changeHistory) {
     ChangeHistory existingHistoryItem = changeHistoryDao.selectByTaskOrderMandant(changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
+      // here is our requirement NOT to show gray color after orange
+    if(existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP  && existingHistoryItem.getState() == TO_BE_CONFIRMED_BY_DRIVER) return;
+    //here is update or insert flow
       if (existingHistoryItem != null){
         changeHistory.setId(existingHistoryItem.getId());
         changeHistoryDao.updateHistory(changeHistory);
