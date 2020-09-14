@@ -24,6 +24,7 @@
     <string name="home_second">Home Second</string>
 
     <string name="need_log_in">First log in</string>
+    <string name="error_log_in">Error while log in</string>
 
     <string name="name_test">manyvehicles@abona-erp.com</string>
     <string name="password_test">1234qwerQWER,.-</string>

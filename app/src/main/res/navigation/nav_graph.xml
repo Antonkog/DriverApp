@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.redhotapp.driverapp.ui.home.HomeFragment"
+        android:name="com.abona_erp.driver.app.ui.home.HomeFragment"
         android:label="@string/screen_home"
         tools:layout="@layout/home_fragment">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/nav_login"
-        android:name="com.redhotapp.driverapp.ui.login.LoginFragment"
+        android:name="com.abona_erp.driver.app.ui.login.LoginFragment"
         android:label="@string/screen_login"
         tools:layout="@layout/login_fragment" >
         <action
@@ -27,26 +27,26 @@
 
     <fragment
         android:id="@+id/nav_activities"
-        android:name="com.redhotapp.driverapp.ui.activities.DriverActFragment"
+        android:name="com.abona_erp.driver.app.ui.activities.DriverActFragment"
         android:label="@string/screen_activities"
         tools:layout="@layout/driver_act_fragment"/>
 
     <fragment
         android:id="@+id/nav_documents"
-        android:name="com.redhotapp.driverapp.ui.documents.DocumentsFragment"
+        android:name="com.abona_erp.driver.app.ui.documents.DocumentsFragment"
         android:label="@string/screen_documents"
         tools:layout="@layout/documents_fragment" />
 
 
     <fragment
         android:id="@+id/nav_delay_reason"
-        android:name="com.redhotapp.driverapp.ui.delayReason.DelayReasonFragment"
+        android:name="com.abona_erp.driver.app.ui.delayReason.DelayReasonFragment"
         android:label="@string/screen_delay_reason"
         tools:layout="@layout/delay_reason_fragment" />
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.redhotapp.driverapp.ui.settings.SettingsFragment"
+        android:name="com.abona_erp.driver.app.ui.settings.SettingsFragment"
         android:label="@string/screen_settings"
         tools:layout="@layout/settings_fragment"/>
 

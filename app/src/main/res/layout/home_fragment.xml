@@ -13,7 +13,7 @@
 
         <variable
             name="viewmodel"
-            type="com.redhotapp.driverapp.ui.home.HomeViewModel" />
+            type="com.abona_erp.driver.app.ui.home.HomeViewModel" />
 
     </data>
 

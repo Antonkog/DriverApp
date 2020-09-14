@@ -14,7 +14,7 @@
 
         <variable
             name="viewmodel"
-            type="com.redhotapp.driverapp.ui.documents.DocumentsViewModel" />
+            type="com.abona_erp.driver.app.ui.documents.DocumentsViewModel" />
 
     </data>
 

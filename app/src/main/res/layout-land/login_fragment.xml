@@ -12,7 +12,7 @@
 
     <variable
         name="viewmodel"
-        type="com.redhotapp.driverapp.ui.login.LoginViewModel" />
+        type="com.abona_erp.driver.app.ui.login.LoginViewModel" />
 
   </data>
 

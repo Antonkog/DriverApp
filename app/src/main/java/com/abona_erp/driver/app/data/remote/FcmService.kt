@@ -1,0 +1,35 @@
+package com.abona_erp.driver.app.data.remote
+
+import android.annotation.SuppressLint
+import android.util.Log
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
+import java.util.*
+
+
+@SuppressLint("NewApi")
+class FcmService : FirebaseMessagingService() {
+    override fun onMessageReceived(message: RemoteMessage) {
+        Log.d(
+            TAG,
+            "++ FCM Message... latency (" + (System.currentTimeMillis() - message.sentTime) + " ms)"
+        )
+        mNotifyData.add(message)
+    }
+
+    override fun onNewToken(token: String) {
+        PrivatePreferences.setFCMToken(
+            applicationContext,
+            token
+        )
+        Log.i(TAG, "onNewToken: $token")
+    }
+
+    companion object {
+        private val TAG = FcmService::class.java.simpleName
+        private const val NOTIFICATION_ID = 1453
+        private val mNotifyData =
+            LinkedList<RemoteMessage>()
+    }
+}

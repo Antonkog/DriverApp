@@ -12,7 +12,7 @@
 
         <variable
             name="viewmodel"
-            type="com.redhotapp.driverapp.ui.settings.SettingsViewModel" />
+            type="com.abona_erp.driver.app.ui.settings.SettingsViewModel" />
 
     </data>
 
