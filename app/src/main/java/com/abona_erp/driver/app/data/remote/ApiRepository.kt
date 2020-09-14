@@ -18,7 +18,7 @@ interface ApiRepository {
     //API set activity change
     fun postActivity(deviceId: String): Observable<CommResponseItem>
 
-    suspend fun refreshData(deviceId: String) // call api to set db
+    suspend fun refreshTasks(deviceId: String) // call api to set db
     //that is LiveData from db
     fun getAllTasks(deviceId: String): LiveData<List<TaskEntity>>
     fun getAllActivity(deviceId: String): LiveData<List<ActivityEntity>>

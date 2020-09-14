@@ -22,6 +22,7 @@ import com.abona_erp.driver.app.data.remote.ApiRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.material.internal.ContextUtils
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -126,9 +127,15 @@ class LoginViewModel
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-                    Log.e(TAG, result.toString())
-                    Log.e(TAG, "device set success")
-                    authenticationState.value = AuthenticationState.AUTHENTICATED
+                    if(result.isSuccess){
+                        Log.e(TAG, result.toString())
+                        Log.e(TAG, "device set success")
+                        authenticationState.value = AuthenticationState.AUTHENTICATED
+                    } else {
+                        Log.e(TAG, "device set error: ${result.text}")
+                        authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                    }
+
                 },
                 { error ->
                     Log.e(TAG, error.localizedMessage ?: "error while setting deviceProfile")
@@ -139,18 +146,21 @@ class LoginViewModel
 
     private fun getCommItem(): CommItem {
 
-        val header = Header(DataType.DEVICE_PROFILE.dataType, DeviceUtils.getUniqueID(context))
+        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaDateFormat, Locale.getDefault())
+        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+        val currentDate = dfUtc.format(Date())
+
+        val header = Header(DataType.DEVICE_PROFILE.dataType, currentDate, DeviceUtils.getUniqueID(context))
         val commItem = CommItem(header = header)
+
         val deviceProfileItem = DeviceProfileItem()
         deviceProfileItem.instanceId = PrivatePreferences.getFCMToken(context)
         deviceProfileItem.deviceId = DeviceUtils.getUniqueID(context)
         deviceProfileItem.model = Build.MODEL
         deviceProfileItem.manufacturer = Build.MANUFACTURER
-        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaDateFormat, Locale.getDefault())
-        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-        val currentTimestamp = Date()
-        deviceProfileItem.createdDate = dfUtc.format(currentTimestamp)
-        deviceProfileItem.updatedDate = dfUtc.format(currentTimestamp)
+
+        deviceProfileItem.createdDate = currentDate
+        deviceProfileItem.updatedDate = currentDate
         deviceProfileItem.languageCode = Locale.getDefault().toString().replace("_", "-")
         deviceProfileItem.versionCode = BuildConfig.VERSION_CODE
         deviceProfileItem.versionName = BuildConfig.VERSION_NAME

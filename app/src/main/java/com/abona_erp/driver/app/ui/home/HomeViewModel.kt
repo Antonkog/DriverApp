@@ -19,6 +19,8 @@ import com.abona_erp.driver.app.data.model.AllTask
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
     private val TAG = "HomeViewModel"
@@ -36,6 +38,10 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 
     fun getTasks() {
        mutableTasks.postValue(api.getAllTasks(DeviceUtils.getUniqueID(context)).value)
+    }
+
+    fun refreshTasksAsync() = GlobalScope.async{
+        api.refreshTasks(DeviceUtils.getUniqueID(context))
     }
 //
 //    fun userName(): Flowable<String> {

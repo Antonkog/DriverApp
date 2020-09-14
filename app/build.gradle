@@ -25,11 +25,23 @@ android {
             }
         }
     }
+//    signingConfigs { for future to get same deviceID in both release and debug.
+//        release {
+//            storeFile file('../tools/DriverApp.jks')
+//            storePassword "${storePassword}"
+//            keyAlias "${keyAlias}"
+//            keyPassword "${keyPassword}"
+//        }
+//    }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.release
+        }
+        debug {
+//            signingConfig signingConfigs.release
         }
     }
 

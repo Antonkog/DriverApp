@@ -72,7 +72,7 @@ class HomeFragment : BaseFragment() {
         })
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
-        else homeViewModel.getTasks()
+        else homeViewModel.refreshTasksAsync()
         return view
     }
 }

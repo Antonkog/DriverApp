@@ -25,7 +25,7 @@ class ApiRepositoryImpl @Inject constructor (val appDataBase: AppDatabase, val r
        return  rabbit.getLastOrder(id)
     }
 
-   override suspend fun refreshData(deviceId: String) {
+   override suspend fun refreshTasks(deviceId: String) {
          withContext(Dispatchers.IO) {
             api.getAllTasks(deviceId)
                 .subscribeOn(Schedulers.io())
