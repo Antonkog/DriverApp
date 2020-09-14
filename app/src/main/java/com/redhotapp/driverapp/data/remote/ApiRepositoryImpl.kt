@@ -17,8 +17,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import javax.inject.Inject
 
-class ApiRepositoryImpl(val appDataBase: AppDatabase, val rabbit : RabbitService, val api : ApiService, val authService: AuthService) : ApiRepository {
+class ApiRepositoryImpl @Inject constructor (val appDataBase: AppDatabase, val rabbit : RabbitService, val api : ApiService, val authService: AuthService) : ApiRepository {
     val TAG = "ApiRepositoryImpl"
     override fun getLatestOrder(id: String): Observable<LatestOrder> {
        return  rabbit.getLastOrder(id)

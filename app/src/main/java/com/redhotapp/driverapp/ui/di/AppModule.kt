@@ -31,9 +31,11 @@ import com.redhotapp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.redhotapp.driverapp.data.remote.utils.ResponseInterceptor
 import com.redhotapp.driverapp.data.remote.utils.UnsafeOkHttpClient
 import com.redhotapp.driverapp.data.remote.utils.UserAgentInterceptor
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
@@ -147,19 +149,11 @@ object AppModule {
  */
 @Module
 @InstallIn(ApplicationComponent::class)
-object TasksRepositoryModule {
+abstract class TasksRepositoryModule {
+        @Binds
+        abstract fun bindApiRepository(
+            apiRepositoryImpl: ApiRepositoryImpl
+        ): ApiRepository
 
-    @Singleton
-    @Provides
-    fun provideApiRepository(
-         appDatabase: AppDatabase,
-         rabbitService: RabbitService,
-         apiService: ApiService, authService: AuthService
-    ): ApiRepository {
-        return ApiRepositoryImpl(
-            appDatabase,  rabbitService, apiService, authService
-        )
-    }
 }
-
 
