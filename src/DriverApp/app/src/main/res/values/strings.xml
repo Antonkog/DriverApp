@@ -2,6 +2,7 @@
 
   <string name="app_name" translatable="false">Driver App</string>
   <string name="app_company" translatable="false">ABONA Deutschland GmbH</string>
+  <string name="rest_api" translatable="false">REST-API</string>
 
   <!-- This String is used in the User Agent -->
   <string name="useragent_appname" translatable="false">ABONA Driver App</string>
@@ -283,5 +284,12 @@
   <string name="delay_delay">Delay:</string>
   <string name="task_type_ph" translatable="false">Abladestelle</string>
   <string name="task_notes_ph" translatable="false">1 Bemerkung verfügbar</string>
+
+  <string name="device_id">Device ID</string>
+  <string name="model">Model</string>
+  <string name="manufacturer">Manufacturer</string>
+  <string name="created_at">Created at</string>
+  <string name="protocol">Protocol</string>
+  <string name="device_reset">Device Reset</string>
 
 </resources>
