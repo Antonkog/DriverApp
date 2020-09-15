@@ -1,8 +1,5 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.settings;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -24,8 +21,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
@@ -38,13 +33,11 @@ import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
-import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
-import com.abona_erp.driver.app.worker.DeviceProfileWorker;
 import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
 import com.kongzue.dialog.util.BaseDialog;
 import com.kongzue.dialog.util.DialogSettings;
@@ -52,27 +45,24 @@ import com.kongzue.dialog.util.InputInfo;
 import com.kongzue.dialog.util.TextInfo;
 import com.kongzue.dialog.v3.InputDialog;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
   
   private static final String TAG = SettingsFragment.class.getSimpleName();
   
   private LinearLayout mLlLanguage;
-  private LinearLayout notificationContainer;
   private Button mBtnSave;
   private AppCompatButton mBtnProtocol;
-  //private TextInputEditText mTeServerPort;
-  //private TextInputEditText mTeIpAddress;
   
   private AsapTextView versionName;
   private AsapTextView restApiVersion;
   private AsapTextView mDeviceId;
-  private AsapTextView mDeviceModel;
   private AsapTextView mDeviceManufacturer;
-  private AsapTextView mDeviceSerial;
   private AsapTextView mDeviceCreated;
-  private AsapTextView mDeviceUpdated;
   private SeekBar seekBar;
   private AppCompatImageButton mBtnBack;
 
@@ -105,23 +95,6 @@ public class SettingsFragment extends Fragment {
     super.onResume();
   }
 
-  /**
-   * this method should start DeviceProfileWorker
-   * that brings device profile to Abona server
-   * now not used as all work in BackgroundServiceWorker.java
-   * that is wrong.
-   */
-  private void startUpdateDeviceWork() {
-    /*
-    OneTimeWorkRequest taskAlarmRequest =
-            new OneTimeWorkRequest.Builder(DeviceProfileWorker.class)
-                    .addTag(Constants.WORK_TAG_DEVICE_UPDATE)
-                    .build();
-    WorkManager.getInstance(getContext()).enqueue(taskAlarmRequest);
-    
-     */
-  }
-
   private void updateLanguage() {
     DynamicLanguageContextWrapper.updateContext(getContext(),
             TextSecurePreferences.getLanguage(getContext()));
@@ -134,7 +107,7 @@ public class SettingsFragment extends Fragment {
     TextSecurePreferences.setUpdateAllTasks(true);
     TextSecurePreferences.setUpdateDelayReason(true);
   }
-
+  
   private void initComponents(@NonNull View root) {
     
     mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_settings_back);
@@ -148,11 +121,8 @@ public class SettingsFragment extends Fragment {
     mDeviceId = (AsapTextView)root.findViewById(R.id.tv_device_id);
     versionName = (AsapTextView)root.findViewById(R.id.app_version_name);
     restApiVersion = (AsapTextView)root.findViewById(R.id.rest_api_version);
-    mDeviceModel = (AsapTextView)root.findViewById(R.id.tv_device_model);
     mDeviceManufacturer = (AsapTextView)root.findViewById(R.id.tv_device_manufacturer);
-    mDeviceSerial = (AsapTextView)root.findViewById(R.id.tv_device_serial);
     mDeviceCreated = (AsapTextView)root.findViewById(R.id.tv_device_created);
-    mDeviceUpdated = (AsapTextView)root.findViewById(R.id.tv_device_updated);
     
     try {
       versionName.setText(BuildConfig.VERSION_NAME);
@@ -167,30 +137,19 @@ public class SettingsFragment extends Fragment {
           mDeviceId.setText("<Error By Device>");
         }
     
-        if (devProf.getDeviceModel() != null) {
-          mDeviceModel.setText(devProf.getDeviceModel());
-        } else {
-          mDeviceModel.setText("<Unknown Device Model>");
-        }
-    
-        if (devProf.getDeviceManufacturer() != null) {
-          mDeviceManufacturer.setText(devProf.getDeviceManufacturer());
+        if (devProf.getDeviceManufacturer() != null && devProf.getDeviceModel() != null) {
+          mDeviceManufacturer.setText(devProf.getDeviceModel() + " - " + devProf.getDeviceManufacturer());
         } else {
           mDeviceManufacturer.setText("<Unknown Manufacturer>");
         }
     
-        if (devProf.getDeviceSerial() != null) {
-          mDeviceSerial.setText(devProf.getDeviceSerial());
-        } else {
-          mDeviceSerial.setText("<Unknown Serial>");
-        }
-    
         if (devProf.getCreatedAt() != null) {
-          mDeviceCreated.setText(devProf.getCreatedAt());
-        }
-    
-        if (devProf.getModifiedAt() != null) {
-          mDeviceUpdated.setText(devProf.getModifiedAt());
+          
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+          Date date = sdf.parse(devProf.getCreatedAt());
+          
+          SimpleDateFormat sdf2 = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+          mDeviceCreated.setText(sdf2.format(date));
         }
       }
     } catch (Exception e) {
@@ -240,25 +199,35 @@ public class SettingsFragment extends Fragment {
           @Override
           public void onClick(DialogInterface dialogInterface, int i) {
             
+            String currentLanguage = TextSecurePreferences.getLanguage(getContext());
+            
             switch (i) {
               case 0: // ENGLISCH
-                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_ENGLISH);
-                updateLanguage();
+                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_ENGLISH)) {
+                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_ENGLISH);
+                  updateLanguage();
+                }
                 break;
               
               case 1: // DEUTSCH
-                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_GERMAN);
-                updateLanguage();
+                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_GERMAN)) {
+                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_GERMAN);
+                  updateLanguage();
+                }
                 break;
                 
               case 2: // RUSSISCH
-                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_RUSSIAN);
-                updateLanguage();
+                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_RUSSIAN)) {
+                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_RUSSIAN);
+                  updateLanguage();
+                }
                 break;
                 
               case 3: // POLNISCH
-                TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_POLISH);
-                updateLanguage();
+                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_POLISH)) {
+                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_POLISH);
+                  updateLanguage();
+                }
                 break;
             }
           }
@@ -300,31 +269,11 @@ public class SettingsFragment extends Fragment {
                         mDb.logDAO().deleteAll();
 
                         // DEVICE RESET END
-
-                        //String ip_address = mTeIpAddress.getText().toString();
-                        //TextSecurePreferences.setServerIpAddress(ip_address);
-
-                        //int server_port = Integer.valueOf(mTeServerPort.getText().toString());
-                        //TextSecurePreferences.setServerPort(server_port);
-
-                        //TextSecurePreferences.setFcmTokenUpdate(getContext().getApplicationContext(), true);
+                        
                         TextSecurePreferences.setLoginPageEnable(true);
                         TextSecurePreferences.setDeviceFirstTimeRun(false);
                         TextSecurePreferences.setDeviceRegistrated(false);
                         TextSecurePreferences.setStopService(true);
-               /*
-                        getActivity().runOnUiThread(() -> {
-                          Intent restartIntent =
-                            getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
-                          PendingIntent intent = PendingIntent.getActivity(getContext(), 0, restartIntent,
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                          AlarmManager manager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
-                          manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, intent);
-                          getActivity().finish();
-                          Runtime.getRuntime().exit(0);
-                        });
-                        
-                */
 
                         getActivity().runOnUiThread(() -> {
 

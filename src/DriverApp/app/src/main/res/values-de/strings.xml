@@ -160,4 +160,11 @@
   <string name="delay_finished">Fertig:</string>
   <string name="delay_delay">Verzögern:</string>
     <string name="task_information">Aufgabeninformationen</string>
+
+  <string name="device_id">Geräte ID</string>
+  <string name="model">Modell</string>
+  <string name="manufacturer">Hersteller</string>
+  <string name="created_at">Erstellt am</string>
+  <string name="protocol">Protokoll</string>
+  <string name="device_reset">Gerät zurücksetzen</string>
 </resources>

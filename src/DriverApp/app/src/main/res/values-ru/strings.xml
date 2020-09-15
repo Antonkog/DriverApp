@@ -143,4 +143,11 @@
   <string name="delay_finished">Окончание:</string>
   <string name="delay_delay">Задержка:</string>
   <string name="task_information">Информация о задании</string>
+
+  <string name="device_id">Идентификатор устройства</string>
+  <string name="model">Модель</string>
+  <string name="manufacturer">Производитель</string>
+  <string name="created_at">Создано на</string>
+  <string name="protocol">Протокол</string>
+  <string name="device_reset">Сброс устройства</string>
 </resources>
