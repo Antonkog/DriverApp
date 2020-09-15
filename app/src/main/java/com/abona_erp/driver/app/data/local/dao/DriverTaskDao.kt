@@ -4,11 +4,28 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.CommResponseItem
+import com.google.android.gms.tasks.Task
+import io.reactivex.internal.operators.completable.CompletableFromCallable
+import io.reactivex.rxjava3.core.Completable
 
 @Dao
 interface DriverTaskDao {
     @Query("SELECT * FROM task_entity")
-    fun getAll(): LiveData<List<TaskEntity>>
+    fun observeTasks(): LiveData<List<TaskEntity>>
+
+    /**
+     * Select all tasks from the task_entity table.
+     *
+     * @return all tasks.
+     */
+    @Query("SELECT * FROM task_entity")
+    suspend fun getTasks(): List<TaskEntity>
+
+    /**
+     * Delete all tasks.
+     */
+    @Query("DELETE FROM task_entity")
+    suspend fun deleteTasks()
 
     @Insert
     fun insert(tasks: List<TaskEntity?>?)
@@ -17,7 +34,7 @@ interface DriverTaskDao {
     fun delete(user: TaskEntity)
 
     @Transaction
-    fun insertFromCommItem(commonItem: CommResponseItem) {
+    suspend fun insertFromCommItem(commonItem: CommResponseItem) {
         if(commonItem.allTask.isNotEmpty()) {
             var strCustList = commonItem.allTask.map { it ->
                 TaskEntity(

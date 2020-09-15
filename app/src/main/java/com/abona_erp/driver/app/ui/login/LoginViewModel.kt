@@ -18,11 +18,10 @@ import com.abona_erp.driver.app.data.model.CommItem
 import com.abona_erp.driver.app.data.model.DataType
 import com.abona_erp.driver.app.data.model.DeviceProfileItem
 import com.abona_erp.driver.app.data.model.Header
-import com.abona_erp.driver.app.data.remote.ApiRepository
+import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.internal.ContextUtils
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -34,7 +33,7 @@ import java.util.*
 class LoginViewModel
 @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
-    private val api: ApiRepository,
+    private val app: AppRepository,
     private val prefs: SharedPreferences,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
@@ -61,7 +60,7 @@ class LoginViewModel
 
     fun authenticate(username: String, password: String, clientId: Int) {
         prefs.putAny(Constant.mandantId, clientId)
-        api.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
+        app.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
@@ -87,7 +86,7 @@ class LoginViewModel
     }
 
     fun getEndpointActive(clientId: String) {
-        api.getClientEndpoint(clientId)
+        app.getClientEndpoint(clientId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -122,7 +121,7 @@ class LoginViewModel
 
 
     fun setDeviceProfile(commItem: CommItem) {
-        api.registerDevice(commItem)
+        app.registerDevice(commItem)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(

@@ -6,14 +6,14 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem
-import com.abona_erp.driver.app.data.remote.ApiRepository
+import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val  prefs: SharedPreferences) :  BaseViewModel() {
+class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences) :  BaseViewModel() {
 
     val documents = MutableLiveData<List<AppFileInterchangeItem>>()
     val error  = MutableLiveData<String> ()
@@ -23,7 +23,7 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
     }
 
     private fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String) {
-        api.getDocuments(mandantId, orderNo, deviceId).subscribeOn(Schedulers.io())
+        repository.getDocuments(mandantId, orderNo, deviceId).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {result ->

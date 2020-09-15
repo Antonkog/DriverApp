@@ -7,26 +7,28 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.abona_erp.driver.app.App
+import androidx.lifecycle.viewModelScope
 import com.abona_erp.driver.app.data.Constant
+import com.abona_erp.driver.app.data.ResultWithStatus
 import com.abona_erp.driver.app.data.local.db.TaskEntity
-import com.abona_erp.driver.app.data.remote.ApiRepository
+import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
 import com.abona_erp.driver.app.data.local.preferences.putAny
-import com.abona_erp.driver.app.data.model.AllTask
+import com.abona_erp.driver.app.data.succeeded
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
-class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
+class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val app: AppRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
     private val TAG = "HomeViewModel"
 
     val mutableTasks  = MutableLiveData<List<TaskEntity>> ()
     val error  = MutableLiveData<String> ()
+
+    init {
+        refreshTasks()
+    }
 
     fun loggedIn(): Boolean {
         val currentTime = System.currentTimeMillis()
@@ -37,28 +39,22 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
     }
 
     fun getTasks() {
-       mutableTasks.postValue(api.getAllTasks(DeviceUtils.getUniqueID(context)).value)
+       mutableTasks.postValue(app.observeTasks(DeviceUtils.getUniqueID(context)).value)
     }
 
-    fun refreshTasksAsync() = GlobalScope.async{
-        api.refreshTasks(DeviceUtils.getUniqueID(context))
+    fun refreshTasks() = viewModelScope.launch {
+        //ResultWithStatus<List<TaskEntity>>
+      val result =   app.getTasks(true, DeviceUtils.getUniqueID(context))
+
+        if(result is ResultWithStatus.Success){
+            if(result.data.isNullOrEmpty()){
+                error.postValue("no tasks from server")
+            }
+            mutableTasks.postValue(result.data)
+        }else if(result is ResultWithStatus.Error){
+            error.postValue(result.exception.message)
+        }
     }
-//
-//    fun userName(): Flowable<String> {
-//        return dataSource.getUserById(USER_ID)
-//            .map { user -> user.userName }
-//    }
-//
-//    /**
-//     * Update the user name.
-//     * @param userName the new user name
-//     * *
-//     * @return a [Completable] that completes when the user name is updated
-//     */
-//    fun updateUserName(userName: String): Completable {
-//        val user = User(USER_ID, userName)
-//        return dataSource.insertUser(user)
-//    }
 
     fun setVisibleTaskID(taskEntity: TaskEntity) {
         Log.e(TAG, "saving task " + taskEntity.taskId)

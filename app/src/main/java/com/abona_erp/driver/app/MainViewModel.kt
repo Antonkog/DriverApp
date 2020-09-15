@@ -6,13 +6,13 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import com.abona_erp.driver.app.data.Constant
-import com.abona_erp.driver.app.data.remote.ApiRepository
+import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.abona_erp.driver.app.data.local.preferences.putAny
 import com.abona_erp.driver.app.data.local.preferences.putLong
 
-class MainViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val api: ApiRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {
+class MainViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val app: AppRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {
     //taskRepo : ApiRepository,
     private val TAG = "MainViewModel"
 

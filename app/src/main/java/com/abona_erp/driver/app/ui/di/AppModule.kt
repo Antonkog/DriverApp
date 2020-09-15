@@ -25,17 +25,16 @@ import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
 import com.abona_erp.driver.app.App
 import com.abona_erp.driver.app.BuildConfig
 import com.abona_erp.driver.app.data.Constant
+import com.abona_erp.driver.app.data.local.LocalDataSource
 import com.abona_erp.driver.app.data.local.db.AppDatabase
 import com.abona_erp.driver.app.data.remote.*
 import com.abona_erp.driver.app.data.remote.rabbitMQ.RabbitService
-import com.abona_erp.driver.app.data.remote.utils.ResponseInterceptor
 import com.abona_erp.driver.app.data.remote.utils.UnsafeOkHttpClient
 import com.abona_erp.driver.app.data.remote.utils.UserAgentInterceptor
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
@@ -75,6 +74,14 @@ object AppModule {
             AppDatabase::class.java,
             "driver_db").build()
     }
+
+
+    @Singleton
+    @Provides
+    fun provideLocalDataSource(database: AppDatabase): LocalDataSource {
+        return LocalDataSource(database)
+    }
+
 
     @Singleton
     @Provides
@@ -152,8 +159,8 @@ object AppModule {
 abstract class TasksRepositoryModule {
         @Binds
         abstract fun bindApiRepository(
-            apiRepositoryImpl: ApiRepositoryImpl
-        ): ApiRepository
+            apiRepositoryImpl: AppRepositoryImpl
+        ): AppRepository
 
 }
 

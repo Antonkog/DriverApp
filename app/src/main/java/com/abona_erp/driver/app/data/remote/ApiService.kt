@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.data.remote
 
+import com.abona_erp.driver.app.data.ResultWithStatus
 import com.abona_erp.driver.app.data.model.*
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -18,7 +19,7 @@ interface ApiService {
 
 
     @GET("api/device/GetAllTask")
-    fun getAllTasks(@Query("deviceId") deviceId: String?): Observable<CommResponseItem>
+    suspend fun getAllTasks(@Query("deviceId") deviceId: String?): CommResponseItem
 //
 //    @Headers("Content-Type:application/json")
 //    @POST("api/activity/activity")
