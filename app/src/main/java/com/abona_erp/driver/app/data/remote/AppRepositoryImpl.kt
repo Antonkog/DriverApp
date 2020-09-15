@@ -42,6 +42,14 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
     }
 
     override suspend fun getTasks(forceUpdate: Boolean, deviceId: String):  ResultWithStatus<List<TaskEntity>> {
+        /*
+          Maybe<List<Event>> source1 =
+        cacheRepository.getEventsFeed(...);
+        Single<List<Event>> source2 =
+        networkRepository.getEventsFeed(...);
+        Maybe<List<Event>> source =
+        Maybe.concat(source1, source2.toMaybe()).firstElement();
+         */
         if (forceUpdate) {
             try {
                 updateTasksFromRemoteDataSource(deviceId)
@@ -52,14 +60,14 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         return localDataSource.getTasks()
     }
 
-    private suspend fun updateTasksFromRemoteDataSource(deviceId: String) {
+     suspend fun updateTasksFromRemoteDataSource(deviceId: String) {
         val remoteTasks = api.getAllTasks(deviceId)
 
         if(remoteTasks.isSuccess && !remoteTasks.isException){
             localDataSource.deleteTasks()
             localDataSource.insertFromCommItem(remoteTasks)
         } else{
-            throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text + " " + remoteTasks.exceptionText} ")
+            throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text + " " + remoteTasks.exceptionText ?: ""} ")
         }
     }
 

@@ -3,7 +3,10 @@ package com.abona_erp.driver.app.data.local.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.abona_erp.driver.app.data.local.db.TaskEntity
+import com.abona_erp.driver.app.data.model.Address
 import com.abona_erp.driver.app.data.model.CommResponseItem
+import com.abona_erp.driver.app.data.model.OrderDetails
+import com.abona_erp.driver.app.data.model.PalletExchange
 import com.google.android.gms.tasks.Task
 import io.reactivex.internal.operators.completable.CompletableFromCallable
 import io.reactivex.rxjava3.core.Completable
@@ -28,7 +31,7 @@ interface DriverTaskDao {
     suspend fun deleteTasks()
 
     @Insert
-    fun insert(tasks: List<TaskEntity?>?)
+    suspend fun insert(tasks: List<TaskEntity?>?)
 
     @Delete
     fun delete(user: TaskEntity)
@@ -40,11 +43,10 @@ interface DriverTaskDao {
                 TaskEntity(
                     it.taskId, it.status, it.activities.map { it.activityId },
                     it.changeReason, it.address, it.orderDetails, it.palletExchange,
-                    false, it.kundenName, it.taskDueDateStart, it.taskDueDateFinish
+                    false,  it.taskDueDateStart, it.taskDueDateFinish, it.kundenName
                 )
             }
             insert(strCustList)
         }
     }
-
 }

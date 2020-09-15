@@ -16,11 +16,10 @@ import com.abona_erp.driver.app.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
 import com.abona_erp.driver.app.data.local.preferences.putAny
-import com.abona_erp.driver.app.data.succeeded
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import kotlinx.coroutines.launch
 
-class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val app: AppRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
+class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
     private val TAG = "HomeViewModel"
 
     val mutableTasks  = MutableLiveData<List<TaskEntity>> ()
@@ -39,19 +38,19 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
     }
 
     fun getTasks() {
-       mutableTasks.postValue(app.observeTasks(DeviceUtils.getUniqueID(context)).value)
+       mutableTasks.postValue(repository.observeTasks(DeviceUtils.getUniqueID(context)).value)
     }
 
     fun refreshTasks() = viewModelScope.launch {
         //ResultWithStatus<List<TaskEntity>>
-      val result =   app.getTasks(true, DeviceUtils.getUniqueID(context))
+      val result =   repository.getTasks(true, DeviceUtils.getUniqueID(context))
 
         if(result is ResultWithStatus.Success){
             if(result.data.isNullOrEmpty()){
                 error.postValue("no tasks from server")
-            }
-            mutableTasks.postValue(result.data)
-        }else if(result is ResultWithStatus.Error){
+            } else mutableTasks.postValue(result.data)
+        } else if(result is ResultWithStatus.Error){
+            Log.e(TAG, result.exception.message)
             error.postValue(result.exception.message)
         }
     }

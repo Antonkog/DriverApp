@@ -17,17 +17,17 @@ data class CommResponseItem(
     @SerializedName("DelayReasons")
     val delayReasons: List<DelayReasonItem>,
     @SerializedName("ExceptionText")
-    val exceptionText: String,
+    val exceptionText: String?,
     @SerializedName("HttpResponseMessage")
-    val httpResponseMessage: String,
+    val httpResponseMessage: String?,
     @SerializedName("IsException")
     val isException: Boolean,
     @SerializedName("IsSuccess")
     val isSuccess: Boolean,
     @SerializedName("LogText")
-    val logText: String,
+    val logText: String?,
     @SerializedName("Text")
-    val text: String,
+    val text: String?,
     @SerializedName("TransportAuftragOid")
     val transportAuftragOid: Int
 )
