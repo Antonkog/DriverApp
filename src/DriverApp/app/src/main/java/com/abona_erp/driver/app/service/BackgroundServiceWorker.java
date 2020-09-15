@@ -125,7 +125,7 @@ public class BackgroundServiceWorker extends Service {
     }
   }
   
-  private volatile static int delay = 7000;
+  private volatile static int delay = 3000;
   public volatile static boolean allowRequest = true;
   public class Runner implements Runnable {
     @Override
