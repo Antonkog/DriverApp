@@ -10,6 +10,7 @@ import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 public class TextSecurePreferences {
