@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,13 +144,11 @@ public class SettingsFragment extends Fragment {
           mDeviceManufacturer.setText("<Unknown Manufacturer>");
         }
     
-        if (devProf.getCreatedAt() != null) {
-          
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-          Date date = sdf.parse(devProf.getCreatedAt());
-          
-          SimpleDateFormat sdf2 = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
-          mDeviceCreated.setText(sdf2.format(date));
+        if (devProf.getCreatedAt() != null && !TextUtils.isEmpty(devProf.getCreatedAt())) {
+          SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+          long updateTime = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(),
+            0).lastUpdateTime;
+          mDeviceCreated.setText(sdf.format(new Date(updateTime)));
         }
       }
     } catch (Exception e) {
