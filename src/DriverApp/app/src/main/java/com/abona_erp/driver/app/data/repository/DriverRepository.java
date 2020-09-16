@@ -27,6 +27,7 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.util.AppUtils;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +38,7 @@ import java.util.Locale;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.CONFIRMED;
 import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.TO_BE_CONFIRMED_BY_APP;
 import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER;
 
@@ -244,17 +246,38 @@ public class DriverRepository {
     return mDelayReasonDAO.getDelayReasonByMandantId(mandantId, activityId, waitingReasonCode);
   }
 
-  public void updateOrInsert(ChangeHistory changeHistory) {
+  public void updateOrInsertActivityHistory(ChangeHistory changeHistory) {
+    ChangeHistory existingHistoryItem = changeHistoryDao.selectActivityHistory(changeHistory.getActivityId(), changeHistory.getTaskId(), changeHistory.getType().getCode());
+    if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == CONFIRMED){
+      Log.e(TAG, "skip firebase history change " + changeHistory.toString());
+      return;
+    }
+
+    if(existingHistoryItem != null){
+      existingHistoryItem.setState(changeHistory.getState());
+      int update =  changeHistoryDao.updateHistory(existingHistoryItem);
+      Log.e(TAG, "change act complete " + update);
+    } else {
+      Log.e(TAG, "can't find old value in db to update activity history actID " + changeHistory.getActivityId());
+      changeHistoryDao.insert(changeHistory);
+    }
+  }
+
+  public void updateOrInsertFcm(ChangeHistory changeHistory) {
     ChangeHistory existingHistoryItem = changeHistoryDao.selectByTypeTaskOrderMandant(LogType.getTypeInt(changeHistory.getType()), changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
-      // here is our requirement NOT to show gray color after orange
-    if(existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP  && existingHistoryItem.getState() == TO_BE_CONFIRMED_BY_DRIVER) return;
+    // here is our requirement NOT to show gray color after orange
+    if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == TO_BE_CONFIRMED_BY_DRIVER){
+      Log.e(TAG, "skip history change " + changeHistory.toString());
+      return;
+    }
+
     //here is update or insert flow
-      if (existingHistoryItem != null){
-        changeHistory.setId(existingHistoryItem.getId());
-        changeHistoryDao.updateHistory(changeHistory);
-      } else {
-        changeHistoryDao.insert(changeHistory);
-      }
+    if (existingHistoryItem != null) {
+      changeHistory.setId(existingHistoryItem.getId());
+      changeHistoryDao.updateHistory(changeHistory);
+    } else {
+      changeHistoryDao.insert(changeHistory);
+    }
   }
 
     private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {

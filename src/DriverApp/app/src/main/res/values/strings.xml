@@ -86,6 +86,7 @@
   <string name="action_start_task_msg">Do you want to start the task?</string>
   <string name="menu_protocol">Protocol</string>
   <string name="menu_settings">Settings</string>
+  <string name="key_taskId" translatable="false">taskID</string>
   <string name="menu_history" translatable="false">History</string>
   <string name="history_task_id" translatable="false">Task ID:</string>
   <string name="history_when" translatable="false">When</string>

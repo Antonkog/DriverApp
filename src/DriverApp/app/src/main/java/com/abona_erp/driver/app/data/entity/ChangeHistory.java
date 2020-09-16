@@ -167,4 +167,24 @@ public class ChangeHistory /*implements Serializable*/ {
   public int getOfflineConfirmationID() {
     return offlineConfirmationID;
   }
+
+  @Override
+  public String toString() {
+    return "ChangeHistory{" +
+            "id=" + id +
+            ", title='" + title + '\'' +
+            ", message='" + message + '\'' +
+            ", type=" + type +
+            ", actionType=" + actionType +
+            ", state=" + state +
+            ", createdAt=" + createdAt +
+            ", modifiedAt=" + modifiedAt +
+            ", timeModifyLong=" + timeModifyLong +
+            ", taskId=" + taskId +
+            ", activityId=" + activityId +
+            ", orderNumber=" + orderNumber +
+            ", mandantID=" + mandantID +
+            ", offlineConfirmationID=" + offlineConfirmationID +
+            '}';
+  }
 }

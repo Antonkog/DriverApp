@@ -392,7 +392,7 @@ public class BackgroundServiceWorker extends Service {
                                 .subscribe(new DisposableSingleObserver<LastActivity>() {
                                   @Override
                                   public void onSuccess(LastActivity lastActivity) {
-                                    postActivityChangeSent(lastActivity, commItemReq, oldConfirmId);
+                                    postActivityChangeSent(_currActivity.getTaskId(), _currActivity.getActivityId(), UtilCommon.parseInt(lastActivity.getOrderNo()), _currActivity.getMandantId(), oldConfirmId);
                                     updateLastActivity(mLastActivityDAO, lastActivity, 2, "CHANGED", -1);
                                   }
                     
@@ -552,7 +552,7 @@ public class BackgroundServiceWorker extends Service {
                                   @Override
                                   public void onSuccess(LastActivity lastActivity) {
                                     if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal()) {
-                                      postFcmTaskConfirmed(lastActivity, commItemDB, offlineConfirmations);
+                                      postFcmTaskConfirmed(commItemDB, offlineConfirmations.get(0).getId());
                                       updateLastActivity(mLastActivityDAO, lastActivity, -1, "CONFIRMED BY DEVICE", 1);
                                       notify.setConfirmationStatus(1);
                                       AsyncTask.execute(new Runnable() {
@@ -562,7 +562,7 @@ public class BackgroundServiceWorker extends Service {
                                         }
                                       });
                                     } else if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal()) {
-                                      postFcmTaskConfirmedByUser(lastActivity, commItemDB, offlineConfirmations);
+                                      postFcmTaskConfirmedByUser(commItemDB, offlineConfirmations.get(0).getId());
                                       updateLastActivity(mLastActivityDAO, lastActivity, -1, "CONFIRMED BY USER", 2);
                                       notify.setConfirmationStatus(2);
                                       AsyncTask.execute(new Runnable() {
@@ -684,23 +684,24 @@ public class BackgroundServiceWorker extends Service {
   }
 
 
-  private void postActivityChangeSent(LastActivity lastActivity, CommItem commItemDB, int confirmationID) {
-    EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_activity), getApplicationContext().getString(R.string.log_activity_status_change),
+  private void postActivityChangeSent(int taskId, int activityId, int orderNumber, int mandantID, int confirmationID) {
+    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_activity), getApplicationContext().getString(R.string.log_activity_status_change),
             LogType.APP_TO_SERVER, ActionType.UPDATE_TASK, ChangeHistoryState.CONFIRMED,
-            lastActivity.getTaskId(), lastActivity.getId(), UtilCommon.parseInt(lastActivity.getOrderNo()), commItemDB.getActivityItem().getMandantId(), confirmationID));
+            taskId, activityId, orderNumber, mandantID, confirmationID);
+    EventBus.getDefault().post(changeHistoryEvent);
   }
 
 
-  private void postFcmTaskConfirmedByUser(LastActivity lastActivity, CommItem commItemDB, List<OfflineConfirmation> offlineConfirmations) {
+  private void postFcmTaskConfirmedByUser(CommItem commItemDB, int offlineConfirmId) { //we don't have activityId on task change
     EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_confirm_send),
             LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.CONFIRMED,
-            commItemDB.getTaskItem().getTaskId(), lastActivity.getId(), commItemDB.getTaskItem().getOrderNo(), commItemDB.getTaskItem().getMandantId(), offlineConfirmations.get(0).getId()));
+            commItemDB.getTaskItem().getTaskId(), 0, commItemDB.getTaskItem().getOrderNo(), commItemDB.getTaskItem().getMandantId(), offlineConfirmId));
   }
 
-  private void postFcmTaskConfirmed(LastActivity lastActivity, CommItem commItemDB, List<OfflineConfirmation> offlineConfirmations) {
+  private void postFcmTaskConfirmed(CommItem commItemDB, int offlineConfirmId) { //we don't have activityId on task change
     EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_task_updated_fcm),
             LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER,
-            commItemDB.getTaskItem().getTaskId(), lastActivity.getId(), commItemDB.getTaskItem().getOrderNo(), commItemDB.getTaskItem().getMandantId(), offlineConfirmations.get(0).getId()));
+            commItemDB.getTaskItem().getTaskId(), 0, commItemDB.getTaskItem().getOrderNo(), commItemDB.getTaskItem().getMandantId(), offlineConfirmId));
   }
 
   private void handleUploadJob() {

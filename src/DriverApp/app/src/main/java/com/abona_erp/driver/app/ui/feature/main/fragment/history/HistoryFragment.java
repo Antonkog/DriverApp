@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.ui.event.PageEvent;
-import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 
 public class HistoryFragment extends Fragment {
@@ -28,7 +27,7 @@ public class HistoryFragment extends Fragment {
   private HistoryAdapter historyAdapter;
   private RecyclerView.LayoutManager layoutManager;
   private AppCompatButton btnClearLog;
-
+  private int currentTaskId = 0;
   public HistoryFragment() {
     // Required empty public constructor.
   }
@@ -43,6 +42,11 @@ public class HistoryFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View root = inflater.inflate(R.layout.fragment_history, container, false);
+    if (getArguments() != null) {
+      currentTaskId = getArguments().getInt(getResources().getString(R.string.key_taskId));
+      if(currentTaskId!=0) historyViewModel.setLogsWithTaskId(currentTaskId);
+      else historyViewModel.setHistoryLogs();
+    }
     initComponents(root);
     return root;
   }

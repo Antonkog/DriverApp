@@ -97,8 +97,12 @@ public class MainViewModel extends AndroidViewModel {
     insert(item);
   }
 
-  public void addChangeHistory(ChangeHistory item){
-    updateOrInsert(item);
+  public void updateFCMHistory(ChangeHistory changeHistory){
+    mRepository.updateOrInsertFcm(changeHistory);
+  }
+
+  public void updateActivityHistory(ChangeHistory item){
+    mRepository.updateOrInsertActivityHistory(item);
   }
 
   public void addLog(String message, LogType type, LogLevel level, String title){
@@ -120,9 +124,6 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.insert(item);
   }
 
-  void updateOrInsert(ChangeHistory changeHistory) {
-    mRepository.updateOrInsert(changeHistory);
-  }
 
   void insert(Notify notify) {
     mRepository.insert(notify);

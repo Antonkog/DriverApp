@@ -6,7 +6,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
-import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.List;
@@ -19,9 +18,15 @@ public class HistoryViewModel extends AndroidViewModel {
   public HistoryViewModel(Application application) {
     super(application);
     _repo = new DriverRepository(application);
+  }
+
+  public void setLogsWithTaskId(int taskId){
+    mAllLogs =  _repo.getChangeHistoryDao().getLogsWithId(taskId);
+  }
+  public void setHistoryLogs(){
     mAllLogs =  _repo.getChangeHistoryDao().getLogs();
   }
-  
+
   public LiveData<List<ChangeHistory>> getHistoryLogs() {
     return mAllLogs;
   }

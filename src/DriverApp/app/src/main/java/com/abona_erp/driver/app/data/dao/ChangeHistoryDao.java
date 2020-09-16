@@ -11,13 +11,19 @@ import com.abona_erp.driver.app.data.entity.ChangeHistory;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
-
 @Dao
 public interface ChangeHistoryDao {
 
   @Query("SELECT * FROM change_history ORDER BY modified_long DESC")
   LiveData<List<ChangeHistory>> getLogs();
+
+
+  @Query("SELECT * FROM change_history WHERE task_id = :taskId ORDER BY modified_long DESC")
+  List<ChangeHistory> getLogsByTaskId(int taskId);
+
+
+  @Query("SELECT * FROM change_history WHERE task_id = :taskId ORDER BY modified_long DESC")
+  LiveData<List<ChangeHistory>> getLogsWithId(int taskId);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   long insert(ChangeHistory item);
@@ -25,12 +31,13 @@ public interface ChangeHistoryDao {
   @Query("DELETE FROM change_history")
   void deleteAll();
 
-  @Query("SELECT * FROM change_history WHERE direction = :logType and task_id == :taskID  and order_number = :orderNumber and mandant_id = :mandantId LIMIT 1")
+  @Query("SELECT * FROM change_history WHERE task_id == :taskID  AND order_number = :orderNumber AND mandant_id = :mandantId  AND  direction = :logType LIMIT 1")
   ChangeHistory selectByTypeTaskOrderMandant(int logType, int taskID, int orderNumber, int mandantId);
 
-  @Update
-  void updateHistory(ChangeHistory changeHistory);
+  @Query("SELECT * FROM change_history WHERE task_id == :taskID AND activity_id = :activityId AND direction = :logType LIMIT 1")
+  ChangeHistory selectActivityHistory(int activityId, int taskID, int logType);
 
-  @Query("SELECT COUNT(id) from change_history")
-  Flowable<Integer> countLogItems();
+  @Update
+  int updateHistory(ChangeHistory changeHistory);
+
 }

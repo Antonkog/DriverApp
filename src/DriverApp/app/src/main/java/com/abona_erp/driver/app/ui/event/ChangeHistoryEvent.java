@@ -31,31 +31,6 @@ public class ChangeHistoryEvent {
         changeHistory = history;
     }
 
-    private String title;
-
-    private String message;
-
-    private LogType type; //app to server etc.
-
-    private ActionType actionType;
-
-    private ChangeHistoryState state;
-
-    private Date createdAt;
-
-    private Date modifiedAt;
-
-    private int taskId;
-
-    private int activityId;
-
-    private int orderNumber;
-
-    private int mandantID;
-
-    private int offlineConfirmationID;
-
-
     public ChangeHistory getChangeHistory() {
         return changeHistory;
     }

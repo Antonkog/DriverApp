@@ -66,7 +66,6 @@ import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
-import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
@@ -610,13 +609,20 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Subscribe
   public void onMessageEvent(ChangeHistoryEvent event) {
-      mMainViewModel.addChangeHistory(event.getChangeHistory());
+    switch (event.getChangeHistory().getType()){
+      case APP_TO_SERVER:
+        mMainViewModel.updateActivityHistory(event.getChangeHistory());
+        break;
+      case FCM:
+        mMainViewModel.updateFCMHistory(event.getChangeHistory());
+        break;
+    }
   }
 
 
   @Subscribe
   public void onMessageEvent(HistoryClick historyClick) {
-    loadHistoryFragment();
+    loadHistoryFragment(historyClick.getTaskId());
   }
 
   private void showHistoryClickError(Throwable error) {
@@ -993,9 +999,13 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS),
             null), new SettingsFragment());
   }
-   private void loadHistoryFragment() {
-    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_HISTORY),
-            null), new HistoryFragment());
+
+  private void loadHistoryFragment(int taskId) {
+    HistoryFragment historyFragment = new HistoryFragment();
+    Bundle bundle = new Bundle();
+    bundle.putInt(getResources().getString(R.string.key_taskId), taskId);
+    historyFragment.setArguments(bundle);
+    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_HISTORY), null), historyFragment);
   }
 
 
