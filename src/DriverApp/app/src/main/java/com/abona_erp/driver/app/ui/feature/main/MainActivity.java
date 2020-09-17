@@ -1068,6 +1068,24 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       Date currentTimestamp = new Date();
       deviceProfile.setCreatedAt(dfUtc.format(currentTimestamp));
       deviceProfile.setModifiedAt(dfUtc.format(currentTimestamp));
+  
+      switch (Locale.getDefault().getISO3Language().toLowerCase()){
+        case "rus":
+        case "ukr":
+          TextSecurePreferences.setLanguage(getApplicationContext(), Constants.LANG_TO_SERVER_RUSSIAN); //as ukrainian is not implemented on server.
+          break;
+        case "eng":
+          TextSecurePreferences.setLanguage(getApplicationContext(), Constants.LANG_TO_SERVER_ENGLISH);
+          break;
+        case "pol":
+          TextSecurePreferences.setLanguage(getApplicationContext(), Constants.LANG_TO_SERVER_POLISH);
+          break;
+        case "deu":
+          TextSecurePreferences.setLanguage(getApplicationContext(), Constants.LANG_TO_SERVER_GERMAN);
+          break;
+        default:
+          break;
+      }
 
       mMainViewModel.insert(deviceProfile);
 
@@ -1134,9 +1152,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   
   private void initializeAppCenter() {
     // Initialize the AppCenter.
-    AppCenter.start(getApplication(), "317a6cfb-0f3e-4810-bbc1-13dfa263c2eb",
-      Analytics.class, Crashes.class);
-    Analytics.setEnabled(true);
+    if (!BuildConfig.DEBUG) {
+      AppCenter.start(getApplication(), "317a6cfb-0f3e-4810-bbc1-13dfa263c2eb",
+        Analytics.class, Crashes.class);
+      Analytics.setEnabled(true);
+    }
   }
   
   private void showOkDialog(String title, String message) {

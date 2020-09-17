@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 
 import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.LogLevel;
@@ -75,7 +76,9 @@ public class FcmService extends FirebaseMessagingService {
     Log.d(TAG, "++ FCM Message... latency (" + (System.currentTimeMillis() - message.getSentTime()) + " ms)");
     mNotifyData.add(message);
     addLog(LogLevel.INFO, LogType.FCM,  getBaseContext().getString(R.string.log_title_fcm), message.getData().toString());
-    Analytics.trackEvent("FCM-Task");
+    if (!BuildConfig.DEBUG) {
+      Analytics.trackEvent("FCM-Task");
+    }
   }
   
   @Override
