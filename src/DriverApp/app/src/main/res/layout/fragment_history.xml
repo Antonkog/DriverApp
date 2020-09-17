@@ -13,29 +13,17 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_clear_log"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/textView"
-        android:layout_marginEnd="16dp"
-        android:drawableStart="@drawable/ic_reset"
-        android:drawablePadding="@dimen/spacing_medium"
-        android:drawableTint="@color/clrIcon"
-        android:text="@string/clear_log"
-        app:backgroundTint="@color/colorPrimary" />
     <!-- BACK BUTTON -->
+
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_history_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/spacing_large"
-        android:layout_marginEnd="@dimen/spacing_large"
+        android:layout_marginStart="@dimen/margin_XVI"
+        android:layout_marginEnd="@dimen/margin_XVI"
         android:backgroundTint="@color/clrAbona"
-        android:padding="@dimen/spacing_large"
+        android:padding="@dimen/margin_XVI"
         android:src="@drawable/ic_arrow_back"
         android:tint="@color/white" />
 
@@ -49,18 +37,34 @@
         android:textSize="28sp" />
 
     <TextView
-        android:id="@+id/textView"
-        android:gravity="left|center_vertical"
-        android:textSize="16sp"
-        android:textColor="@color/dark"
+        android:id="@+id/text_order_no"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
+        android:gravity="left|center_vertical"
+        android:minWidth="100dp"
+        android:text="@string/order_no"
+        android:textColor="@color/dark"
+        android:textSize="@dimen/margin_XVI" />
+
+
+    <TextView
+        android:id="@+id/text_task_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/margin_XVI"
+        android:layout_toStartOf="@+id/text_order_no"
+        android:gravity="left|center_vertical"
         android:minWidth="60dp"
-        android:text="@string/task_id" />
+        android:text="@string/task_id"
+        android:textColor="@color/dark"
+        android:textSize="16sp" />
+
 
   </RelativeLayout>
 
@@ -73,5 +77,20 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
       tools:listitem="@layout/history_item" />
+
+  <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/btn_clear_log"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/margin_XVI"
+      android:layout_marginBottom="@dimen/margin_XVI"
+      android:drawableStart="@drawable/ic_reset"
+      android:drawablePadding="@dimen/spacing_medium"
+      android:drawableTint="@color/clrIcon"
+      android:text="@string/clear_log"
+      app:backgroundTint="@color/colorPrimary"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

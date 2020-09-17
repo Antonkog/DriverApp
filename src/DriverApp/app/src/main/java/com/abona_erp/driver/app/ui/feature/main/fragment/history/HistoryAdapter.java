@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
+import com.abona_erp.driver.app.util.AppUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,17 +31,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public TextView txtWhen;
-        public TextView txtWhat;
-        public TextView txtId;
-        public TextView title;
+        public TextView txtWhen, txtWhat, txtTaskId, title, orderNo;
         public AppCompatImageView checkers;
 
         public MyViewHolder(View root) {
             super(root);
             txtWhat = (TextView) root.findViewById(R.id.text_what);
             txtWhen = (TextView) root.findViewById(R.id.text_when);
-            txtId = (TextView) root.findViewById(R.id.text_id);
+            txtTaskId = (TextView) root.findViewById(R.id.text_task_id);
+            orderNo = (TextView) root.findViewById(R.id.text_order_no);
             title = (TextView) root.findViewById(R.id.text_title);
             checkers = (AppCompatImageView) root.findViewById(R.id.checkers);
         }
@@ -85,11 +84,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         holder.txtWhat.setText(history.get(position).getMessage());
         holder.title.setText(history.get(position).getTitle());
 
-        if(history.get(position).getTaskId() > 0) holder.txtId.setText(" "+history.get(position).getTaskId());
-        else holder.txtId.setText("");
+        if(history.get(position).getTaskId() > 0) holder.txtTaskId.setText(" "+history.get(position).getTaskId());
+        else holder.txtTaskId.setText("");
+
+        holder.orderNo.setText(AppUtils.parseOrderNo(history.get(position).getOrderNumber()));
     }
     public final String formatUTCTZ(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat(" HH:mm dd-MM-yyyy");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(date);
     }

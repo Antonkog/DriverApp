@@ -13,4 +13,7 @@
   <dimen name="camera_right_margin">18dp</dimen>
   <dimen name="camera_bottom_margin">16dp</dimen>
   <dimen name="camera_top_margin">16dp</dimen>
+
+  <dimen name="margin_XVI">16dp</dimen>
+
 </resources>

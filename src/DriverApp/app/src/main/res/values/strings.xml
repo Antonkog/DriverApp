@@ -91,7 +91,8 @@
   <string name="history_task_id" translatable="false">Task ID:</string>
   <string name="history_when" translatable="false">When</string>
   <string name="history_what" translatable="false">What</string>
-  <string name="history_id" translatable="false">1234</string>
+  <string name="ph_task_id" translatable="false">1234</string>
+  <string name="ph_order_no" translatable="false">2020/15/152</string>
   <string name="history_title" translatable="false">title</string>
   <string name="menu_about">About</string>
   <string name="action_lets_start">Let\'s Start</string>
