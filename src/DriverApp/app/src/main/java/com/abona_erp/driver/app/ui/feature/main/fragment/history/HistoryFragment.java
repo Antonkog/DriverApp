@@ -78,9 +78,9 @@ public class HistoryFragment extends Fragment {
 
     tabLayout = root.findViewById(R.id.tabs);
     if (currentTaskId != 0)
-      tabLayout.getTabAt(tabTaskPosition).setText(currentTaskId + "");
+      tabLayout.getTabAt(tabTaskPosition).setText(getResources().getString(R.string.task) + " " + currentTaskId);
     if (currentOrderNo != 0)
-      tabLayout.getTabAt(tabOrdersPosition).setText(AppUtils.parseOrderNo(currentOrderNo));
+      tabLayout.getTabAt(tabOrdersPosition).setText(getResources().getString(R.string.order) + " " + AppUtils.parseOrderNo(currentOrderNo));
 
     tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
       @Override

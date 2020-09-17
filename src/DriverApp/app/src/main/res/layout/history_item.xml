@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/history_when" />
+        tools:text="@string/ph_time" />
 
     <TextView
         android:id="@+id/text_what"
@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/text_when"
         app:layout_constraintStart_toEndOf="@+id/text_when"
         app:layout_constraintTop_toTopOf="@+id/text_when"
-        tools:text="@string/history_what" />
+        tools:text="@string/ph_message" />
 
     <TextView
         android:id="@+id/btn_order_no"

@@ -41,11 +41,20 @@
         android:id="@+id/tabs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        app:tabBackground="@drawable/tab_selector_rect"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@android:color/white"
+        app:tabPaddingStart="@dimen/spacing_large"
+        app:tabPaddingEnd="@dimen/spacing_large"
+        app:tabIndicatorHeight="0dp"
+        app:tabRippleColor="@null"
+        app:tabTextColor="@color/black"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="250dp"
         android:layout_marginEnd="250dp">
@@ -55,14 +64,14 @@
           android:tag="task"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="@string/task_id" />
+          android:text="@string/task" />
 
       <com.google.android.material.tabs.TabItem
           android:id="@+id/tab_by_order"
           android:tag="order"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="@string/order_no" />
+          android:text="@string/order" />
 
 
     </com.google.android.material.tabs.TabLayout>

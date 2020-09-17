@@ -93,6 +93,7 @@
   <string name="due_in">Fällig in</string>
   <string name="order_no">Auftragsnummer</string>
   <string name="task_id">Task ID</string>
+  <string name="task">Aufgabe</string>
   <string name="activity_status">Aktivität Status</string>
   <string name="task_total_status">Task Total Status</string>
   <string name="customer">Kunde</string>
