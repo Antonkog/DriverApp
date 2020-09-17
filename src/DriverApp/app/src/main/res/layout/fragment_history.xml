@@ -28,6 +28,7 @@
         android:tint="@color/white" />
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:id="@+id/history_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -36,15 +37,44 @@
         android:textColor="@color/grey_80"
         android:textSize="28sp" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="250dp"
+        android:layout_marginEnd="250dp">
+
+      <com.google.android.material.tabs.TabItem
+          android:id="@+id/tab_by_task"
+          android:tag="task"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/task_id" />
+
+      <com.google.android.material.tabs.TabItem
+          android:id="@+id/tab_by_order"
+          android:tag="order"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/order_no" />
+
+
+    </com.google.android.material.tabs.TabLayout>
+
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:id="@+id/btn_order_no"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        app:backgroundTint="@color/colorPrimary"
-        android:drawableTint="@color/clrIcon"
         android:layout_marginEnd="16dp"
         android:gravity="left|center_vertical"
         android:minWidth="100dp"
@@ -53,7 +83,7 @@
         android:textSize="@dimen/margin_XVI" />
 
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:id="@+id/btn_task_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,8 +91,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/margin_XVI"
         android:layout_toStartOf="@+id/btn_order_no"
-        app:backgroundTint="@color/colorPrimary"
-        android:drawableTint="@color/clrIcon"
         android:gravity="left|center_vertical"
         android:minWidth="60dp"
         android:text="@string/task_id"
