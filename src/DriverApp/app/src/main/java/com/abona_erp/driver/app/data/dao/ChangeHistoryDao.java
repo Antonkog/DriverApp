@@ -25,6 +25,10 @@ public interface ChangeHistoryDao {
   @Query("SELECT * FROM change_history WHERE task_id = :taskId ORDER BY modified_long DESC")
   LiveData<List<ChangeHistory>> getLogsWithId(int taskId);
 
+
+  @Query("SELECT * FROM change_history WHERE order_number = :orderNo ORDER BY modified_long DESC")
+  LiveData<List<ChangeHistory>> getLogsOrderNo(int orderNo);
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   long insert(ChangeHistory item);
   

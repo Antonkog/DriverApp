@@ -36,13 +36,15 @@
         android:textColor="@color/grey_80"
         android:textSize="28sp" />
 
-    <TextView
-        android:id="@+id/text_order_no"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_order_no"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        app:backgroundTint="@color/colorPrimary"
+        android:drawableTint="@color/clrIcon"
         android:layout_marginEnd="16dp"
         android:gravity="left|center_vertical"
         android:minWidth="100dp"
@@ -51,14 +53,16 @@
         android:textSize="@dimen/margin_XVI" />
 
 
-    <TextView
-        android:id="@+id/text_task_id"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_task_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/margin_XVI"
-        android:layout_toStartOf="@+id/text_order_no"
+        android:layout_toStartOf="@+id/btn_order_no"
+        app:backgroundTint="@color/colorPrimary"
+        android:drawableTint="@color/clrIcon"
         android:gravity="left|center_vertical"
         android:minWidth="60dp"
         android:text="@string/task_id"
@@ -90,7 +94,6 @@
       android:text="@string/clear_log"
       app:backgroundTint="@color/colorPrimary"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      tools:visibility="gone" />
+      app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

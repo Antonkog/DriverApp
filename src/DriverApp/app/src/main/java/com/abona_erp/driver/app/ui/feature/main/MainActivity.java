@@ -622,7 +622,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Subscribe
   public void onMessageEvent(HistoryClick historyClick) {
-    loadHistoryFragment(historyClick.getTaskId());
+    loadHistoryFragment(historyClick.getTaskId(), historyClick.getOrderNo());
   }
 
   private void showHistoryClickError(Throwable error) {
@@ -1000,10 +1000,11 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             null), new SettingsFragment());
   }
 
-  private void loadHistoryFragment(int taskId) {
+  private void loadHistoryFragment(int taskId, int orderNo) {
     HistoryFragment historyFragment = new HistoryFragment();
     Bundle bundle = new Bundle();
     bundle.putInt(getResources().getString(R.string.key_taskId), taskId);
+    bundle.putInt(getResources().getString(R.string.key_orderNo), orderNo);
     historyFragment.setArguments(bundle);
     loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_HISTORY), null), historyFragment);
   }

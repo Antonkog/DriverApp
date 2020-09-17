@@ -220,12 +220,7 @@ public class CommItemAdapterExt extends
       }
     });
     
-    holder.btn_task_history.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        EventBus.getDefault().post(new HistoryClick(taskItem.getTaskId()));
-      }
-    });
+    holder.btn_task_history.setOnClickListener(view -> EventBus.getDefault().post(new HistoryClick(taskItem.getTaskId(), taskItem.getOrderNo())));
     
     holder.btn_task_info.setOnClickListener(new View.OnClickListener() {
       @Override

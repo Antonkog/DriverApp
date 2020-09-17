@@ -38,8 +38,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             super(root);
             txtWhat = (TextView) root.findViewById(R.id.text_what);
             txtWhen = (TextView) root.findViewById(R.id.text_when);
-            txtTaskId = (TextView) root.findViewById(R.id.text_task_id);
-            orderNo = (TextView) root.findViewById(R.id.text_order_no);
+            txtTaskId = (TextView) root.findViewById(R.id.btn_task_id);
+            orderNo = (TextView) root.findViewById(R.id.btn_order_no);
             title = (TextView) root.findViewById(R.id.text_title);
             checkers = (AppCompatImageView) root.findViewById(R.id.checkers);
         }
@@ -90,7 +90,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         holder.orderNo.setText(AppUtils.parseOrderNo(history.get(position).getOrderNumber()));
     }
     public final String formatUTCTZ(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(" HH:mm dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd-MM-yyyy");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(date);
     }
