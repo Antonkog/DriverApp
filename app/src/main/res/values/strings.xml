@@ -32,4 +32,7 @@
     <string name="password_hint">Password</string>
     <string name="client_id_hint">Client ID</string>
     <string name="set_test_data">Set test data</string>
+
+    <string name="fcmChannelId">FCM Channed</string>
+    <string name="fcmTitle">Firebase notification</string>
 </resources>
