@@ -43,7 +43,7 @@ interface DriverTaskDao {
                 TaskEntity(
                     it.taskId, it.status, it.activities.map { it.activityId },
                     it.changeReason, it.address, it.orderDetails, it.palletExchange,
-                    false,  it.taskDueDateStart, it.taskDueDateFinish, it.kundenName
+                    false,  it.taskDueDateStart, it.taskDueDateFinish, it.mandantId, it.kundenName
                 )
             }
             insert(strCustList)

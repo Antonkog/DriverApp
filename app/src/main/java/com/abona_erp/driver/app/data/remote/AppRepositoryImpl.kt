@@ -67,7 +67,7 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
             localDataSource.deleteTasks()
             localDataSource.insertFromCommItem(remoteTasks)
         } else{
-            throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text + " " + remoteTasks.exceptionText ?: ""} ")
+            throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text} " )
         }
     }
 

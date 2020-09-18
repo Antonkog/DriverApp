@@ -6,16 +6,17 @@ import androidx.room.ForeignKey.CASCADE
 @Entity(tableName = "activity_entity", indices = arrayOf(Index(value = ["taskpId"])),
     foreignKeys = [
         ForeignKey(entity = TaskEntity::class,
-            parentColumns = ["taskId"],
-            childColumns = ["taskpId"],
-            onDelete = CASCADE)])
+            parentColumns = ["taskId","mandantId"],
+            childColumns = ["taskpId","mandantId"],
+            onDelete = CASCADE)],
+    primaryKeys = ["taskpId", "activityId", "mandantId"]
+)
 
 data class ActivityEntity(
-    @PrimaryKey (autoGenerate = true)  val id: Int,
     @ColumnInfo val activityId: Int,
     @ColumnInfo val mandantId: Int,
     @ColumnInfo val taskpId: Int,
-    @ColumnInfo val deviceId: Int, // to send
+    @ColumnInfo val deviceId: String?, // to send
     @ColumnInfo val started: String?,
     @ColumnInfo val finished: String?,
     @ColumnInfo val name: String?

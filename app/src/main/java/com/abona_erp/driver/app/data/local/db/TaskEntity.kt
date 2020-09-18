@@ -5,10 +5,13 @@ import com.abona_erp.driver.app.data.model.Address
 import com.abona_erp.driver.app.data.model.Contact
 import com.abona_erp.driver.app.data.model.OrderDetails
 import com.abona_erp.driver.app.data.model.PalletExchange
+import com.google.gson.annotations.SerializedName
 
-@Entity (tableName = "task_entity")
+@Entity (tableName = "task_entity",
+    primaryKeys = ["taskId", "mandantId"]
+)
 data class TaskEntity(
-    @PrimaryKey  val taskId: Int,
+    @ColumnInfo  val taskId: Int,
     @ColumnInfo val actionType: Int,
     val activityIds: List<Int>,
     @ColumnInfo val changeReason: Int,
@@ -20,6 +23,7 @@ data class TaskEntity(
     @ColumnInfo val finished: Boolean,
     @ColumnInfo val taskDueDateStart: String?,
     @ColumnInfo val taskDueDateFinish: String?,
+    @ColumnInfo  val mandantId: Int,
     @ColumnInfo val kundenName: String?
 )
 /*

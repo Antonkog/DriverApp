@@ -11,21 +11,21 @@ data class Activity(
     @SerializedName("DelayReasons")
     val delayReasons: Any,
     @SerializedName("Description")
-    val description: Any,
+    val description: String?,
     @SerializedName("DeviceId")
-    val deviceId: Any,
+    val deviceId: String?,
     @SerializedName("Finished")
-    val finished: String,
+    val finished: String?,
     @SerializedName("MandantId")
     val mandantId: Int,
     @SerializedName("Name")
-    val name: String,
+    val name: String?,
     @SerializedName("RadiusGeoFence")
     val radiusGeoFence: Int,
     @SerializedName("Sequence")
     val sequence: Int,
     @SerializedName("Started")
-    val started: String,
+    val started: String?,
     @SerializedName("Status")
     val status: Int,
     @SerializedName("TaskId")
