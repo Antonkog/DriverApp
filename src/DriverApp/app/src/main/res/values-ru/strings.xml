@@ -150,4 +150,5 @@
   <string name="created_at">Создано на</string>
   <string name="protocol">Протокол</string>
   <string name="device_reset">Сброс устройства</string>
+  <string name="local_time">Местное время</string>
 </resources>
