@@ -29,6 +29,10 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         return localDataSource.observeActivities()
     }
 
+    override suspend fun getActivities(): List<ActivityEntity> {
+       return  localDataSource.getActivities()
+    }
+
     override fun registerDevice(commItem: CommItem): Observable<ResultOfAction> {
         return api.deviceProfile(commItem)
     }
@@ -64,6 +68,7 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         val remoteTasks = api.getAllTasks(deviceId)
 
         if(remoteTasks.isSuccess && !remoteTasks.isException){
+            localDataSource.deleteActivities()
             localDataSource.deleteTasks()
             localDataSource.insertFromCommItem(remoteTasks)
         } else{

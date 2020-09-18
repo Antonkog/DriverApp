@@ -34,7 +34,6 @@ class LocalDataSource internal constructor(
 )  {
 
     fun observeActivities(): LiveData<List<ActivityEntity>> {
-
         return db.driverActDao().getAll()
     }
 
@@ -50,14 +49,22 @@ class LocalDataSource internal constructor(
         }
     }
 
+    fun getActivities() : List<ActivityEntity> {
+        return db.driverActDao().getActivitiesList()
+    }
+
     suspend fun saveTask(taskEntity: TaskEntity) {
-        db.driverTaskDao().deleteTasks()
+        db.driverTaskDao().insertOrReplace(taskEntity)
     }
 
 
 
     suspend fun deleteTasks() {
         db.driverTaskDao().deleteTasks()
+    }
+
+    suspend fun deleteActivities() {
+        db.driverActDao().deleteActivities()
     }
 
     suspend fun insertFromCommItem(data: CommResponseItem) {

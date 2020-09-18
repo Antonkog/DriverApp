@@ -27,6 +27,10 @@ interface DriverTaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(tasks: List<TaskEntity?>?)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplace(tasks: TaskEntity)
+
+
     @Delete
     fun delete(user: TaskEntity)
 

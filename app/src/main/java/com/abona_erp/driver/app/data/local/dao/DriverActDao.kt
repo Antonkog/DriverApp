@@ -13,9 +13,23 @@ interface DriverActDao {
     @Query("SELECT * FROM activity_entity")
     fun getAll(): LiveData<List<ActivityEntity>>
 
+
+    @Query("SELECT * FROM activity_entity")
+    fun getActivitiesList(): List<ActivityEntity>
+
+
     @Delete
     fun delete(activity: ActivityEntity)
 
+    @Delete
+    fun deleteAll(activitys: List<ActivityEntity>)
+
+
+    /**
+     * Delete all Activities.
+     */
+    @Query("DELETE FROM activity_entity")
+    suspend fun deleteActivities()
 
     @Insert
     suspend fun insert(activities: List<ActivityEntity>)

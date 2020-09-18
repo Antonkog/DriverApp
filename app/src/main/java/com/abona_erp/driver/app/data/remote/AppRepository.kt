@@ -23,6 +23,7 @@ interface AppRepository {
     //that is LiveData from db
     fun observeTasks(deviceId: String): LiveData<List<TaskEntity>>
     fun observeActivities(deviceId: String): LiveData<List<ActivityEntity>>
+    suspend fun getActivities(): List<ActivityEntity>
 
     //that responses not in db - safe place to keep credentials
     fun registerDevice(commItem: CommItem): Observable<ResultOfAction>
