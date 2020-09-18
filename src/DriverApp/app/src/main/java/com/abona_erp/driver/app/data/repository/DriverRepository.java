@@ -7,12 +7,15 @@ import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.converters.LogType;
+import com.abona_erp.driver.app.data.dao.ChangeHistoryDao;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
@@ -24,6 +27,7 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.util.AppUtils;
 
 import java.text.SimpleDateFormat;
@@ -33,6 +37,10 @@ import java.util.Locale;
 
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.CONFIRMED;
+import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.TO_BE_CONFIRMED_BY_APP;
+import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER;
 
 public class DriverRepository {
   private final String TAG  ="DriverRepository" ;
@@ -55,7 +63,8 @@ public class DriverRepository {
   
   private LogDAO mLogDAO;
   private DelayReasonDAO mDelayReasonDAO;
-  
+  private ChangeHistoryDao changeHistoryDao;
+
   public DriverRepository(Application application) {
     DriverDatabase db = DriverDatabase.getDatabase();
     mNotifyDao = db.notifyDao();
@@ -79,6 +88,8 @@ public class DriverRepository {
     mLogDAO = db.logDAO();
 
     mDelayReasonDAO = db.delayReasonDAO();
+
+    changeHistoryDao = db.changeHistoryDao();
   }
 
   public DeviceProfileDAO getmDeviceProfileDAO() {
@@ -88,7 +99,11 @@ public class DriverRepository {
   public LogDAO getLogsDAO() {
     return mLogDAO;
   }
-  
+
+  public ChangeHistoryDao getChangeHistoryDao() {
+    return changeHistoryDao;
+  }
+
   public LiveData<List<OfflineConfirmation>> getAllLiveDataConfirmations() {
     return mAllOfflineConfirmation;
   }
@@ -212,6 +227,11 @@ public class DriverRepository {
   public void deleteAllLogs() {
     new deleteAllLogsAsyncTask(mLogDAO).execute();
   }
+
+  public void deleteChangeHistory() {
+    new deleteHistoryAsyncTask(changeHistoryDao).execute();
+  }
+
   
   public long insert(DelayReasonEntity item) {
     new insertDelayReasonAsyncTask(mDelayReasonDAO).execute(item);
@@ -226,7 +246,41 @@ public class DriverRepository {
     return mDelayReasonDAO.getDelayReasonByMandantId(mandantId, activityId, waitingReasonCode);
   }
 
-  private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
+  public void updateOrInsertActivityHistory(ChangeHistory changeHistory) {
+    ChangeHistory existingHistoryItem = changeHistoryDao.selectActivityHistory(changeHistory.getActivityId(), changeHistory.getTaskId(), changeHistory.getType().getCode());
+    if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == CONFIRMED){
+      Log.e(TAG, "skip firebase history change " + changeHistory.toString());
+      return;
+    }
+
+    if(existingHistoryItem != null){
+      existingHistoryItem.setState(changeHistory.getState());
+      int update =  changeHistoryDao.updateHistory(existingHistoryItem);
+      Log.e(TAG, "change act complete " + update);
+    } else {
+      Log.e(TAG, "can't find old value in db to update activity history actID " + changeHistory.getActivityId());
+      changeHistoryDao.insert(changeHistory);
+    }
+  }
+
+  public void updateOrInsertFcm(ChangeHistory changeHistory) {
+    ChangeHistory existingHistoryItem = changeHistoryDao.selectByTypeTaskOrderMandant(LogType.getTypeInt(changeHistory.getType()), changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
+    // here is our requirement NOT to show gray color after orange
+    if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == TO_BE_CONFIRMED_BY_DRIVER){
+      Log.e(TAG, "skip history change " + changeHistory.toString());
+      return;
+    }
+
+    //here is update or insert flow
+    if (existingHistoryItem != null) {
+      changeHistory.setId(existingHistoryItem.getId());
+      changeHistoryDao.updateHistory(changeHistory);
+    } else {
+      changeHistoryDao.insert(changeHistory);
+    }
+  }
+
+    private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
 
     private NotifyDao mDAO;
 
@@ -445,22 +499,37 @@ public class DriverRepository {
       return null;
     }
   }
-  
+
   static class deleteAllLogsAsyncTask extends AsyncTask<Void, Void, Void> {
-    
+
     private LogDAO _dao;
-    
+
     deleteAllLogsAsyncTask(LogDAO dao) {
       this._dao = dao;
     }
-    
+
     @Override
     protected Void doInBackground(Void... params) {
       _dao.deleteAll();
       return null;
     }
   }
-  
+
+  static class deleteHistoryAsyncTask extends AsyncTask<Void, Void, Void> {
+
+    private ChangeHistoryDao _dao;
+
+    deleteHistoryAsyncTask(ChangeHistoryDao dao) {
+      this._dao = dao;
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      _dao.deleteAll();
+      return null;
+    }
+  }
+
   static class insertDelayReasonAsyncTask extends AsyncTask<DelayReasonEntity, Void, Void> {
     
     private DelayReasonDAO dao;

@@ -5,7 +5,7 @@ import androidx.room.TypeConverter;
 public enum ChangeHistoryState {
   NO_SYNC(0),
   TO_BE_CONFIRMED_BY_APP(1), //gray
-  TO_BE_CONFIRMED_BY_DRIVER(2),//orange: device got data, task not opened
+  TO_BE_CONFIRMED_BY_DRIVER(2),//orange: device got data, task not opened. App to server don't has orange. Only gray and green. 
   CONFIRMED(3);//green:  200 from server or driver open task
 
 

@@ -9,6 +9,7 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.abona_erp.driver.app.data.converters.Converters;
+import com.abona_erp.driver.app.data.dao.ChangeHistoryDao;
 import com.abona_erp.driver.app.data.dao.DelayReasonDAO;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
@@ -16,6 +17,7 @@ import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.dao.OfflineDelayReasonDAO;
+import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
@@ -35,8 +37,9 @@ import com.abona_erp.driver.core.base.ContextUtils;
   OfflineConfirmation.class,
   LogItem.class,
   DelayReasonEntity.class,
-  OfflineDelayReasonEntity.class
-}, version = 7, exportSchema = false)
+  OfflineDelayReasonEntity.class,
+  ChangeHistory.class
+}, version = 8, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class DriverDatabase extends RoomDatabase {
 
@@ -45,6 +48,7 @@ public abstract class DriverDatabase extends RoomDatabase {
   public abstract DeviceProfileDAO deviceProfileDAO();
   public abstract OfflineConfirmationDAO offlineConfirmationDAO();
   public abstract LogDAO logDAO();
+  public abstract ChangeHistoryDao changeHistoryDao();
   public abstract DelayReasonDAO delayReasonDAO();
   public abstract OfflineDelayReasonDAO offlineDelayReasonDAO();
 
@@ -58,14 +62,25 @@ public abstract class DriverDatabase extends RoomDatabase {
           INSTANCE = Room.databaseBuilder(ContextUtils.getApplicationContext(),
             DriverDatabase.class, "abona_driver77")
             .allowMainThreadQueries()
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
             .build();
         }
       }
     }
     return INSTANCE;
   }
-  
+
+
+  static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+    @Override
+    public void migrate(@NonNull SupportSQLiteDatabase database) {
+      database.execSQL("CREATE TABLE IF NOT EXISTS `change_history` (`id` INTEGER NOT NULL primary key autoincrement, " +
+              "`title` varchar(255), `message` text, `direction` integer,  `action_type` integer, `state` integer, `created_at` text, `modified_at` text, " +
+              "`modified_long` INTEGER  NOT NULL, `task_id` integer  NOT NULL, `activity_id` integer  NOT NULL, `order_number` integer NOT NULL, `mandant_id` integer NOT NULL, `confirmation_id` integer  NOT NULL)");
+
+    }
+  };
+
   static final Migration MIGRATION_6_7 = new Migration(6, 7) {
     @Override
     public void migrate(@NonNull SupportSQLiteDatabase database) {

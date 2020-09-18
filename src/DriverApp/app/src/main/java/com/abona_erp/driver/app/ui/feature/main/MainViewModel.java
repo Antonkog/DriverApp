@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
+import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.LogItem;
@@ -33,9 +34,9 @@ public class MainViewModel extends AndroidViewModel {
   private LiveData<List<Notify>> mAllCMRNotifications;
   private LiveData<List<Notify>> mAllCompletedNotifications;
   private LiveData<List<Notify>> mAllTasksByMandantAndOrderNo;
-  
+
   private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmations;
-  
+
   //private List<DeviceProfile> mAllDeviceProfiles;
 
   public MainViewModel(Application application) {
@@ -49,12 +50,12 @@ public class MainViewModel extends AndroidViewModel {
     mAllRunningNotifications = mRepository.getAllRunningNotifications();
     mAllCMRNotifications = mRepository.getAllCMRNotifications();
     mAllCompletedNotifications = mRepository.getAllCompletedNotifications();
-    
+
     mAllOfflineConfirmations = mRepository.getAllLiveDataConfirmations();
-    
+
     //mAllDeviceProfiles = mRepository.getAllDeviceProfiles();
   }
-  
+
   LiveData<List<OfflineConfirmation>> getAllOfflineConfirmations() {
     return mAllOfflineConfirmations;
   }
@@ -62,7 +63,7 @@ public class MainViewModel extends AndroidViewModel {
   LiveData<Integer> getNotReadNotificationCount() {
     return mNotReadNotificationCount;
   }
-  
+
   LiveData<Integer> getRowCount() {
     return mRowCount;
   }
@@ -86,7 +87,7 @@ public class MainViewModel extends AndroidViewModel {
   LiveData<List<Notify>> getAllCompletedNotifications() {
     return mAllCompletedNotifications;
   }
-  
+
   Single<List<Notify>> getAllTasksByMandantAndOrderNo(int mandantID, int orderNo) {
     return mRepository.getAllTasksByOrderNo(mandantID, orderNo);
   }
@@ -95,6 +96,15 @@ public class MainViewModel extends AndroidViewModel {
   public void addLog(LogItem item){
     insert(item);
   }
+
+  public void updateFCMHistory(ChangeHistory changeHistory){
+    mRepository.updateOrInsertFcm(changeHistory);
+  }
+
+  public void updateActivityHistory(ChangeHistory item){
+    mRepository.updateOrInsertActivityHistory(item);
+  }
+
   public void addLog(String message, LogType type, LogLevel level, String title){
 //    addLog(message, type, level, title, 0);
   }
@@ -114,6 +124,7 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.insert(item);
   }
 
+
   void insert(Notify notify) {
     mRepository.insert(notify);
   }
@@ -125,11 +136,11 @@ public class MainViewModel extends AndroidViewModel {
   void update(Notify notify) {
     mRepository.update(notify);
   }
-  
+
   void delete(Notify notify) {
     mRepository.delete(notify);
   }
-  
+
   Single<Notify> getNotifyByMandantTaskId(int mandantId, int taskId) {
     return mRepository.getNotifyByMandantTaskId(mandantId, taskId);
   }
@@ -156,7 +167,7 @@ public class MainViewModel extends AndroidViewModel {
   void insert(DeviceProfile deviceProfile) {
     mRepository.insert(deviceProfile);
   }
-  
+
   void update(DeviceProfile deviceProfile) {
     mRepository.update(deviceProfile);
   }
@@ -165,13 +176,13 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.deleteAllNotify();
     mRepository.deleteAllLastActivities();
   }
-  
+
   //List<DeviceProfile> getAllDeviceProfiles() {
   //  return mAllDeviceProfiles;
   //}
   // DEVICE PROFILE:
   // -----------------------------------------------------------------------------------------------
-  
+
   // -----------------------------------------------------------------------------------------------
   // LAST ACTIVITY:
   void delete(LastActivity lastActivity) {

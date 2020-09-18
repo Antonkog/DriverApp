@@ -88,6 +88,7 @@
   <string name="due_in">Осталось</string>
   <string name="order_no">№ заказа</string>
   <string name="task_id">Задача №</string>
+  <string name="task">Задача</string>
   <string name="activity_status">Статус активности</string>
   <string name="task_total_status">Общий статус задания</string>
   <string name="customer">Клиент</string>
