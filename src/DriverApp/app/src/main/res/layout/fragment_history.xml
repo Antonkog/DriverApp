@@ -5,118 +5,101 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-  <RelativeLayout
-      android:id="@+id/relativeLayout"
-      android:layout_width="match_parent"
-      android:layout_height="?attr/actionBarSize"
+
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/history_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/margin_XVI"
+      android:layout_toEndOf="@id/btn_history_back"
+      android:text="@string/menu_history"
+      android:textColor="@color/grey_80"
+      android:textSize="28sp"
+      app:layout_constraintBottom_toBottomOf="@+id/btn_history_back"
+      app:layout_constraintStart_toEndOf="@+id/btn_history_back"
+      app:layout_constraintTop_toTopOf="@+id/btn_history_back" />
+
+  <com.google.android.material.tabs.TabLayout
+      android:id="@+id/tabs"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentStart="true"
+      android:layout_alignParentEnd="true"
+      android:layout_alignParentBottom="true"
+      android:layout_centerVertical="true"
+      android:layout_marginTop="@dimen/margin_XVI"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
+      app:layout_constraintTop_toTopOf="parent"
+      app:tabBackground="@drawable/tab_selector_rect"
+      app:tabIndicatorHeight="4dp"
+      app:tabIndicatorColor="@color/clrAbona"
+      app:tabPaddingEnd="@dimen/margin_XVI"
+      app:tabPaddingStart="@dimen/margin_XVI"
+      app:tabRippleColor="@null"
+      app:tabSelectedTextColor="@android:color/white"
+      app:tabTextColor="@color/black">
 
-    <!-- BACK BUTTON -->
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/btn_history_back"
+    <com.google.android.material.tabs.TabItem
+        android:id="@+id/tab_by_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/margin_XVI"
-        android:layout_marginEnd="@dimen/margin_XVI"
-        android:backgroundTint="@color/clrAbona"
-        android:padding="@dimen/margin_XVI"
-        android:src="@drawable/ic_arrow_back"
-        android:tint="@color/white" />
+        android:tag="task"
+        android:text="@string/task" />
 
-    <com.abona_erp.driver.app.ui.widget.AsapTextView
-        android:id="@+id/history_label"
+    <com.google.android.material.tabs.TabItem
+        android:id="@+id/tab_by_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/btn_history_back"
-        android:text="@string/menu_history"
-        android:textColor="@color/grey_80"
-        android:textSize="28sp" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        app:tabBackground="@drawable/tab_selector_rect"
-        app:tabMode="scrollable"
-        app:tabSelectedTextColor="@android:color/white"
-        app:tabPaddingStart="@dimen/spacing_large"
-        app:tabPaddingEnd="@dimen/spacing_large"
-        app:tabIndicatorHeight="0dp"
-        app:tabRippleColor="@null"
-        app:tabTextColor="@color/black"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="250dp"
-        android:layout_marginEnd="250dp">
-
-      <com.google.android.material.tabs.TabItem
-          android:id="@+id/tab_by_task"
-          android:tag="task"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/task" />
-
-      <com.google.android.material.tabs.TabItem
-          android:id="@+id/tab_by_order"
-          android:tag="order"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/order" />
+        android:tag="order"
+        android:text="@string/order" />
 
 
-    </com.google.android.material.tabs.TabLayout>
+  </com.google.android.material.tabs.TabLayout>
 
 
-    <com.abona_erp.driver.app.ui.widget.AsapTextView
-        android:id="@+id/btn_order_no"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:gravity="left|center_vertical"
-        android:minWidth="100dp"
-        android:text="@string/order_no"
-        android:textColor="@color/dark"
-        android:textSize="@dimen/margin_XVI" />
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/txt_order_no"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:layout_alignParentEnd="true"
+      android:layout_alignParentBottom="true"
+      android:layout_marginEnd="@dimen/margin_XVI"
+      android:gravity="left|center_vertical"
+      android:minWidth="100dp"
+      android:text="@string/order_no"
+      android:textColor="@color/dark"
+      android:textSize="@dimen/margin_XVI"
+      app:layout_constraintBottom_toBottomOf="@+id/tabs"
+      app:layout_constraintEnd_toEndOf="parent" />
 
-
-    <com.abona_erp.driver.app.ui.widget.AsapTextView
-        android:id="@+id/btn_task_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/margin_XVI"
-        android:layout_toStartOf="@+id/btn_order_no"
-        android:gravity="left|center_vertical"
-        android:minWidth="60dp"
-        android:text="@string/task_id"
-        android:textColor="@color/dark"
-        android:textSize="16sp" />
-
-
-  </RelativeLayout>
+  <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:id="@+id/txt_task_id"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:layout_alignParentBottom="true"
+      android:layout_marginEnd="@dimen/margin_XVI"
+      android:layout_toStartOf="@+id/txt_order_no"
+      android:gravity="left|center_vertical"
+      android:minWidth="60dp"
+      android:text="@string/task_id"
+      android:textColor="@color/dark"
+      android:textSize="16sp"
+      app:layout_constraintBottom_toBottomOf="@+id/txt_order_no"
+      app:layout_constraintEnd_toStartOf="@+id/txt_order_no"
+      app:layout_constraintTop_toTopOf="@+id/txt_order_no" />
 
   <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/recyclerView"
       android:layout_width="match_parent"
       android:layout_height="0dp"
+      android:layout_marginTop="@dimen/margin_VIII"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
+      app:layout_constraintTop_toBottomOf="@+id/tabs"
       tools:listitem="@layout/history_item" />
 
   <androidx.appcompat.widget.AppCompatButton
@@ -129,8 +112,22 @@
       android:drawablePadding="@dimen/spacing_medium"
       android:drawableTint="@color/clrIcon"
       android:text="@string/clear_log"
+      android:visibility="gone"
       app:backgroundTint="@color/colorPrimary"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />
+
+  <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/btn_history_back"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/margin_VIII"
+      android:layout_marginTop="@dimen/margin_VIII"
+      android:backgroundTint="@color/clrAbona"
+      android:padding="@dimen/margin_XVI"
+      android:src="@drawable/ic_arrow_back"
+      android:tint="@color/white"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

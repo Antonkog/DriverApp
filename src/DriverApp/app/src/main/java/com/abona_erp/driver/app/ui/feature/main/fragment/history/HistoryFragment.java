@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
-import com.abona_erp.driver.app.BuildConfig;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -59,7 +58,12 @@ public class HistoryFragment extends Fragment {
 
   private void initComponents(@NonNull View root) {
     AppCompatImageButton  mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_history_back);
-    mBtnBack.setOnClickListener(view -> App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null)));
+    mBtnBack.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+      }
+    });
 
     recyclerView = root.findViewById(R.id.recyclerView);
 
@@ -106,13 +110,8 @@ public class HistoryFragment extends Fragment {
       }
     });
 
-    if (BuildConfig.DEBUG) {
-      btnClearLog = root.findViewById(R.id.btn_clear_log);
-      btnClearLog.setOnClickListener(v -> historyViewModel.deleteChangeHistory());
-      btnClearLog.setVisibility(View.VISIBLE);
-    } else {
-      btnClearLog.setVisibility(View.GONE);
-    }
+    btnClearLog = root.findViewById(R.id.btn_clear_log);
+    btnClearLog.setOnClickListener(v -> historyViewModel.deleteChangeHistory());
   }
 
   private void refreshByOrderNo() {

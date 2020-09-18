@@ -31,7 +31,7 @@
         tools:text="@string/ph_message" />
 
     <TextView
-        android:id="@+id/btn_order_no"
+        android:id="@+id/txt_order_no"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginEnd="@dimen/margin_XVI"
@@ -45,7 +45,7 @@
 
 
     <TextView
-        android:id="@+id/btn_task_id"
+        android:id="@+id/txt_task_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_XVI"
@@ -53,7 +53,7 @@
         android:textColor="@color/dark"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_order_no"
+        app:layout_constraintEnd_toStartOf="@+id/txt_order_no"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/ph_task_id" />
 
@@ -65,7 +65,7 @@
         android:src="@drawable/ic_done_all"
         android:tint="@color/grey_40"
         app:layout_constraintBottom_toTopOf="@+id/view2"
-        app:layout_constraintEnd_toStartOf="@+id/btn_task_id"
+        app:layout_constraintEnd_toStartOf="@+id/txt_task_id"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.466" />
 
