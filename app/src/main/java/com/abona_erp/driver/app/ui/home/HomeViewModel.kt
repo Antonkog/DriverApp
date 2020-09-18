@@ -60,4 +60,8 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
         prefs.putAny(Constant.currentVisibleTaskid, taskEntity.taskId)
     }
 
+
+    fun saveTask() {
+        mutableTasks.postValue(repository.observeTasks(DeviceUtils.getUniqueID(context)).value)
+    }
 }

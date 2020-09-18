@@ -15,17 +15,38 @@ import com.abona_erp.driver.app.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
+import com.abona_erp.driver.app.ui.RxBus
+import com.abona_erp.driver.app.ui.events.RxBusEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.*
 
 
 @SuppressLint("NewApi")
 class FcmService : FirebaseMessagingService() {
+
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(Dispatchers.Main + job)
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d(
             TAG,
             "++ FCM Message... latency (" + (System.currentTimeMillis() - message.sentTime) + " ms)"
         )
+        Log.d(
+            TAG,
+            "FCM Message(" + message.data.toString() +  " )"
+        )
         mNotifyData.add(message)
+        sendNotification(message.data.toString())
+        RxBus.publish(RxBusEvent.FirebaseMessage(message.data.toString()))
     }
 
     private fun sendNotification(messageBody: String) {

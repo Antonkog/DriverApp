@@ -30,6 +30,7 @@ interface AppRepository {
     fun getAuthToken(grantType : String, userName : String, password : String) : Observable<Response<TokenResponse>>
     fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String ): Single<List<AppFileInterchangeItem>>
 
+    suspend fun saveTask(taskEntity: TaskEntity)
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWithStatus<List<TaskEntity>>
 
 }

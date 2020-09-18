@@ -86,4 +86,8 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
     ): Single<List<AppFileInterchangeItem>> {
         return api.getDocuments(mandantId,orderNo,deviceId)
     }
+
+    override suspend fun saveTask(taskEntity: TaskEntity) {
+        localDataSource.saveTask(taskEntity)
+    }
 }

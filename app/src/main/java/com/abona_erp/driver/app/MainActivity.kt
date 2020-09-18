@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_log_out -> {
-              RxBus.publish(RxBusEvent.LogOut(true))
                 mainViewModel.resetAuthTime()
                 navController.navigate(R.id.nav_login)
                 true

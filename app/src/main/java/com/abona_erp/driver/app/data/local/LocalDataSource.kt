@@ -50,11 +50,18 @@ class LocalDataSource internal constructor(
         }
     }
 
+    suspend fun saveTask(taskEntity: TaskEntity) {
+        db.driverTaskDao().deleteTasks()
+    }
+
+
+
     suspend fun deleteTasks() {
         db.driverTaskDao().deleteTasks()
     }
 
     suspend fun insertFromCommItem(data: CommResponseItem) {
         db.driverTaskDao().insertFromCommItem(data)
+        db.driverActDao().insertFromCommItem(data)
     }
 }
