@@ -247,19 +247,19 @@ public class DriverRepository {
   }
 
   public void updateOrInsertActivityHistory(ChangeHistory changeHistory) {
-    ChangeHistory existingHistoryItem = changeHistoryDao.selectActivityHistory(changeHistory.getActivityId(), changeHistory.getTaskId(), changeHistory.getType().getCode());
+    ChangeHistory existingHistoryItem = changeHistoryDao.selectActivityHistory(changeHistory.getActionType().getCode(), changeHistory.getOrderNumber(), changeHistory.getActivityId(), changeHistory.getTaskId(), changeHistory.getType().getCode());
     if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == CONFIRMED){
-      Log.e(TAG, "skip firebase history change " + changeHistory.toString());
+      Log.e(TAG, "skip history change" + changeHistory.toString());
       return;
     }
 
     if(existingHistoryItem != null){
       existingHistoryItem.setState(changeHistory.getState());
       int update =  changeHistoryDao.updateHistory(existingHistoryItem);
-      Log.e(TAG, "change act complete " + update);
+      Log.e(TAG, "update history change " + update + " " + changeHistory.toString());
     } else {
-      Log.e(TAG, "can't find old value in db to update activity history actID " + changeHistory.getActivityId());
       changeHistoryDao.insert(changeHistory);
+      Log.e(TAG, "insert history change    " + changeHistory.toString());
     }
   }
 
@@ -267,7 +267,7 @@ public class DriverRepository {
     ChangeHistory existingHistoryItem = changeHistoryDao.selectByTypeTaskOrderMandant(LogType.getTypeInt(changeHistory.getType()), changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
     // here is our requirement NOT to show gray color after orange
     if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == TO_BE_CONFIRMED_BY_DRIVER){
-      Log.e(TAG, "skip history change " + changeHistory.toString());
+      Log.e(TAG, "skip history change    " + changeHistory.toString());
       return;
     }
 

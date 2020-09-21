@@ -35,11 +35,11 @@ public interface ChangeHistoryDao {
   @Query("DELETE FROM change_history")
   void deleteAll();
 
-  @Query("SELECT * FROM change_history WHERE task_id == :taskID  AND order_number = :orderNumber AND mandant_id = :mandantId  AND  direction = :logType LIMIT 1")
+  @Query("SELECT * FROM change_history WHERE  task_id == :taskID  AND order_number = :orderNumber AND mandant_id = :mandantId  AND  direction = :logType LIMIT 1")
   ChangeHistory selectByTypeTaskOrderMandant(int logType, int taskID, int orderNumber, int mandantId);
 
-  @Query("SELECT * FROM change_history WHERE task_id == :taskID AND activity_id = :activityId AND direction = :logType LIMIT 1")
-  ChangeHistory selectActivityHistory(int activityId, int taskID, int logType);
+  @Query("SELECT * FROM change_history WHERE action_type =:actionType AND order_number ==:orderID AND task_id == :taskID AND activity_id = :activityId AND direction = :logType LIMIT 1")
+  ChangeHistory selectActivityHistory(int actionType, int orderID, int activityId, int taskID, int logType);
 
   @Update
   int updateHistory(ChangeHistory changeHistory);
