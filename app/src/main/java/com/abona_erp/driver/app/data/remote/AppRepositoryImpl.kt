@@ -25,8 +25,8 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         return localDataSource.observeTasks()
     }
 
-    override fun observeActivities(deviceId: String): LiveData<List<ActivityEntity>> {
-        return localDataSource.observeActivities()
+    override fun observeActivities(taskID : Int): LiveData<List<ActivityEntity>> {
+        return localDataSource.observeActivities(taskID)
     }
 
     override suspend fun getActivities(): List<ActivityEntity> {
@@ -43,6 +43,10 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
 
     override suspend fun refreshTasks(deviceId: String) {
         getTasks(true, deviceId)
+    }
+
+    override suspend fun insertActivity(activityEntity: ActivityEntity) {
+        localDataSource.insertActivity(activityEntity)
     }
 
     override suspend fun getTasks(forceUpdate: Boolean, deviceId: String):  ResultWithStatus<List<TaskEntity>> {

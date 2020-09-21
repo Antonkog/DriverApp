@@ -33,8 +33,8 @@ class LocalDataSource internal constructor(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 )  {
 
-    fun observeActivities(): LiveData<List<ActivityEntity>> {
-        return db.driverActDao().getAll()
+    fun observeActivities(taskId: Int): LiveData<List<ActivityEntity>> {
+        return db.driverActDao().getAllByTask(taskId)
     }
 
     fun observeTasks(): LiveData<List<TaskEntity>> {
@@ -49,7 +49,7 @@ class LocalDataSource internal constructor(
         }
     }
 
-    fun getActivities() : List<ActivityEntity> {
+    suspend fun getActivities() : List<ActivityEntity> {
         return db.driverActDao().getActivitiesList()
     }
 
@@ -57,6 +57,9 @@ class LocalDataSource internal constructor(
         db.driverTaskDao().insertOrReplace(taskEntity)
     }
 
+    suspend fun insertActivity(activityEntity: ActivityEntity) {
+        db.driverTaskDao().insert(activityEntity)
+    }
 
 
     suspend fun deleteTasks() {

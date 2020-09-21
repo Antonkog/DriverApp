@@ -13,6 +13,8 @@ interface DriverActDao {
     @Query("SELECT * FROM activity_entity")
     fun getAll(): LiveData<List<ActivityEntity>>
 
+    @Query("SELECT * FROM activity_entity WHERE taskpId =:taskId")
+    fun getAllByTask(taskId: Int): LiveData<List<ActivityEntity>>
 
     @Query("SELECT * FROM activity_entity")
     fun getActivitiesList(): List<ActivityEntity>

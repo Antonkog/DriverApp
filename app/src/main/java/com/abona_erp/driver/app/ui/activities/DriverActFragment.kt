@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import com.abona_erp.driver.app.R
+import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
-import com.abona_erp.driver.app.data.model.Activity
 import com.abona_erp.driver.app.databinding.DriverActFragmentBinding
 import com.abona_erp.driver.app.ui.base.BaseFragment
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
@@ -46,10 +46,9 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
         driverActFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
 
-        driverActViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
+        driverActViewModel.getActivityObservable().observe(viewLifecycleOwner, Observer {
             if (it != null && it.isNotEmpty()) {
                 adapter.swapData(it)
-//                Log.e(TAG, "got tasks")
             }
         })
 
@@ -57,7 +56,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
             if (it.isNotEmpty()) driverActFragmentBinding.textHome.text = it.toString()
         })
 
-        driverActViewModel.getActivities(DeviceUtils.getUniqueID(context))
 
 //        if(args ==null) driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
 //        else driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), args.taskId)

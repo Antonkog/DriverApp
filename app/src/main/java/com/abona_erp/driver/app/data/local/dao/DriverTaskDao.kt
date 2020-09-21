@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.data.local.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.CommResponseItem
 
@@ -47,4 +48,6 @@ interface DriverTaskDao {
             insertOrReplace(strCustList)
         }
     }
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(activityEntity: ActivityEntity)
 }

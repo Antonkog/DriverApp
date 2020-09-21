@@ -60,7 +60,7 @@ class HomeFragment : BaseFragment() {
             }
         })
 
-        homeViewModel.mutableTasks.observe(viewLifecycleOwner, Observer {
+        homeViewModel.tasks.observe(viewLifecycleOwner, Observer {
             if(it!= null && it.isNotEmpty())
             adapter.swapData(it)
             else Log.e(TAG, "got empty or null tasks $it")
@@ -72,7 +72,7 @@ class HomeFragment : BaseFragment() {
         })
 
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
-        else homeViewModel.getTasks()
+       // else homeViewModel.getTasks()
         return view
     }
 }

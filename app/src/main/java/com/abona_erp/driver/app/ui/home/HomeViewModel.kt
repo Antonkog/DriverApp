@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {  //taskRepo : ApiRepository,
     private val TAG = "HomeViewModel"
 
-    val mutableTasks  = MutableLiveData<List<TaskEntity>> ()
+    val tasks  : LiveData<List<TaskEntity>> = repository.observeTasks(DeviceUtils.getUniqueID(context))
     val error  = MutableLiveData<String> ()
 
     init {
@@ -37,31 +38,12 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
                 && PrivatePreferences.getAccessToken(context) != null)
     }
 
-    fun getTasks() {
-       mutableTasks.postValue(repository.observeTasks(DeviceUtils.getUniqueID(context)).value)
-    }
-
     fun refreshTasks() = viewModelScope.launch {
-        //ResultWithStatus<List<TaskEntity>>
-      val result =   repository.getTasks(true, DeviceUtils.getUniqueID(context))
-
-        if(result is ResultWithStatus.Success){
-            if(result.data.isNullOrEmpty()){
-                error.postValue("no tasks from server")
-            } else mutableTasks.postValue(result.data)
-        } else if(result is ResultWithStatus.Error){
-            Log.e(TAG, result.exception.message)
-            error.postValue(result.exception.message)
-        }
+        repository.refreshTasks(DeviceUtils.getUniqueID(context))
     }
 
     fun setVisibleTaskID(taskEntity: TaskEntity) {
         Log.e(TAG, "saving task " + taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, taskEntity.taskId)
-    }
-
-
-    fun saveTask() {
-        mutableTasks.postValue(repository.observeTasks(DeviceUtils.getUniqueID(context)).value)
     }
 }

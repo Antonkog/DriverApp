@@ -19,10 +19,11 @@ interface AppRepository {
     fun postActivity(deviceId: String): Observable<CommResponseItem>
 
     suspend fun refreshTasks(deviceId: String) // call api to set db
+    suspend fun insertActivity(activityEntity: ActivityEntity) // call api to set db
 
     //that is LiveData from db
     fun observeTasks(deviceId: String): LiveData<List<TaskEntity>>
-    fun observeActivities(deviceId: String): LiveData<List<ActivityEntity>>
+    fun observeActivities(taskId : Int): LiveData<List<ActivityEntity>>
     suspend fun getActivities(): List<ActivityEntity>
 
     //that responses not in db - safe place to keep credentials
