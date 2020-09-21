@@ -86,8 +86,8 @@
   <string name="task_status">Статус задания</string>
   <string name="task_finish">Завершить задание</string>
   <string name="due_in">Осталось</string>
-  <string name="order_no">№ заказа</string>
-  <string name="task_id">Задача №</string>
+  <string name="order_no">№ Заказа</string>
+  <string name="task_id">№ Задачи</string>
   <string name="task">Задача</string>
   <string name="activity_status">Статус активности</string>
   <string name="task_total_status">Общий статус задания</string>
@@ -151,4 +151,21 @@
   <string name="created_at">Создано на</string>
   <string name="protocol">Протокол</string>
   <string name="device_reset">Сброс устройства</string>
+
+  <string name="menu_history">История</string>
+  <string name="log_activity_started">:задание начато</string>
+  <string name="log_activity_finished">:задание окончено</string>
+
+  <string name="log_confirm_open">Водитель прочитал задание</string>
+  <string name="log_confirm_send">Задание прочитано: отправлено на сервер</string>
+  <string name="log_confirm_error">Ошибка при отправке подтверждения</string>
+
+  <string name="log_title_activity">Изменение активности</string>
+
+  <string name="log_activity_status_change">Изменение активности: отправлено на сервер</string>
+  <string name="log_activity_sent_error">Ошибка при отправке изменения активности</string>
+
+  <string name="log_task_updated_fcm">Задача обновлена через FCM</string>
+  <string name="log_document_fcm">Документ от Абоны через FCM</string>
+  <string name="log_vehicle_fcm">Автомобиль от Абоны через FCM</string>
 </resources>

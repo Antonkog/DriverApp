@@ -695,7 +695,6 @@ public class CommItemSubAdapterExt
       EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_activity), actItem.getName(),
               LogType.APP_TO_SERVER, actionType, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
               commItem.getTaskItem().getTaskId(), actItem.getActivityId(), commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), 0));
-      Log.e(TAG, "adding log event: actId " + actItem.getActivityId());
     } catch (Exception e) {
       Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commItem" + commItem.toString());
     }

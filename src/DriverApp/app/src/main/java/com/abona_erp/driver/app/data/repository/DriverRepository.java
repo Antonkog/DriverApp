@@ -15,6 +15,7 @@ import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
@@ -27,7 +28,6 @@ import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskStatus;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.util.AppUtils;
 
 import java.text.SimpleDateFormat;
@@ -249,17 +249,28 @@ public class DriverRepository {
   public void updateOrInsertActivityHistory(ChangeHistory changeHistory) {
     ChangeHistory existingHistoryItem = changeHistoryDao.selectActivityHistory(changeHistory.getActionType().getCode(), changeHistory.getOrderNumber(), changeHistory.getActivityId(), changeHistory.getTaskId(), changeHistory.getType().getCode());
     if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == CONFIRMED){
-      Log.e(TAG, "skip history change" + changeHistory.toString());
       return;
     }
+    setPrevActivityFinished(changeHistory); //that is fix because we send same confirmation for started and finished activity, and we don't have separate id or type from server.
+    changeCurrentHistoryInDB(changeHistory, existingHistoryItem);
+  }
 
+  private void changeCurrentHistoryInDB(ChangeHistory changeHistory, ChangeHistory existingHistoryItem) {
     if(existingHistoryItem != null){
       existingHistoryItem.setState(changeHistory.getState());
-      int update =  changeHistoryDao.updateHistory(existingHistoryItem);
-      Log.e(TAG, "update history change " + update + " " + changeHistory.toString());
+      changeHistoryDao.updateHistory(existingHistoryItem);
     } else {
       changeHistoryDao.insert(changeHistory);
-      Log.e(TAG, "insert history change    " + changeHistory.toString());
+    }
+  }
+
+  private void setPrevActivityFinished(ChangeHistory changeHistory) {
+    if (changeHistory.getActionType() == ActionType.FINISH_ACTIVITY && changeHistory.getState() == CONFIRMED) { // if press next fast, current implementation reads all activities as finished, so i can't divide them by activity status, that's why setting this urgent workaround.
+      ChangeHistory prevStartedActivity = changeHistoryDao.selectActivityHistory(ActionType.START_ACTIVITY.getCode(), changeHistory.getOrderNumber(), changeHistory.getActivityId(), changeHistory.getTaskId(), changeHistory.getType().getCode());
+      if (prevStartedActivity != null) {
+        prevStartedActivity.setState(CONFIRMED);
+        changeHistoryDao.updateHistory(prevStartedActivity);
+      }
     }
   }
 
@@ -267,10 +278,8 @@ public class DriverRepository {
     ChangeHistory existingHistoryItem = changeHistoryDao.selectByTypeTaskOrderMandant(LogType.getTypeInt(changeHistory.getType()), changeHistory.getTaskId(), changeHistory.getOrderNumber(), changeHistory.getMandantID());
     // here is our requirement NOT to show gray color after orange
     if (existingHistoryItem != null && changeHistory.getState() == TO_BE_CONFIRMED_BY_APP && existingHistoryItem.getState() == TO_BE_CONFIRMED_BY_DRIVER){
-      Log.e(TAG, "skip history change    " + changeHistory.toString());
       return;
     }
-
     //here is update or insert flow
     if (existingHistoryItem != null) {
       changeHistory.setId(existingHistoryItem.getId());

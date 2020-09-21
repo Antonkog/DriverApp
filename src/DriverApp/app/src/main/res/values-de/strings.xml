@@ -91,8 +91,8 @@
   <string name="task_status">Task Status</string>
   <string name="task_finish">Task fertig stellen</string>
   <string name="due_in">Fällig in</string>
-  <string name="order_no">Auftragsnummer</string>
-  <string name="task_id">Task ID</string>
+  <string name="order_no">Bestellnummer</string>
+  <string name="task_id">Auftragsnummer</string>
   <string name="task">Aufgabe</string>
   <string name="activity_status">Aktivität Status</string>
   <string name="task_total_status">Task Total Status</string>
@@ -168,4 +168,23 @@
   <string name="created_at">Erstellt am</string>
   <string name="protocol">Protokoll</string>
   <string name="device_reset">Gerät zurücksetzen</string>
+  <string name="menu_history">Geschichte</string>
+
+  <string name="log_activity_started">:aktivität gestartet</string>
+  <string name="log_activity_finished">:aktivität beendet</string>
+
+
+  <string name="log_confirm_open">Fahrer hatte Aufgabe gelesen</string>
+  <string name="log_confirm_send">Aufgabe gelesen: an Server gesendet</string>
+  <string name="log_confirm_error">Fehler beim Senden der Bestätigung</string>
+
+  <string name="log_title_activity">Aktivitätsänderung</string>
+
+  <string name="log_activity_status_change">Aktivitätsänderung: an Server gesendet</string>
+  <string name="log_activity_sent_error">Fehler beim Senden der Aktivitätsänderung</string>
+
+  <string name="log_task_updated_fcm">Aufgabe wurde über FCM aktualisiert</string>
+  <string name="log_document_fcm">Dokument von Abona über FCM</string>
+  <string name="log_vehicle_fcm">Fahrzeug von Abona über FCM</string>
+
 </resources>
