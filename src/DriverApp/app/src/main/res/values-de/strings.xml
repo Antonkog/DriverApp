@@ -168,4 +168,5 @@
   <string name="created_at">Erstellt am</string>
   <string name="protocol">Protokoll</string>
   <string name="device_reset">Gerät zurücksetzen</string>
+  <string name="local_time">Ortszeit</string>
 </resources>

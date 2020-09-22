@@ -163,4 +163,5 @@
   <string name="created_at">Utworzono w</string>
   <string name="protocol">Protokół</string>
   <string name="device_reset">Reset urządzenia</string>
+  <string name="local_time">Czas lokalny</string>
 </resources>
