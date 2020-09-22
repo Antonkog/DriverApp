@@ -1,16 +1,20 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.history;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
+import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Flowable;
 
 public class HistoryViewModel extends AndroidViewModel {
   private final String TAG = "HistoryViewModel";
@@ -82,5 +86,25 @@ public class HistoryViewModel extends AndroidViewModel {
           logsByOrderNum.add(logItems.get(i));
       }
     }
+  }
+
+  public String getEmailMessage(Context context) {
+
+    if(logsByOrderNum.isEmpty()) return "";
+    StringBuilder sbToServer = new StringBuilder();
+
+    for (int i = 0; i < logsByOrderNum.size(); i++) {
+      sbToServer.append(logsByOrderNum.get(i).toString());
+      }
+    return sbToServer.toString();
+  }
+
+  /**
+   * Get the DeviceProfile
+   *
+   * @return a {@link Flowable} DeviceProfile.
+   */
+  public Flowable<DeviceProfile> getDeviceProfile() {
+    return  _repo.getmDeviceProfileDAO().getDeviceProfile();
   }
 }

@@ -4,6 +4,8 @@
   <string name="app_company" translatable="false">ABONA Deutschland GmbH</string>
   <string name="rest_api" translatable="false">REST-API</string>
 
+  <string name="email_support" translatable="false">logging@abona-erp.com</string>
+
   <!-- This String is used in the User Agent -->
   <string name="useragent_appname" translatable="false">ABONA Driver App</string>
 
@@ -90,6 +92,8 @@
   <string name="key_orderNo" translatable="false">orderNo</string>
 
   <string name="menu_history">History</string>
+  <string name="history_email_theme" translatable="false">Activity history</string>
+  <string name="error_history_email" translatable="false">email client not found, please install mail app.</string>
   <string name="ph_time" translatable="false">15:43 21.12.20</string>
   <string name="ph_message" translatable="false">Driving to unloading</string>
   <string name="ph_task_id" translatable="false">1234</string>
