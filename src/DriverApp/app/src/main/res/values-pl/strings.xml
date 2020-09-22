@@ -92,6 +92,7 @@
   <string name="due_in">Z powodu</string>
   <string name="order_no">Nr zamówienia</string>
   <string name="task_id">ID zadania</string>
+  <string name="task">Zadanie</string>
   <string name="activity_status">Status aktywności</string>
   <string name="task_total_status">Całkowity status zadania</string>
   <string name="customer">Klient</string>
@@ -162,4 +163,5 @@
   <string name="created_at">Utworzono w</string>
   <string name="protocol">Protokół</string>
   <string name="device_reset">Reset urządzenia</string>
+  <string name="local_time">Czas lokalny</string>
 </resources>

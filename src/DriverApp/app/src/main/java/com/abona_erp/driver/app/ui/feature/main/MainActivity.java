@@ -45,6 +45,8 @@ import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
+import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
@@ -60,10 +62,10 @@ import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.service.ForegroundAlarmService;
 import com.abona_erp.driver.app.ui.base.BaseActivity;
+import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
-import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
@@ -602,16 +604,23 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     return false;
   }
 
+
   @Subscribe
-  public void onMessageEvent(LogEvent event) {
-    if(event.getLog().getType() == FCM) // hide History fragment for now, log only this events
-    mMainViewModel.addLog(event.getLog());
+  public void onMessageEvent(ChangeHistoryEvent event) {
+    switch (event.getChangeHistory().getType()){
+      case APP_TO_SERVER:
+        mMainViewModel.updateActivityHistory(event.getChangeHistory());
+        break;
+      case FCM:
+        mMainViewModel.updateFCMHistory(event.getChangeHistory());
+        break;
+    }
   }
 
 
   @Subscribe
   public void onMessageEvent(HistoryClick historyClick) {
-    loadHistoryFragment();
+    loadHistoryFragment(historyClick.getTaskId(), historyClick.getOrderNo());
   }
 
   private void showHistoryClickError(Throwable error) {
@@ -660,6 +669,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
           OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
           offlineConfirmation.setNotifyId((int)notify.getId());
           offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal());
+          postHistoryEvent(notify, offlineConfirmation);
           AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -715,6 +725,12 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     }
   }
 
+
+  private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
+    EventBus.getDefault().post(new ChangeHistoryEvent(getResources().getString(R.string.log_title_fcm), getResources().getString(R.string.log_confirm_open),
+            FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+            item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
+  }
 
   @Subscribe
   public void onMessageEvent(VehicleRegistrationEvent event) {
@@ -981,9 +997,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS),
             null), new SettingsFragment());
   }
-   private void loadHistoryFragment() {
-    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_HISTORY),
-            null), new HistoryFragment());
+
+  private void loadHistoryFragment(int taskId, int orderNo) {
+    HistoryFragment historyFragment = new HistoryFragment();
+    Bundle bundle = new Bundle();
+    bundle.putInt(getResources().getString(R.string.key_taskId), taskId);
+    bundle.putInt(getResources().getString(R.string.key_orderNo), orderNo);
+    historyFragment.setArguments(bundle);
+    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_HISTORY), null), historyFragment);
   }
 
 

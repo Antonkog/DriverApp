@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.TimeZoneMapper;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
@@ -66,6 +67,7 @@ import com.lid.lib.LabelImageView;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -101,8 +103,9 @@ public class CommItemAdapterExt extends
   private final int clrTractorSwap = ContextCompat.getColor(ContextUtils.getApplicationContext(), R.color.clrTractorSwap);
   private final int clrDelay = ContextCompat.getColor(ContextUtils.getApplicationContext(), R.color.clrDelay);
   private final int clrUnknown = ContextCompat.getColor(ContextUtils.getApplicationContext(), R.color.clrUnknown);
-  
-  SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+  private final String DEFAULT_DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss";
+
+  SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT,
     Locale.getDefault());
   
   public CommonItemClickListener<Notify> getListener() {
@@ -221,12 +224,7 @@ public class CommItemAdapterExt extends
       }
     });
     
-    holder.btn_task_history.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        EventBus.getDefault().post(new HistoryClick());
-      }
-    });
+    holder.btn_task_history.setOnClickListener(view -> EventBus.getDefault().post(new HistoryClick(taskItem.getTaskId(), taskItem.getOrderNo())));
     
     holder.btn_task_info.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -269,6 +267,20 @@ public class CommItemAdapterExt extends
     synchronized (CommItemAdapterExt.this) {
       if (taskItem.getTaskDueDateFinish() != null) {
         holder.tv_task_finish.setText(sdf.format(taskItem.getTaskDueDateFinish()));
+        if (mCommItem.getTaskItem().getAddress().getLatitude() != null &&
+                mCommItem.getTaskItem().getAddress().getLongitude() != null) {
+          String startTimeZone = TimeZoneMapper.latLngToTimezoneString(
+                  mCommItem.getTaskItem().getAddress().getLatitude(),
+                  mCommItem.getTaskItem().getAddress().getLongitude()
+          );
+          TimeZone startTimeZoneRegion = TimeZone.getTimeZone(startTimeZone);
+          String localTime = getLocalTimeFromGivenTimeZone(sdf.format(taskItem.getTaskDueDateFinish()), startTimeZoneRegion);
+          holder.tv_local_time_task_finish.setText(mContext.getString(R.string.local_time) + " - " + localTime);
+          holder.tv_local_time_task_finish.setVisibility(View.VISIBLE);
+        } else {
+          holder.tv_local_time_task_finish.setVisibility(View.GONE);
+        }
+
         if (taskItem.getTaskStatus() != null) {
           if (taskItem.getTaskStatus().equals(TaskStatus.PENDING) || taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
             enableDueInTimer(true, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
@@ -439,6 +451,7 @@ public class CommItemAdapterExt extends
     
     final AppCompatImageView iv_confirmation;
     final AsapTextView tv_task_finish;
+    final AsapTextView tv_local_time_task_finish;
     final AsapTextView tv_order_no;
     final LabelImageView status_label_view;
     final LinearLayout ll_sub_header;
@@ -481,6 +494,7 @@ public class CommItemAdapterExt extends
       iv_confirmation = (AppCompatImageView)itemView.findViewById(R.id.iv_confirmation);
       iv_warning = (AppCompatImageView)itemView.findViewById(R.id.iv_warning);
       tv_task_finish = (AsapTextView)itemView.findViewById(R.id.tv_task_finish);
+      tv_local_time_task_finish = (AsapTextView)itemView.findViewById(R.id.tv_local_task_finish);
       tv_due_in = (AsapTextView)itemView.findViewById(R.id.tv_due_in);
       tv_order_no = (AsapTextView)itemView.findViewById(R.id.tv_order_no);
       status_label_view = (LabelImageView)itemView.findViewById(R.id.status_label_view);
@@ -729,4 +743,30 @@ public class CommItemAdapterExt extends
       default: return ResourcesCompat.getDrawable(mResources, R.drawable.ic_risk, null);
     }
   }
+
+  String getLocalTimeFromGivenTimeZone(
+          String givenDate,
+          TimeZone timeZone
+  ) {
+    Date givenDateWithTimeZone = new Date();
+    SimpleDateFormat givenDataFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.US);
+    givenDataFormat.setTimeZone(timeZone);
+    try {
+      givenDateWithTimeZone = givenDataFormat.parse(givenDate);
+      Date localDateTime = new Date();
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.US);
+      simpleDateFormat.setTimeZone(TimeZone.getDefault());
+      try {
+        localDateTime = simpleDateFormat.parse(simpleDateFormat.format(givenDateWithTimeZone));
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+      SimpleDateFormat displayedDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.US);
+      return displayedDateFormat.format(localDateTime);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return "";
+  }
+
 }

@@ -10,7 +10,7 @@ import com.abona_erp.driver.app.data.converters.LogType;
 
 import java.util.Date;
 
-@Entity(tableName = "logItem")
+@Entity(tableName = "change_history")
 @TypeConverters({ChangeHistoryState.class, ActionType.class, LogType.class, DateConverter.class})
 public class ChangeHistory /*implements Serializable*/ {
   
@@ -37,6 +37,9 @@ public class ChangeHistory /*implements Serializable*/ {
 
   @ColumnInfo(name = "modified_at")
   private Date modifiedAt;
+
+  @ColumnInfo(name = "modified_long")
+  private long timeModifyLong;
 
   @ColumnInfo(name = "task_id")
   private int taskId;
@@ -99,5 +102,89 @@ public class ChangeHistory /*implements Serializable*/ {
   
   public void setCreatedAt(Date createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public void setActionType(ActionType actionType) {
+    this.actionType = actionType;
+  }
+
+  public void setState(ChangeHistoryState state) {
+    this.state = state;
+  }
+
+  public void setModifiedAt(Date modifiedAt) {
+    this.modifiedAt = modifiedAt;
+  }
+
+  public void setActivityId(int activityId) {
+    this.activityId = activityId;
+  }
+
+  public void setOrderNumber(int orderNumber) {
+    this.orderNumber = orderNumber;
+  }
+
+  public void setMandantID(int mandantID) {
+    this.mandantID = mandantID;
+  }
+
+  public void setOfflineConfirmationID(int offlineConfirmationID) {
+    this.offlineConfirmationID = offlineConfirmationID;
+  }
+
+  public void setTimeModifyLong(long timeModifyLong) {
+    this.timeModifyLong = timeModifyLong;
+  }
+
+  public long getTimeModifyLong() {
+    return timeModifyLong;
+  }
+
+  public ActionType getActionType() {
+    return actionType;
+  }
+
+  public ChangeHistoryState getState() {
+    return state;
+  }
+
+  public Date getModifiedAt() {
+    return modifiedAt;
+  }
+
+  public int getActivityId() {
+    return activityId;
+  }
+
+  public int getOrderNumber() {
+    return orderNumber;
+  }
+
+  public int getMandantID() {
+    return mandantID;
+  }
+
+  public int getOfflineConfirmationID() {
+    return offlineConfirmationID;
+  }
+
+  @Override
+  public String toString() {
+    return "ChangeHistory{" +
+            "id=" + id +
+            ", title='" + title + '\'' +
+            ", message='" + message + '\'' +
+            ", type=" + type +
+            ", actionType=" + actionType +
+            ", state=" + state +
+            ", createdAt=" + createdAt +
+            ", modifiedAt=" + modifiedAt +
+            ", timeModifyLong=" + timeModifyLong +
+            ", taskId=" + taskId +
+            ", activityId=" + activityId +
+            ", orderNumber=" + orderNumber +
+            ", mandantID=" + mandantID +
+            ", offlineConfirmationID=" + offlineConfirmationID +
+            '}';
   }
 }

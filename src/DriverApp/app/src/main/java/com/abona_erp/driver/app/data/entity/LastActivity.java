@@ -116,7 +116,7 @@ public class LastActivity implements Serializable {
   public void setCustomer(String customer) {
     this.customer = customer;
   }
-  
+
   public String getOrderNo() {
     return orderNo;
   }

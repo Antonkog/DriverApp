@@ -86,12 +86,15 @@
   <string name="action_start_task_msg">Do you want to start the task?</string>
   <string name="menu_protocol">Protocol</string>
   <string name="menu_settings">Settings</string>
+  <string name="key_taskId" translatable="false">taskID</string>
+  <string name="key_orderNo" translatable="false">orderNo</string>
+
   <string name="menu_history" translatable="false">History</string>
-  <string name="history_task_id" translatable="false">Task ID:</string>
-  <string name="history_when" translatable="false">When</string>
-  <string name="history_what" translatable="false">What</string>
-  <string name="history_id" translatable="false">1234</string>
-  <string name="history_title" translatable="false">title</string>
+  <string name="ph_time" translatable="false">15:43 21.12.20</string>
+  <string name="ph_message" translatable="false">Driving to unloading</string>
+  <string name="ph_task_id" translatable="false">1234</string>
+  <string name="ph_order_no" translatable="false">2020/15/152</string>
+
   <string name="menu_about">About</string>
   <string name="action_lets_start">Let\'s Start</string>
   <string name="action_security_code">Security Code</string>
@@ -148,6 +151,7 @@
   <string name="due_in">Due in</string>
   <string name="order_no">Order No</string>
   <string name="task_id">Task ID</string>
+  <string name="task">Task</string>
   <string name="activity_status">Activity Status</string>
   <string name="task_total_status">Task Total Status</string>
   <string name="customer">Customer</string>
@@ -240,26 +244,27 @@
   <string name="theme_light" translatable="false">White</string>
   <string name="theme_dark" translatable="false">Dark</string>
 
+  <string name="log_tasks_come" translatable="false">Tasks: got server response</string>
   <string name="log_title_get_tasks" translatable="false">Get Tasks by user</string>
   <string name="log_title_get_tasks_bg" translatable="false">Get Tasks background</string>
 
   <string name="log_update_schedule" translatable="false">Update tasks scheduled</string>
   <string name="log_update_pressed" translatable="false">Update tasks pressed</string>
-  <string name="log_tasks_come" translatable="false">Tasks: got server response</string>
   <string name="log_tasks_error" translatable="false">Tasks update error</string>
 
 
-  <string name="log_title_open_confirm" translatable="false">Confirmation: open</string>
+  <string name="log_title_confirm_error" translatable="false">Confirmation error:</string>
 
   <string name="log_confirm_open" translatable="false">Driver read task</string>
-  <string name="log_confirm_error" translatable="false">Error while sending confirmation</string>
   <string name="log_confirm_send" translatable="false">Task read: sent to server</string>
+
+  <string name="log_confirm_error" translatable="false">Error while sending confirmation</string>
 
 
   <string name="log_title_activity" translatable="false">Activity change</string>
 
-  <string name="log_activity_start_pressed" translatable="false">Driver pressed activity start</string>
-  <string name="log_activity_status_change" translatable="false">Activity change was sent to server</string>
+  <string name="log_activity_start_pressed" translatable="false">Driver changed activity</string>
+  <string name="log_activity_status_change" translatable="false">Activity change: sent to server</string>
   <string name="log_activity_sent_error" translatable="false">Error while sending activity change</string>
 
   <string name="log_token_error" translatable="false">No token</string>
@@ -269,12 +274,6 @@
   <string name="log_task_updated_fcm" translatable="false">Task was updated via FCM</string>
   <string name="log_document_fcm" translatable="false">Document from Abona via FCM</string>
   <string name="log_vehicle_fcm" translatable="false">Vehicle from Abona via FCM</string>
-
-
-
-  <string name="log_title_docs" translatable="false">Documents</string>
-  <string name="log_document_got_links" translatable="false">Got links to documents</string>
-  <string name="log_document_upload" translatable="false">Document uploaded</string>
 
   <string name="log_message_unknown_error" translatable="false">Unknown Error!</string>
   <string name="clear_log" translatable="false">clear log</string>
@@ -291,5 +290,6 @@
   <string name="created_at">Created at</string>
   <string name="protocol">Protocol</string>
   <string name="device_reset">Device Reset</string>
+  <string name="local_time">Local Time</string>
 
 </resources>

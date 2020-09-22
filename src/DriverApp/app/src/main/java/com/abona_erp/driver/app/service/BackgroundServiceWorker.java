@@ -12,10 +12,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.abona_erp.driver.app.App;
@@ -29,6 +27,8 @@ import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.dao.OfflineDelayReasonDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
+import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
@@ -54,6 +54,7 @@ import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
+import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
@@ -66,12 +67,9 @@ import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.app.util.UtilCommon;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.v3.MessageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
@@ -104,8 +102,8 @@ import retrofit2.Response;
 public class BackgroundServiceWorker extends Service {
   
   private static final String TAG = MiscUtil.getTag(BackgroundServiceWorker.class);
-  
-  private Context mContext;
+
+  private Context context;
   private Handler mHandler;
   private Handler mDelayReasonHandler;
   private Runner  mRunner;
@@ -119,11 +117,6 @@ public class BackgroundServiceWorker extends Service {
   private OfflineDelayReasonDAO mOfflineDelayReasonDAO = mDB.offlineDelayReasonDAO();
   
   public BackgroundServiceWorker() {
-  }
-  
-  public BackgroundServiceWorker(Context appContext) {
-    super();
-    this.mContext = appContext;
   }
   
   public class DelayReasonRunner implements Runnable {
@@ -221,7 +214,7 @@ public class BackgroundServiceWorker extends Service {
     handleDelayReasonJob();
     handleUploadJob();
   }
-  
+
   private void handleDelayReasonJob() {
     AsyncTask.execute(new Runnable() {
       @Override
@@ -375,10 +368,6 @@ public class BackgroundServiceWorker extends Service {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
 
-                      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_status_change),
-                              LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_activity),
-                              activityItem.getTaskId()));
-
                       allowRequest = true;
                       if (response.isSuccessful()) {
                         if (!response.body().getIsSuccess() && !response.body().getIsException()) {
@@ -395,6 +384,7 @@ public class BackgroundServiceWorker extends Service {
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
+                              int oldConfirmId = offlineConfirmations.get(0).getId();
                               mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
                 
                               mLastActivityDAO.getLastActivityByTaskClientId(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId())
@@ -403,6 +393,7 @@ public class BackgroundServiceWorker extends Service {
                                 .subscribe(new DisposableSingleObserver<LastActivity>() {
                                   @Override
                                   public void onSuccess(LastActivity lastActivity) {
+                                    postActivityChangeSent(_currActivity.getTaskId(), _currActivity.getActivityId(), UtilCommon.parseInt(lastActivity.getOrderNo()), _currActivity.getMandantId(), oldConfirmId);
                                     updateLastActivity(mLastActivityDAO, lastActivity, 2, "CHANGED", -1);
                                   }
                     
@@ -411,6 +402,7 @@ public class BackgroundServiceWorker extends Service {
                                     // TODO:
                                   }
                                 });
+
                             }
                           });
                         } else {
@@ -530,7 +522,7 @@ public class BackgroundServiceWorker extends Service {
                         if (response.body().getIsException())
                         {
                           EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_error),
-                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
+                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
                                   confirmationItem.getTaskId()));
   
                           showErrorMessage(response.body().getText());
@@ -549,11 +541,6 @@ public class BackgroundServiceWorker extends Service {
                             }
                           }
 
-
-                          EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_send),
-                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
-                                  confirmationItem.getTaskId()));
-
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
@@ -566,6 +553,7 @@ public class BackgroundServiceWorker extends Service {
                                   @Override
                                   public void onSuccess(LastActivity lastActivity) {
                                     if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal()) {
+                                      postFcmTaskConfirmed(commItemDB, offlineConfirmations.get(0).getId());
                                       updateLastActivity(mLastActivityDAO, lastActivity, -1, "CONFIRMED BY DEVICE", 1);
                                       notify.setConfirmationStatus(1);
                                       AsyncTask.execute(new Runnable() {
@@ -575,6 +563,7 @@ public class BackgroundServiceWorker extends Service {
                                         }
                                       });
                                     } else if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal()) {
+                                      postFcmTaskConfirmedByUser(commItemDB, offlineConfirmations.get(0).getId());
                                       updateLastActivity(mLastActivityDAO, lastActivity, -1, "CONFIRMED BY USER", 2);
                                       notify.setConfirmationStatus(2);
                                       AsyncTask.execute(new Runnable() {
@@ -659,7 +648,7 @@ public class BackgroundServiceWorker extends Service {
                           case 401:
                           {
                             EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
-                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_open_confirm),
+                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
                                     confirmationItem.getTaskId()));
                             handleAccessToken();
                           }
@@ -694,7 +683,28 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
+
+  private void postActivityChangeSent(int taskId, int activityId, int orderNumber, int mandantID, int confirmationID) {
+    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_activity), getApplicationContext().getString(R.string.log_activity_status_change),
+            LogType.APP_TO_SERVER, ActionType.UPDATE_TASK, ChangeHistoryState.CONFIRMED,
+            taskId, activityId, orderNumber, mandantID, confirmationID);
+    EventBus.getDefault().post(changeHistoryEvent);
+  }
+
+
+  private void postFcmTaskConfirmedByUser(CommItem commItemDB, int offlineConfirmId) { //we don't have activityId on task change
+    EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_confirm_send),
+            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.CONFIRMED,
+            commItemDB.getTaskItem().getTaskId(), 0, commItemDB.getTaskItem().getOrderNo(), commItemDB.getTaskItem().getMandantId(), offlineConfirmId));
+  }
+
+  private void postFcmTaskConfirmed(CommItem commItemDB, int offlineConfirmId) { //we don't have activityId on task change
+    EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_task_updated_fcm),
+            LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_DRIVER,
+            commItemDB.getTaskItem().getTaskId(), 0, commItemDB.getTaskItem().getOrderNo(), commItemDB.getTaskItem().getMandantId(), offlineConfirmId));
+  }
+
   private void handleUploadJob() {
     AsyncTask.execute(new Runnable() {
       @Override
@@ -788,10 +798,7 @@ public class BackgroundServiceWorker extends Service {
                             @Override
                             public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
                               
-                              if (response.isSuccessful()) {
-  
-                                EventBus.getDefault().post(new LogEvent(getApplicationContext().getString(R.string.log_document_upload),
-                                  LogType.SERVER_TO_APP, LogLevel.INFO, getApplicationContext().getString(R.string.log_title_docs), notify != null? notify.getTaskId() : 0));
+                              if (response.isSuccessful()) {//document upload
   
                                 uploadItem.setUploaded(true);
                                 notify.getPhotoUrls().set(j, App.getInstance().gson.toJson(uploadItem));
