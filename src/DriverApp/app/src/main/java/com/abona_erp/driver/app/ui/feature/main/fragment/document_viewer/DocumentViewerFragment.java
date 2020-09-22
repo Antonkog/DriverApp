@@ -11,14 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.Notify;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -26,9 +24,6 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragmentViewModel;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.DocumentViewAdapter;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.AppUtils;
-import com.abona_erp.driver.app.util.Util;
-
-import java.util.ArrayList;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -38,7 +33,6 @@ public class DocumentViewerFragment extends Fragment {
   
   private int               mOid;
   private Notify            mNotify;
-  //private ArrayList<String> mDocuments = new ArrayList<>();
   
   private RecyclerView mListView;
   

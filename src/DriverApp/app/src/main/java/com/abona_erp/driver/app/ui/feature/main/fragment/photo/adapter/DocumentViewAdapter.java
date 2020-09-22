@@ -12,17 +12,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
+import com.abona_erp.driver.app.data.model.SourceReference;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.core.base.ContextUtils;
@@ -94,6 +97,12 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         holder.tv_document_created.setText(sdf.format(_items.get(position).getAddedDate()));
       }
+    }
+    
+    if (_items.get(position).getSourceReference().equals(SourceReference.ABONA) && _items.get(position).getTaskId() == 0) {
+      holder.iv_thumbnail.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.abona_36x36));
+    } else {
+      holder.iv_thumbnail.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_work));
     }
   
     if (isFileExists(mMandantID, mOrderNo, _items.get(position).getFileName())) {
@@ -196,6 +205,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
     private final AsapTextView    tv_document_user;
     private final AsapTextView    tv_document_created;
     private final AppCompatButton btn_document_download;
+    private final ImageView       iv_thumbnail;
     private final ProgressWheel   progressWheel;
   
     ViewHolder(View itemView) {
@@ -206,6 +216,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       tv_document_created = itemView.findViewById(R.id.tv_created);
       btn_document_download = itemView.findViewById(R.id.btn_download);
       progressWheel = itemView.findViewById(R.id.progressWheel);
+      iv_thumbnail = itemView.findViewById(R.id.thumbnail);
     }
   }
   
@@ -289,8 +300,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
     }
     
     try {
-      File destinationFile = new File(Environment
-        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+      File destinationFile = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         + APP_FOLDER + mMandantID + PATH_SLASH + mOrderNo, filename);
   
       InputStream inputStream = null;
@@ -347,8 +357,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       return false;
     
     try {
-      File file = new File(Environment
-        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+      File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         + APP_FOLDER + mandantID + PATH_SLASH + orderNo, filename);
       if (file.exists() && !file.isDirectory()) {
         return true;
@@ -367,8 +376,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       return false;
     
     try {
-      File dir = new File(Environment
-        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+      File dir = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         + APP_FOLDER + mandantID + PATH_SLASH + orderNo);
       if (!dir.exists()) {
         dir.mkdirs();

@@ -159,8 +159,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
   private AppCompatImageView getAllTaskImage;
-
-
+  
   private NetworkChangeReceiver networkChangeReceiver;
   private LocaleChangeReceiver localeChangeReceiver;
 
@@ -214,8 +213,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       Util.askNeedExit(MainActivity.this);
     }
   }
-
-
+  
   @Override
   protected void onDestroy() {
     super.onDestroy();
