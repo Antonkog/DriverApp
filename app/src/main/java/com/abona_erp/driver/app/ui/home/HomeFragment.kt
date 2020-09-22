@@ -61,8 +61,11 @@ class HomeFragment : BaseFragment() {
         })
 
         homeViewModel.tasks.observe(viewLifecycleOwner, Observer {
-            if(it!= null && it.isNotEmpty())
-            adapter.swapData(it)
+            if(it!= null && it.isNotEmpty()){
+                adapter.swapData(it)
+                homeViewModel.setVisibleTaskID(it[0]) //not sure this is correct way to set first element on fragment creation, but works
+            }
+
             else Log.e(TAG, "got empty or null tasks $it")
 //            Log.e(TAG, "got tasks ${it}")
         })
