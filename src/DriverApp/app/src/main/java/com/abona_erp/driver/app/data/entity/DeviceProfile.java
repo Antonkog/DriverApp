@@ -135,14 +135,14 @@ public class DeviceProfile {
 
   @Override
   public String toString() {
-    return "DeviceProfile{" +
-            "deviceId='" + deviceId + '\'' +
-            ", deviceModel='" + deviceModel + '\'' +
-            ", deviceManufacturer='" + deviceManufacturer + '\'' +
-            ", languageCode='" + languageCode + '\'' +
-            ", versionCode=" + versionCode +
-            ", versionName='" + versionName + '\'' +
-            ", modifiedAt='" + modifiedAt + '\'' +
+    return "DeviceProfile:\n{" +
+            "deviceId=" + deviceId +  ",\n"  +
+            "deviceModel=" + deviceModel +  ",\n"  +
+            "deviceManufacturer=" + deviceManufacturer +  ",\n"  +
+            "languageCode=" + languageCode +  ",\n"  +
+            "versionCode=" + versionCode +  ",\n"  +
+            "versionName=" + versionName +  ",\n"  +
+            "modifiedAt=" + modifiedAt  +
             '}'+ "\n";
   }
 }
