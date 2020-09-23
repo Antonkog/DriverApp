@@ -4,6 +4,7 @@ import android.provider.SyncStateContract.Helpers.insert
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
+import com.abona_erp.driver.app.data.local.db.ConfirmationType
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.CommResponseItem
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
@@ -41,7 +42,7 @@ interface DriverActDao {
         if(commonItem.allTask.isNotEmpty()) {
             var strActList = commonItem.allTask.flatMap {
                 it.activities.map {
-                    ActivityEntity(it.activityId, it.mandantId, it.taskId, "" , it.started, it.finished, it.name)
+                    ActivityEntity(it.activityId, it.mandantId, it.taskId, it.started, it.finished, it.name, ConfirmationType.RECEIVED) //todo: check if make sense not to override confirmation type from server.
                 }
             }
             insert(strActList)

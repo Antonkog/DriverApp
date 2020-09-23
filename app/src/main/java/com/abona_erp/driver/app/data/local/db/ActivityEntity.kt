@@ -16,9 +16,9 @@ data class ActivityEntity(
     @ColumnInfo val activityId: Int,
     @ColumnInfo val mandantId: Int,
     @ColumnInfo val taskpId: Int,
-    @ColumnInfo val deviceId: String?, // to send
     @ColumnInfo val started: String?,
     @ColumnInfo val finished: String?,
-    @ColumnInfo val name: String?
+    @ColumnInfo val name: String?,
+    @ColumnInfo  val confirmationType: ConfirmationType
 )
 

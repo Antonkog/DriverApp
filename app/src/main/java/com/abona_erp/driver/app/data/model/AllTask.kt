@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.data.model
 
 
+import com.abona_erp.driver.app.data.local.db.TaskStatus
 import com.google.gson.annotations.SerializedName
 
 data class AllTask(
@@ -51,7 +52,7 @@ data class AllTask(
     @SerializedName("ReferenceIdCustomer2")
     val referenceIdCustomer2: Any,
     @SerializedName("Status")
-    val status: Int,
+    val status: TaskStatus,
     @SerializedName("SwapInfoItem")
     val swapInfoItem: Any,
     @SerializedName("TaskChangeId")

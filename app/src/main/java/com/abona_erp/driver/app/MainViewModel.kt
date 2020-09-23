@@ -8,6 +8,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driver.app.data.Constant
+import com.abona_erp.driver.app.data.local.db.ConfirmationType
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
@@ -61,10 +62,10 @@ class MainViewModel @ViewModelInject constructor(@ApplicationContext private val
                  messageStruct.taskItem?.let {
                      Log.d(TAG, " saving fcm task")
                      repository.saveTask( TaskEntity(
-                         it.taskId, it.status, it.activities.map { it.activityId },
+                         it.taskId, it.actionType,it.status, it.activities.map { it.activityId },
                          it.changeReason, it.address, it.orderDetails, it.palletExchange,
                          false,  it.taskDueDateStart, it.taskDueDateFinish, it.mandantId, it.kundenName
-                     ))
+                     , ConfirmationType.RECEIVED))
                  }
              }
          }

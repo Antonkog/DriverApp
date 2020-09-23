@@ -4,7 +4,38 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class GsonToDbConverter {
+class Converters {
+
+    @TypeConverter
+     fun getTaskStatus(ordinal: Int): TaskStatus? {
+        for (lt in TaskStatus.values()) {
+            if (lt.ordinal == ordinal) {
+                return lt
+            }
+        }
+        return null
+    }
+
+    @TypeConverter
+    fun getTaskStatusInt(type: TaskStatus?): Int? {
+        return type?.ordinal
+    }
+
+    @TypeConverter
+    fun getConfirmType(numeral: Int): ConfirmationType? {
+        for (lt in ConfirmationType.values()) {
+            if (lt.code === numeral) {
+                return lt
+            }
+        }
+        return null
+    }
+
+    @TypeConverter
+    fun getConfirmTypeInt(type: ConfirmationType?): Int? {
+        return type?.code
+    }
+
     @TypeConverter
     fun stringToSomeObjectList(data: String?): List<Any> {
         if (data == null) {
