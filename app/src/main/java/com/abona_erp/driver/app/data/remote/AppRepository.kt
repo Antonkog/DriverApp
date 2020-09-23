@@ -1,11 +1,13 @@
 package com.abona_erp.driver.app.data.remote
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import com.abona_erp.driver.app.data.ResultWithStatus
 import com.google.gson.JsonObject
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.*
+import com.abona_erp.driver.app.ui.utils.UtilModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
@@ -16,8 +18,7 @@ interface AppRepository {
 //    fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String ): LiveData<List<AppFileInterchangeItem>>
 
     //API set activity change
-    fun postActivity(deviceId: String): Observable<CommResponseItem>
-
+    suspend fun postActivity(context: Context, activity: Activity): Observable<ResultOfAction>
     suspend fun refreshTasks(deviceId: String) // call api to set db
     suspend fun insertActivity(activityEntity: ActivityEntity) // call api to set db
 

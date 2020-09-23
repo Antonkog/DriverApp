@@ -1,9 +1,9 @@
 package com.abona_erp.driver.app.data.remote
 
-import com.abona_erp.driver.app.data.ResultWithStatus
 import com.abona_erp.driver.app.data.model.*
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -12,22 +12,16 @@ interface ApiService {
     @POST("/authentication")
     fun authentication(@Field("grant_type")  grantType :String, @Field("username")  username :String, @Field("password")  password :String) : Observable<Response<TokenResponse>>
 
-
-//    @Headers("Content-Type:application/json; charset=UTF-8")
     @POST("/api/device/deviceprofile")
-    fun deviceProfile(@Body commItem: CommItem?): Observable<ResultOfAction>
+    fun setDeviceProfile(@Body commItem: CommItem?): Observable<ResultOfAction>
 
 
     @GET("api/device/GetAllTask")
     suspend fun getAllTasks(@Query("deviceId") deviceId: String?): CommResponseItem
-//
-//    @Headers("Content-Type:application/json")
-//    @POST("api/activity/activity")
-//    Call<ResultOfAction> activityChange(@Body CommItem commItem);
-//
-    @POST("api/Activity/Activity")
-    fun postActivity(deviceId: String): Observable<CommResponseItem>
-//
+
+    @POST("api/activity/activity")
+    fun postActivityChange(@Body commItem: CommItem): Observable<ResultOfAction>
+
     @GET("api/uploader/documents")
     fun getDocuments(@Query("mandantId") mandantId: Int,@Query("orderNo") orderNo: Int, @Query("deviceId") deviceId: String ): Single<List<AppFileInterchangeItem>>
 

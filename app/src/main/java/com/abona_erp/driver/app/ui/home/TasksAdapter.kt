@@ -36,7 +36,7 @@ val TAG = "TasksAdapter"
                 val row = LayoutInflater.from(binding.root.context)
                     .inflate(R.layout.task_row, null, false)
                 row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
-//                Log.e(TAG, " adding entry "+ entry.key + " " + entry.value)
+                Log.e(TAG, " adding entry "+ entry.key + " " + entry.value)
                 linearContent.addView(row)
             }
         }

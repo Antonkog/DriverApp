@@ -11,12 +11,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.ResultWithStatus
+import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
 import com.abona_erp.driver.app.data.local.preferences.putAny
+import com.abona_erp.driver.app.data.model.Activity
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import kotlinx.coroutines.launch
 
@@ -40,6 +42,10 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 
     fun refreshTasks() = viewModelScope.launch {
         repository.refreshTasks(DeviceUtils.getUniqueID(context))
+    }
+
+    fun postActivityChange(activity: Activity ) = viewModelScope.launch {
+        repository.postActivity(context, activity)
     }
 
     fun setVisibleTaskID(taskEntity: TaskEntity) {

@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.data.remote
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import com.google.gson.JsonObject
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
@@ -12,6 +13,7 @@ import retrofit2.Response
 import javax.inject.Inject
 import com.abona_erp.driver.app.data.ResultWithStatus
 import com.abona_erp.driver.app.data.local.LocalDataSource
+import com.abona_erp.driver.app.ui.utils.UtilModel
 
 class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSource, val rabbit : RabbitService,
                                              val api : ApiService, val authService: AuthService) : AppRepository {
@@ -34,11 +36,12 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
     }
 
     override fun registerDevice(commItem: CommItem): Observable<ResultOfAction> {
-        return api.deviceProfile(commItem)
+        return api.setDeviceProfile(commItem)
     }
 
-    override fun postActivity(deviceId: String): Observable<CommResponseItem> {
-        return api.postActivity(deviceId)
+    override suspend fun postActivity(context: Context, activity: Activity): Observable<ResultOfAction> {
+            val commItem: CommItem = UtilModel.getCommActivityChangeItem(context, activity)
+            return api.postActivityChange(commItem)
     }
 
     override suspend fun refreshTasks(deviceId: String) {
