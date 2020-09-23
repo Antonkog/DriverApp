@@ -197,7 +197,7 @@ public class CommItemSubAdapterExt
                 
                 App.eventBus.post(new TabChangeEvent());
 
-                addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
                 addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
                 return false;
               }
@@ -228,40 +228,8 @@ public class CommItemSubAdapterExt
               commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               updateNotify(mData);
-              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-              addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
-              //CommItem currItem = App.getInstance().gsonUtc.fromJson(mNotify.getData(), CommItem.class);
-              /*
-              if (i == mDataList.size() -1) {
-            
-                if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
-                  NotifyDao dao = DriverDatabase.getDatabase().notifyDao();
-                  dao.loadNotifyByTaskId(commItem.getTaskItem().getNextTaskId())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(new DisposableSingleObserver<Notify>() {
-                      @Override
-                      public void onSuccess(Notify notify) {
-                    
-                        // I found next task and start it.
-                        CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
-                        nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                        nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                        notify.setStatus(50);
-                        notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
-                        updateNotify(notify);
-                    
-                        addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-                        notifyDataSetChanged();
-                      }
-                  
-                      @Override
-                      public void onError(Throwable e) {
-                        // IGNORE.
-                      }
-                    });
-                }
-              }*/
+              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());//that is when last next pressed
+              addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
             }
             continue;
           }
@@ -272,8 +240,8 @@ public class CommItemSubAdapterExt
             mData.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mData);
         
-            addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-            addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
+            addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());//press next button even if it's last item
+            addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
               commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
               commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
@@ -281,7 +249,7 @@ public class CommItemSubAdapterExt
               updateNotify(mData);
           
               addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-              addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem);
+              addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
             } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
               if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
                 NotifyDao dao = DriverDatabase.getDatabase().notifyDao();
@@ -727,7 +695,6 @@ public class CommItemSubAdapterExt
       EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_activity), actItem.getName(),
               LogType.APP_TO_SERVER, actionType, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
               commItem.getTaskItem().getTaskId(), actItem.getActivityId(), commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), 0));
-      Log.e(TAG, "adding log event: actId " + actItem.getActivityId());
     } catch (Exception e) {
       Log.e(TAG, "not enough data to log event : " + e.getMessage() + " commItem" + commItem.toString());
     }

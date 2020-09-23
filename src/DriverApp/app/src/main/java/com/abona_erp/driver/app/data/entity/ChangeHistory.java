@@ -171,20 +171,15 @@ public class ChangeHistory /*implements Serializable*/ {
   @Override
   public String toString() {
     return "ChangeHistory{" +
-            "id=" + id +
-            ", title='" + title + '\'' +
+            "activityId=" + activityId +
+            "title='" + title + '\'' +
             ", message='" + message + '\'' +
             ", type=" + type +
             ", actionType=" + actionType +
             ", state=" + state +
-            ", createdAt=" + createdAt +
-            ", modifiedAt=" + modifiedAt +
-            ", timeModifyLong=" + timeModifyLong +
             ", taskId=" + taskId +
-            ", activityId=" + activityId +
-            ", orderNumber=" + orderNumber +
-            ", mandantID=" + mandantID +
-            ", offlineConfirmationID=" + offlineConfirmationID +
+
+            ", orderNumber=" + orderNumber+
             '}';
   }
 }

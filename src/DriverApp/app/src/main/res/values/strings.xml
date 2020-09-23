@@ -89,7 +89,7 @@
   <string name="key_taskId" translatable="false">taskID</string>
   <string name="key_orderNo" translatable="false">orderNo</string>
 
-  <string name="menu_history" translatable="false">History</string>
+  <string name="menu_history">History</string>
   <string name="ph_time" translatable="false">15:43 21.12.20</string>
   <string name="ph_message" translatable="false">Driving to unloading</string>
   <string name="ph_task_id" translatable="false">1234</string>
@@ -150,7 +150,7 @@
   <string name="task_finish">Task Finish</string>
   <string name="due_in">Due in</string>
   <string name="order_no">Order No</string>
-  <string name="task_id">Task ID</string>
+  <string name="task_id">Task No</string>
   <string name="task">Task</string>
   <string name="activity_status">Activity Status</string>
   <string name="task_total_status">Task Total Status</string>
@@ -255,25 +255,25 @@
 
   <string name="log_title_confirm_error" translatable="false">Confirmation error:</string>
 
-  <string name="log_confirm_open" translatable="false">Driver read task</string>
-  <string name="log_confirm_send" translatable="false">Task read: sent to server</string>
+  <string name="log_confirm_open">Driver read task</string>
+  <string name="log_confirm_send">Task read: sent to server</string>
+  <string name="log_confirm_error">Error while sending confirmation</string>
 
-  <string name="log_confirm_error" translatable="false">Error while sending confirmation</string>
 
+  <string name="log_title_activity">Activity change</string>
+  <string name="log_activity_started">:activity started</string>
+  <string name="log_activity_finished">:activity finished</string>
 
-  <string name="log_title_activity" translatable="false">Activity change</string>
-
-  <string name="log_activity_start_pressed" translatable="false">Driver changed activity</string>
-  <string name="log_activity_status_change" translatable="false">Activity change: sent to server</string>
-  <string name="log_activity_sent_error" translatable="false">Error while sending activity change</string>
+  <string name="log_activity_status_change">Activity change: sent to server</string>
+  <string name="log_activity_sent_error">Error while sending activity change</string>
 
   <string name="log_token_error" translatable="false">No token</string>
 
 
   <string name="log_title_fcm" translatable="false">Firebase</string>
-  <string name="log_task_updated_fcm" translatable="false">Task was updated via FCM</string>
-  <string name="log_document_fcm" translatable="false">Document from Abona via FCM</string>
-  <string name="log_vehicle_fcm" translatable="false">Vehicle from Abona via FCM</string>
+  <string name="log_task_updated_fcm">Task was updated via FCM</string>
+  <string name="log_document_fcm">Document from Abona via FCM</string>
+  <string name="log_vehicle_fcm">Vehicle from Abona via FCM</string>
 
   <string name="log_message_unknown_error" translatable="false">Unknown Error!</string>
   <string name="clear_log" translatable="false">clear log</string>

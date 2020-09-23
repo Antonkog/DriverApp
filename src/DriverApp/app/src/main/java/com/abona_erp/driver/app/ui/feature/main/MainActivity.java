@@ -45,7 +45,6 @@ import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
-import com.abona_erp.driver.app.data.entity.ActionType;
 import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.Notify;
@@ -730,7 +729,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
     EventBus.getDefault().post(new ChangeHistoryEvent(getResources().getString(R.string.log_title_fcm), getResources().getString(R.string.log_confirm_open),
-            FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+            FCM, null, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
   }
 

@@ -81,7 +81,18 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         }
 
         holder.txtWhen.setText(formatUTCTZ(history.get(position).getCreatedAt()));
-        holder.txtWhat.setText(history.get(position).getMessage());
+        switch (history.get(position).getActionType()){
+            case START_ACTIVITY:
+                holder.txtWhat.setText(history.get(position).getMessage() + " " + holder.txtWhen.getContext().getResources().getString(R.string.log_activity_started));
+                break;
+            case FINISH_ACTIVITY:
+                holder.txtWhat.setText(history.get(position).getMessage() + " " + holder.txtWhen.getContext().getResources().getString(R.string.log_activity_finished));
+                break;
+            default:
+                holder.txtWhat.setText(history.get(position).getMessage());
+                break;
+        }
+
         holder.title.setText(history.get(position).getTitle());
 
         if(history.get(position).getTaskId() > 0) holder.txtTaskId.setText(" "+history.get(position).getTaskId());

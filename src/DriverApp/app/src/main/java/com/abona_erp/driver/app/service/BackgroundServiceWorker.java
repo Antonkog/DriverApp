@@ -392,7 +392,7 @@ public class BackgroundServiceWorker extends Service {
                                 .subscribe(new DisposableSingleObserver<LastActivity>() {
                                   @Override
                                   public void onSuccess(LastActivity lastActivity) {
-                                    postActivityChangeSent(_currActivity.getTaskId(), _currActivity.getActivityId(), UtilCommon.parseInt(lastActivity.getOrderNo()), _currActivity.getMandantId(), oldConfirmId);
+                                    postActivityChangeSent((_currActivity.getStatus() == ActivityStatus.FINISHED) ? ActionType.FINISH_ACTIVITY : ActionType.START_ACTIVITY, _currActivity.getTaskId(), _currActivity.getActivityId(), UtilCommon.parseInt(lastActivity.getOrderNo()), _currActivity.getMandantId(), oldConfirmId);
                                     updateLastActivity(mLastActivityDAO, lastActivity, 2, "CHANGED", -1);
                                   }
                     
@@ -684,9 +684,9 @@ public class BackgroundServiceWorker extends Service {
   }
 
 
-  private void postActivityChangeSent(int taskId, int activityId, int orderNumber, int mandantID, int confirmationID) {
+  private void postActivityChangeSent(ActionType type, int taskId, int activityId, int orderNumber, int mandantID, int confirmationID) {
     ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_activity), getApplicationContext().getString(R.string.log_activity_status_change),
-            LogType.APP_TO_SERVER, ActionType.UPDATE_TASK, ChangeHistoryState.CONFIRMED,
+            LogType.APP_TO_SERVER, type, ChangeHistoryState.CONFIRMED,
             taskId, activityId, orderNumber, mandantID, confirmationID);
     EventBus.getDefault().post(changeHistoryEvent);
   }
