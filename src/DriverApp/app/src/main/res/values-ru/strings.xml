@@ -151,6 +151,7 @@
   <string name="created_at">Создано на</string>
   <string name="protocol">Протокол</string>
   <string name="device_reset">Сброс устройства</string>
+  <string name="local_time">Местное время</string>
 
   <string name="menu_history">История</string>
   <string name="log_activity_started">:задание начато</string>
@@ -168,6 +169,4 @@
   <string name="log_task_updated_fcm">Задача обновлена через FCM</string>
   <string name="log_document_fcm">Документ от Абоны через FCM</string>
   <string name="log_vehicle_fcm">Автомобиль от Абоны через FCM</string>
-
-  <string name="local_time">Местное время</string>
 </resources>

@@ -1,9 +1,12 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.history;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
@@ -17,8 +20,13 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
+import com.abona_erp.driver.app.ui.widget.MovableFloatingActionButton;
 import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.app.util.DeviceUtils;
 import com.google.android.material.tabs.TabLayout;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class HistoryFragment extends Fragment {
 
@@ -29,6 +37,7 @@ public class HistoryFragment extends Fragment {
   private HistoryAdapter historyAdapter;
   private RecyclerView.LayoutManager layoutManager;
   private AppCompatButton btnClearLog;
+  private MovableFloatingActionButton fabEmail;
   private int currentTaskId = 0, currentOrderNo = 0;
   private TabLayout tabLayout;
   private final int tabTaskPosition = 0, tabOrdersPosition = 1;
@@ -111,7 +120,34 @@ public class HistoryFragment extends Fragment {
     });
 
     btnClearLog = root.findViewById(R.id.btn_clear_log);
+    fabEmail = root.findViewById(R.id.fab_mail);
     btnClearLog.setOnClickListener(v -> historyViewModel.deleteChangeHistory());
+    fabEmail.setOnClickListener(v -> sendEmail());
+  }
+
+  private void sendEmail() {
+    historyViewModel.getDeviceProfile().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+            result -> sendEmail(historyViewModel.getEmailMessage(getContext()) + " \n " + result.toString()),
+            error -> sendEmail(historyViewModel.getEmailMessage(getContext()) + " \n deviceId:" + DeviceUtils.getUniqueID(getContext())));
+  }
+
+  private void sendEmail(String message) {
+    if (message == null)
+      Toast.makeText(getContext(), getResources().getString(R.string.log_message_unknown_error), Toast.LENGTH_LONG).show();
+    Intent email = new Intent(Intent.ACTION_SEND);
+    email.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.email_support)});
+    email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.history_email_theme));
+    email.putExtra(Intent.EXTRA_TEXT, message);
+
+//need this to prompts email client only
+    email.setType("message/rfc822");
+
+    try {
+      //Intent.createChooser(email, "Choose an Email client :")
+      startActivity(email);
+    } catch (ActivityNotFoundException e) {
+      Toast.makeText(getContext(), getResources().getString(R.string.error_history_email), Toast.LENGTH_LONG).show();
+    }
   }
 
   private void refreshByOrderNo() {

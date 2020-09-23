@@ -188,6 +188,7 @@
   <string name="log_document_fcm">Dokument von Abona über FCM</string>
   <string name="log_vehicle_fcm">Fahrzeug von Abona über FCM</string>
 
+
   <string name="local_time">Ortszeit</string>
 
 </resources>

@@ -2,9 +2,10 @@
 <resources>
   <color name="colorPrimary">@color/clrAbona</color>
   <color name="colorPrimaryDark">#1F1C2C</color>
-  <color name="colorAccent">#D81B60</color>
+  <color name="colorAccent">#E30613</color>
 
   <color name="clrAbona">#E30613</color>
+  <color name="clrAbonaGray">#b2b2b1</color>
   <color name="clrFont">#1F1C2C</color>
   <color name="clrFont_opaque">#601F1C2C</color>
   <color name="clrWhite">#FFF</color>
