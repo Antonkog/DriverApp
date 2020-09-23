@@ -22,7 +22,7 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
         val map: Map<String, String> = JsonParser.parseJson(jsonObject)
 
         val linearContent: LinearLayout = binding.linlayDescription
-
+        if (linearContent.childCount > 0) linearContent.removeAllViews()
         map.entries.forEach { entry ->
             run {
                 val row = LayoutInflater.from(binding.root.context)
