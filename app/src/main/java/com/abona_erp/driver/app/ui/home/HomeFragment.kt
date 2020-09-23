@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.abona_erp.driver.app.R
+import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.databinding.HomeFragmentBinding
 import com.abona_erp.driver.app.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,13 +61,12 @@ class HomeFragment : BaseFragment() {
             }
         })
 
+
         homeViewModel.tasks.observe(viewLifecycleOwner, Observer {
             if(it!= null && it.isNotEmpty()){
                 adapter.swapData(it)
-                homeViewModel.setVisibleTaskID(it[0]) //not sure this is correct way to set first element on fragment creation, but works
-            }
-
-            else Log.e(TAG, "got empty or null tasks $it")
+                setAdapterPosition(it) //got new tasks, change position.
+            } else Log.e(TAG, "got empty or null tasks $it")
 //            Log.e(TAG, "got tasks ${it}")
         })
 
@@ -77,5 +77,13 @@ class HomeFragment : BaseFragment() {
         if(!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
        // else homeViewModel.getTasks()
         return view
+    }
+
+    private fun setAdapterPosition(it: List<TaskEntity>) {
+        if (homeViewModel.getVisibleTaskId() != 0) {
+            val task =
+                it.first { taskEntity -> taskEntity.taskId == homeViewModel.getVisibleTaskId() }
+            homeBinding.tasksPager.setCurrentItem(it.indexOf(task),false) //setting position of current task, if it exist
+        } else homeViewModel.setVisibleTaskID(it[0]) //else on create set id of first element.
     }
 }
