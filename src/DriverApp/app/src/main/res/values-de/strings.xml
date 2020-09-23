@@ -168,6 +168,7 @@
   <string name="created_at">Erstellt am</string>
   <string name="protocol">Protokoll</string>
   <string name="device_reset">Gerät zurücksetzen</string>
+
   <string name="menu_history">Geschichte</string>
 
   <string name="log_activity_started">:aktivität gestartet</string>
@@ -186,5 +187,7 @@
   <string name="log_task_updated_fcm">Aufgabe wurde über FCM aktualisiert</string>
   <string name="log_document_fcm">Dokument von Abona über FCM</string>
   <string name="log_vehicle_fcm">Fahrzeug von Abona über FCM</string>
+
+  <string name="local_time">Ortszeit</string>
 
 </resources>

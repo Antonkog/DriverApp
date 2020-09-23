@@ -163,6 +163,7 @@
   <string name="created_at">Utworzono w</string>
   <string name="protocol">Protokół</string>
   <string name="device_reset">Reset urządzenia</string>
+
   <string name="menu_history">Historia</string>
   <string name="log_activity_started">:działalność rozpoczęta</string>
   <string name="log_activity_finished">:działalność zakończona</string>
@@ -179,5 +180,7 @@
   <string name="log_task_updated_fcm">Zadanie zostało zaktualizowane przez FCM</string>
   <string name="log_document_fcm">Dokument od Abony za pośrednictwem FCM</string>
   <string name="log_vehicle_fcm">Pojazd z Abony przez FCM</string>
+
+  <string name="local_time">Czas lokalny</string>
 
 </resources>

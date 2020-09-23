@@ -168,4 +168,6 @@
   <string name="log_task_updated_fcm">Задача обновлена через FCM</string>
   <string name="log_document_fcm">Документ от Абоны через FCM</string>
   <string name="log_vehicle_fcm">Автомобиль от Абоны через FCM</string>
+
+  <string name="local_time">Местное время</string>
 </resources>
