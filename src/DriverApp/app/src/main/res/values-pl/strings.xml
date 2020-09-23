@@ -90,8 +90,8 @@
   <string name="task_status">Status zadania</string>
   <string name="task_finish">Zakończ zadanie</string>
   <string name="due_in">Z powodu</string>
-  <string name="order_no">Nr zamówienia</string>
-  <string name="task_id">ID zadania</string>
+  <string name="order_no">№ zamówienia</string>
+  <string name="task_id">№ zadania</string>
   <string name="task">Zadanie</string>
   <string name="activity_status">Status aktywności</string>
   <string name="task_total_status">Całkowity status zadania</string>
@@ -163,5 +163,24 @@
   <string name="created_at">Utworzono w</string>
   <string name="protocol">Protokół</string>
   <string name="device_reset">Reset urządzenia</string>
+
+  <string name="menu_history">Historia</string>
+  <string name="log_activity_started">:działalność rozpoczęta</string>
+  <string name="log_activity_finished">:działalność zakończona</string>
+
+  <string name="log_confirm_open">Kierowca przeczytał zadanie</string>
+  <string name="log_confirm_send">Przeczytane zadanie: wysłane na serwer</string>
+  <string name="log_confirm_error">Błąd podczas wysyłania potwierdzenia</string>
+
+  <string name="log_title_activity">Zmiana aktywności</string>
+
+  <string name="log_activity_status_change">Zmiana aktywności: wysłane na serwer</string>
+  <string name="log_activity_sent_error">Błąd podczas wysyłania zmiany aktywności</string>
+
+  <string name="log_task_updated_fcm">Zadanie zostało zaktualizowane przez FCM</string>
+  <string name="log_document_fcm">Dokument od Abony za pośrednictwem FCM</string>
+  <string name="log_vehicle_fcm">Pojazd z Abony przez FCM</string>
+
   <string name="local_time">Czas lokalny</string>
+
 </resources>

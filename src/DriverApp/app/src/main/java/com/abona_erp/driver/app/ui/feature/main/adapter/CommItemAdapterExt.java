@@ -39,6 +39,7 @@ import com.abona_erp.driver.app.data.model.EnumNoteType;
 import com.abona_erp.driver.app.data.model.EnumPalletExchangeType;
 import com.abona_erp.driver.app.data.model.NotesItem;
 import com.abona_erp.driver.app.data.model.PalletExchange;
+import com.abona_erp.driver.app.data.model.SourceReference;
 import com.abona_erp.driver.app.data.model.TaskActionType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskItem;
@@ -393,8 +394,19 @@ public class CommItemAdapterExt extends
         Gson gson = new Gson();
         AppFileInterchangeItem[] items = gson.fromJson(documents.get(0), AppFileInterchangeItem[].class);
         if (items != null && items.length > 0) {
-          holder.tv_document_badge.setText(String.valueOf(items.length));
-          holder.tv_document_badge.setVisibility(View.VISIBLE);
+          int cnt = 0;
+          for (int i = 0; i < items.length; i++) {
+            if (items[i].getTaskId().equals(mCommItem.getTaskItem().getTaskId()) || (items[i].getSourceReference().equals(SourceReference.ABONA) && items[i].getTaskId().equals(0))) {
+              cnt++;
+            }
+          }
+          if (cnt > 0) {
+            holder.tv_document_badge.setText(String.valueOf(cnt));
+            holder.tv_document_badge.setVisibility(View.VISIBLE);
+          } else {
+            holder.tv_document_badge.setText("0");
+            holder.tv_document_badge.setVisibility(View.GONE);
+          }
         } else {
           holder.tv_document_badge.setText("0");
           holder.tv_document_badge.setVisibility(View.GONE);

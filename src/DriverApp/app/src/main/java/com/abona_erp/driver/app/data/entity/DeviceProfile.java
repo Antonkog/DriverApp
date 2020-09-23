@@ -132,4 +132,17 @@ public class DeviceProfile {
   public void setModifiedAt(@NonNull String modifiedAt) {
     this.modifiedAt = modifiedAt;
   }
+
+  @Override
+  public String toString() {
+    return "DeviceProfile:\n{" +
+            "deviceId=" + deviceId +  ",\n"  +
+            "deviceModel=" + deviceModel +  ",\n"  +
+            "deviceManufacturer=" + deviceManufacturer +  ",\n"  +
+            "languageCode=" + languageCode +  ",\n"  +
+            "versionCode=" + versionCode +  ",\n"  +
+            "versionName=" + versionName +  ",\n"  +
+            "modifiedAt=" + modifiedAt  +
+            '}'+ "\n";
+  }
 }

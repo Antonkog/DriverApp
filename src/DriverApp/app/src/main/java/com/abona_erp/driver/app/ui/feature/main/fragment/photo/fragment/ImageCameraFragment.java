@@ -159,19 +159,10 @@ public class ImageCameraFragment extends Fragment
               BuildConfig.APPLICATION_ID + ".provider",
               photoFile);
             
-            //try {
               ContentValues image = getImageContent(photoFile);
-              /*
-              MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
-                photoFile.getAbsolutePath(), photoFile.getName(), photoFile.getName());
-              */
-              
               getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
               
               App.eventBus.post(new ImageEvent(photoFile.getAbsolutePath()));
-            //} catch (IOException e) {
-            //  e.printStackTrace();
-            //}
           }
         }
       });
@@ -194,8 +185,6 @@ public class ImageCameraFragment extends Fragment
     options.inJustDecodeBounds = true;
     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
     
-    
-    
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
     File f = createImageFile(mandantId, orderNo, taskId);
@@ -213,11 +202,7 @@ public class ImageCameraFragment extends Fragment
     String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + ".jpg";
 
     File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-    File image = File.createTempFile(
-            mFileName,  /* prefix */
-            ".jpg",         /* suffix */
-            storageDir      /* directory */
-    );
+    File image = File.createTempFile(mFileName, ".jpg", storageDir);
     return image;
   }
 
