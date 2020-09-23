@@ -61,7 +61,6 @@ import com.abona_erp.driver.app.receiver.LocaleChangeReceiver;
 import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.service.ForegroundAlarmService;
-import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
@@ -210,9 +209,10 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Override
   public void onBackPressed() {
-    if(getSupportFragmentManager().getBackStackEntryCount() > 1 )
+    if(getSupportFragmentManager().getBackStackEntryCount() > 1 ){
+      tellFragmentsOnBackPress();
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-    else {
+    } else {
       Util.askNeedExit(MainActivity.this);
     }
   }
