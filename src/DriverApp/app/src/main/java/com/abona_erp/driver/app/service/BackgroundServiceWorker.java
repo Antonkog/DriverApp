@@ -53,6 +53,7 @@ import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
@@ -814,6 +815,8 @@ public class BackgroundServiceWorker extends Service {
                                     }
                                   });
                                 }
+                                
+                                App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo()));
                               
                               } else {
                                 

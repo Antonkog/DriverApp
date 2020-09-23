@@ -171,13 +171,13 @@ public class CommItemAdapter extends ExpandableRecyclerView.Adapter<Notify> {
     ExpandableItem expandableItem = (ExpandableItem) holder.getView(R.id.expandable_item);
     if(getItem(position).isCurrentlySelected()) expandableItem.showNow();
     else expandableItem.hideNow();
-    
+    /*
     if (App.selectedTaskPos == position) {
       expandableItem.showNow();
     } else {
       expandableItem.hideNow();
     }
-
+*/
     expandableItem.setOnClickListener(new DoubleClickListener() {
       @Override
       public void onSingleClick(View v) {
