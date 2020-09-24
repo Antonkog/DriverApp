@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -67,6 +68,7 @@ import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
+import com.abona_erp.driver.app.ui.event.RequestDelayEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
@@ -156,6 +158,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   private CommItem mCommItem;
   private View header;
+  private FrameLayout mainContainer;
   private ProgressBar progressBar;
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
@@ -282,6 +285,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             .setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
 
     header = findViewById(R.id.header_container);// to hide it when using settings fragment
+    mainContainer = findViewById(R.id.main_container);// to hide it when using settings fragment
 
     ImageView settingsImage  = findViewById(R.id.settings_image);
 
@@ -612,6 +616,15 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     return false;
   }
 
+  @Subscribe
+  public void onMessageEvent(RequestDelayEvent event) {
+    progressBar.setVisibility(View.VISIBLE);
+    mainContainer.setVisibility(View.INVISIBLE);
+    h.postDelayed(() -> {
+      progressBar.setVisibility(View.INVISIBLE);
+      mainContainer.setVisibility(View.VISIBLE);
+    }, event.getDelay());
+  }
 
   @Subscribe
   public void onMessageEvent(ChangeHistoryEvent event) {
