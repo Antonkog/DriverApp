@@ -88,7 +88,7 @@
               android:id="@+id/tv_local_task_finish"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:textSize="10sp"
+              android:textSize="14sp"
               android:textColor="@color/clrFont"
               tools:text="29.10.2019 10:33:33"
               />
