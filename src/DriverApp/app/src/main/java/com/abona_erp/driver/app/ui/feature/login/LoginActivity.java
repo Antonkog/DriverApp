@@ -11,7 +11,7 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.remote.NetworkUtil;
-import com.abona_erp.driver.app.ui.base.BaseActivity;
+import com.abona_erp.driver.app.ui.feature.main.BaseActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.Util;

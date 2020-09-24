@@ -45,6 +45,7 @@ import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.entity.ActionType;
 import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.Notify;
@@ -60,7 +61,6 @@ import com.abona_erp.driver.app.receiver.LocaleChangeReceiver;
 import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.service.ForegroundAlarmService;
-import com.abona_erp.driver.app.ui.base.BaseActivity;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
@@ -160,7 +160,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
   private AppCompatImageView getAllTaskImage;
-  
+
+
   private NetworkChangeReceiver networkChangeReceiver;
   private LocaleChangeReceiver localeChangeReceiver;
 
@@ -208,13 +209,21 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Override
   public void onBackPressed() {
-    if(getSupportFragmentManager().getBackStackEntryCount() > 1 )
+    if(getSupportFragmentManager().getBackStackEntryCount() > 1 ){
+      tellFragmentsOnBackPress();
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-    else {
+    } else {
       Util.askNeedExit(MainActivity.this);
     }
   }
-  
+  private void tellFragmentsOnBackPress(){
+    List<Fragment> fragments = getSupportFragmentManager().getFragments();
+    for(Fragment f : fragments){
+      if(f != null && f instanceof BaseFragment)
+        ((BaseFragment)f).onBackPressed();
+    }
+  }
+
   @Override
   protected void onDestroy() {
     super.onDestroy();
@@ -727,7 +736,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
     EventBus.getDefault().post(new ChangeHistoryEvent(getResources().getString(R.string.log_title_fcm), getResources().getString(R.string.log_confirm_open),
-            FCM, null, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+            FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
   }
 
