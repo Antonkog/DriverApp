@@ -12,14 +12,25 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.webkit.MimeTypeMap;
+
+import androidx.core.content.FileProvider;
+
+import com.abona_erp.driver.app.R;
+import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.logging.Log;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.core.base.ContextUtils;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 public class AppUtils {
@@ -123,5 +134,83 @@ public class AppUtils {
     } else {
       return context.startService(intent);
     }
+  }
+
+
+  /**method to send email based on our csv file
+   * created by Anton Kogan
+   * @param context
+   * @param message
+   * @throws Exception
+   */
+  private static void sendLogFile(Context context, String message) throws Exception{
+    Intent email = new Intent(Intent.ACTION_SEND);
+    email.setType("plain/text");
+    email.putExtra(Intent.EXTRA_EMAIL, new String[]{context.getString(R.string.email_support)});
+    email.putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.history_email_theme));
+
+    File logFile = getLogFile(context);
+
+    if (logFile.exists()) {
+      email.putExtra(Intent.EXTRA_TEXT, message+ "\n"
+              + context.getResources().getString(R.string.csv_attached) +"\n"
+              + logFile.getPath());
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        String type = mime.getMimeTypeFromExtension(getExtension(logFile.getPath()));
+        Uri uri = FileProvider.getUriForFile(context, Constants.FILE_PROVIDER_AUTHORITY, logFile);
+        email.setDataAndType(uri, type);
+        email.setType(type);
+        email.putExtra(Intent.EXTRA_STREAM, uri);
+      }else {
+        email.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(getLogFile(context)));
+      }
+    }
+    context.startActivity(email);
+  }
+  public static String getExtension(String name) {
+    String ext;
+
+    if (name.lastIndexOf(".") == -1) {
+      ext = "";
+
+    } else {
+      int index = name.lastIndexOf(".");
+      ext = name.substring(index + 1, name.length());
+    }
+    return ext;
+  }
+
+  /**method to get our csv file
+   * created by Anton Kogan
+   * @param context
+   * @return
+   */
+  private static File getLogFile(Context context) {
+    return new  File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + Constants.LOG_FILE_PREFIX  + Constants.LOG_FILE_EXTENSION);
+  }
+
+  public static boolean removeLogFile(Context context) {
+    return getLogFile(context).delete();
+  }
+
+  /**method to add logs based on action history
+   * created by Anton Kogan
+   * @param context
+   * @param deviceProfileString
+   * @param logsByOrderNum
+   * @throws Exception
+   */
+  public static void sendEmail(Context context, String deviceProfileString, List<ChangeHistory> logsByOrderNum) throws Exception {
+    if (logsByOrderNum.isEmpty()) return;
+    removeLogFile(context);
+    FileWriter myWriter = new FileWriter(getLogFile(context));
+    BufferedWriter bufferedWriter = new BufferedWriter(myWriter);
+    bufferedWriter.append(logsByOrderNum.get(0).getCsvHeader());
+    for (int i = 0; i < logsByOrderNum.size(); i++) {
+      bufferedWriter.append(logsByOrderNum.get(i).getAsCsv());
+    }
+    bufferedWriter.close();
+    sendLogFile(context, deviceProfileString);
   }
 }

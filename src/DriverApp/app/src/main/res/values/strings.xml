@@ -93,6 +93,7 @@
 
   <string name="menu_history">History</string>
   <string name="history_email_theme" translatable="false">Activity history</string>
+  <string name="csv_attached" translatable="false">CSV file attached to email:</string>
   <string name="error_history_email" translatable="false">email client not found, please install mail app.</string>
   <string name="ph_time" translatable="false">15:43 21.12.20</string>
   <string name="ph_message" translatable="false">Driving to unloading</string>
