@@ -28,7 +28,6 @@ import com.abona_erp.driver.app.data.model.AppFileInterchangeItem;
 import com.abona_erp.driver.app.data.model.SourceReference;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.abona_erp.driver.core.base.ContextUtils;
 import com.google.gson.Gson;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -39,7 +38,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +46,6 @@ import java.util.TimeZone;
 
 import okhttp3.Request;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapter.ViewHolder> {
   
@@ -115,33 +110,21 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       public void onClick(View view) {
         
         if (isFileExists(mMandantID, mOrderNo, _items.get(position).getFileName())) {
-  
-          File file = new File(Environment
-            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            .getAbsolutePath() + APP_FOLDER + mMandantID + PATH_SLASH + mOrderNo,
-            _items.get(position).getFileName());
-          
-          MimeTypeMap mime = MimeTypeMap.getSingleton();
-          String ext = file.getName().substring(file.getName().lastIndexOf(".") + 1);
-          String type = mime.getMimeTypeFromExtension(ext);
-          
           try {
-            Uri path = null;
+            File file = getFile(mMandantID,mOrderNo, _items.get(position).getFileName());
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String type = mime.getMimeTypeFromExtension(getExtension(file.getAbsolutePath()));
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-  
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri uri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-              path = FileProvider.getUriForFile(mContext, "com.abona_erp.driver.app.provider", file);
-    
-              intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-              intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+              uri = FileProvider.getUriForFile(mContext, "com.abona_erp.driver.app.provider", file);
             } else {
-              path = Uri.fromFile(file);
-              
-              intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+              uri = Uri.fromFile(file);
             }
-  
-            intent.setDataAndType(path, type);
+            intent.setDataAndType(uri, type);
             App.getInstance().getApplicationContext().startActivity(intent);
             
           } catch (Exception e) {
@@ -163,7 +146,21 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       }
     });
   }
-  
+
+  public static String getExtension(String name) {
+    String ext;
+
+    if (name.lastIndexOf(".") == -1) {
+      ext = "";
+
+    } else {
+      int index = name.lastIndexOf(".");
+      ext = name.substring(index + 1, name.length());
+    }
+    return ext;
+  }
+
+
   public void setDocumentItems(List<String> items, int mandantID, int orderNo, int taskId) {
     
     if (items.size() > 0) {
@@ -300,9 +297,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
     }
     
     try {
-      File destinationFile = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        + APP_FOLDER + mMandantID + PATH_SLASH + mOrderNo, filename);
-  
+      File destinationFile = getFile(mMandantID, mOrderNo, filename);
       InputStream inputStream = null;
       OutputStream outputStream = null;
       
@@ -357,8 +352,7 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
       return false;
     
     try {
-      File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        + APP_FOLDER + mandantID + PATH_SLASH + orderNo, filename);
+      File file = getFile(mandantID, orderNo, filename);
       if (file.exists() && !file.isDirectory()) {
         return true;
       }
@@ -368,7 +362,13 @@ public class DocumentViewAdapter extends RecyclerView.Adapter<DocumentViewAdapte
     
     return false;
   }
-  
+
+  @NotNull
+  private File getFile(String mandantID, String orderNo, String filename) {
+    return new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+            + APP_FOLDER + mandantID + PATH_SLASH + orderNo, filename);
+  }
+
   private boolean createDirectory(String mandantID, String orderNo) {
     if (TextUtils.isEmpty(mandantID) || mandantID.length() == 0)
       return false;
