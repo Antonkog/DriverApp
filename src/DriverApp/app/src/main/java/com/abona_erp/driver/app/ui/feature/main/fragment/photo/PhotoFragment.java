@@ -35,6 +35,7 @@ import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RefreshUiEvent;
+import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
 import com.abona_erp.driver.app.ui.feature.main.BaseFragment;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragmentViewModel;
@@ -47,6 +48,7 @@ import com.abona_erp.driver.app.ui.widget.CustomDMSDocumentTypeDialog;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
@@ -68,10 +70,11 @@ import static android.app.Activity.RESULT_OK;
 public class PhotoFragment extends BaseFragment
   implements MenuToolsAdapter.OnItemSelected,
     GalleryListener, CustomDMSDocumentTypeDialog.OnSelectedTypeEventListener {
-  
+
   public static final int ACTION_REQUEST_PHOTO_EDITOR = 777;
   
   private int mOid;
+  private String TAG = PhotoFragment.class.getName();
   private Notify mNotify;
   private ArrayList<String> mPhotoUrls = new ArrayList<>();
   private int mPreviewIndex = -1;
@@ -96,7 +99,16 @@ public class PhotoFragment extends BaseFragment
   public static PhotoFragment newInstance() {
     return new PhotoFragment();
   }
-  
+
+  @Subscribe
+  public void onMessageEvent(UploadAllDocsEvent event) {
+
+    if(mNotify.getTaskId() == event.getTaskId()){
+      mPhotoUrls.clear();
+      mGalleryViewAdapter.setPhotoItems(mPhotoUrls);
+    }
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -389,13 +401,13 @@ public class PhotoFragment extends BaseFragment
   @Override
   public void onStart() {
     super.onStart();
-    App.eventBus.register(this);
+    if(!EventBus.getDefault().isRegistered(this)) App.eventBus.register(this);
   }
   
   @Override
   public void onStop() {
     super.onStop();
-    App.eventBus.unregister(this);
+    if(EventBus.getDefault().isRegistered(this)) App.eventBus.unregister(this);
   }
   
   @Subscribe
@@ -460,7 +472,7 @@ public class PhotoFragment extends BaseFragment
         OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
 
         OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
-        offlineConfirmation.setNotifyId(mNotify.getId());
+        offlineConfirmation.setNotifyId(mNotify.getTaskId());
         offlineConfirmation.setUploadFlag(1);
         AsyncTask.execute(new Runnable() {
           @Override
@@ -473,6 +485,37 @@ public class PhotoFragment extends BaseFragment
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
     }
 
+    /*
+     if (uploadFiles) {
+     DriverDatabase.getDatabase().offlineConfirmationDAO().selectConfirmationsByTaskId(mNotify.getTaskId()).subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(
+                confirmations -> {
+                  if(confirmations.isEmpty()) addConfirmationAsync();
+                  for (int i = 0; i < confirmations.size(); i++) {
+                    OfflineConfirmation confirmation  =  confirmations.get(i);
+                    confirmation.setUploadFlag(1);
+                    AsyncTask.execute(new Runnable() {
+                      @Override
+                      public void run() {
+                        int update = DriverDatabase.getDatabase().offlineConfirmationDAO().update(confirmation);
+                        Log.e(TAG, "Upload offlineConfirmation update: " + update);
+                      }
+                    });
+                           // AsyncTask.execute(() -> DriverDatabase.getDatabase().offlineConfirmationDAO().update(confirmation));
+                  }
+                },
+                error -> {
+                  Log.e(TAG, "Upload old offlineConfirmation not found");
+                  addConfirmationAsync();
+                }
+        );
+        }
+
+
+//  @Query("SELECT * FROM offline_confirmation WHERE notify_id =:taskID")
+//  Single<List<OfflineConfirmation>> selectConfirmationsByTaskId(int taskID);
+
+     */
 
      /*
         if (mNotify == null || mNotify.getPhotoUrls() == null) return;
@@ -619,6 +662,18 @@ public class PhotoFragment extends BaseFragment
         }
         */
   }
+//
+//  private void addConfirmationAsync() {
+//    OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+//    offlineConfirmation.setNotifyId(mNotify.getTaskId());
+//    offlineConfirmation.setUploadFlag(1);
+//    AsyncTask.execute(new Runnable() {
+//      @Override
+//      public void run() {
+//        DriverDatabase.getDatabase().offlineConfirmationDAO().insert(offlineConfirmation);
+//      }
+//    });
+//  }
 
   private void handleAccessToken() {
     App.getInstance().apiManager.provideAuthClient().newCall(App.getInstance().apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
