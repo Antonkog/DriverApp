@@ -749,19 +749,19 @@ public class CommItemAdapterExt extends
           TimeZone timeZone
   ) {
     Date givenDateWithTimeZone = new Date();
-    SimpleDateFormat givenDataFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.US);
+    SimpleDateFormat givenDataFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.getDefault());
     givenDataFormat.setTimeZone(timeZone);
     try {
       givenDateWithTimeZone = givenDataFormat.parse(givenDate);
       Date localDateTime = new Date();
-      SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.US);
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.getDefault());
       simpleDateFormat.setTimeZone(TimeZone.getDefault());
       try {
         localDateTime = simpleDateFormat.parse(simpleDateFormat.format(givenDateWithTimeZone));
       } catch (ParseException e) {
         e.printStackTrace();
       }
-      SimpleDateFormat displayedDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.US);
+      SimpleDateFormat displayedDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.getDefault());
       return displayedDateFormat.format(localDateTime);
     } catch (ParseException e) {
       e.printStackTrace();
