@@ -183,4 +183,12 @@ public class ChangeHistory /*implements Serializable*/ {
             "orderNumber=" + orderNumber +  ",\n" +
             "mandantID=" + mandantID  +  '}'+ "\n";
   }
+
+  public String getCsvHeader() {
+    return "id,title,message,direction,action_type,state,created_at,modified_at,task_id,activity_id,order_number,mandant_id\n";
+  }
+  public String getAsCsv() {
+    return id+ "," +title+ "," +message+ "," +type.name()+ "," +actionType.name()+ "," +state.name()+ "," +createdAt.toString()+ "," +modifiedAt.toString()+ "," + taskId+ "," +activityId+ "," +orderNumber+ "," +mandantID + "\n";
+  }
+
 }

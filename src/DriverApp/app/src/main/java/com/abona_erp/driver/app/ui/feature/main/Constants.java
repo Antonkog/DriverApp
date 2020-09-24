@@ -18,6 +18,10 @@ public interface Constants {
     String PACKAGE_NAME = "com.abona_erp.driver.app";
     int REQUEST_PERMISSIONS_KEY = 111;
 
+    String LOG_FILE_PREFIX = "actionHistory";
+    String FILE_PROVIDER_AUTHORITY = "com.abona_erp.driver.app.provider";
+    String LOG_FILE_EXTENSION = ".csv";
+
     String permissions[] = {
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.ACCESS_FINE_LOCATION,
