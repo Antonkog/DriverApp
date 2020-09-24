@@ -12,6 +12,7 @@ public interface Constants {
     int REPEAT_COUNT = 3;
     int REPEAT_TIME_MIGRATION = 1500;
     int SUCCESS_CODE = 200;
+    int DELAY_FOR_CHANGE_HISTORY = 1000; // see that bug7821, for some reason we need delay when sending to server - 1 second
 
     int TEST_TIME_QUOTES = 10;
     String PACKAGE_NAME = "com.abona_erp.driver.app";

@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -28,19 +27,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
-import com.abona_erp.driver.app.data.converters.LogLevel;
-import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.UploadItem;
-import com.abona_erp.driver.app.data.model.UploadResult;
-import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
-import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.RefreshUiEvent;
+import com.abona_erp.driver.app.ui.feature.main.BaseFragment;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragmentViewModel;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.GalleryViewAdapter;
@@ -51,13 +46,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.photo.fragment.ImageSet
 import com.abona_erp.driver.app.ui.widget.CustomDMSDocumentTypeDialog;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.v3.MessageDialog;
-import com.kongzue.dialog.v3.WaitDialog;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
@@ -73,16 +62,10 @@ import java.util.Date;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PhotoFragment extends Fragment
+public class PhotoFragment extends BaseFragment
   implements MenuToolsAdapter.OnItemSelected,
     GalleryListener, CustomDMSDocumentTypeDialog.OnSelectedTypeEventListener {
   
@@ -124,7 +107,17 @@ public class PhotoFragment extends Fragment
     mViewModel = ViewModelProviders.of(this)
       .get(MainFragmentViewModel.class);
   }
-  
+
+  @Override
+  public void injectDependencies() {
+    getFragmentComponent().inject(this);
+  }
+
+  @Override
+  public void onBackPressed(){
+    onBackPress();
+  }
+
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     
@@ -433,46 +426,59 @@ public class PhotoFragment extends Fragment
   }
   
   private void initComponents(@NonNull View root) {
-    mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_photo_back);
-    mBtnBack.setOnClickListener(new View.OnClickListener() {
-      
-      @Override
-      public void onClick(View view) {
-        if (mNotify == null || mNotify.getPhotoUrls() == null) {
-          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-        } else {
-  
-          int photoSize = mPhotoUrls.size();
-          boolean uploadFiles = false;
-          for (int i = 0; i < photoSize; i++) {
-            UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(i), UploadItem.class);
-            if (!uploadItem.getUploaded()) {
-              uploadFiles = true;
-            }
-          }
-          if (uploadFiles) {
-            OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
-  
-            OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
-            offlineConfirmation.setNotifyId(mNotify.getId());
-            offlineConfirmation.setUploadFlag(1);
-            AsyncTask.execute(new Runnable() {
-              @Override
-              public void run() {
-                dao.insert(offlineConfirmation);
-              }
-            });
-          }
-          
-          App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+    mBtnBack = root.findViewById(R.id.btn_photo_back);
+    mBtnBack.setOnClickListener(view -> onBackPress());
+    
+    mRvGalleryView = (RecyclerView)root.findViewById(R.id.rvGalleryView);
+    mRvMenu = (RecyclerView)root.findViewById(R.id.rv_gallery_menu);
+
+    LinearLayoutManager llmMenu = new LinearLayoutManager(getContext(),
+      LinearLayoutManager.VERTICAL, false);
+    mRvMenu.setLayoutManager(llmMenu);
+    mRvMenu.setAdapter(mMenuToolsAdapter);
+
+    LinearLayoutManager llmGallery = new LinearLayoutManager(getContext(),
+      LinearLayoutManager.HORIZONTAL, false);
+    mRvGalleryView.setLayoutManager(llmGallery);
+    mRvGalleryView.setAdapter(mGalleryViewAdapter);
+  }
+
+  private void onBackPress() {
+    if (mNotify == null || mNotify.getPhotoUrls() == null) {
+      App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+    } else {
+
+      int photoSize = mPhotoUrls.size();
+      boolean uploadFiles = false;
+      for (int i = 0; i < photoSize; i++) {
+        UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(i), UploadItem.class);
+        if (!uploadItem.getUploaded()) {
+          uploadFiles = true;
         }
-        
-        
+      }
+      if (uploadFiles) {
+        OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
+
+        OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+        offlineConfirmation.setNotifyId(mNotify.getId());
+        offlineConfirmation.setUploadFlag(1);
+        AsyncTask.execute(new Runnable() {
+          @Override
+          public void run() {
+            dao.insert(offlineConfirmation);
+          }
+        });
+      }
+
+      App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+    }
+
+
      /*
         if (mNotify == null || mNotify.getPhotoUrls() == null) return;
-        
+
         int photoSize = mPhotoUrls.size();
-  
+
         boolean uploadFiles = false;
         for (int i = 0; i < photoSize; i++) {
           UploadItem uploadItem = App.getInstance().gson.fromJson(mPhotoUrls.get(i), UploadItem.class);
@@ -488,42 +494,42 @@ public class PhotoFragment extends Fragment
             .setMessage(getContext().getResources().getString(R.string.action_upload_photos_message))
             .setOkButton(getContext().getResources().getString(R.string.action_upload),
               new OnDialogButtonClickListener() {
-          
+
                 @Override
                 public boolean onClick(BaseDialog baseDialog, View v) {
-            
+
                   // Wait Dialog - for Uploading...
                   WaitDialog.show((AppCompatActivity)getActivity(), getContext().getResources().getString(R.string.action_uploading_photos))
                     .setTheme(DialogSettings.THEME.LIGHT);
-            
+
                   if (photoSize > 0) {
-              
+
                     for (int i = 0; i < photoSize; i++) {
                       UploadItem uploadItem = App.getInstance().gson
                         .fromJson(mPhotoUrls.get(i), UploadItem.class);
-                
+
                       if (uploadItem.getUploaded()) continue;
-                
+
                       if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
                         File file = new File(uploadItem.getUri());
-                  
+
                         RequestBody requestFile = RequestBody
                           .create(MediaType.parse("multipart/form-data"), file);
-                  
+
                         MultipartBody.Part body =
                           MultipartBody.Part.createFormData("",
                             file.getName(), requestFile);
-                  
+
                         RequestBody mandantId = RequestBody.create(MediaType
                           .parse("multipart/form-data"), String.valueOf(mNotify.getMandantId()));
                         RequestBody orderNo = RequestBody.create(MediaType
                           .parse("multipart/form-data"), String.valueOf(mNotify.getOrderNo()));
                         RequestBody taskId = RequestBody.create(MediaType
                           .parse("multipart/form-data"), String.valueOf(mNotify.getTaskId()));
-                  
+
                         RequestBody driverNo = RequestBody.create(MediaType
                           .parse("multipart/form-data"), String.valueOf(-1));
-                        
+
                         String dmsType = "0";
                         if (uploadItem.getDocumentType().equals(DMSDocumentType.NA)) {
                           dmsType = "0";
@@ -540,17 +546,17 @@ public class PhotoFragment extends Fragment
                         } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_VEHICLE_IMAGE)) {
                           dmsType = "30";
                         }
-                  
+
                         RequestBody documentType = RequestBody.create(MediaType
                           .parse("multipart/form-data"), dmsType);
-                  
+
                         final int j = i;
                         Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
                           .upload(mandantId,orderNo,taskId,driverNo,documentType, body);
                         call.enqueue(new Callback<UploadResult>() {
                           @Override
                           public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
-                      
+
                             if (response.isSuccessful()) {
                               EventBus.getDefault().post(new LogEvent(context.getString(R.string.log_document_upload),
                                       LogType.SERVER_TO_APP, LogLevel.INFO, context.getString(R.string.log_title_docs), mNotify != null? mNotify.getTaskId() : 0));
@@ -559,18 +565,18 @@ public class PhotoFragment extends Fragment
                               mPhotoUrls.set(j, App.getInstance().gson.toJson(uploadItem));
                               mNotify.setPhotoUrls(mPhotoUrls);
                               mViewModel.update(mNotify);
-                        
+
                               if (j >= photoSize-1) {
                                 WaitDialog.dismiss(1000);
                                 App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
                               }
-                        
+
                               App.eventBus.post(new DocumentEvent(mNotify.getMandantId(), mNotify.getOrderNo()));
                             } else {
-                        
+
                               WaitDialog.dismiss(1000);
                               App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-                        
+
                               switch (response.code()) {
                                 case 401:
                                   handleAccessToken();
@@ -580,7 +586,7 @@ public class PhotoFragment extends Fragment
                               }
                             }
                           }
-                    
+
                           @Override
                           public void onFailure(Call<UploadResult> call, Throwable t) {
                             if (j == photoSize-1) {
@@ -591,7 +597,7 @@ public class PhotoFragment extends Fragment
                         });
                       }
                     }
-              
+
                   } else {
                     WaitDialog.dismiss(500);
                   }
@@ -600,7 +606,7 @@ public class PhotoFragment extends Fragment
               })
             .setCancelButton(getContext().getString(R.string.action_later),
               new OnDialogButtonClickListener() {
-          
+
                 @Override
                 public boolean onClick(BaseDialog baseDialog, View v) {
                   App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
@@ -612,23 +618,8 @@ public class PhotoFragment extends Fragment
           App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
         }
         */
-      }
-    });
-    
-    mRvGalleryView = (RecyclerView)root.findViewById(R.id.rvGalleryView);
-    mRvMenu = (RecyclerView)root.findViewById(R.id.rv_gallery_menu);
-
-    LinearLayoutManager llmMenu = new LinearLayoutManager(getContext(),
-      LinearLayoutManager.VERTICAL, false);
-    mRvMenu.setLayoutManager(llmMenu);
-    mRvMenu.setAdapter(mMenuToolsAdapter);
-
-    LinearLayoutManager llmGallery = new LinearLayoutManager(getContext(),
-      LinearLayoutManager.HORIZONTAL, false);
-    mRvGalleryView.setLayoutManager(llmGallery);
-    mRvGalleryView.setAdapter(mGalleryViewAdapter);
   }
-  
+
   private void handleAccessToken() {
     App.getInstance().apiManager.provideAuthClient().newCall(App.getInstance().apiManager.provideAuthRequest()).enqueue(new okhttp3.Callback() {
       @Override

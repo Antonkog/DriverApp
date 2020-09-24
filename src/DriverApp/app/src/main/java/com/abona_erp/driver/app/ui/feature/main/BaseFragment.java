@@ -27,6 +27,8 @@ public abstract class BaseFragment extends Fragment {
         return ((BaseActivity) getActivity()).getActivityComponent();
     }
 
+    public void onBackPressed() {}
+
     public FragmentComponent getFragmentComponent() {
         return fragmentComponent;
     }

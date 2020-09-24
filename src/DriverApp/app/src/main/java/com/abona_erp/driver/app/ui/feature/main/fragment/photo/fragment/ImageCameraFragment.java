@@ -81,8 +81,8 @@ public class ImageCameraFragment extends Fragment
       mMandantID = getArguments().getInt("mandant_id");
       mOrderNo = getArguments().getInt("order_no");
       mTaskID = getArguments().getInt("task_id");
-  
-      File createFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+      File createFile = new File(root.getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
         + File.separator
         + "DriverApp"
         + File.separator
