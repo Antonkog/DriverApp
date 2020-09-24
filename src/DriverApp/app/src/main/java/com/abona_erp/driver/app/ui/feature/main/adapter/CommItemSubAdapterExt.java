@@ -178,40 +178,55 @@ public class CommItemSubAdapterExt
         }
         if (!isPreviousTaskFinished) return;
     
-        // Start Activity?
-        MessageDialog.build((AppCompatActivity)mContext)
-          .setStyle(DialogSettings.STYLE.STYLE_IOS)
-          .setTheme(DialogSettings.THEME.LIGHT)
-          .setTitle(mContext.getResources().getString(R.string.action_start_order))
-          .setMessage(mContext.getResources().getString(R.string.action_start_task_msg))
-          .setOkButton(mContext.getResources().getString(R.string.action_start),
-            new OnDialogButtonClickListener() {
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-            
-                isPreviousTaskFinished = false;
-                commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                mData.setStatus(50);
-                mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-                updateNotify(mData);
-                
-                App.eventBus.post(new TabChangeEvent());
-
-                addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
-                addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
-                return false;
-              }
-            })
-          .setCancelButton(mContext.getResources().getString(R.string.action_cancel),
-            new OnDialogButtonClickListener() {
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-                return false;
-              }
-            })
-          .show();
+        if (commItem.getTaskItem().getActivities().get(0).getStatus().equals(ActivityStatus.RUNNING)) {
+          commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+          commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+          commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+          mData.setStatus(50);
+          mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+          updateNotify(mData);
+  
+          App.eventBus.post(new TabChangeEvent());
+  
+          addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
+          addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+        } else {
+          // Start Activity?
+          MessageDialog.build((AppCompatActivity)mContext)
+            .setStyle(DialogSettings.STYLE.STYLE_IOS)
+            .setTheme(DialogSettings.THEME.LIGHT)
+            .setTitle(mContext.getResources().getString(R.string.action_start_order))
+            .setMessage(mContext.getResources().getString(R.string.action_start_task_msg))
+            .setOkButton(mContext.getResources().getString(R.string.action_start),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+          
+                  isPreviousTaskFinished = false;
+                  commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                  commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                  commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                  mData.setStatus(50);
+                  mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                  updateNotify(mData);
+          
+                  App.eventBus.post(new TabChangeEvent());
+          
+                  addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
+                  addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+                  return false;
+                }
+              })
+            .setCancelButton(mContext.getResources().getString(R.string.action_cancel),
+              new OnDialogButtonClickListener() {
+                @Override
+                public boolean onClick(BaseDialog baseDialog, View v) {
+                  return false;
+                }
+              })
+            .show();
+        }
+        
       } else {
     
         mData.setStatus(100);
@@ -229,9 +244,39 @@ public class CommItemSubAdapterExt
               mData.setStatus(100);
               commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-              updateNotify(mData);
+              
               addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());//that is when last next pressed
               addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
+              
+              
+              // Check next previous task and start it.
+              if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
+                
+                NotifyDao dao = DriverDatabase.getDatabase().notifyDao();
+                dao.loadNotifyByTaskId(commItem.getTaskItem().getNextTaskId())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .subscribe(new DisposableSingleObserver<Notify>() {
+                    @Override
+                    public void onSuccess(Notify notify) {
+                      
+                      CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
+                      notify.setStatus(50);
+                      nextItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                      nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                      nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                      notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
+                      updateNotify(notify);
+                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    }
+  
+                    @Override
+                    public void onError(Throwable e) {
+                      // ignore.
+                    }
+                  });
+              }
+              updateNotify(mData);
             }
             continue;
           }
@@ -253,6 +298,8 @@ public class CommItemSubAdapterExt
               addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
               addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
             } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
+              
+              
               if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
                 NotifyDao dao = DriverDatabase.getDatabase().notifyDao();
                 dao.loadNotifyByTaskId(commItem.getTaskItem().getNextTaskId())
@@ -264,13 +311,14 @@ public class CommItemSubAdapterExt
         
                       // I found next task and start it.
                       CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
-                      //nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                      //nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                      nextItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                      nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                      nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
                       notify.setStatus(50);
                       notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                       updateNotify(notify);
         
-                      //addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
                     }
       
                     @Override
