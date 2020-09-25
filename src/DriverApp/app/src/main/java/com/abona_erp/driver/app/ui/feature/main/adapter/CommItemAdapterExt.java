@@ -267,8 +267,8 @@ public class CommItemAdapterExt extends
     synchronized (CommItemAdapterExt.this) {
       if (taskItem.getTaskDueDateFinish() != null) {
         holder.tv_task_finish.setText(sdf.format(taskItem.getTaskDueDateFinish()));
-        if (mCommItem.getTaskItem().getAddress().getLatitude() != null &&
-                mCommItem.getTaskItem().getAddress().getLongitude() != null) {
+        if (mCommItem.getTaskItem().getAddress().getLatitude() != 0.0 ||
+                mCommItem.getTaskItem().getAddress().getLongitude() != 0.0) {
           String startTimeZone = TimeZoneMapper.latLngToTimezoneString(
                   mCommItem.getTaskItem().getAddress().getLatitude(),
                   mCommItem.getTaskItem().getAddress().getLongitude()
