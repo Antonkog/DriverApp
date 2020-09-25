@@ -34,9 +34,11 @@ import com.abona_erp.driver.app.data.model.DMSDocumentType;
 import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RefreshUiEvent;
 import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
 import com.abona_erp.driver.app.ui.feature.main.BaseFragment;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragmentViewModel;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.GalleryViewAdapter;
@@ -469,6 +471,7 @@ public class PhotoFragment extends BaseFragment
         }
       }
       if (uploadFiles) {
+        EventBus.getDefault().post(new ProgressBarEvent(true, Constants.DELAY_FOR_UPLOAD_PHOTOS, getResources().getString(R.string.action_uploading_photos)));
         OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
 
         OfflineConfirmation offlineConfirmation = new OfflineConfirmation();

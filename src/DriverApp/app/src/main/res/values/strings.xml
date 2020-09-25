@@ -99,7 +99,7 @@
   <string name="ph_message" translatable="false">Driving to unloading</string>
   <string name="ph_task_id" translatable="false">1234</string>
   <string name="ph_order_no" translatable="false">2020/15/152</string>
-
+  <string name="progress_bar_placeholder" translatable="false">Syncing&#8230;</string>
   <string name="menu_about">About</string>
   <string name="action_lets_start">Let\'s Start</string>
   <string name="action_security_code">Security Code</string>

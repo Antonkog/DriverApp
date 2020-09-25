@@ -40,7 +40,7 @@ import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
-import com.abona_erp.driver.app.ui.event.RequestDelayEvent;
+import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.TabChangeEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -742,8 +742,7 @@ public class CommItemSubAdapterExt
 
   private void addHistoryLog(ActionType actionType, ActivityItem actItem, CommItem commItem) {
     try {
-      EventBus.getDefault().post(new RequestDelayEvent(Constants.DELAY_FOR_CHANGE_HISTORY));
-
+      EventBus.getDefault().post(new ProgressBarEvent(true, Constants.DELAY_FOR_CHANGE_HISTORY,  mContext.getString(R.string.progress_bar_placeholder)));
       EventBus.getDefault().post(new ChangeHistoryEvent(mContext.getString(R.string.log_title_activity), actItem.getName(),
               LogType.APP_TO_SERVER, actionType, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
               commItem.getTaskItem().getTaskId(), actItem.getActivityId(), commItem.getTaskItem().getOrderNo(), commItem.getTaskItem().getMandantId(), 0));
