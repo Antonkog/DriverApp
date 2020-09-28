@@ -53,10 +53,11 @@ import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
-import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
+import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
@@ -686,6 +687,15 @@ public class BackgroundServiceWorker extends Service {
   }
 
 
+  private void postDocumentSent(Notify notify, int confirmId,  boolean confirmed) {
+    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), getApplicationContext().getString(R.string.log_document_upload)+ " " + confirmId,
+            LogType.APP_TO_SERVER, ActionType.DOCUMENT_UPLOAD , confirmed? ChangeHistoryState.CONFIRMED : ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+            notify.getTaskId(), 0, notify.getOrderNo(), notify.getMandantId(), confirmId);
+    EventBus.getDefault().post(changeHistoryEvent);
+    Log.e(TAG, " posting doc event  : " + confirmId + " confirmed " + confirmed);
+  }
+
+
   private void postActivityChangeSent(ActionType type, int taskId, int activityId, int orderNumber, int mandantID, int confirmationID) {
     ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_activity), getApplicationContext().getString(R.string.log_activity_status_change),
             LogType.APP_TO_SERVER, type, ChangeHistoryState.CONFIRMED,
@@ -738,16 +748,21 @@ public class BackgroundServiceWorker extends Service {
                       }
                     }
                     if (uploadFiles) {
-                      
+
                       // UPLOADING FILES....BEGIN
-                      
+
+                      int oldId = TextSecurePreferences.getConfirmationCounter();
+                      oldId++;
+                      TextSecurePreferences.setConfirmationCounter(oldId);
+
+                      postDocumentSent(notify, oldId, false);
                       for (int i = 0; i < notify.getPhotoUrls().size(); i++) {
                         
                         UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(i), UploadItem.class);
                         if (uploadItem.getUploaded()) continue;
                         
                         if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
-  
+
                           File file = new File(uploadItem.getUri());
   
                           RequestBody requestFile = RequestBody
@@ -796,7 +811,7 @@ public class BackgroundServiceWorker extends Service {
                               
                               if (response.isSuccessful()) {//document upload
 
-                                Log.d(TAG, ">>>>>>>>>>  Upload complete: " + uploadItem.getUri());
+                                Log.d(TAG, ">>>>>>>>>>  Upload complete: " +response.body().getFileName() + " uri" +  uploadItem.getUri());
 
                                 uploadItem.setUploaded(true);
                                 notify.getPhotoUrls().set(j, App.getInstance().gson.toJson(uploadItem));
@@ -807,6 +822,9 @@ public class BackgroundServiceWorker extends Service {
                                 if (j >= photoSize-1) {
                                   // Entfernen:
                                   deleteDocumentConfirmation(offlineConfirmations);
+                                  EventBus.getDefault().post(new ProgressBarEvent(false));
+                                  int oldId = TextSecurePreferences.getConfirmationCounter();
+                                  postDocumentSent(notify, oldId,true);
                                 }
                                 
                                 App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo()));

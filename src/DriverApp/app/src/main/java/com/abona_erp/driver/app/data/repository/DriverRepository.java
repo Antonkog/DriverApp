@@ -289,7 +289,12 @@ public class DriverRepository {
     }
   }
 
-    private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
+  public void updateOrInsertDocumentHistory(ChangeHistory changeHistory) {
+    ChangeHistory existingHistoryItem = changeHistoryDao.selectDocumentHistory(changeHistory.getActionType().getCode(), changeHistory.getOrderNumber(), changeHistory.getTaskId(), changeHistory.getActivityId(), changeHistory.getOfflineConfirmationID());
+    changeCurrentHistoryInDB(changeHistory, existingHistoryItem);
+  }
+
+  private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
 
     private NotifyDao mDAO;
 
