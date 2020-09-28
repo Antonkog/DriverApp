@@ -199,7 +199,7 @@ public class ImageCameraFragment extends Fragment
     // Create an image file name
     String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss",
       Locale.getDefault()).format(new Date());
-    String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + ".jpg";
+    String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + "_";
 
     File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
     File image = File.createTempFile(mFileName, ".jpg", storageDir);
