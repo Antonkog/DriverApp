@@ -31,7 +31,7 @@ interface AppRepository {
     fun registerDevice(commItem: CommItem): Observable<ResultOfAction>
     fun getClientEndpoint(clientId: String): Observable<JsonObject>
     fun getAuthToken(grantType : String, userName : String, password : String) : Observable<Response<TokenResponse>>
-    fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String ): Single<List<AppFileInterchangeItem>>
+    fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String ): Single<List<DocumentResponse>>
 
     suspend fun saveTask(taskEntity: TaskEntity)
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWithStatus<List<TaskEntity>>

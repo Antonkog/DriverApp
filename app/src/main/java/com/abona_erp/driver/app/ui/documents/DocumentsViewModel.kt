@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import com.abona_erp.driver.app.data.Constant
-import com.abona_erp.driver.app.data.model.AppFileInterchangeItem
+import com.abona_erp.driver.app.data.model.DocumentResponse
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
@@ -15,11 +15,11 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 
 class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences) :  BaseViewModel() {
 
-    val documents = MutableLiveData<List<AppFileInterchangeItem>>()
-    val error  = MutableLiveData<String> ()
+    val documents = MutableLiveData<List<DocumentResponse>>()
+    val error  = MutableLiveData<Throwable> ()
 
     fun getDocuments() {
-        getDocuments(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleTaskid,0), DeviceUtils.getUniqueID(context))
+        getDocuments(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0), DeviceUtils.getUniqueID(context))
     }
 
     private fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String) {
@@ -28,7 +28,7 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
             .subscribe(
                 {result ->
                     documents.postValue(result)},
-                {throwable -> error.postValue(throwable.message)}
+                {throwable -> error.postValue(throwable)}
             )
     }
 }

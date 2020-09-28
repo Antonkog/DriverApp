@@ -51,6 +51,7 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
     fun setVisibleTaskID(taskEntity: TaskEntity) {
         Log.e(TAG, "saving task " + taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, taskEntity.taskId)
+        prefs.putAny(Constant.currentVisibleOrderId, taskEntity.orderDetails?.orderNo ?: 0)
     }
 
     fun getVisibleTaskId() =prefs.getInt(Constant.currentVisibleTaskid,0)

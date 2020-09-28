@@ -35,6 +35,11 @@ class DocumentsFragment : BaseFragment() {
 
         docBinding.lifecycleOwner = this.viewLifecycleOwner
 
+        docViewModel.error.observe(viewLifecycleOwner, Observer { error ->
+
+            docBinding.textDocs.text = error.toString()
+
+        })
         docViewModel.documents.observe(viewLifecycleOwner, Observer { documetns ->
 
             adapter.swapData(documetns)

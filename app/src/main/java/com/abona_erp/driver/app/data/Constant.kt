@@ -23,6 +23,7 @@ object Constant {
     const val prefShowAll = "show_all"
     const val tokenFcm = "tokenFcm"
     const val currentVisibleTaskid = "current_visible_taskId"
+    const val currentVisibleOrderId = "current_visible_OrderId"
     const val mandantId = "mandantId"
 
 }

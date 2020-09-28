@@ -95,7 +95,7 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         mandantId: Int,
         orderNo: Int,
         deviceId: String
-    ): Single<List<AppFileInterchangeItem>> {
+    ): Single<List<DocumentResponse>> {
         return api.getDocuments(mandantId,orderNo,deviceId)
     }
 
