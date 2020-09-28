@@ -67,8 +67,8 @@ import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
-import com.abona_erp.driver.app.ui.event.RequestDelayEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
@@ -160,6 +160,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   private View header;
   private FrameLayout mainContainer;
   private ProgressBar progressBar;
+  private View progressView;
+  private TextView progressText;
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
   private AppCompatImageView getAllTaskImage;
@@ -299,6 +301,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     }
     getAllTaskImage = findViewById(R.id.refresh_image);
     progressBar = findViewById(R.id.progressBar);
+    progressView = findViewById(R.id.main_progress_container);
+    progressText = progressView.findViewById(R.id.progress_text);
     getAllTaskImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -341,6 +345,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
           }
         } else {
           findViewById(R.id.badge_process).setVisibility(View.GONE);
+          hideProgress();
         }
       }
     });
@@ -617,13 +622,30 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   }
 
   @Subscribe
-  public void onMessageEvent(RequestDelayEvent event) {
+  public void onMessageEvent(ProgressBarEvent event) {
+    Log.i(TAG, "ProgressBarEvent" + event.isShowProgress() + " message " + event.getMessage());
+    if (event.isShowProgress()) {
+      showProgress();
+      if (event.getMessage() == null)
+        progressText.setText(getResources().getString(R.string.progress_bar_placeholder));
+      else progressText.setText(event.getMessage());
+      if (event.getMaxDuration() > 0) h.postDelayed(() -> hideProgress(), event.getMaxDuration());
+    } else {
+      progressText.setText(getResources().getString(R.string.progress_bar_placeholder));
+      hideProgress();
+    }
+  }
+
+  private void hideProgress() {
+    progressView.setVisibility(View.GONE);
+    progressBar.setVisibility(View.GONE);
+    mainContainer.setVisibility(View.VISIBLE);
+  }
+
+  private void showProgress() {
+    progressView.setVisibility(View.VISIBLE);
     progressBar.setVisibility(View.VISIBLE);
     mainContainer.setVisibility(View.INVISIBLE);
-    h.postDelayed(() -> {
-      progressBar.setVisibility(View.INVISIBLE);
-      mainContainer.setVisibility(View.VISIBLE);
-    }, event.getDelay());
   }
 
   @Subscribe

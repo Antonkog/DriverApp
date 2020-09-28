@@ -61,6 +61,7 @@ import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
+import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
@@ -714,7 +715,7 @@ public class BackgroundServiceWorker extends Service {
           
           Log.i(TAG, ">>>>>>>>>> Prepare Upload..: " + offlineConfirmations.get(0).getId());
           
-          mNotifyDAO.loadNotifyById(offlineConfirmations.get(0).getNotifyId())
+          mNotifyDAO.loadNotifyByTaskId(offlineConfirmations.get(0).getNotifyId())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(new DisposableSingleObserver<Notify>() {
@@ -723,12 +724,7 @@ public class BackgroundServiceWorker extends Service {
     
                 if (notify == null || notify.getPhotoUrls() == null) {
                   // Entfernen:
-                  AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                      mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                    }
-                  });
+                  deleteDocumentConfirmation(offlineConfirmations);
                 } else {
                 
                   int photoSize = notify.getPhotoUrls().size();
@@ -799,7 +795,9 @@ public class BackgroundServiceWorker extends Service {
                             public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
                               
                               if (response.isSuccessful()) {//document upload
-  
+
+                                Log.d(TAG, ">>>>>>>>>>  Upload complete: " + uploadItem.getUri());
+
                                 uploadItem.setUploaded(true);
                                 notify.getPhotoUrls().set(j, App.getInstance().gson.toJson(uploadItem));
                                 notify.setPhotoUrls(notify.getPhotoUrls());
@@ -808,12 +806,7 @@ public class BackgroundServiceWorker extends Service {
                                 
                                 if (j >= photoSize-1) {
                                   // Entfernen:
-                                  AsyncTask.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                      mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                                    }
-                                  });
+                                  deleteDocumentConfirmation(offlineConfirmations);
                                 }
                                 
                                 App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo()));
@@ -838,34 +831,20 @@ public class BackgroundServiceWorker extends Service {
                         
                         } else {
                           // Entfernen:
-                          AsyncTask.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                              mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                            }
-                          });
+                          deleteDocumentConfirmation(offlineConfirmations);
                         }
                       }
                       
                       // UPLOADING FILES....END
+                      EventBus.getDefault().post(new UploadAllDocsEvent(notify.getTaskId()));
                     
                     } else {
                       // Entfernen:
-                      AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                          mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                        }
-                      });
+                      deleteDocumentConfirmation(offlineConfirmations);
                     }
                   } else {
                     // Entfernen:
-                    AsyncTask.execute(new Runnable() {
-                      @Override
-                      public void run() {
-                        mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                      }
-                    });
+                    deleteDocumentConfirmation(offlineConfirmations);
                   }
                 }
               }
@@ -873,19 +852,23 @@ public class BackgroundServiceWorker extends Service {
               @Override
               public void onError(Throwable e) {
                 // Entfernen:
-                AsyncTask.execute(new Runnable() {
-                  @Override
-                  public void run() {
-                    mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                  }
-                });
+                deleteDocumentConfirmation(offlineConfirmations);
               }
             });
         }
       }
     });
   }
-  
+
+  private void deleteDocumentConfirmation(List<OfflineConfirmation> offlineConfirmations) {
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+      }
+    });
+  }
+
   private boolean isDeviceUpdateToken() {
     if (TextSecurePreferences.getFcmTokenUpdate(ContextUtils.getApplicationContext())) {
       Log.i(TAG, ">>>>>>> PREPARE DEVICE TOKEN UPDATE...");
