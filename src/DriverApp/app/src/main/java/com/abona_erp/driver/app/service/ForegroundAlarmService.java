@@ -87,13 +87,13 @@ public class ForegroundAlarmService extends Service {
     }
 
 
-    private void startNotificationWithDelay(TaskItem taskItem) {
+    public static void startNotificationWithDelay(TaskItem taskItem) {
         WorkManager workManager = WorkManager.getInstance(App.getInstance());
 
         long delay = getAlarmDelay(taskItem);
 
         if(delay > 0){
-            Log.e(TAG, taskItem.getTaskId() + " alarm delay: secs " + delay/1000);
+            Log.d(TAG, taskItem.getTaskId() + " alarm delay: mins " + delay/1000/60);
             setOneTimeWork(taskItem.getTaskId(), workManager, delay);
 //            setRepeatWork(taskItem, workManager); //don't work properly when kill stop app
         }

@@ -188,6 +188,7 @@ public class NotificationService extends JobService implements MediaPlayer.OnPre
       }
       
       if (mCommItem.getTaskItem().getMandantId() != null && mCommItem.getTaskItem().getTaskId() != null) {
+        ForegroundAlarmService.startNotificationWithDelay(mCommItem.getTaskItem());
         mRepository.getNotifyByMandantTaskId(mCommItem.getTaskItem().getMandantId(), mCommItem.getTaskItem().getTaskId()).observeOn(AndroidSchedulers.mainThread())
           .subscribeOn(Schedulers.io())
           .subscribe(new DisposableSingleObserver<Notify>() {
