@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity() {
                 // The result data contains a URI for the document or directory that
                 // the user selected.
                 resultData?.data?.also { uri ->
+                    Log.e(TAG, " got uri: $uri ")
                     // Perform operations on the document using its URI.
                     RxBus.publish(RxBusEvent.DocumentMessage(uri))
                 }

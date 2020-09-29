@@ -19,8 +19,10 @@ import androidx.lifecycle.LiveData
 import com.abona_erp.driver.app.data.ResultWithStatus
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.AppDatabase
+import com.abona_erp.driver.app.data.local.db.DocumentEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.CommResponseItem
+import com.abona_erp.driver.app.data.model.DocumentResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -74,4 +76,29 @@ class LocalDataSource internal constructor(
         db.driverTaskDao().insertFromCommItem(data)
         db.driverActDao().insertFromCommItem(data)
     }
+
+    fun observeDocuments(): LiveData<List<DocumentEntity>> {
+        return db.documentsDao().observeDocuments()
+    }
+
+    suspend fun getDocuments(): ResultWithStatus<List<DocumentEntity>> = withContext(ioDispatcher) {
+        return@withContext try {
+            ResultWithStatus.Success(db.documentsDao().getDocuments())
+        } catch (e: Exception) {
+            ResultWithStatus.Error(e)
+        }
+    }
+
+
+    suspend fun insertDocumentResponse(responseItems : List<DocumentResponse>) {
+        responseItems.map {
+            DocumentEntity(it.fileName, it.linkToFile, it.oid, it.orderNo, it.taskId, it.vehicleOid)
+        }.let {
+            db.documentsDao().insertOrReplace(it)
+        }
+    }
+    suspend fun deleteDocuments() {
+        db.documentsDao().deleteDocuments()
+    }
+
 }

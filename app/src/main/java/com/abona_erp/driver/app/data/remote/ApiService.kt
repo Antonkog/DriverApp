@@ -25,11 +25,11 @@ interface ApiService {
     fun postActivityChange(@Body commItem: CommItem): Observable<ResultOfAction>
 
     @GET("api/uploader/documents")
-    fun getDocuments(
+    suspend fun getDocuments(
         @Query("mandantId") mandantId: Int,
         @Query("orderNo") orderNo: Int,
         @Query("deviceId") deviceId: String
-    ): Single<List<DocumentResponse>>
+    ): List<DocumentResponse>
 
     @Multipart
     @POST("upload")

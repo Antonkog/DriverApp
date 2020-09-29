@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.abona_erp.driver.app.data.ResultWithStatus
 import com.abona_erp.driver.app.data.local.LocalDataSource
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
+import com.abona_erp.driver.app.data.local.db.DocumentEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.*
 import com.abona_erp.driver.app.data.remote.rabbitMQ.RabbitService
@@ -40,6 +41,10 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         return localDataSource.observeActivities(taskID)
     }
 
+    override fun observeDocuments(taskId: Int): LiveData<List<DocumentEntity>> {
+       return  localDataSource.observeDocuments()
+    }
+
     override suspend fun getActivities(): List<ActivityEntity> {
        return  localDataSource.getActivities()
     }
@@ -55,6 +60,10 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
 
     override suspend fun refreshTasks(deviceId: String) {
         getTasks(true, deviceId)
+    }
+
+    override suspend fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) {
+       getDocuments(true, mandantId, orderNo, deviceId)
     }
 
     override suspend fun insertActivity(activityEntity: ActivityEntity) {
@@ -80,6 +89,35 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         return localDataSource.getTasks()
     }
 
+
+    override suspend fun getDocuments(
+        forceUpdate: Boolean,
+        mandantId: Int,
+        orderNo: Int,
+        deviceId: String
+    ): ResultWithStatus<List<DocumentEntity>> {
+        if (forceUpdate) {
+            try {
+                updateDocumentsFromRemoteDataSource(mandantId,orderNo, deviceId)
+            } catch (ex: Exception) {
+                return ResultWithStatus.Error(ex)
+            }
+        }
+        return localDataSource.getDocuments()
+    }
+
+    suspend fun updateDocumentsFromRemoteDataSource(mandantId: Int,
+                                                    orderNo: Int,
+                                                    deviceId: String) {
+        val remoteDocuments = api.getDocuments(mandantId, orderNo, deviceId)
+        if (remoteDocuments.isNotEmpty()) {
+            localDataSource.deleteDocuments()
+            localDataSource.insertDocumentResponse(remoteDocuments)
+        } else {
+            throw java.lang.Exception("no documents for this task ")
+        }
+    }
+
      suspend fun updateTasksFromRemoteDataSource(deviceId: String) {
         val remoteTasks = api.getAllTasks(deviceId)
 
@@ -98,14 +136,6 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
 
     override fun getAuthToken(grantType : String, userName : String, password : String): Observable<Response<TokenResponse>> {
         return  api.authentication(grantType, userName, password)
-    }
-
-    override fun getDocuments(
-        mandantId: Int,
-        orderNo: Int,
-        deviceId: String
-    ): Single<List<DocumentResponse>> {
-        return api.getDocuments(mandantId,orderNo,deviceId)
     }
 
     override fun upladDocument(

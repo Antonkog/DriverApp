@@ -48,23 +48,16 @@ class DocumentsFragment : BaseFragment() {
         docBinding.lifecycleOwner = this.viewLifecycleOwner
 
         docViewModel.error.observe(viewLifecycleOwner, Observer { error ->
-
             docBinding.textDocs.text = error.toString()
-
-        })
-        docViewModel.documents.observe(viewLifecycleOwner, Observer { documetns ->
-
-            adapter.swapData(documetns)
-            Log.i(TAG, " got docs: $documetns ")
-
         })
 
-        getDocuments()
+        docViewModel.documents.observe(viewLifecycleOwner, Observer {
+            if(it!= null && it.isNotEmpty()){
+                adapter.swapData(it)
+            } else Log.e(TAG, "got empty or null tasks $it")
+//            Log.e(TAG, "got tasks ${it}")
+        })
         return view
-    }
-
-    private fun getDocuments() {
-        docViewModel.getDocuments()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
