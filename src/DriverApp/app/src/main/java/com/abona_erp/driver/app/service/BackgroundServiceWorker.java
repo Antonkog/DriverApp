@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -51,6 +50,7 @@ import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
+import com.abona_erp.driver.app.data.remote.NetworkUtil;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
@@ -105,7 +105,6 @@ public class BackgroundServiceWorker extends Service {
   
   private static final String TAG = MiscUtil.getTag(BackgroundServiceWorker.class);
 
-  private Context context;
   private Handler mHandler;
   private Handler mDelayReasonHandler;
   private Runner  mRunner;
@@ -752,10 +751,10 @@ public class BackgroundServiceWorker extends Service {
                       // UPLOADING FILES....BEGIN
 
                       int oldId = TextSecurePreferences.getConfirmationCounter();
-                      oldId++;
+                      oldId++;// always increase counter to count attempts
                       TextSecurePreferences.setConfirmationCounter(oldId);
 
-                      postDocumentSent(notify, oldId, false);
+                      if(NetworkUtil.isConnected(getApplicationContext())) postDocumentSent(notify, oldId, false);//"if" to avoid multiple logs on request attempts
                       for (int i = 0; i < notify.getPhotoUrls().size(); i++) {
                         
                         UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(i), UploadItem.class);
