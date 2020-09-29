@@ -11,6 +11,7 @@ import com.abona_erp.driver.app.ui.utils.UtilModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
+import java.io.File
 
 interface AppRepository {
     //RabbitMQ
@@ -36,4 +37,12 @@ interface AppRepository {
     suspend fun saveTask(taskEntity: TaskEntity)
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWithStatus<List<TaskEntity>>
 
+    fun upladDocument(
+        mandantId: Int,
+        orderNo: Int,
+        taskID: Int,
+        driverNo: Int,
+        documentType: Int,
+        file: File
+    ): Single<UploadResult>
 }

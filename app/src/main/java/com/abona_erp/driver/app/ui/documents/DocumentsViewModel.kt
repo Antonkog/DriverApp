@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import com.abona_erp.driver.app.data.Constant
+import com.abona_erp.driver.app.data.model.DMSDocumentType
 import com.abona_erp.driver.app.data.model.DocumentResponse
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
@@ -13,6 +14,11 @@ import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import org.w3c.dom.DocumentType
+import java.io.File
+
 
 class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences) :  BaseViewModel() {
 
@@ -22,6 +28,10 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
 
     fun getDocuments() {
         getDocuments(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0),prefs.getInt(Constant.currentVisibleTaskid,0),  DeviceUtils.getUniqueID(context))
+    }
+
+    fun uploadDocuments(mandantId: Int,  orderNo: Int, taskId: Int, driverId: Int, documentType: DMSDocumentType, file : File) {
+        repository.upladDocument(mandantId, orderNo, taskId, driverId, documentType.documentType, file)
     }
 
     private fun getDocuments(mandantId: Int,  orderNo: Int, taskId: Int, deviceId: String) {

@@ -2,18 +2,27 @@ package com.abona_erp.driver.app.data.remote
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import com.google.gson.JsonObject
+import com.abona_erp.driver.app.data.ResultWithStatus
+import com.abona_erp.driver.app.data.local.LocalDataSource
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.*
 import com.abona_erp.driver.app.data.remote.rabbitMQ.RabbitService
+import com.abona_erp.driver.app.ui.utils.UtilModel
+import com.google.gson.JsonObject
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
+import java.io.File
 import javax.inject.Inject
-import com.abona_erp.driver.app.data.ResultWithStatus
-import com.abona_erp.driver.app.data.local.LocalDataSource
-import com.abona_erp.driver.app.ui.utils.UtilModel
+
 
 class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSource, val rabbit : RabbitService,
                                              val api : ApiService, val authService: AuthService) : AppRepository {
@@ -98,6 +107,34 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
     ): Single<List<DocumentResponse>> {
         return api.getDocuments(mandantId,orderNo,deviceId)
     }
+
+    override fun upladDocument(
+        mandantId: Int,
+        orderNo: Int,
+        taskID: Int,
+        driverNo: Int,
+        documentType: Int,
+        file: File
+    ): Single<UploadResult> {
+        val mandantBody = mandantId.toMultipartBody()
+        val orderBody = orderNo.toMultipartBody()
+        val taskBody = taskID.toMultipartBody()
+        val driverBody = driverNo.toMultipartBody()
+        val docTypeBody = documentType.toMultipartBody()
+        val fileBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val multiparFileBody =  MultipartBody.Part.createFormData(
+            name = "files[]",
+            filename = file.name,
+            body = fileBody
+        )
+        return api.uploadDocument(mandantBody, orderBody, taskBody, driverBody, docTypeBody, multiparFileBody)
+    }
+
+    private fun String.toPlainTextBody() = toRequestBody("text/plain".toMediaType())
+    private fun String.toMultipartBody() = toRequestBody("multipart/form-data".toMediaType())
+    private fun Int.toMultipartBody() = this.toString().toRequestBody("multipart/form-data".toMediaType())
+
+
 
     override suspend fun saveTask(taskEntity: TaskEntity) {
         localDataSource.saveTask(taskEntity)
