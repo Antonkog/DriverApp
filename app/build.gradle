@@ -121,8 +121,11 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.2.5"
     //networking
     //image loading
+    implementation "com.github.bumptech.glide:annotations:$glideVersion"
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
+    implementation group: 'com.github.bumptech.glide', name: 'okhttp3-integration', version: "$glideVersion"
+//    implementation 'com.github.bumptech.glide:okhttp3-integration:4.0.0@aar'
     //json parsing
     implementation 'com.google.code.gson:gson:2.8.5'
     //networkProfiler
