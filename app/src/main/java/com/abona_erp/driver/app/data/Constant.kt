@@ -4,6 +4,8 @@ object Constant {
     const val SUCCESS_CODE: Int = 200
     const val ERROR_NULL_CODE: Int = 408
     const val ERROR_COMMON: Int = 410
+
+    const val OPEN_DOC_REQUEST_CODE = 122
     const val userAgentAppName = "ABONA DriverApp"
     const val baseRabbitUrl: String = "http://yms-test.abona-erp.com:50517/"
     const val grantTypeToken: String = "password"

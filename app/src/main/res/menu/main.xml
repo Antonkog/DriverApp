@@ -8,7 +8,6 @@
 <!--        app:showAsAction="never" />-->
     <item
         android:id="@+id/action_log_out"
-        android:orderInCategory="100"
         android:title="@string/action_log_out"
         app:showAsAction="never" />
 
@@ -17,4 +16,9 @@
         android:title="@string/action_show_all"
         app:showAsAction="never"
         android:checkable="true"/>
+    <item
+        android:id="@+id/action_send_doc"
+        android:title="@string/action_send_doc"
+        app:showAsAction="never"/>
+
 </menu>

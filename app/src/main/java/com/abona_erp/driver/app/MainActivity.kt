@@ -1,6 +1,11 @@
 package com.abona_erp.driver.app
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -13,13 +18,18 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.navigation.NavigationView
+import com.abona_erp.driver.app.data.Constant.OPEN_DOC_REQUEST_CODE
+import com.abona_erp.driver.app.data.model.DMSDocumentType
 import com.abona_erp.driver.app.ui.RxBus
+import com.abona_erp.driver.app.ui.documents.DocumentsFragment
 import com.abona_erp.driver.app.ui.events.RxBusEvent
+import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    val TAG = MainActivity::class.simpleName
     private val mainViewModel by viewModels<MainViewModel> ()
     private lateinit var navController : NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -77,7 +87,61 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.setShowAll(item.isChecked)
                 true
             }
+            R.id.action_send_doc -> {
+//                openDirectory(null)
+                openDocumentPicker()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+
+    fun openDirectory(pickerInitialUri: Uri?) {
+        // Choose a directory using the system's file picker.
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+            // Provide read access to files and sub-directories in the user-selected
+            // directory.
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+            // Optionally, specify a URI for the directory that should be opened in
+            // the system file picker when it loads.
+            if(pickerInitialUri!=null) putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+        }
+
+        startActivityForResult(intent, OPEN_DOC_REQUEST_CODE)
+    }
+    private fun openDocumentPicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            /**
+             * It's possible to limit the types of files by mime-type. Since this
+             * app displays pages from a PDF file, we'll specify `application/pdf`
+             * in `type`.
+             * See [Intent.setType] for more details.
+             */
+            type = "application/pdf"
+
+            /**
+             * Because we'll want to use [ContentResolver.openFileDescriptor] to read
+             * the data of whatever file is picked, we set [Intent.CATEGORY_OPENABLE]
+             * to ensure this will succeed.
+             */
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        startActivityForResult(intent, OPEN_DOC_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
+        super.onActivityResult(requestCode, resultCode, resultData)
+            if (requestCode == OPEN_DOC_REQUEST_CODE
+                && resultCode == Activity.RESULT_OK) {
+                Log.e(TAG, " got result: $resultData ")
+                // The result data contains a URI for the document or directory that
+                // the user selected.
+                resultData?.data?.also { uri ->
+                    // Perform operations on the document using its URI.
+                    RxBus.publish(RxBusEvent.DocumentMessage(uri))
+                }
+            }
     }
 }

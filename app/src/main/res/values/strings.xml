@@ -8,6 +8,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_log_out">Log out</string>
     <string name="action_show_all">Show all</string>
+    <string name="action_send_doc">Send document</string>
 
 <!--    activity-->
     <string name="activity_next">Next</string>

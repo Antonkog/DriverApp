@@ -5,15 +5,19 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.model.DMSDocumentType
 import com.abona_erp.driver.app.data.model.DocumentResponse
 import com.abona_erp.driver.app.data.remote.AppRepository
+import com.abona_erp.driver.app.ui.RxBus
 import com.abona_erp.driver.app.ui.base.BaseViewModel
+import com.abona_erp.driver.app.ui.events.RxBusEvent
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.w3c.dom.DocumentType
@@ -26,12 +30,22 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
     val documents = MutableLiveData<List<DocumentResponse>>()
     val error  = MutableLiveData<Throwable> ()
 
+    init {
+        RxBus.listen(RxBusEvent.DocumentMessage::class.java).subscribe { event->
+            viewModelScope.launch {
+                Log.e(TAG, " got uri: ${event.uri} ")
+                uploadDocuments(DMSDocumentType.POD_CMR, File(event.uri.path))
+            }
+        }
+    }
+
     fun getDocuments() {
         getDocuments(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0),prefs.getInt(Constant.currentVisibleTaskid,0),  DeviceUtils.getUniqueID(context))
     }
 
-    fun uploadDocuments(mandantId: Int,  orderNo: Int, taskId: Int, driverId: Int, documentType: DMSDocumentType, file : File) {
-        repository.upladDocument(mandantId, orderNo, taskId, driverId, documentType.documentType, file)
+    fun uploadDocuments(documentType: DMSDocumentType, file : File) {
+
+        repository.upladDocument(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0),prefs.getInt(Constant.currentVisibleTaskid,0), -1, documentType.documentType, file)
     }
 
     private fun getDocuments(mandantId: Int,  orderNo: Int, taskId: Int, deviceId: String) {
