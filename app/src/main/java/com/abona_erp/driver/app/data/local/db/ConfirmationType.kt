@@ -18,7 +18,7 @@ enum class ConfirmationType(//green
                 RECEIVED -> ResourcesCompat.getColor(context.resources, R.color.confirm_gray, null)
                 READ -> ResourcesCompat.getColor(context.resources, R.color.confirm_orange, null)
                 SYNCED_WITH_SERVER -> ResourcesCompat.getColor(context.resources, R.color.confirm_green, null)
-                else ->  ResourcesCompat.getColor(context.resources, R.color.confirm_gray, null)
+                else ->  ResourcesCompat.getColor(context.resources, R.color.white, null)
             }
         }
     }

@@ -6,6 +6,7 @@
     <color name="gray_100">#b2b2b1</color>
     <color name="gray_80">#CCB2B2B1</color>
     <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
 
 
     <color name="confirm_gray">@color/gray_100</color>
