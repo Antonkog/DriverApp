@@ -22,6 +22,7 @@ public interface Constants {
     String LOG_FILE_PREFIX = "actionHistory";
     String FILE_PROVIDER_AUTHORITY = "com.abona_erp.driver.app.provider";
     String LOG_FILE_EXTENSION = ".csv";
+    String FILE_NAME_DIVIDER = "_";
 
     String permissions[] = {
             Manifest.permission.READ_PHONE_STATE,

@@ -687,6 +687,12 @@ public class BackgroundServiceWorker extends Service {
 
 
   private void postDocumentSent(Notify notify, int confirmId, String message, boolean confirmed) {
+    String split[] = message.split(Constants.FILE_NAME_DIVIDER);
+
+    if(split.length > 1){
+      message = split[0]+ "..." + split[split.length-1];// time and last id that is unique
+    }
+
     ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), message,
             LogType.APP_TO_SERVER, ActionType.DOCUMENT_UPLOAD , confirmed? ChangeHistoryState.CONFIRMED : ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             notify.getTaskId(), 0, notify.getOrderNo(), notify.getMandantId(), confirmId);
@@ -857,12 +863,11 @@ public class BackgroundServiceWorker extends Service {
                 // Entfernen:
                 deleteDocumentConfirmation(offlineConfirmations);
                 EventBus.getDefault().post(new ProgressBarEvent(false));
-                int oldId = TextSecurePreferences.getUploadConfirmationCounter();
-                postDocumentSent(notify, oldId, response.body().getFileName(), true);
               }
 
-              App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo()));
-
+              App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo())); //used to reload document's but why? if we know that it is on server
+              int oldId = TextSecurePreferences.getUploadConfirmationCounter();
+              postDocumentSent(notify, oldId, file.getName(), true);
             } else {
 
               switch (response.code()) {

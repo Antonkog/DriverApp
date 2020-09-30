@@ -37,6 +37,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.abona_erp.driver.app.ui.feature.main.Constants.FILE_NAME_DIVIDER;
+
 public class ImageCameraFragment extends Fragment
   implements View.OnClickListener {
   
@@ -199,7 +201,7 @@ public class ImageCameraFragment extends Fragment
     // Create an image file name
     String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss",
       Locale.getDefault()).format(new Date());
-    String mFileName = timeStamp + "_" + mandantId + "_" + orderNo + "_" + taskId + "_";
+    String mFileName = timeStamp + FILE_NAME_DIVIDER + mandantId + FILE_NAME_DIVIDER + orderNo +  FILE_NAME_DIVIDER + taskId + FILE_NAME_DIVIDER;
 
     File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
     File image = File.createTempFile(mFileName, ".jpg", storageDir);

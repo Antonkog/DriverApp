@@ -785,8 +785,10 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
   }
 
-  private void postGotDocuments(int orderNo,  int mandantId, int confirmId, boolean confirmed) {
-    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), getApplicationContext().getString(R.string.log_document_download) + " " + confirmId,
+  private void postGotDocuments(int orderNo,  int mandantId, int confirmId, int size,  boolean confirmed) {
+    String sizeMessage =  (size > 0)? " " + String.format(getApplicationContext().getString(R.string.log_doc_size), size) : "";
+    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents),
+            getApplicationContext().getString(R.string.log_document_download) + " " + confirmId + sizeMessage ,
             LogType.APP_TO_SERVER, ActionType.DOCUMENT_DOWNLOAD , confirmed? ChangeHistoryState.CONFIRMED : ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             0, 0, orderNo, mandantId, confirmId);
     EventBus.getDefault().post(changeHistoryEvent);
@@ -835,7 +837,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
      //   if(NetworkUtil.isConnected(getApplicationContext())) {{
           int oldId = incrementDownloadConfirmation();
 
-          postGotDocuments(event.getOrderNo(),event.getMandantID(), oldId, false);
+          postGotDocuments(event.getOrderNo(),event.getMandantID(), oldId, 0, false);
 
           getDocuments(event);
 
@@ -858,7 +860,6 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
         if (response.isSuccessful()) {
           if (response.body() != null) {
-            postGotDocuments(event.getOrderNo(),event.getMandantID(), TextSecurePreferences.getDownloadConfirmationCounter(),true);
             Gson gson = new Gson();
             String raw = gson.toJson(response.body());
 //                mMainViewModel.addLog(getString(R.string.log_document_got_links), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
@@ -866,6 +867,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
             final List<AppFileInterchangeItem> appFileInterchangeItems;
             appFileInterchangeItems = gson.fromJson(response.body().toString(), ArrayList.class);
+            postGotDocuments(event.getOrderNo(), event.getMandantID(), TextSecurePreferences.getDownloadConfirmationCounter(),  (appFileInterchangeItems != null)? appFileInterchangeItems.size() : 0,true);
+
             if (appFileInterchangeItems != null) {
               if (appFileInterchangeItems.size() > 0) {
 
