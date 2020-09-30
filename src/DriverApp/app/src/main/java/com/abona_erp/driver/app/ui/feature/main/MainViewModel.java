@@ -105,6 +105,10 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.updateOrInsertActivityHistory(item);
   }
 
+  public void updateDocumentHistory(ChangeHistory item){
+    mRepository.updateOrInsertDocumentHistory(item);
+  }
+
   public void addLog(String message, LogType type, LogLevel level, String title){
 //    addLog(message, type, level, title, 0);
   }

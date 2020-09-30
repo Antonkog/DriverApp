@@ -197,6 +197,8 @@
   <string name="exit_message">Do you want to quit ABONA Driver App?</string>
   <string name="order_documents">Images for the order</string>
   <string name="order_documents_message">Start the job first!</string>
+  <string name="log_title_documents" translatable="false">Documents</string>
+  <string name="log_document_upload" translatable="false">Document upload</string>
 
   <string name="action_type_pick_up">Pick Up</string>
   <string name="action_type_drop_off">Drop Off</string>

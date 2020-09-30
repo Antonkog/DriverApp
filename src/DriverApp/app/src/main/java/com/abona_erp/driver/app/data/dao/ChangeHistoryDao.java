@@ -41,6 +41,10 @@ public interface ChangeHistoryDao {
   @Query("SELECT * FROM change_history WHERE action_type =:actionType AND order_number ==:orderID AND task_id == :taskID AND activity_id = :activityId AND direction = :logType LIMIT 1")
   ChangeHistory selectActivityHistory(int actionType, int orderID, int activityId, int taskID, int logType);
 
+
+  @Query("SELECT * FROM change_history WHERE action_type =:actionType AND order_number ==:orderID AND task_id == :taskID AND activity_id = :activityId AND confirmation_id = :confirmId LIMIT 1")
+  ChangeHistory selectDocumentHistory(int actionType, int orderID, int taskID, int activityId, int confirmId);
+
   @Update
   int updateHistory(ChangeHistory changeHistory);
 

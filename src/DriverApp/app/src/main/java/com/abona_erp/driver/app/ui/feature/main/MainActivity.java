@@ -652,7 +652,16 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   public void onMessageEvent(ChangeHistoryEvent event) {
     switch (event.getChangeHistory().getType()){
       case APP_TO_SERVER:
-        mMainViewModel.updateActivityHistory(event.getChangeHistory());
+        switch (event.getChangeHistory().getActionType()){
+          case FINISH_ACTIVITY:
+          case START_ACTIVITY:
+            mMainViewModel.updateActivityHistory(event.getChangeHistory());
+            break;
+          case DOCUMENT_UPLOAD:
+            mMainViewModel.updateDocumentHistory(event.getChangeHistory());
+            break;
+        }
+
         break;
       case FCM:
         mMainViewModel.updateFCMHistory(event.getChangeHistory());

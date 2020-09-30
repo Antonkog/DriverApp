@@ -10,7 +10,6 @@ import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Set;
 
 public class TextSecurePreferences {
@@ -51,6 +50,7 @@ public class TextSecurePreferences {
   
 
   public static final String PREF_NOTIFICATION_BEFORE_TASK    = "pref_notification_before_task";
+  public static final String CONFIRMATION_COUNTER    = "confirmation_counter";
   public static final String PREF_OLD_DEVICE_ID    = "pref_old_device_id";
   public static final String UPDATE_LANG_CODE    = "pref_update_lang_code";
   public static final String UPDATE_ALL_TASKS    = "pref_update_all_tasks";
@@ -106,6 +106,14 @@ public class TextSecurePreferences {
     setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_NOTIFICATION_BEFORE_TASK, time);
   }
 
+
+  public static int getConfirmationCounter() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(), CONFIRMATION_COUNTER, 0);
+  }
+
+  public static void setConfirmationCounter(int counter) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), CONFIRMATION_COUNTER, counter);
+  }
 
   public static String getOldDeviceID() {
     return getStringPreference(ContextUtils.getApplicationContext(), PREF_OLD_DEVICE_ID, null);
