@@ -658,6 +658,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             mMainViewModel.updateActivityHistory(event.getChangeHistory());
             break;
           case DOCUMENT_UPLOAD:
+          case DOCUMENT_DOWNLOAD:
             mMainViewModel.updateDocumentHistory(event.getChangeHistory());
             break;
         }
@@ -784,6 +785,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
             item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
   }
 
+  private void postGotDocuments(int orderNo,  int mandantId, int confirmId, boolean confirmed) {
+    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), getApplicationContext().getString(R.string.log_document_download) + " " + confirmId,
+            LogType.APP_TO_SERVER, ActionType.DOCUMENT_DOWNLOAD , confirmed? ChangeHistoryState.CONFIRMED : ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
+            0, 0, orderNo, mandantId, confirmId);
+    EventBus.getDefault().post(changeHistoryEvent);
+    com.abona_erp.driver.app.logging.Log.e(TAG, " posting doc event  : " + confirmId + " confirmed " + confirmed);
+  }
+
   @Subscribe
   public void onMessageEvent(VehicleRegistrationEvent event) {
     runOnUiThread(new Runnable() {
@@ -820,80 +829,89 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        
         // -----------------------------------------------------------------------------------------
         // BEGIN: GET DOCUMENTS
-  
-        Call<ArrayList<AppFileInterchangeItem>> call = App.getInstance().apiManager.getDocumentApi()
-          .getDocuments(event.getMandantID(), event.getOrderNo(),
-            DeviceUtils.getUniqueIMEI(getApplicationContext()));
-        
-        call.enqueue(new Callback<ArrayList<AppFileInterchangeItem>>() {
-          @Override
-          public void onResponse(Call<ArrayList<AppFileInterchangeItem>> call, Response<ArrayList<AppFileInterchangeItem>> response) {
-            
-            if (response.isSuccessful()) {
-              if (response.body() != null) {
-                Gson gson = new Gson();
-                String raw = gson.toJson(response.body());
-//                mMainViewModel.addLog(getString(R.string.log_document_got_links), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
 
+     //   if(NetworkUtil.isConnected(getApplicationContext())) {{
+          int oldId = incrementDownloadConfirmation();
 
-                final List<AppFileInterchangeItem> appFileInterchangeItems;
-                appFileInterchangeItems = gson.fromJson(response.body().toString(), ArrayList.class);
-                if (appFileInterchangeItems != null) {
-                  if (appFileInterchangeItems.size() > 0) {
-                    
-                    mMainViewModel.getAllTasksByMandantAndOrderNo(event.getMandantID(), event.getOrderNo())
-                      .subscribeOn(Schedulers.io())
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribe(new DisposableSingleObserver<List<Notify>>() {
-                        @Override
-                        public void onSuccess(List<Notify> notifies) {
-                          if (notifies.size() > 0) {
-                            for (int i = 0; i < notifies.size(); i++) {
-                              ArrayList<String> _list = new ArrayList<>();
-                              _list.add(raw);
-                              notifies.get(i).setDocumentUrls(_list);
-                              mMainViewModel.update(notifies.get(i));
-                            }
-                          }
-                        }
-  
-                        @Override
-                        public void onError(Throwable e) {
-    
-                        }
-                      });
-                    /*
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(getApplicationContext().getResources().getString(R.string.new_document_message));
-                    sb.append("\n" + getApplicationContext().getResources().getString(R.string.order_no));
-                    sb.append(": " + AppUtils.parseOrderNo(event.getOrderNo()));
-                    
-                    showOkDialog(getApplicationContext().getResources().getString(R.string.new_document), sb.toString());
-                    */
-                  }
-                }
-              }
-            }
-          }
-  
-          @Override
-          public void onFailure(Call<ArrayList<AppFileInterchangeItem>> call, Throwable t) {
-    
-          }
-        });
-  
-        new RingtoneUtils().playNotificationTone();
-        
+          postGotDocuments(event.getOrderNo(),event.getMandantID(), oldId, false);
+
+          getDocuments(event);
+
+          new RingtoneUtils().playNotificationTone();
+    //    }}
         // END: GET DOCUMENTS
         // -----------------------------------------------------------------------------------------
       }
     });
   }
 
-  
+  private void getDocuments(DocumentEvent event) {
+    Call<ArrayList<AppFileInterchangeItem>> call = App.getInstance().apiManager.getDocumentApi()
+      .getDocuments(event.getMandantID(), event.getOrderNo(),
+        DeviceUtils.getUniqueIMEI(getApplicationContext()));
+
+    call.enqueue(new Callback<ArrayList<AppFileInterchangeItem>>() {
+      @Override
+      public void onResponse(Call<ArrayList<AppFileInterchangeItem>> call, Response<ArrayList<AppFileInterchangeItem>> response) {
+
+        if (response.isSuccessful()) {
+          if (response.body() != null) {
+            postGotDocuments(event.getOrderNo(),event.getMandantID(), TextSecurePreferences.getDownloadConfirmationCounter(),true);
+            Gson gson = new Gson();
+            String raw = gson.toJson(response.body());
+//                mMainViewModel.addLog(getString(R.string.log_document_got_links), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_docs), event.getOrderNo());
+
+
+            final List<AppFileInterchangeItem> appFileInterchangeItems;
+            appFileInterchangeItems = gson.fromJson(response.body().toString(), ArrayList.class);
+            if (appFileInterchangeItems != null) {
+              if (appFileInterchangeItems.size() > 0) {
+
+                mMainViewModel.getAllTasksByMandantAndOrderNo(event.getMandantID(), event.getOrderNo())
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(new DisposableSingleObserver<List<Notify>>() {
+                    @Override
+                    public void onSuccess(List<Notify> notifies) {
+                      if (notifies.size() > 0) {
+                        for (int i = 0; i < notifies.size(); i++) {
+                          ArrayList<String> _list = new ArrayList<>();
+                          _list.add(raw);
+                          notifies.get(i).setDocumentUrls(_list);
+                          mMainViewModel.update(notifies.get(i));
+                        }
+                      }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                  });
+              }
+            }
+          }
+        }
+      }
+
+      @Override
+      public void onFailure(Call<ArrayList<AppFileInterchangeItem>> call, Throwable t) {
+
+      }
+    });
+  }
+
+  private int incrementDownloadConfirmation() {
+    int oldId = TextSecurePreferences.getDownloadConfirmationCounter();
+    if(oldId == Integer.MAX_VALUE -2) oldId=0; //to prevent integer overflow
+    oldId++;// always increase counter to count attempts
+    TextSecurePreferences.setDownloadConfirmationCounter(oldId);
+    return oldId;
+  }
+
+
   private void handleGetAllTasks(ResultOfAction resultOfAction) {
     if (resultOfAction == null) {
       getAllTaskImage.setEnabled(true);

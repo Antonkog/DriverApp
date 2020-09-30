@@ -6,7 +6,8 @@ public enum ActionType {
   START_ACTIVITY(0),
   FINISH_ACTIVITY(1),
   UPDATE_TASK(2),
-  DOCUMENT_UPLOAD(3);
+  DOCUMENT_UPLOAD(3),
+  DOCUMENT_DOWNLOAD(4);
 
 
   private final Integer code;
