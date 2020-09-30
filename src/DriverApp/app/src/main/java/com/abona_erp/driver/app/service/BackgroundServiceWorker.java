@@ -686,8 +686,8 @@ public class BackgroundServiceWorker extends Service {
   }
 
 
-  private void postDocumentSent(Notify notify, int confirmId,  boolean confirmed) {
-    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), getApplicationContext().getString(R.string.log_document_upload)+ " " + confirmId,
+  private void postDocumentSent(Notify notify, int confirmId, String message, boolean confirmed) {
+    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), message,
             LogType.APP_TO_SERVER, ActionType.DOCUMENT_UPLOAD , confirmed? ChangeHistoryState.CONFIRMED : ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             notify.getTaskId(), 0, notify.getOrderNo(), notify.getMandantId(), confirmId);
     EventBus.getDefault().post(changeHistoryEvent);
@@ -750,8 +750,6 @@ public class BackgroundServiceWorker extends Service {
 
                       // UPLOADING FILES....BEGIN
                       if(NetworkUtil.isConnected(getApplicationContext())) {
-                        int oldId = incrementUploadCounter();
-                        postDocumentSent(notify, oldId, false);//"if" to avoid multiple logs on request attempts
                         uploadDocuments(notify, photoSize, offlineConfirmations);
                       }
 
@@ -805,6 +803,9 @@ public class BackgroundServiceWorker extends Service {
           MultipartBody.Part.createFormData("",
             file.getName(), requestFile);
 
+        int oldId = incrementUploadCounter();
+        postDocumentSent(notify, oldId, file.getName(), false);//"if" to avoid multiple logs on request attempts
+
         RequestBody mandantId = RequestBody.create(MediaType
           .parse("multipart/form-data"), String.valueOf(notify.getMandantId()));
         RequestBody orderNo = RequestBody.create(MediaType
@@ -857,7 +858,7 @@ public class BackgroundServiceWorker extends Service {
                 deleteDocumentConfirmation(offlineConfirmations);
                 EventBus.getDefault().post(new ProgressBarEvent(false));
                 int oldId = TextSecurePreferences.getUploadConfirmationCounter();
-                postDocumentSent(notify, oldId,true);
+                postDocumentSent(notify, oldId, response.body().getFileName(), true);
               }
 
               App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo()));
