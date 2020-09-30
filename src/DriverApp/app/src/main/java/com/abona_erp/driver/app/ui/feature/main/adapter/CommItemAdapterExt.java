@@ -91,8 +91,7 @@ public class CommItemAdapterExt extends
   public AppCompatImageView iv_warning;
   
   private List<Notify> mDataList;
-  private CommItem     mCommItem;
-  
+
   private CommonItemClickListener<Notify> mListener;
   
   private List<ActivityStep> mActivityList = new ArrayList<>();
@@ -117,9 +116,6 @@ public class CommItemAdapterExt extends
     mListener = listener;
     mResources = mContext.getResources();
     mInflater = LayoutInflater.from(mContext);
-    
-    mCommItem = new CommItem();
-    
     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
   
@@ -131,7 +127,7 @@ public class CommItemAdapterExt extends
     
     String rawJson = notify.getData();
     if (rawJson == null || TextUtils.isEmpty(rawJson)) return;
-    mCommItem = App.getInstance().gsonUtc.fromJson(rawJson, CommItem.class);
+    CommItem mCommItem = App.getInstance().gsonUtc.fromJson(rawJson, CommItem.class);
     if (mCommItem == null) return;
     
     holder.setIsRecyclable(false);
@@ -234,7 +230,7 @@ public class CommItemAdapterExt extends
         dialog.setCanceledOnTouchOutside(false);
       }
     });
-    
+
     holder.btn_camera.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -283,9 +279,9 @@ public class CommItemAdapterExt extends
 
         if (taskItem.getTaskStatus() != null) {
           if (taskItem.getTaskStatus().equals(TaskStatus.PENDING) || taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
-            enableDueInTimer(true, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
+            enableDueInTimer(mCommItem, true, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
           } else {
-            enableDueInTimer(false, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
+            enableDueInTimer(mCommItem, false, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
           }
         }
       }
@@ -610,7 +606,7 @@ public class CommItemAdapterExt extends
   }
   
   @SuppressLint({"DefaultLocale", "SetTextI18n"})
-  private void enableDueInTimer(boolean enable, AsapTextView dueIn, AppCompatImageView ivWarning, Date finishDate) {
+  private void enableDueInTimer(CommItem commItem, boolean enable, AsapTextView dueIn, AppCompatImageView ivWarning, Date finishDate) {
     
     if (enable) {
       _handler.removeCallbacks(dueInCounter);
@@ -623,12 +619,12 @@ public class CommItemAdapterExt extends
       _handler.removeCallbacks(dueInCounter);
       
       if (finishDate == null) return;
-      if (mCommItem == null || mCommItem.getTaskItem() == null || mCommItem.getTaskItem().getActivities() == null) return;
-      if (mCommItem.getTaskItem().getActivities().size() <= 0) return;
-      int lastIdx = mCommItem.getTaskItem().getActivities().size() - 1;
-      if (mCommItem.getTaskItem().getActivities().get(lastIdx).getFinished() == null) return;
+      if (commItem == null || commItem.getTaskItem() == null || commItem.getTaskItem().getActivities() == null) return;
+      if (commItem.getTaskItem().getActivities().size() <= 0) return;
+      int lastIdx = commItem.getTaskItem().getActivities().size() - 1;
+      if (commItem.getTaskItem().getActivities().get(lastIdx).getFinished() == null) return;
       Calendar endTaskCalendar = Calendar.getInstance();
-      endTaskCalendar.setTime(mCommItem.getTaskItem().getActivities().get(lastIdx).getFinished());
+      endTaskCalendar.setTime(commItem.getTaskItem().getActivities().get(lastIdx).getFinished());
   
       Calendar finishCalendar = Calendar.getInstance();
       finishCalendar.setTime(finishDate);
