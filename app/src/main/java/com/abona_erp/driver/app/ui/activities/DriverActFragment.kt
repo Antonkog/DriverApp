@@ -78,5 +78,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     override fun onLazyItemClick(data: ActivityEntity) {
        Log.d(TAG, " on activity click : ${data.activityId}")
+        driverActViewModel.getActivityObservable()
     }
 }

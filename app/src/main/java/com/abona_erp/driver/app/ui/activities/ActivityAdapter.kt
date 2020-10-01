@@ -22,7 +22,6 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
         val map: Map<String, String> = JsonParser.parseJson(jsonObject)
 
         val linearContent: LinearLayout = binding.linlayDescription
-        linearContent.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
         if (linearContent.childCount > 0) linearContent.removeAllViews()
         map.entries.forEach { entry ->
             run {
@@ -31,6 +30,10 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
                 row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
                 linearContent.addView(row)
             }
+        }
+
+        binding.buttonActConfirm.setOnClickListener {
+            itemClickListener?.onLazyItemClick(data)
         }
     }
 

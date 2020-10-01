@@ -47,7 +47,7 @@ object UtilModel{
 //    val taskId: Int
 
     fun getCommActivityChangeItem(context: Context, activity: Activity): CommItem {
-        val header = Header.Builder(DataType.ACTIVITY.dataType,DeviceUtils.getUniqueID(context)).build()
+        val header = Header.Builder(DataType.ACTIVITY.dataType, DeviceUtils.getUniqueID(context)).build()
         return CommItem.Builder(header = header)
             .deviceProfileItem(getDeviceProfileItem(context))
             .activityItem(activity).build()

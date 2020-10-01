@@ -32,4 +32,10 @@ class DriverActViewModel @ViewModelInject constructor(@ApplicationContext privat
         val taskId= prefs.getInt(Constant.currentVisibleTaskid, 0)
         return repository.observeActivities(taskId)
     }
+
+    fun postActivityChange(entity: ActivityEntity){
+        viewModelScope.launch {
+            repository.postActivity(context, entity.toActivity())
+        }
+    }
 }
