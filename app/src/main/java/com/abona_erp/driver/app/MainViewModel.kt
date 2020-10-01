@@ -1,6 +1,5 @@
 package com.abona_erp.driver.app
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.hilt.Assisted
@@ -47,7 +46,7 @@ class MainViewModel @ViewModelInject constructor(private val gson: Gson, private
                 Log.d(TAG, " got fcm task")
                 messageStruct.taskItem?.let {
                     Log.d(TAG, " saving fcm task")
-                    repository.saveTask(
+                    repository.insertOrReplaceTask(
                         TaskEntity(
                             it.taskId,
                             it.actionType,

@@ -46,6 +46,7 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
         }
     }
 
+
     fun refreshDocuments(mandantId: Int,  orderNo: Int, deviceId: String) = viewModelScope.launch {
         viewModelScope.launch {
             try {
@@ -75,6 +76,7 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Log.e(TAG, "upload result : $it")
+                refreshDocuments(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0),  DeviceUtils.getUniqueID(context)) //to get vehicle number etc.
             }, {
                 error.postValue(it)
             })

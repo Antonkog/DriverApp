@@ -51,11 +51,7 @@ class LocalDataSource internal constructor(
         }
     }
 
-    suspend fun getActivities() : List<ActivityEntity> {
-        return db.driverActDao().getActivitiesList()
-    }
-
-    suspend fun saveTask(taskEntity: TaskEntity) {
+    suspend fun insertOrReplaceTask(taskEntity: TaskEntity) {
         db.driverTaskDao().insertOrReplace(taskEntity)
     }
 
@@ -89,6 +85,9 @@ class LocalDataSource internal constructor(
         }
     }
 
+    suspend fun insertDocument(documentEntity: DocumentEntity){
+        db.documentsDao().insertOrReplace(documentEntity)
+    }
 
     suspend fun insertDocumentResponse(responseItems : List<DocumentResponse>) {
         responseItems.map {

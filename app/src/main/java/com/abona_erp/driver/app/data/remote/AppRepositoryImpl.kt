@@ -21,20 +21,17 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.util.*
 import javax.inject.Inject
 
 
 class AppRepositoryImpl @Inject constructor (@ApplicationContext val context: Context, val localDataSource: LocalDataSource, val rabbit : RabbitService,
                                              val api : ApiService, val authService: AuthService) : AppRepository {
     val TAG = "ApiRepositoryImpl"
-    override fun getLatestOrder(id: String): Observable<LatestOrder> {
+    override fun getLatestRabbitOrder(id: String): Observable<LatestOrder> {
        return  rabbit.getLastOrder(id)
     }
 
@@ -49,10 +46,6 @@ class AppRepositoryImpl @Inject constructor (@ApplicationContext val context: Co
 
     override fun observeDocuments(taskId: Int): LiveData<List<DocumentEntity>> {
        return  localDataSource.observeDocuments()
-    }
-
-    override suspend fun getActivities(): List<ActivityEntity> {
-       return  localDataSource.getActivities()
     }
 
     override fun registerDevice(commItem: CommItem): Observable<ResultOfAction> {
@@ -72,8 +65,16 @@ class AppRepositoryImpl @Inject constructor (@ApplicationContext val context: Co
        getDocuments(true, mandantId, orderNo, deviceId)
     }
 
+    override suspend fun insertOrReplaceTask(taskEntity: TaskEntity) {
+        localDataSource.insertOrReplaceTask(taskEntity)
+    }
+
     override suspend fun insertActivity(activityEntity: ActivityEntity) {
         localDataSource.insertActivity(activityEntity)
+    }
+
+    override suspend fun insertDocument(documentEntity: DocumentEntity) {
+        localDataSource.insertDocument(documentEntity)
     }
 
     override suspend fun getTasks(forceUpdate: Boolean, deviceId: String):  ResultWithStatus<List<TaskEntity>> {
@@ -188,7 +189,4 @@ class AppRepositoryImpl @Inject constructor (@ApplicationContext val context: Co
 
 
 
-    override suspend fun saveTask(taskEntity: TaskEntity) {
-        localDataSource.saveTask(taskEntity)
-    }
 }
