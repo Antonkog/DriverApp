@@ -17,11 +17,12 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
     LazyAdapter<ActivityEntity, ActivityItemBinding>(itemClickListener) {
 
     override fun bindData(data: ActivityEntity, binding: ActivityItemBinding) {
-        binding.root.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
+
         val jsonObject = JSONObject(Gson().toJson(data).trim())
         val map: Map<String, String> = JsonParser.parseJson(jsonObject)
 
         val linearContent: LinearLayout = binding.linlayDescription
+        linearContent.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
         if (linearContent.childCount > 0) linearContent.removeAllViews()
         map.entries.forEach { entry ->
             run {

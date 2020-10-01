@@ -14,15 +14,16 @@ import com.abona_erp.driver.app.R
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.databinding.HomeFragmentBinding
 import com.abona_erp.driver.app.ui.base.BaseFragment
+import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskEntity> {
 
     val TAG = "HomeFragment"
     private val homeViewModel by viewModels<HomeViewModel> ()
 //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
-    private var adapter = TasksAdapter(null)
+    private var adapter = TasksAdapter(this)
 
     private lateinit var homeBinding: HomeFragmentBinding
 
@@ -85,5 +86,9 @@ class HomeFragment : BaseFragment() {
                 it.first { taskEntity -> taskEntity.taskId == homeViewModel.getVisibleTaskId() }
             homeBinding.tasksPager.setCurrentItem(it.indexOf(task),false) //setting position of current task, if it exist
         } else homeViewModel.setVisibleTaskID(it[0]) //else on create set id of first element.
+    }
+
+    override fun onLazyItemClick(data: TaskEntity) {
+        Log.e(TAG, "got click taskid " + data.taskId)
     }
 }

@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,6 +77,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
     }
 
     override fun onLazyItemClick(data: ActivityEntity) {
-        Toast.makeText(context, " on activity click : ${data.activityId}", Toast.LENGTH_LONG).show()
+       Log.d(TAG, " on activity click : ${data.activityId}")
     }
 }

@@ -14,11 +14,13 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driver.app.R
 import com.abona_erp.driver.app.data.Constant.OPEN_DOC_REQUEST_CODE
+import com.abona_erp.driver.app.data.local.db.DocumentEntity
 import com.abona_erp.driver.app.data.model.DMSDocumentType
 import com.abona_erp.driver.app.databinding.DocumentsFragmentBinding
 import com.abona_erp.driver.app.ui.RxBus
 import com.abona_erp.driver.app.ui.base.BaseFragment
 import com.abona_erp.driver.app.ui.events.RxBusEvent
+import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,10 +28,10 @@ import java.io.File
 
 
 @AndroidEntryPoint
-class DocumentsFragment : BaseFragment() {
+class DocumentsFragment : BaseFragment(), LazyAdapter.OnItemClickListener<DocumentEntity> {
     val TAG = "DocumentsFragment"
     private val docViewModel by viewModels<DocumentsViewModel>()
-    private var adapter = DocumentsAdapter()
+    private var adapter = DocumentsAdapter(this)
     private lateinit var docBinding: DocumentsFragmentBinding
 
     override fun onCreateView(
@@ -52,7 +54,7 @@ class DocumentsFragment : BaseFragment() {
         docViewModel.documents.observe(viewLifecycleOwner, Observer {
             if(it!= null && it.isNotEmpty()){
                 adapter.swapData(it)
-            } else Log.e(TAG, "got empty or null tasks $it")
+            } else Log.e(TAG, "got empty or null documents $it")
 //            Log.e(TAG, "got tasks ${it}")
         })
         return view
@@ -75,5 +77,9 @@ class DocumentsFragment : BaseFragment() {
         docBinding.docsRecycler.initWithLinLay(LinearLayoutManager.VERTICAL, adapter, listOf())
         docBinding.docsRecycler.addItemDivider()
 
+    }
+
+    override fun onLazyItemClick(data: DocumentEntity) {
+        Log.e(TAG, "got document click $data")
     }
 }
