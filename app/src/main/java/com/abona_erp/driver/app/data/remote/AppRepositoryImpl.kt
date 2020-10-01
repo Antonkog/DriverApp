@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.data.remote
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.abona_erp.driver.app.data.ResultWithStatus
 import com.abona_erp.driver.app.data.local.LocalDataSource
@@ -11,21 +12,26 @@ import com.abona_erp.driver.app.data.model.*
 import com.abona_erp.driver.app.data.remote.rabbitMQ.RabbitService
 import com.abona_erp.driver.app.ui.utils.UtilModel
 import com.google.gson.JsonObject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.util.*
 import javax.inject.Inject
 
 
-class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSource, val rabbit : RabbitService,
+class AppRepositoryImpl @Inject constructor (@ApplicationContext val context: Context, val localDataSource: LocalDataSource, val rabbit : RabbitService,
                                              val api : ApiService, val authService: AuthService) : AppRepository {
     val TAG = "ApiRepositoryImpl"
     override fun getLatestOrder(id: String): Observable<LatestOrder> {
@@ -144,17 +150,33 @@ class AppRepositoryImpl @Inject constructor (val localDataSource: LocalDataSourc
         taskID: Int,
         driverNo: Int,
         documentType: Int,
-        file: File
+        inputStream: InputStream
     ): Single<UploadResult> {
         val mandantBody = mandantId.toMultipartBody()
         val orderBody = orderNo.toMultipartBody()
         val taskBody = taskID.toMultipartBody()
         val driverBody = driverNo.toMultipartBody()
         val docTypeBody = documentType.toMultipartBody()
-        val fileBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+       // val ims : InputStream =  file.inputStream()
+
+
+        val newFIle = File.createTempFile("abona" , ".pdf", context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS))
+
+        try{
+            FileUtils.copyToFile(inputStream, newFIle)
+        }catch (e : IOException){
+            Log.e(TAG, "can't send document")
+        }
+
+
+
+        val fileBody = newFIle.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//        val out =  IOUtils.toByteArray(ims).toRequestBody()
+//        val name = ""+ System.currentTimeMillis() + ".dpf"
+
         val multiparFileBody =  MultipartBody.Part.createFormData(
             name = "files[]",
-            filename = file.name,
+            filename = newFIle.name,
             body = fileBody
         )
         return api.uploadDocument(mandantBody, orderBody, taskBody, driverBody, docTypeBody, multiparFileBody)

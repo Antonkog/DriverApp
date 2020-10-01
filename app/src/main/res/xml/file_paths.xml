@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <files-path name="my_images" path="images/"/>
-    <files-path name="my_docs" path="docs/"/>
+    <files-path name="my_downloads" path="downloads/"/>
+    <files-path name="my_docs" path="downloads.documents/"/>
 </paths>

@@ -32,7 +32,7 @@ interface ApiService {
     ): List<DocumentResponse>
 
     @Multipart
-    @POST("upload")
+    @POST("api/uploader/upload")
     fun uploadDocument(
         @Part("MandantId") mandantId: RequestBody?,
         @Part("OrderNo") orderNo: RequestBody?,

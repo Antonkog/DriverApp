@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
 import java.io.File
+import java.io.InputStream
 
 interface AppRepository {
     //RabbitMQ
@@ -46,7 +47,7 @@ interface AppRepository {
         taskID: Int,
         driverNo: Int,
         documentType: Int,
-        file: File
+        ims: InputStream
     ): Single<UploadResult>
 
 }

@@ -1,16 +1,19 @@
 package com.abona_erp.driver.app
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.FileProvider
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -19,13 +22,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.abona_erp.driver.app.data.Constant.OPEN_DOC_REQUEST_CODE
-import com.abona_erp.driver.app.data.model.DMSDocumentType
 import com.abona_erp.driver.app.ui.RxBus
-import com.abona_erp.driver.app.ui.documents.DocumentsFragment
 import com.abona_erp.driver.app.ui.events.RxBusEvent
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -139,6 +139,14 @@ class MainActivity : AppCompatActivity() {
                 // The result data contains a URI for the document or directory that
                 // the user selected.
                 resultData?.data?.also { uri ->
+
+//                    val takeFlags = (intent.flags
+//                            and (Intent.FLAG_GRANT_READ_URI_PERMISSION
+//                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
+//// Check for the freshest data.
+//// Check for the freshest data.
+//                    contentResolver.takePersistableUriPermission(uri, takeFlags)
+                    contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     Log.e(TAG, " got uri: $uri ")
                     // Perform operations on the document using its URI.
                     RxBus.publish(RxBusEvent.DocumentMessage(uri))

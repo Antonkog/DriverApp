@@ -1,9 +1,12 @@
 package com.abona_erp.driver.app.ui.documents
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.ParcelFileDescriptor
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
@@ -21,7 +24,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
-import java.io.File
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FileUtils.toFile
+import java.io.*
 
 
 class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences) :  BaseViewModel() {
@@ -35,11 +40,7 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
         refreshDocuments(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0),  DeviceUtils.getUniqueID(context))
         RxBus.listen(RxBusEvent.DocumentMessage::class.java).subscribe { event->
             viewModelScope.launch {
-                Log.e(TAG, " got uri: ${event.uri} ")
-                context.contentResolver.takePersistableUriPermission(
-                    event.uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
+                Log.e(TAG, " 123 got uri: ${event.uri} ")
                 uploadDocuments(DMSDocumentType.POD_CMR, event.uri)
             }
         }
@@ -56,7 +57,20 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
     }
 
     fun uploadDocuments(documentType: DMSDocumentType, uri: Uri) {
-        repository.upladDocument(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0),prefs.getInt(Constant.currentVisibleTaskid,0), -1, documentType.documentType, File(uri.path))
+//        val fileUri: Uri? = try {
+//            FileProvider.getUriForFile(
+//                context,
+//                "com.abona_erp.driver.app.fileprovider",
+//                File(uri.path))
+//        } catch (e: IllegalArgumentException) {
+//            Log.e("File Selector",
+//                "The selected file can't be shared: $uri")
+//            null
+//        }
+
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        if(inputStream!=null)
+        repository.upladDocument(prefs.getInt(Constant.mandantId, 0), prefs.getInt(Constant.currentVisibleOrderId,0), prefs.getInt(Constant.currentVisibleTaskid,0), -1, documentType.documentType, inputStream)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -64,5 +78,38 @@ class DocumentsViewModel @ViewModelInject constructor(@ApplicationContext privat
             }, {
                 error.postValue(it)
             })
+        else Log.e(TAG, "can't open document")
+    }
+
+    @Throws(IOException::class)
+    private fun getBitmapFromUri(uri: Uri): Bitmap? {
+        val parcelFileDescriptor: ParcelFileDescriptor? =
+            context.contentResolver.openFileDescriptor(uri, "r")
+        val fileDescriptor: FileDescriptor? = parcelFileDescriptor?.fileDescriptor
+        val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+        parcelFileDescriptor?.close()
+        return image
+    }
+
+    @Throws(IOException::class)
+    private fun readTextFromUri(uri: Uri): String? {
+
+        val parcelFileDescriptor: ParcelFileDescriptor? =
+            context.contentResolver.openFileDescriptor(uri, "r")
+
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        val reader = BufferedReader(
+            InputStreamReader(
+                inputStream
+            )
+        )
+        val stringBuilder = StringBuilder()
+        var line: String?
+        while (reader.readLine().also { line = it } != null) {
+            stringBuilder.append(line)
+        }
+        inputStream?.close()
+        parcelFileDescriptor?.close()
+        return stringBuilder.toString()
     }
 }
