@@ -50,7 +50,8 @@ public class TextSecurePreferences {
   
 
   public static final String PREF_NOTIFICATION_BEFORE_TASK    = "pref_notification_before_task";
-  public static final String CONFIRMATION_COUNTER    = "confirmation_counter";
+  public static final String UPLOAD_CONFIRMATION_COUNTER = "upload_confirmation_counter";
+  public static final String DOWNLOAD_CONFIRMATION_COUNTER = "download_confirmation_counter";
   public static final String PREF_OLD_DEVICE_ID    = "pref_old_device_id";
   public static final String UPDATE_LANG_CODE    = "pref_update_lang_code";
   public static final String UPDATE_ALL_TASKS    = "pref_update_all_tasks";
@@ -107,12 +108,21 @@ public class TextSecurePreferences {
   }
 
 
-  public static int getConfirmationCounter() {
-    return getIntegerPreference(ContextUtils.getApplicationContext(), CONFIRMATION_COUNTER, 0);
+  public static int getUploadConfirmationCounter() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(), UPLOAD_CONFIRMATION_COUNTER, 0);
   }
 
-  public static void setConfirmationCounter(int counter) {
-    setIntegerPrefrence(ContextUtils.getApplicationContext(), CONFIRMATION_COUNTER, counter);
+  public static void setUploadConfirmationCounter(int counter) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), UPLOAD_CONFIRMATION_COUNTER, counter);
+  }
+
+
+  public static int getDownloadConfirmationCounter() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(), DOWNLOAD_CONFIRMATION_COUNTER, 0);
+  }
+
+  public static void setDownloadConfirmationCounter(int counter) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), DOWNLOAD_CONFIRMATION_COUNTER, counter);
   }
 
   public static String getOldDeviceID() {

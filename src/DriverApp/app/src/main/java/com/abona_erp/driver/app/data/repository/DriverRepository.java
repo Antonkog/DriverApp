@@ -258,6 +258,7 @@ public class DriverRepository {
   private void changeCurrentHistoryInDB(ChangeHistory changeHistory, ChangeHistory existingHistoryItem) {
     if(existingHistoryItem != null){
       existingHistoryItem.setState(changeHistory.getState());
+      existingHistoryItem.setMessage(changeHistory.getMessage());
       changeHistoryDao.updateHistory(existingHistoryItem);
     } else {
       changeHistoryDao.insert(changeHistory);

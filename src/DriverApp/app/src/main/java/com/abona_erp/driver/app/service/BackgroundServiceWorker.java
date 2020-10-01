@@ -686,8 +686,14 @@ public class BackgroundServiceWorker extends Service {
   }
 
 
-  private void postDocumentSent(Notify notify, int confirmId,  boolean confirmed) {
-    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), getApplicationContext().getString(R.string.log_document_upload)+ " " + confirmId,
+  private void postDocumentSent(Notify notify, int confirmId, String message, boolean confirmed) {
+    String split[] = message.split(Constants.FILE_NAME_DIVIDER);
+
+    if(split.length > 1){
+      message = split[0]+ "..." + split[split.length-1];// time and last id that is unique
+    }
+
+    ChangeHistoryEvent changeHistoryEvent = new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_documents), message,
             LogType.APP_TO_SERVER, ActionType.DOCUMENT_UPLOAD , confirmed? ChangeHistoryState.CONFIRMED : ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
             notify.getTaskId(), 0, notify.getOrderNo(), notify.getMandantId(), confirmId);
     EventBus.getDefault().post(changeHistoryEvent);
@@ -749,111 +755,12 @@ public class BackgroundServiceWorker extends Service {
                     if (uploadFiles) {
 
                       // UPLOADING FILES....BEGIN
-
-                      int oldId = TextSecurePreferences.getConfirmationCounter();
-                      oldId++;// always increase counter to count attempts
-                      TextSecurePreferences.setConfirmationCounter(oldId);
-
-                      if(NetworkUtil.isConnected(getApplicationContext())) postDocumentSent(notify, oldId, false);//"if" to avoid multiple logs on request attempts
-                      for (int i = 0; i < notify.getPhotoUrls().size(); i++) {
-                        
-                        UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(i), UploadItem.class);
-                        if (uploadItem.getUploaded()) continue;
-                        
-                        if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
-
-                          File file = new File(uploadItem.getUri());
-  
-                          RequestBody requestFile = RequestBody
-                            .create(MediaType.parse("multipart/form-data"), file);
-  
-                          MultipartBody.Part body =
-                            MultipartBody.Part.createFormData("",
-                              file.getName(), requestFile);
-  
-                          RequestBody mandantId = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(notify.getMandantId()));
-                          RequestBody orderNo = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(notify.getOrderNo()));
-                          RequestBody taskId = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(notify.getTaskId()));
-  
-                          RequestBody driverNo = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), String.valueOf(-1));
-  
-                          String dmsType = "0";
-                          if (uploadItem.getDocumentType().equals(DMSDocumentType.NA)) {
-                            dmsType = "0";
-                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.POD_CMR)) {
-                            dmsType = "24";
-                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.PALLETS_NOTE)) {
-                            dmsType = "26";
-                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SAFETY_CERTIFICATE)) {
-                            dmsType = "27";
-                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SHIPMENT_IMAGE)) {
-                            dmsType = "28";
-                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_SHIPMENT_IMAGE)) {
-                            dmsType = "29";
-                          } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_VEHICLE_IMAGE)) {
-                            dmsType = "30";
-                          }
-  
-                          RequestBody documentType = RequestBody.create(MediaType
-                            .parse("multipart/form-data"), dmsType);
-  
-                          final int j = i;
-                          Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
-                            .upload(mandantId,orderNo,taskId,driverNo,documentType, body);
-                          call.enqueue(new Callback<UploadResult>() {
-                            @Override
-                            public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
-                              
-                              if (response.isSuccessful()) {//document upload
-
-                                Log.d(TAG, ">>>>>>>>>>  Upload complete: " +response.body().getFileName() + " uri" +  uploadItem.getUri());
-
-                                uploadItem.setUploaded(true);
-                                notify.getPhotoUrls().set(j, App.getInstance().gson.toJson(uploadItem));
-                                notify.setPhotoUrls(notify.getPhotoUrls());
-                                mNotifyDAO.updateNotify(notify);
-                                //mViewModel.update(mNotify);
-                                
-                                if (j >= photoSize-1) {
-                                  // Entfernen:
-                                  deleteDocumentConfirmation(offlineConfirmations);
-                                  EventBus.getDefault().post(new ProgressBarEvent(false));
-                                  int oldId = TextSecurePreferences.getConfirmationCounter();
-                                  postDocumentSent(notify, oldId,true);
-                                }
-                                
-                                App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo()));
-                              
-                              } else {
-                                
-                                switch (response.code()) {
-                                  case 401:
-                                    handleAccessToken();
-                                    break;
-                                  default:
-                                    break;
-                                }
-                              }
-                            }
-  
-                            @Override
-                            public void onFailure(Call<UploadResult> call, Throwable t) {
-    
-                            }
-                          });
-                        
-                        } else {
-                          // Entfernen:
-                          deleteDocumentConfirmation(offlineConfirmations);
-                        }
+                      if(NetworkUtil.isConnected(getApplicationContext())) {
+                        AsyncTask.execute(() -> uploadDocuments(notify, photoSize, offlineConfirmations));
                       }
-                      
+
                       // UPLOADING FILES....END
-                      EventBus.getDefault().post(new UploadAllDocsEvent(notify.getTaskId()));
+                      EventBus.getDefault().post(new UploadAllDocsEvent(notify.getTaskId())); // even if it's no connection - document already waiting to upload in offline confirmations so removing photos from preview
                     
                     } else {
                       // Entfernen:
@@ -875,6 +782,109 @@ public class BackgroundServiceWorker extends Service {
         }
       }
     });
+  }
+
+  private int incrementUploadCounter() {
+    int oldId = TextSecurePreferences.getUploadConfirmationCounter();
+    if(oldId == Integer.MAX_VALUE -2) oldId=0; //to prevent integer overflow
+    oldId++;// always increase counter to count attempts
+    TextSecurePreferences.setUploadConfirmationCounter(oldId);
+    return oldId;
+  }
+
+  private void uploadDocuments(Notify notify, int photoSize, List<OfflineConfirmation> offlineConfirmations) {
+    for (int counter = 0; counter < notify.getPhotoUrls().size(); counter++) {
+
+      UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(counter), UploadItem.class);
+      if (uploadItem.getUploaded()) continue;
+
+      if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
+
+        File file = new File(uploadItem.getUri());
+
+        RequestBody requestFile = RequestBody
+          .create(MediaType.parse("multipart/form-data"), file);
+
+        MultipartBody.Part body =
+          MultipartBody.Part.createFormData("",
+            file.getName(), requestFile);
+
+        int oldId = incrementUploadCounter();
+
+        RequestBody mandantId = RequestBody.create(MediaType
+          .parse("multipart/form-data"), String.valueOf(notify.getMandantId()));
+        RequestBody orderNo = RequestBody.create(MediaType
+          .parse("multipart/form-data"), String.valueOf(notify.getOrderNo()));
+        RequestBody taskId = RequestBody.create(MediaType
+          .parse("multipart/form-data"), String.valueOf(notify.getTaskId()));
+
+        RequestBody driverNo = RequestBody.create(MediaType
+          .parse("multipart/form-data"), String.valueOf(-1));
+
+        String dmsType = "0";
+        if (uploadItem.getDocumentType().equals(DMSDocumentType.NA)) {
+          dmsType = "0";
+        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.POD_CMR)) {
+          dmsType = "24";
+        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.PALLETS_NOTE)) {
+          dmsType = "26";
+        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SAFETY_CERTIFICATE)) {
+          dmsType = "27";
+        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.SHIPMENT_IMAGE)) {
+          dmsType = "28";
+        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_SHIPMENT_IMAGE)) {
+          dmsType = "29";
+        } else if (uploadItem.getDocumentType().equals(DMSDocumentType.DAMAGED_VEHICLE_IMAGE)) {
+          dmsType = "30";
+        }
+
+        RequestBody documentType = RequestBody.create(MediaType
+          .parse("multipart/form-data"), dmsType);
+
+
+        Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
+          .upload(mandantId,orderNo,taskId,driverNo,documentType, body);
+        try {
+          postDocumentSent(notify, oldId, file.getName(), false);//"if" to avoid multiple logs on request attempts
+
+          Response<UploadResult> response = call.execute();//Synchronous request when uploading documents, since we have no id or md5 from server and i don't want to parse file name, that is also different //C:\\aBonaUploadData\\2020\\10\\01\\20201001095841_3_202040141_9867_353687144218095588.jpg
+          if (response.isSuccessful()) {//document upload
+
+            Log.d(TAG, ">>>>>>>>>>  Upload complete: " +response.body().getFileName() + " uri" +  uploadItem.getUri());
+
+            uploadItem.setUploaded(true);
+            notify.getPhotoUrls().set(counter, App.getInstance().gson.toJson(uploadItem));
+            notify.setPhotoUrls(notify.getPhotoUrls());
+            mNotifyDAO.updateNotify(notify);
+            //mViewModel.update(mNotify);
+
+            if (counter >= photoSize-1) {
+              // Entfernen:
+              mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+              mHandler.post(()->{
+                EventBus.getDefault().post(new ProgressBarEvent(false));
+                EventBus.getDefault().post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo())); //used to reload document's but why? if we know that it is on server
+              });
+            }
+            postDocumentSent(notify, oldId, file.getName(), true);
+          } else {
+            switch (response.code()) {
+              case 401:
+                handleAccessToken();
+                break;
+              default:
+                break;
+            }
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+          Log.e(TAG, " error while uploading photo: " + e.getMessage());
+        }
+      } else {
+        // Entfernen:
+        deleteDocumentConfirmation(offlineConfirmations);
+      }
+    }
   }
 
   private void deleteDocumentConfirmation(List<OfflineConfirmation> offlineConfirmations) {
