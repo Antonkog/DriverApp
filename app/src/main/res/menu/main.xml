@@ -12,11 +12,6 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_show_all"
-        android:title="@string/action_show_all"
-        app:showAsAction="never"
-        android:checkable="true"/>
-    <item
         android:id="@+id/action_send_doc"
         android:title="@string/action_send_doc"
         app:showAsAction="never"/>

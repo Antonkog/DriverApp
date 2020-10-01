@@ -22,7 +22,6 @@ object Constant {
     const val preferencesEndpoint = "endpoint"
     const val token = "token"
     const val token_created = "token_created"
-    const val prefShowAll = "show_all"
     const val tokenFcm = "tokenFcm"
     const val currentVisibleTaskid = "current_visible_taskId"
     const val currentVisibleOrderId = "current_visible_OrderId"

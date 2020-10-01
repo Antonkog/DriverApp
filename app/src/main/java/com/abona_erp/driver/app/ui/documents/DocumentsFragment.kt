@@ -7,9 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -58,6 +56,17 @@ class DocumentsFragment : BaseFragment() {
 //            Log.e(TAG, "got tasks ${it}")
         })
         return view
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu?.findItem(R.id.action_send_doc).let {
+            it?.setVisible(true)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

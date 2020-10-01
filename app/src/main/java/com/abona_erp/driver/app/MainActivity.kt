@@ -59,15 +59,12 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.action_show_all).let {
-            it?.setChecked(mainViewModel.getShowAll())
-        }
-        return super.onPrepareOptionsMenu(menu)
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        menu?.findItem(R.id.action_send_doc).let {
+            it?.setVisible(false)
+        }
         return true
     }
 
@@ -82,13 +79,7 @@ class MainActivity : AppCompatActivity() {
                 navController.navigate(R.id.nav_login)
                 true
             }
-            R.id.action_show_all -> {
-                item.isChecked = !item.isChecked
-                mainViewModel.setShowAll(item.isChecked)
-                true
-            }
             R.id.action_send_doc -> {
-//                openDirectory(null)
                 openDocumentPicker()
                 true
             }
