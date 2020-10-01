@@ -756,7 +756,7 @@ public class BackgroundServiceWorker extends Service {
 
                       // UPLOADING FILES....BEGIN
                       if(NetworkUtil.isConnected(getApplicationContext())) {
-                        uploadDocuments(notify, photoSize, offlineConfirmations);
+                        AsyncTask.execute(() -> uploadDocuments(notify, photoSize, offlineConfirmations));
                       }
 
                       // UPLOADING FILES....END
@@ -793,9 +793,9 @@ public class BackgroundServiceWorker extends Service {
   }
 
   private void uploadDocuments(Notify notify, int photoSize, List<OfflineConfirmation> offlineConfirmations) {
-    for (int i = 0; i < notify.getPhotoUrls().size(); i++) {
+    for (int counter = 0; counter < notify.getPhotoUrls().size(); counter++) {
 
-      UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(i), UploadItem.class);
+      UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(counter), UploadItem.class);
       if (uploadItem.getUploaded()) continue;
 
       if (uploadItem.getUri() != null && !TextUtils.isEmpty(uploadItem.getUri()) && uploadItem.getUri().length() > 0) {
@@ -810,7 +810,6 @@ public class BackgroundServiceWorker extends Service {
             file.getName(), requestFile);
 
         int oldId = incrementUploadCounter();
-        postDocumentSent(notify, oldId, file.getName(), false);//"if" to avoid multiple logs on request attempts
 
         RequestBody mandantId = RequestBody.create(MediaType
           .parse("multipart/form-data"), String.valueOf(notify.getMandantId()));
@@ -842,50 +841,45 @@ public class BackgroundServiceWorker extends Service {
         RequestBody documentType = RequestBody.create(MediaType
           .parse("multipart/form-data"), dmsType);
 
-        final int j = i;
+
         Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
           .upload(mandantId,orderNo,taskId,driverNo,documentType, body);
-        call.enqueue(new Callback<UploadResult>() {
-          @Override
-          public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
+        try {
+          postDocumentSent(notify, oldId, file.getName(), false);//"if" to avoid multiple logs on request attempts
 
-            if (response.isSuccessful()) {//document upload
+          Response<UploadResult> response = call.execute();//Synchronous request when uploading documents, since we have no id or md5 from server and i don't want to parse file name, that is also different //C:\\aBonaUploadData\\2020\\10\\01\\20201001095841_3_202040141_9867_353687144218095588.jpg
+          if (response.isSuccessful()) {//document upload
 
-              Log.d(TAG, ">>>>>>>>>>  Upload complete: " +response.body().getFileName() + " uri" +  uploadItem.getUri());
+            Log.d(TAG, ">>>>>>>>>>  Upload complete: " +response.body().getFileName() + " uri" +  uploadItem.getUri());
 
-              uploadItem.setUploaded(true);
-              notify.getPhotoUrls().set(j, App.getInstance().gson.toJson(uploadItem));
-              notify.setPhotoUrls(notify.getPhotoUrls());
-              mNotifyDAO.updateNotify(notify);
-              //mViewModel.update(mNotify);
+            uploadItem.setUploaded(true);
+            notify.getPhotoUrls().set(counter, App.getInstance().gson.toJson(uploadItem));
+            notify.setPhotoUrls(notify.getPhotoUrls());
+            mNotifyDAO.updateNotify(notify);
+            //mViewModel.update(mNotify);
 
-              if (j >= photoSize-1) {
-                // Entfernen:
-                deleteDocumentConfirmation(offlineConfirmations);
+            if (counter >= photoSize-1) {
+              // Entfernen:
+              mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+              mHandler.post(()->{
                 EventBus.getDefault().post(new ProgressBarEvent(false));
-              }
-
-              App.eventBus.post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo())); //used to reload document's but why? if we know that it is on server
-              int oldId = TextSecurePreferences.getUploadConfirmationCounter();
-              postDocumentSent(notify, oldId, file.getName(), true);
-            } else {
-
-              switch (response.code()) {
-                case 401:
-                  handleAccessToken();
-                  break;
-                default:
-                  break;
-              }
+                EventBus.getDefault().post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo())); //used to reload document's but why? if we know that it is on server
+              });
+            }
+            postDocumentSent(notify, oldId, file.getName(), true);
+          } else {
+            switch (response.code()) {
+              case 401:
+                handleAccessToken();
+                break;
+              default:
+                break;
             }
           }
-
-          @Override
-          public void onFailure(Call<UploadResult> call, Throwable t) {
-
-          }
-        });
-
+        } catch (IOException e) {
+          e.printStackTrace();
+          Log.e(TAG, " error while uploading photo: " + e.getMessage());
+        }
       } else {
         // Entfernen:
         deleteDocumentConfirmation(offlineConfirmations);
