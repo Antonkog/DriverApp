@@ -5,9 +5,9 @@ import android.os.Build
 import com.abona_erp.driver.app.BuildConfig
 import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
+import com.abona_erp.driver.app.data.local.db.DelayReasonEntity
 import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
 import com.abona_erp.driver.app.data.model.*
-import com.google.gson.annotations.SerializedName
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,6 +56,43 @@ object UtilModel{
     fun getCommDeviceProfileItem(context: Context): CommItem {
         val header = Header.Builder(DataType.DEVICE_PROFILE.dataType,DeviceUtils.getUniqueID(context)).build()
         return CommItem.Builder(header = header).deviceProfileItem(getDeviceProfileItem(context)).build()
+    }
+
+
+    fun ActivityEntity.toActivity(deviceId: String): Activity {
+        val reasons = delayReasons?.map { item -> item.toDelayReason() }
+        return Activity(
+            activityId,
+            activityId,
+            reasons,
+            description,
+            deviceId,
+            finished,
+            mandantId,
+            name,
+            radiusGeoFence,
+            sequence,
+            started,
+            status.code,
+            taskpId
+        )
+    }
+
+    private fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
+        return DelayReasonItem(
+            waitingReasongId,
+            activityId,
+            reasonText,
+            translatedReasonText,
+            code,
+            subcode,
+            mandantId,
+            taskId,
+            timestampUtc,
+            delayInMinutes,
+            delaySource,
+            comment
+        )
     }
 
 

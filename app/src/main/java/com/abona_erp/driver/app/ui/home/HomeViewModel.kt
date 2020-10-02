@@ -10,8 +10,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driver.app.data.Constant
-import com.abona_erp.driver.app.data.ResultWithStatus
-import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel

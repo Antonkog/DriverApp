@@ -8,11 +8,9 @@ import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.DocumentEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.*
-import com.abona_erp.driver.app.ui.utils.UtilModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
-import java.io.File
 import java.io.InputStream
 
 interface AppRepository {

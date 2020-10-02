@@ -9,7 +9,7 @@ data class Activity(
     @SerializedName("CustomActivityId")
     val customActivityId: Int,
     @SerializedName("DelayReasons")
-    val delayReasons: Any?,
+    val delayReasons: List<DelayReasonItem>?,
     @SerializedName("Description")
     val description: String?,
     @SerializedName("DeviceId")

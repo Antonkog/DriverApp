@@ -10,8 +10,8 @@ import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
+import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class DriverActViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences) :  BaseViewModel() {  //taskRepo : ApiRepository,
@@ -35,7 +35,7 @@ class DriverActViewModel @ViewModelInject constructor(@ApplicationContext privat
 
     fun postActivityChange(entity: ActivityEntity){
         viewModelScope.launch {
-            repository.postActivity(context, entity.toActivity())
+            repository.postActivity(context, entity.toActivity(DeviceUtils.getUniqueID(context)))
         }
     }
 }
