@@ -22,7 +22,7 @@ interface ApiService {
     suspend fun getAllTasks(@Query("deviceId") deviceId: String?): CommResponseItem
 
     @POST("api/activity/activity")
-    fun postActivityChange(@Body commItem: CommItem): Observable<ResultOfAction>
+    suspend fun postActivityChange(@Body commItem: CommItem): ResultOfAction
 
     @GET("api/uploader/documents")
     suspend fun getDocuments(

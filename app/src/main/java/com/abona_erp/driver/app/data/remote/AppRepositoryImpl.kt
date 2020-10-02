@@ -52,7 +52,7 @@ class AppRepositoryImpl @Inject constructor (@ApplicationContext val context: Co
         return api.setDeviceProfile(commItem)
     }
 
-    override suspend fun postActivity(context: Context, activity: Activity): Observable<ResultOfAction> {
+    override suspend fun postActivity(context: Context, activity: Activity): ResultOfAction {
             val commItem: CommItem = UtilModel.getCommActivityChangeItem(context, activity)
             return api.postActivityChange(commItem)
     }

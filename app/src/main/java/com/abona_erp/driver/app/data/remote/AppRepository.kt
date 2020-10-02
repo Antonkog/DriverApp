@@ -33,7 +33,7 @@ interface AppRepository {
         inputStream: InputStream
     ): Single<UploadResult>
     //API set activity change
-    suspend fun postActivity(context: Context, activity: Activity): Observable<ResultOfAction>
+    suspend fun postActivity(context: Context, activity: Activity): ResultOfAction
 
     suspend fun refreshTasks(deviceId: String) // call api to set db
     suspend fun refreshDocuments(mandantId: Int,  orderNo: Int, deviceId: String) // call api to set db

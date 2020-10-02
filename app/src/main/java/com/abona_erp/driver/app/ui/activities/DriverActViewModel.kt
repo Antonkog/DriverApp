@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.activities
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,7 +37,9 @@ class DriverActViewModel @ViewModelInject constructor(@ApplicationContext privat
 
     fun postActivityChange(entity: ActivityEntity){
         viewModelScope.launch {
-            repository.postActivity(context, entity.toActivity(DeviceUtils.getUniqueID(context)))
+           val result =  repository.postActivity(context, entity.toActivity(DeviceUtils.getUniqueID(context)))
+
+            Log.e(TAG, " got result: $result")
         }
     }
 }
