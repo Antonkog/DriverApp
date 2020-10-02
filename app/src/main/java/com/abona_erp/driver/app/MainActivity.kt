@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        menu?.findItem(R.id.action_send_doc).let {
+        menu.findItem(R.id.action_send_doc).let {
             it?.setVisible(false)
         }
         return true

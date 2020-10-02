@@ -13,12 +13,13 @@ enum class ConfirmationType(//green
     SYNCED_WITH_SERVER(2);
 
     companion object {
+        private val values = values()
+        fun getByCode(code: Int) = values.firstOrNull { it.code == code } ?: RECEIVED
         fun getColor(context: Context, confirm : ConfirmationType): Int {
             return when (confirm) {
                 RECEIVED -> ResourcesCompat.getColor(context.resources, R.color.confirm_gray, null)
                 READ -> ResourcesCompat.getColor(context.resources, R.color.confirm_orange, null)
                 SYNCED_WITH_SERVER -> ResourcesCompat.getColor(context.resources, R.color.confirm_green, null)
-                else ->  ResourcesCompat.getColor(context.resources, R.color.white, null)
             }
         }
     }

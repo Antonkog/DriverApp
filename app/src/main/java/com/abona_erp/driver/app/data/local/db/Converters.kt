@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.data.local.db
 
 import androidx.room.TypeConverter
+import com.abona_erp.driver.app.data.model.DelayReasonItem
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -24,7 +25,7 @@ class Converters {
     @TypeConverter
     fun getConfirmType(numeral: Int): ConfirmationType? {
         for (lt in ConfirmationType.values()) {
-            if (lt.code === numeral) {
+            if (lt.code == numeral) {
                 return lt
             }
         }
@@ -37,13 +38,17 @@ class Converters {
     }
 
     @TypeConverter
-    fun stringToSomeObjectList(data: String?): List<Any> {
-        if (data == null) {
+    fun stringToDelayReasons(json: String?): List<DelayReasonEntity>? {
+        if (json == null) {
             return emptyList()
         }
-        val listType =
-            object : TypeToken<List<Any>>() {}.type
-        return Gson().fromJson(data, listType)
+        val type = object : TypeToken<List<DelayReasonEntity?>?>() {}.type
+        return Gson().fromJson<List<DelayReasonEntity>>(json, type)
+    }
+
+    @TypeConverter
+    fun delayReasonsToString(list: List<DelayReasonEntity>?): String {
+        return Gson().toJson(list)
     }
 
     @TypeConverter
@@ -56,6 +61,12 @@ class Converters {
         return Gson().fromJson(data, listType)
     }
 
+
+    @TypeConverter
+    fun intListToString(someObjects: List<Int>): String {
+        return Gson().toJson(someObjects)
+    }
+
     @TypeConverter
     fun stringToContactsList(data: String?): List<Contact> {
         if (data == null) {
@@ -65,6 +76,7 @@ class Converters {
             object : TypeToken<List<Contact>>() {}.type
         return Gson().fromJson(data, listType)
     }
+
     @TypeConverter
     fun stringToGoods(data: String?): List<DangerousGoods> {
         if (data == null) {
@@ -75,15 +87,6 @@ class Converters {
         return Gson().fromJson(data, listType)
     }
 
-    @TypeConverter
-    fun someObjectListToString(someObjects: List<Any>): String {
-        return Gson().toJson(someObjects)
-    }
-
-    @TypeConverter
-    fun intListToString(someObjects: List<Int>): String {
-        return Gson().toJson(someObjects)
-    }
     @TypeConverter
     fun contactListToString(someObjects: List<Contact>): String {
         return Gson().toJson(someObjects)

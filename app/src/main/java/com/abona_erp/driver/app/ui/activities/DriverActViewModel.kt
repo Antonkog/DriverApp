@@ -11,6 +11,7 @@ import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import com.abona_erp.driver.app.ui.utils.DeviceUtils
+import com.abona_erp.driver.app.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 

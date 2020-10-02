@@ -95,6 +95,23 @@ object UtilModel{
         )
     }
 
+    fun DelayReasonItem.toDelayReasonEntity(): DelayReasonEntity {
+        return DelayReasonEntity(
+            waitingReasongId,
+            activityId,
+            reasonText,
+            translatedReasonText,
+            code,
+            subCode,
+            mandantId,
+            taskId,
+            timestampUtc,
+            delayInMinutes,
+            delaySource,
+            comment
+        )
+    }
+
 
 
     private fun getDeviceProfileItem(context:Context) : DeviceProfileItem {

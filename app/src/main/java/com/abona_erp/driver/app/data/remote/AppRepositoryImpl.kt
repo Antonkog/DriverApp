@@ -40,8 +40,8 @@ class AppRepositoryImpl @Inject constructor (@ApplicationContext val context: Co
         return localDataSource.observeTasks()
     }
 
-    override fun observeActivities(taskID : Int): LiveData<List<ActivityEntity>> {
-        return localDataSource.observeActivities(taskID)
+    override fun observeActivities(taskId : Int): LiveData<List<ActivityEntity>> {
+        return localDataSource.observeActivities(taskId)
     }
 
     override fun observeDocuments(taskId: Int): LiveData<List<DocumentEntity>> {

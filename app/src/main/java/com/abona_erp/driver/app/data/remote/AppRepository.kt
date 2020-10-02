@@ -30,7 +30,7 @@ interface AppRepository {
         taskID: Int,
         driverNo: Int,
         documentType: Int,
-        ims: InputStream
+        inputStream: InputStream
     ): Single<UploadResult>
     //API set activity change
     suspend fun postActivity(context: Context, activity: Activity): Observable<ResultOfAction>
