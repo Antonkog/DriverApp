@@ -1,141 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ScrollView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_VIII"
                 android:background="@color/colorPrimary"
                 android:elevation="@dimen/elevation_IV"
                 android:translationZ="@dimen/elevation_IV"
                 app:cardCornerRadius="@dimen/elevation_IV">
 
-
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    style="?android:attr/progressBarStyleHorizontal"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    android:layout_height="match_parent">
 
 
-                <LinearLayout
-                    android:id="@+id/linlay_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/margin_VIII"
-                    android:orientation="vertical" />
+                    <ProgressBar
+                        android:id="@+id/progress_rest"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
+                    <ProgressBar
+                        android:id="@+id/progress_task"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textTaskName" />
+
+                    <TextView
+                        android:id="@+id/textTaskName"
+                        style="@style/TextTask"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/task_txt_placeholder"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textOrder" />
+
+                    <TextView
+                        android:id="@+id/textActName"
+                        style="@style/TextTask"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/task_txt_placeholder"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textFinish" />
+
+                    <TextView
+                        android:id="@+id/textOrder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/txt_order"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/progress_rest" />
+
+                    <TextView
+                        android:id="@+id/textOrderNo2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/txt_order_placeholder"
+                        app:layout_constraintStart_toEndOf="@+id/textOrder"
+                        app:layout_constraintTop_toTopOf="@+id/textOrder" />
+
+                    <TextView
+                        android:id="@+id/textDueIn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/txt_due_in"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/progress_task" />
+
+                    <TextView
+                        android:id="@+id/textFinish"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/txt_finish"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textDueIn" />
+
+                    <TextView
+                        android:id="@+id/textDueInTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/task_duein_placeholder"
+                        app:layout_constraintStart_toEndOf="@+id/textDueIn"
+                        app:layout_constraintTop_toBottomOf="@+id/progress_task" />
+
+                    <TextView
+                        android:id="@+id/textFinishTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/task_finish_placeholder"
+                        app:layout_constraintBottom_toBottomOf="@+id/textFinish"
+                        app:layout_constraintStart_toStartOf="@+id/textDueInTime"
+                        app:layout_constraintTop_toTopOf="@+id/textFinish" />
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/textFinishTime"
+                        app:layout_constraintEnd_toEndOf="@+id/progress_task"
+                        app:layout_constraintTop_toTopOf="@+id/textDueInTime"
+                        app:srcCompat="@android:drawable/ic_menu_call" />
+
+                    <Button
+                        android:id="@+id/button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Button"
+                        app:layout_constraintBottom_toBottomOf="@+id/textActName"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-        </ScrollView>
 
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txtd_mandant_name"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="MandantName"-->
-        <!--          tools:layout_editor_absoluteX="23dp"-->
-        <!--          tools:layout_editor_absoluteY="59dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txt_mandant_name"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text='"Hegelmann Express GmbH",'-->
-        <!--          tools:layout_editor_absoluteX="182dp"-->
-        <!--          tools:layout_editor_absoluteY="59dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txtd_kunden_name"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="KundenName"-->
-        <!--          tools:layout_editor_absoluteX="20dp"-->
-        <!--          tools:layout_editor_absoluteY="112dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txt_kunden_name"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="Amazon"-->
-        <!--          tools:layout_editor_absoluteX="208dp"-->
-        <!--          tools:layout_editor_absoluteY="112dp" />-->
-
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txtd_finish_time"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="TaskDueDateFinish"-->
-        <!--          tools:layout_editor_absoluteX="23dp"-->
-        <!--          tools:layout_editor_absoluteY="175dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txt_finish_time"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="2020-06-03T00:00:00"-->
-        <!--          tools:layout_editor_absoluteX="209dp"-->
-        <!--          tools:layout_editor_absoluteY="175dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txtd_address"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="Address"-->
-        <!--          tools:layout_editor_absoluteX="49dp"-->
-        <!--          tools:layout_editor_absoluteY="248dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txt_adress"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text='"Street":"Vulytsia Balzaka"'-->
-        <!--          tools:layout_editor_absoluteX="219dp"-->
-        <!--          tools:layout_editor_absoluteY="248dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txtd_dangerous"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="DangerousGoods"-->
-        <!--          tools:layout_editor_absoluteX="60dp"-->
-        <!--          tools:layout_editor_absoluteY="321dp" />-->
-
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/txt_dangerous"-->
-        <!--          android:layout_width="wrap_content"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          android:text="false"-->
-        <!--          tools:layout_editor_absoluteX="209dp"-->
-        <!--          tools:layout_editor_absoluteY="321dp" />-->
-
-        <!--      <TextView-->
-        <!--          android:id="@+id/task_text"-->
-        <!--          android:layout_width="match_parent"-->
-        <!--          android:layout_height="wrap_content"-->
-        <!--          app:layout_constraintBottom_toTopOf="@+id/progress_bar"-->
-        <!--          app:layout_constraintEnd_toEndOf="parent"-->
-        <!--          app:layout_constraintHorizontal_bias="1.0"-->
-        <!--          app:layout_constraintStart_toStartOf="parent" />-->
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

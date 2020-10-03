@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.ConfirmationType
+import com.abona_erp.driver.app.data.model.ActivityStatus
 import com.abona_erp.driver.app.data.model.CommResponseItem
 import com.abona_erp.driver.app.ui.utils.UtilModel.toDelayReasonEntity
 
@@ -50,7 +51,8 @@ interface DriverActDao {
                         it.sequence,
                         it.taskId,
                         it.started,
-                        ConfirmationType.getByCode(it.status)
+                        ActivityStatus.getActivityStatus(it.status),
+                        ConfirmationType.RECEIVED
                     )
                 }
             }

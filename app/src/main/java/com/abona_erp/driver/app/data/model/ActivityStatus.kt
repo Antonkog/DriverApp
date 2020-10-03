@@ -1,8 +1,23 @@
 package com.abona_erp.driver.app.data.model
 
-enum class ActivityStatus(val status: Int)
+import com.abona_erp.driver.app.R
+
+enum class ActivityStatus(val status: Int, val resId: Int)
 {
-    PENDING(0),
-    RUNNING(1),
-    FINISHED(2)
+    PENDING(0, R.string.pending),
+    RUNNING(1, R.string.running),
+    FINISHED(2, R.string.completed),
+    ENUM_ERROR(-1, R.string.error_log_in);
+
+    companion object {
+        fun getActivityStatus(status: Int): ActivityStatus {
+            for (lt in values()) {
+                if (lt.status == status) {
+                    return lt
+                }
+            }
+            return ENUM_ERROR
+        }
+    }
 }
+

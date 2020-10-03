@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.data.model
 
 
+import com.abona_erp.driver.app.data.local.db.ActionType
 import com.abona_erp.driver.app.data.local.db.TaskStatus
 import com.google.gson.annotations.SerializedName
 
@@ -8,7 +9,7 @@ data class TaskItem(
     @SerializedName("AbonaTransferNr")
     val abonaTransferNr: String,
     @SerializedName("ActionType")
-    val actionType: Int,
+    val actionType: ActionType,
     @SerializedName("Activities")
     val activities: List<Activity>,
     @SerializedName("Address")

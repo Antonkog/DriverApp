@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName
 )
 data class TaskEntity(
     @ColumnInfo  val taskId: Int,
-    @ColumnInfo val actionType: Int,
+    @ColumnInfo val actionType: ActionType,
     @ColumnInfo val status: TaskStatus,
     val activityIds: List<Int>,
     @ColumnInfo val changeReason: Int,

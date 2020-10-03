@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.data.local.db
 
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
+import com.abona_erp.driver.app.data.model.ActivityStatus
 
 @Entity(tableName = "activity_entity", indices = arrayOf(Index(value = ["taskpId","mandantId" ])),
     foreignKeys = [
@@ -24,5 +25,6 @@ data class ActivityEntity(
     @ColumnInfo val sequence: Int,
     @ColumnInfo val taskpId: Int,
     @ColumnInfo val started: String?,
-    @ColumnInfo val status: ConfirmationType
+    @ColumnInfo val activityStatus: ActivityStatus,
+    @ColumnInfo val confirmstatus: ConfirmationType
 )

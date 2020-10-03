@@ -3,8 +3,10 @@ package com.abona_erp.driver.app.ui.utils
 import android.content.Context
 import android.os.Build
 import com.abona_erp.driver.app.BuildConfig
+import com.abona_erp.driver.app.R
 import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
+import com.abona_erp.driver.app.data.local.db.Converters
 import com.abona_erp.driver.app.data.local.db.DelayReasonEntity
 import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
 import com.abona_erp.driver.app.data.model.*
@@ -73,9 +75,18 @@ object UtilModel{
             radiusGeoFence,
             sequence,
             started,
-            status.code,
+            activityStatus.status,
             taskpId
         )
+    }
+
+    fun getActivityStatusResId(type: ActivityStatus): Int {
+        for (lt in ActivityStatus.values()) {
+            if (lt == type) {
+                return lt.resId
+            }
+        }
+        return 0
     }
 
     private fun DelayReasonEntity.toDelayReason(): DelayReasonItem {

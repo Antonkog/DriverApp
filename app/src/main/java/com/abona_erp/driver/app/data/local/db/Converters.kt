@@ -1,7 +1,7 @@
 package com.abona_erp.driver.app.data.local.db
 
 import androidx.room.TypeConverter
-import com.abona_erp.driver.app.data.model.DelayReasonItem
+import com.abona_erp.driver.app.data.model.ActivityStatus
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -21,6 +21,28 @@ class Converters {
     fun getTaskStatusInt(type: TaskStatus?): Int? {
         return type?.ordinal
     }
+
+    @TypeConverter
+    fun getActivityStatusInt(type: ActivityStatus): Int {
+        return type.status
+    }
+
+    @TypeConverter
+    fun getActivityStatus(status: Int): ActivityStatus {
+        return ActivityStatus.getActivityStatus(status)
+    }
+
+
+    @TypeConverter
+    fun getTaskActionTypeInt(type: ActionType): Int {
+        return type.typeCode
+    }
+
+    @TypeConverter
+    fun getTaskActionType(typeCode: Int): ActionType{
+        return ActionType.getActionType(typeCode)
+    }
+
 
     @TypeConverter
     fun getConfirmType(numeral: Int): ConfirmationType? {
