@@ -10,4 +10,38 @@
     <dimen name="margin_XVI">16dp</dimen>
     <dimen name="margin_VIII">8dp</dimen>
     <dimen name="elevation_IV">4dp</dimen>
+
+
+    <dimen name="badge_padding">4dp</dimen>
+
+
+    <!--genaral spacing-->
+    <dimen name="spacing_xsmall">2dp</dimen>
+    <dimen name="spacing_small">3dp</dimen>
+    <dimen name="spacing_medium">4dp</dimen>
+    <dimen name="spacing_xmedium">8dp</dimen>
+    <dimen name="spacing_middle">12dp</dimen>
+    <dimen name="spacing_large">16dp</dimen>
+    <dimen name="spacing_smlarge">20dp</dimen>
+    <dimen name="spacing_mlarge">22dp</dimen>
+    <dimen name="spacing_mxlarge">28dp</dimen>
+    <dimen name="spacing_xlarge">30dp</dimen>
+    <dimen name="spacing_xmlarge">40dp</dimen>
+    <dimen name="spacing_xxlarge">50dp</dimen>
+    <dimen name="spacing_xxxlarge">55dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
+
+
+    <!--  icon sizes-->
+    <dimen name="icon_size_X">24dp</dimen>
+    <dimen name="icon_size_XX">32dp</dimen>
+    <dimen name="icon_size_Xbg">40dp</dimen>
+    <dimen name="icon_size_XXX">48dp</dimen>
+    <dimen name="icon_size_XXXX">72dp</dimen>
+
+    <!--  margins-->
+
+
+    <dimen name="margin_std">16dp</dimen>
+    <dimen name="margin_sm">8dp</dimen>
 </resources>
