@@ -11,6 +11,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driver.app.data.Constant
 import com.abona_erp.driver.app.data.local.db.TaskEntity
+import com.abona_erp.driver.app.data.local.db.TaskStatus
 import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,11 +25,46 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
     private val TAG = "HomeViewModel"
 
     val tasks  : LiveData<List<TaskEntity>> = repository.observeTasks(DeviceUtils.getUniqueID(context))
+    val filteredTasks  : MutableLiveData<List<TaskEntity>> = MutableLiveData()
+
+    var runningTasks  : List<TaskEntity> = listOf()
+    var pendingTasks  : List<TaskEntity> = listOf()
+    var completedTasks  : List<TaskEntity> = listOf()
+    var currentStatus : Int = 0
+
+
     val error  = MutableLiveData<String> ()
 
     init {
         refreshTasks()
     }
+
+    fun filterRunning(){
+        currentStatus = TaskStatus.PENDING.status
+        filteredTasks.postValue(runningTasks)
+    }
+
+    fun filterPending(){
+        currentStatus = TaskStatus.RUNNING.status
+        filteredTasks.postValue(runningTasks)
+    }
+
+    fun filterCompleted(){
+        currentStatus = TaskStatus.FINISHED.status
+        filteredTasks.postValue(runningTasks)
+    }
+
+    fun setTasks(tasks :List<TaskEntity>) {
+        pendingTasks  = tasks.filter { it.status == TaskStatus.PENDING }
+        runningTasks  = tasks.filter { it.status == TaskStatus.RUNNING }
+        completedTasks  = tasks.filter { it.status == TaskStatus.FINISHED }
+        when(currentStatus){
+            TaskStatus.PENDING.status -> filteredTasks.postValue(pendingTasks)
+            TaskStatus.RUNNING.status -> filteredTasks.postValue(runningTasks)
+            TaskStatus.FINISHED.status -> filteredTasks.postValue(completedTasks)
+        }
+    }
+
 
     fun loggedIn(): Boolean {
         val currentTime = System.currentTimeMillis()

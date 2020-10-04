@@ -67,7 +67,7 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // recyclerview init
-        driverActFragmentBinding.tasksRecycler.initWithLinLay(
+        driverActFragmentBinding.activityRecycler.initWithLinLay(
             LinearLayoutManager.VERTICAL,
             adapter,
             listOf()

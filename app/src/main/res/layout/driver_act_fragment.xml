@@ -22,10 +22,10 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tasksRecycler"
+            android:id="@+id/activityRecycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/task_item"/>
+            tools:listitem="@layout/activity_item"/>
 
         <TextView
             android:id="@+id/text_home"
