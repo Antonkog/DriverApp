@@ -27,7 +27,7 @@
   <string name="action_lets_start">Lasst uns beginnen</string>
   <string name="action_security_code">Sicherheitscode</string>
   <string name="action_security_code_message">Geben Sie den Sicherheitscode ein.</string>
-  <string name="action_error">Fehlermeldung</string>
+  <string name="dialog_login_error">Fehlermeldung</string>
   <string name="action_warning_notice">Warnhinweis</string>
   <string name="client_id_is_not_active">Client-ID ist nicht aktive!</string>
   <string name="no_internet">Kein Internet!</string>
@@ -116,14 +116,14 @@
   <string name="action_type_delay">Verzögerung</string>
   <string name="action_type_unknown">Unbekannt</string>
 
-  <string name="need_permissions">Berechtigungen!</string>
+  <string name="need_permissions_title">Berechtigungen!</string>
   <string name="permission_message_settings">Diese App benötigt die Erlaubnis, diese Funktion zu nutzen. Sie können sie in den App-Einstellungen gewähren.</string>
 
   <string name="current_location">Aktuelle Position</string>
   <string name="destination_location">Zielort</string>
 
   <string name="preference_language">Sprache</string>
-  <string name="preference_language_show">Deutsch</string>
+  <string name="preference_language_eng">Deutsch</string>
 
   <string name="more">Mehr</string>
   <string name="less">Weniger</string>

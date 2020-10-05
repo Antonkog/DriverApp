@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.feature.main.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,7 +13,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
@@ -47,10 +49,6 @@ import com.abona_erp.driver.app.ui.widget.CustomDelayReasonHistory;
 import com.abona_erp.driver.app.ui.widget.DelayReasonHistoryAdapter;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.v3.MessageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -474,25 +472,17 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
                 CommItem prevItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
                 if (prevItem == null) return;
                 if (!prevItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-                  AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                      MessageDialog.build((AppCompatActivity)mContext)
-                        .setStyle(DialogSettings.STYLE.STYLE_IOS)
-                        .setTheme(DialogSettings.THEME.LIGHT)
-                        .setTitle(mContext.getResources().getString(R.string.action_warning_notice))
-                        .setMessage(mContext.getResources().getString(R.string.action_previous_task_message))
-                        .setOkButton(mContext.getResources().getString(R.string.action_ok),
-                          new OnDialogButtonClickListener() {
-                            @Override
-                            public boolean onClick(BaseDialog baseDialog, View v) {
-                              isPreviousTaskFinished = false;
-                              return false;
-                            }
-                          })
-                        .show();
-                    }
-                  });
+                      AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(mContext, R.style.AbonaDialog));
+                      builder.setTitle(mContext.getResources().getString(R.string.action_warning_notice))
+                      .setMessage(mContext.getResources().getString(R.string.action_previous_task_message))
+                      .setPositiveButton(mContext.getResources().getString(R.string.action_ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                          isPreviousTaskFinished = false;
+                          dialog.dismiss();
+                        }
+                      });
+                      builder.show();
                 } else {
                   isPreviousTaskFinished = true;
                 }
@@ -507,48 +497,45 @@ public class ActivityStepAdapter extends RecyclerView.Adapter<ActivityStepAdapte
           isPreviousTaskFinished = true;
         }
         if (!isPreviousTaskFinished) return;
-  
-        // Start Activity?
-        MessageDialog.build((AppCompatActivity)mContext)
-          .setStyle(DialogSettings.STYLE.STYLE_IOS)
-          .setTheme(DialogSettings.THEME.LIGHT)
-          .setTitle(mContext.getResources().getString(R.string.action_start_order))
-          .setMessage(mContext.getResources().getString(R.string.action_start_task_msg))
-          .setOkButton(mContext.getResources().getString(R.string.action_start),
-            new OnDialogButtonClickListener() {
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-  
-                isPreviousTaskFinished = false;
-                commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                mNotify.setStatus(50);
-                mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
-                updateNotify(mNotify);
 
-                OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
 
-                OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
-                offlineConfirmation.setNotifyId(mNotify.getId());
-                offlineConfirmation.setActivityId(0);
-                offlineConfirmation.setConfirmType(ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(mContext, R.style.AbonaDialog));
+        builder.setTitle(mContext.getResources().getString(R.string.action_start_order));
+        builder.setMessage(mContext.getResources().getString(R.string.action_start_task_msg));
+        builder.setPositiveButton(mContext.getResources().getString(R.string.action_start), new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            // Start Activity?
+            isPreviousTaskFinished = false;
+            commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+            commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+            commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+            mNotify.setStatus(50);
+            mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));
+            updateNotify(mNotify);
 
-                addOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-                addHistoryLog(ActionType.START_ACTIVITY,  commItem.getTaskItem().getActivities().get(0), commItem);
-                return false;
-              }
-            })
-          .setCancelButton(mContext.getResources().getString(R.string.action_cancel),
-            new OnDialogButtonClickListener() {
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-                return false;
-              }
-            })
-          .show();
+            OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
+
+            OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+            offlineConfirmation.setNotifyId(mNotify.getId());
+            offlineConfirmation.setActivityId(0);
+            offlineConfirmation.setConfirmType(ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+
+            addOfflineWork(mNotify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+            addHistoryLog(ActionType.START_ACTIVITY,  commItem.getTaskItem().getActivities().get(0), commItem);
+
+            dialog.dismiss();
+          }
+        });
+
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
+          }
+        });
+        builder.show();
       } else {
-
         mNotify.setStatus(100);
         commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
         mNotify.setData(App.getInstance().gsonUtc.toJson(commItem));

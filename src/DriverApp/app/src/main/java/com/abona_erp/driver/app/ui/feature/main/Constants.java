@@ -7,6 +7,7 @@ public interface Constants {
     String EXTRAS_ALARM_TASK_ID = "extras_alarm_task_id";
     String WORK_TAG_SUFFIX = "alarmTask";
     String WORK_TAG_DEVICE_UPDATE = "deviceUpdateTask";
+    String SECURITY_CODE = "0000";
     int REPEAT_TIME = 5;
     int FLEX_TIME = 2;
     int REPEAT_COUNT = 3;

@@ -104,7 +104,6 @@
   <string name="action_lets_start">Let\'s Start</string>
   <string name="action_security_code">Security Code</string>
   <string name="action_security_code_message">Enter the security code.</string>
-  <string name="action_error">Error Message</string>
   <string name="action_warning_notice">Warning notice</string>
   <string name="client_id_is_not_active">Client-ID is not active!</string>
   <string name="no_internet">No Internet!</string>
@@ -150,6 +149,9 @@
   <string name="camera">Camera</string>
   <string name="document">Document</string>
 
+  <string name="registration_started" translatable="false">Device Registration started&#8230;</string>
+  <string name="registration_rest_error" translatable="false">Error on REST-API&#8230;</string>
+  <string name="registration_success" translatable="false">Device Registration Successful!</string>
   <string name="registration_number">No Vehicle</string>
   <string name="task_status">Task Status</string>
   <string name="task_finish">Task Finish</string>
@@ -212,7 +214,17 @@
 
   <string name="hint_ip_address" translatable="false">IP Address</string>
 
-  <string name="need_permissions">Need Permissions!</string>
+  <string name="need_permissions_title">Need Permissions!</string>
+  <string name="need_permissions_message" translatable="false">Please check phone settings.</string>
+  <string name="dialog_language_title" translatable="false">Select Language</string>
+
+  <string name="dialog_not_found_title" translatable="false">Not Found</string>
+  <string name="dialog_not_found_message" translatable="false">Task existiert nicht mehr!</string>
+
+  <string name="dialog_register" translatable="false">Device registration</string>
+
+  <string name="dialog_login_error">Login error, while getting response from server</string>
+
 
   <string name="permission_message_settings">69/5000</string>
 
@@ -220,7 +232,11 @@
   <string name="destination_location">Destination Location</string>
 
   <string name="preference_language">Language</string>
-  <string name="preference_language_show">English</string>
+  <string name="preference_language_eng" translatable="false">English</string>
+  <string name="preference_language_rus" translatable="false">Русский</string>
+  <string name="preference_language_ger" translatable="false">Deutsch</string>
+  <string name="preference_language_pol" translatable="false">Polski</string>
+
   <string name="preference_notification">Notification</string>
   <string name="preference_notification_show">Minutes before task end</string>
   <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>

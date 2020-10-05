@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
@@ -14,6 +15,7 @@ import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
+import com.abona_erp.driver.app.util.TextSecurePreferences;
 
 import java.util.Date;
 import java.util.List;
@@ -181,6 +183,25 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.deleteAllLastActivities();
   }
 
+  public void deleteAllLogs() {
+    mRepository.deleteAllLogs();
+  }
+
+  public void resetDeviceDB(){
+    DriverDatabase mDb =  DriverDatabase.getDatabase();
+    mDb.lastActivityDAO().deleteAll();
+    mDb.notifyDao().deleteAll();
+    mDb.offlineConfirmationDAO().deleteAll();
+    mDb.delayReasonDAO().deleteAll();
+    mDb.offlineDelayReasonDAO().deleteAll();
+    mDb.logDAO().deleteAll();
+    // DEVICE RESET END
+
+    TextSecurePreferences.setLoginPageEnable(true);
+    TextSecurePreferences.setDeviceFirstTimeRun(false);
+    TextSecurePreferences.setDeviceRegistrated(false);
+    TextSecurePreferences.setStopService(true);
+  }
   //List<DeviceProfile> getAllDeviceProfiles() {
   //  return mAllDeviceProfiles;
   //}

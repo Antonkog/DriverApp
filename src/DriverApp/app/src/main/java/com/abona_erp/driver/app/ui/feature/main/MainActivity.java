@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -84,6 +84,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotR
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.app.util.CustomDialogFragment;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.RingtoneUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -95,10 +96,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.v3.MessageDialog;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
@@ -129,7 +126,7 @@ import retrofit2.Response;
 
 import static com.abona_erp.driver.app.data.converters.LogType.FCM;
 
-public class MainActivity extends BaseActivity /*implements OnCompleteListener<Void>*/ {
+public class MainActivity extends BaseActivity implements CustomDialogFragment.CustomDialogListener /*implements OnCompleteListener<Void>*/ {
 
   private static final String TAG = MainActivity.class.getSimpleName();
   
@@ -172,7 +169,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   // VIEW MODEL:
   private MainViewModel mMainViewModel;
-  
+
   private enum PendingGeofenceTask {
     ADD, REMOVE, NONE
   }
@@ -218,7 +215,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       tellFragmentsOnBackPress();
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
     } else {
-      Util.askNeedExit(MainActivity.this);
+      CustomDialogFragment fragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.EXIT);
+      fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.EXIT.name());
     }
   }
   private void tellFragmentsOnBackPress(){
@@ -267,10 +265,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     requestDriverPermission();
     if (!AppUtils.isNetworkConnected(getBaseContext())) {
       findViewById(R.id.connectivity_image).setVisibility(View.VISIBLE);
-      Util.showDialog(this, getApplicationContext().getResources()
-                      .getString(R.string.action_warning_notice),
-              getApplicationContext().getResources()
-                      .getString(R.string.no_internet));
+      CustomDialogFragment fragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.NO_CONNECTION);
+      fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.NO_CONNECTION.name());
     } else{
       findViewById(R.id.connectivity_image).setVisibility(View.GONE);
     }
@@ -560,44 +556,18 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    
     if (requestCode == REQUEST_APP_SETTINGS) {
       Log.i(TAG, "onActivityResult() called! - REQUEST_APP_SETTINGS");
-      
-      if (!hasPermissions(Manifest.permission.READ_PHONE_STATE)) {
-        Log.i(TAG, "onActivityResult() called! - No READ_PHONE_STATE permission...");
+      if (!hasPermissions(Manifest.permission.READ_PHONE_STATE)||
+              !hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)||
+              !hasPermissions(Manifest.permission.CAMERA)||
+              !hasPermissions(Manifest.permission.RECORD_AUDIO)||
+              !hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)||
+              !hasPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+      ){
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this, getResources().getString(R.string.need_permissions), "No READ_PHONE_STATE permission...", positiveDialogListener);
-        return;
-      }
-      if (!hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
-        Log.i(TAG, "onActivityResult() called! - No ACCESS_FINE_LOCATION permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No ACCESS_FINE_LOCATION permission...", positiveDialogListener);
-        return;
-      }
-      if (!hasPermissions(Manifest.permission.CAMERA)) {
-        Log.i(TAG, "onActivityResult() called! - No CAMERA permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No CAMERA permission...", positiveDialogListener);
-        return;
-      }
-      if (!hasPermissions(Manifest.permission.RECORD_AUDIO)) {
-        Log.i(TAG, "onActivityResult() called! - No RECORD_AUDIO permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No RECORD_AUDIO permission...", positiveDialogListener);
-        return;
-      }
-      if (!hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-        Log.i(TAG, "onActivityResult() called! - No WRITE_EXTERNAL_STORAGE permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No WRITE_EXTERNAL_STORAGE permission...", positiveDialogListener);
-        return;
-      }
-      if (!hasPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-        Log.i(TAG, "onActivityResult() called! - No READ_EXTERNAL_STORAGE permission...");
-        TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showPermissionErrorMessageAndFinish(this,getResources().getString(R.string.need_permissions), "No READ_EXTERNAL_STORAGE permission...", positiveDialogListener);
+        CustomDialogFragment fragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.PERMISSION);
+        fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.PERMISSION.name());
         return;
       }
     }
@@ -685,14 +655,13 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   public void onMessageEvent(ConnectivityEvent event) {
       if(!event.isConnected()){
         findViewById(R.id.connectivity_image).setVisibility(View.VISIBLE);
-          Util.showDialog(this, getApplicationContext().getResources()
-                          .getString(R.string.action_warning_notice),
-                  getApplicationContext().getResources()
-                          .getString(R.string.no_internet));
+        CustomDialogFragment fragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.NO_CONNECTION);
+        fragment.show(getSupportFragmentManager(),CustomDialogFragment.DialogType.NO_CONNECTION.name());
       } else {
         findViewById(R.id.connectivity_image).setVisibility(View.GONE);
         if (Util.isAirplaneModeOn(getApplicationContext())) {
-         Util.showAirplaneDialog(this);
+          CustomDialogFragment fragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.AIRPLANE_MODE);
+          fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.AIRPLANE_MODE.name());
         }
       }
   }
@@ -702,8 +671,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     switch (event.getPageItem().pageItem) {
       case PageItemDescriptor.PAGE_BACK:
         FragmentManager fm = getSupportFragmentManager();
-        Fragment mainFragment = fm.findFragmentByTag("main");
-        
+      //  Fragment mainFragment = fm.findFragmentByTag("main");
         if (fm.getBackStackEntryCount() > 1) {
           fm.popBackStackImmediate();
           showMainActivityItems();
@@ -750,12 +718,12 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         break;
         
       case PageItemDescriptor.PAGE_TASK_NOT_FOUND:
-        showOkDialog("Not Found", "Task existiert nicht mehr!");
+        CustomDialogFragment taskNotFoundFragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.TASK_NOT_FOUND);
+        taskNotFoundFragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.TASK_NOT_FOUND.name());
         break;
         
       case PageItemDescriptor.PAGE_DEVICE_REGISTRATED:
         loadMainFragment(MainFragment.newInstance());
-        
         SpannableStringBuilder builder = new SpannableStringBuilder();
         SpannableString deviceID = new SpannableString(DeviceUtils.getUniqueIMEI(getBaseContext()));
         StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
@@ -763,15 +731,16 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         
         builder.append("Device registration was successfully!\n\nRegistration Number\n");
         builder.append(deviceID);
-        
-        showOkDialog("Successful Registrated", builder.toString());
+        CustomDialogFragment registerFragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.REGISTRATION_SUCCESS, builder.toString());
+        registerFragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.REGISTRATION_SUCCESS.name());
         break;
         
       case PageItemDescriptor.PAGE_NEW_DOCUMENTS:
         runOnUiThread(new Runnable() {
           @Override
           public void run() {
-            Util.showDocumentDialog(MainActivity.this, event.getNotify());
+            CustomDialogFragment docFragment =  CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.DOCUMENT, event.getNotify().getOrderNo());
+            docFragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.DOCUMENT.name());
           }
         });
         break;
@@ -823,7 +792,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
   
   @Subscribe
   public void onMessageEvent(RestApiErrorEvent event) {
-    showOkDialog("Warning", event.getMessage());
+    getOkDialog("Warning", event.getMessage());
   }
   
   @Subscribe
@@ -1001,14 +970,14 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
               });
           }
           // Aktualisiert:
-          showOkDialog(
+          getOkDialog(
             getApplicationContext().getResources()
               .getString(R.string.action_update),
             getApplicationContext().getResources()
               .getString(R.string.action_update_message));
         } else {
           // Kein Update vorhanden:
-          showOkDialog(
+          getOkDialog(
             getApplicationContext().getResources()
               .getString(R.string.action_update),
             getApplicationContext().getResources()
@@ -1016,7 +985,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         }
       } else if (resultOfAction.getIsException()) {
         // Exception from REST-API
-        showOkDialog(getApplicationContext().getResources().getString(R.string.action_warning_notice),
+        getOkDialog(getApplicationContext().getResources().getString(R.string.action_warning_notice),
           getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
 
         mMainViewModel.addLog(getResources().getString(R.string.action_exception_on_rest_api), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
@@ -1182,7 +1151,8 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
         initFirstTimeRun();
       } else {
         TextSecurePreferences.setDevicePermissionsGranted(false);
-        Util.showSettingsDialog(MainActivity.this, positiveDialogListener, negativeDialogListener);
+        CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.SETTINGS);
+        fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.SETTINGS.name());
       }
     }
   }
@@ -1231,25 +1201,26 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     }
   }
   
-  private void showOkDialog(String title, String message) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        MessageDialog.build((AppCompatActivity) MainActivity.this)
-          .setStyle(DialogSettings.STYLE.STYLE_IOS)
-          .setTheme(DialogSettings.THEME.LIGHT)
-          .setTitle(title)
-          .setMessage(message)
-          .setOkButton(getApplicationContext().getResources().getString(R.string.action_ok),
-            new OnDialogButtonClickListener() {
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-                return false;
-              }
-            })
-          .show();
-      }
-    });
+  private AlertDialog getOkDialog(String title, String message) {
+
+
+        // 1. Instantiate an AlertDialog.Builder with its constructor
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+
+// 2. Chain together various setter methods to set the dialog characteristics
+        builder.setMessage(message)
+                .setTitle(title)
+                .setPositiveButton(getApplicationContext().getResources().getString(R.string.action_ok), new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                  }
+                });
+
+
+              AlertDialog dialog = builder.create();
+             return dialog;
+
   }
   
   private void fetchRestApiVersion() {
@@ -1258,7 +1229,7 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
       @Override
       public void onResponse(Call<String> call, Response<String> response) {
         if (response.isSuccessful() && response.body() != null) {
-          TextSecurePreferences.setRestApiVersion(response.body().toString());
+          TextSecurePreferences.setRestApiVersion(response.body());
         } else {
           
           switch (response.code()) {
@@ -1275,5 +1246,55 @@ public class MainActivity extends BaseActivity /*implements OnCompleteListener<V
     
       }
     });
+  }
+
+
+  @Override
+  public void onDialogPositiveClick(CustomDialogFragment dialog) {
+    switch (dialog.getDialogType()){
+      case DEVICE_RESET:
+        dialog.dismiss(); // because DialogFragment can't handle click after activity death
+        resetDevice();
+        break;
+      case EXIT:
+         finish();
+        break;
+      case PROTOCOL:
+        mMainViewModel.deleteAllLogs();
+        break;
+      case SETTINGS:
+        openSettings(MainActivity.this);
+        break;
+    }
+  }
+
+  @Override
+  public void onDialogNegativeClick(CustomDialogFragment dialog) {
+    switch (dialog.getDialogType()) {
+      case LANGUAGE:
+        dialog.dismiss();
+        break;
+    }
+  }
+
+
+  private void resetDevice() {
+        AsyncTask.execute(new Runnable() {
+          @Override
+          public void run() {
+            mMainViewModel.resetDeviceDB();
+          }
+        });
+    stopBackgroundWorkerService();
+    //start a same new one
+    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+    //finish current
+    finish();
+  }
+
+  public void stopBackgroundWorkerService() {
+    Intent serviceIntent = new Intent(this, BackgroundServiceWorker.class);
+    serviceIntent.putExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, true);
+    startService(serviceIntent);
   }
 }

@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.feature.main.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
@@ -50,10 +51,6 @@ import com.abona_erp.driver.app.ui.widget.CustomDelayReasonHistory;
 import com.abona_erp.driver.app.ui.widget.DelayReasonHistoryAdapter;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.v3.MessageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -144,25 +141,14 @@ public class CommItemSubAdapterExt
                 CommItem prevItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
                 if (prevItem == null) return;
                 if (!prevItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-                  AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                      MessageDialog.build((AppCompatActivity)mContext)
-                        .setStyle(DialogSettings.STYLE.STYLE_IOS)
-                        .setTheme(DialogSettings.THEME.LIGHT)
-                        .setTitle(mContext.getResources().getString(R.string.action_warning_notice))
+                      AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+                      alertDialog.setTitle(mContext.getResources().getString(R.string.action_warning_notice))
                         .setMessage(mContext.getResources().getString(R.string.action_previous_task_message))
-                        .setOkButton(mContext.getResources().getString(R.string.action_ok),
-                          new OnDialogButtonClickListener() {
-                            @Override
-                            public boolean onClick(BaseDialog baseDialog, View v) {
-                              isPreviousTaskFinished = false;
-                              return false;
-                            }
-                          })
-                        .show();
-                    }
-                  });
+                              .setPositiveButton(mContext.getResources().getString(R.string.action_ok),
+                                      (dialog, which) -> {
+                                        isPreviousTaskFinished = false;
+                                        dialog.dismiss();
+                                      }).show();
                 } else {
                   isPreviousTaskFinished = true;
                 }
@@ -192,39 +178,34 @@ public class CommItemSubAdapterExt
           addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
         } else {
           // Start Activity?
-          MessageDialog.build((AppCompatActivity)mContext)
-            .setStyle(DialogSettings.STYLE.STYLE_IOS)
-            .setTheme(DialogSettings.THEME.LIGHT)
-            .setTitle(mContext.getResources().getString(R.string.action_start_order))
+          AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+          alertDialog.setTitle(mContext.getResources().getString(R.string.action_start_order))
             .setMessage(mContext.getResources().getString(R.string.action_start_task_msg))
-            .setOkButton(mContext.getResources().getString(R.string.action_start),
-              new OnDialogButtonClickListener() {
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-          
-                  isPreviousTaskFinished = false;
-                  commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                  commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                  commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                  mData.setStatus(50);
-                  mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-                  updateNotify(mData);
-          
-                  App.eventBus.post(new TabChangeEvent());
-          
-                  addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
-                  addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
-                  return false;
-                }
-              })
-            .setCancelButton(mContext.getResources().getString(R.string.action_cancel),
-              new OnDialogButtonClickListener() {
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-                  return false;
-                }
-              })
-            .show();
+                  .setPositiveButton(mContext.getResources().getString(R.string.action_start), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                      isPreviousTaskFinished = false;
+                      commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                      commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                      commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                      mData.setStatus(50);
+                      mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                      updateNotify(mData);
+
+                      App.eventBus.post(new TabChangeEvent());
+
+                      addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
+                      addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+                      dialog.dismiss();
+                    }
+                  })
+                  .setNegativeButton(mContext.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                      dialog.dismiss();
+                    }
+                  }).show();
         }
         
       } else {

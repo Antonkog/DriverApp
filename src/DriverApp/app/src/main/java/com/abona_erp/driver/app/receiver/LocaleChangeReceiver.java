@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.abona_erp.driver.app.ui.feature.main.Constants;
-import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
 
 import java.util.Locale;
+
+import static com.abona_erp.driver.app.util.Util.updatePreferenceFlags;
 
 public class LocaleChangeReceiver extends BroadcastReceiver {
 
@@ -31,6 +33,8 @@ public class LocaleChangeReceiver extends BroadcastReceiver {
                 default:
                     break;
             }
-            SettingsFragment.updatePreferenceFlags();
+            DynamicLanguageContextWrapper.updateContext(context,
+                    TextSecurePreferences.getLanguage(context));
+            updatePreferenceFlags();
         }
 }

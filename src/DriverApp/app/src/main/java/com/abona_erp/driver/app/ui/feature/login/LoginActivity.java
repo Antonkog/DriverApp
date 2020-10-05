@@ -13,8 +13,8 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.remote.NetworkUtil;
 import com.abona_erp.driver.app.ui.feature.main.BaseActivity;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
+import com.abona_erp.driver.app.util.CustomDialogFragment;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
-import com.abona_erp.driver.app.util.Util;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,7 +26,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements CustomDialogFragment.CustomDialogListener {
 
   private AppCompatButton btnLogin;
   private TextInputEditText etClientID;
@@ -56,10 +56,8 @@ public class LoginActivity extends BaseActivity {
 
         try {
           if (!NetworkUtil.isConnected(getApplicationContext())) {
-            Util.showDialog(LoginActivity.this, getApplicationContext().getResources()
-              .getString(R.string.action_warning_notice),
-              getApplicationContext().getResources()
-                .getString(R.string.no_internet));
+            CustomDialogFragment fragment =CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.NO_CONNECTION);
+            fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.NO_CONNECTION.name());
             return;
           }
         } catch (Exception e) {
@@ -92,10 +90,8 @@ public class LoginActivity extends BaseActivity {
                   runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                      Util.showDialog(LoginActivity.this,getApplicationContext().getResources()
-                                      .getString(R.string.action_warning_notice),
-                              getApplicationContext().getResources()
-                                      .getString(R.string.client_id_is_not_active));
+                      CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.LOGIN_NOT_ACTIVE);
+                      fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.LOGIN_NOT_ACTIVE.name());
                     }
                   });
                 }
@@ -109,9 +105,8 @@ public class LoginActivity extends BaseActivity {
               runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                  Util.showDialog(LoginActivity.this,getApplicationContext().getResources()
-                                  .getString(R.string.action_error),
-                          error.getLocalizedMessage());
+                  CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.LOGIN_ERROR, error.getLocalizedMessage());
+                  fragment.show(getSupportFragmentManager(),CustomDialogFragment.DialogType.LOGIN_ERROR.name());
                 }
               });
             }
@@ -126,6 +121,16 @@ public class LoginActivity extends BaseActivity {
   @Override
   public void injectDependency() {
     getActivityComponent().inject(this);
+  }
+
+  @Override
+  public void onDialogPositiveClick(CustomDialogFragment dialog) {
+
+  }
+
+  @Override
+  public void onDialogNegativeClick(CustomDialogFragment dialog) {
+
   }
 
 }
