@@ -152,7 +152,7 @@ public class CustomDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AbonaDialog))
         .setPositiveButton(R.string.action_ok, (dialog, id) -> { // id = which button click
             // Send the positive button event back to the host activity
-            sendItemClickAsNegative();
+            customDialogListener.onDialogPositiveClick(CustomDialogFragment.this);
         });
     }
 
@@ -188,7 +188,12 @@ public class CustomDialogFragment extends DialogFragment {
     private Dialog getExitDialog() {
         return  getBaseDialogBuilder().setTitle(context.getResources().getString(R.string.action_exit))
                 .setMessage(context.getResources().getString(R.string.exit_message))
-                .create();
+                .setPositiveButton(R.string.action_quit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        customDialogListener.onDialogPositiveClick(CustomDialogFragment.this);
+                    }
+                }).create();
     }
 
     private Dialog getNoConnectionDialog() {
