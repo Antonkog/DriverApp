@@ -315,6 +315,6 @@
   <string name="created_at">Created at</string>
   <string name="protocol">Protocol</string>
   <string name="device_reset">Device Reset</string>
-  <string name="local_time">Local Time</string>
+  <string name="local_time">(Local Time)</string>
 
 </resources>
