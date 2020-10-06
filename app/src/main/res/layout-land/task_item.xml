@@ -162,7 +162,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/imageDocuments"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imageMap"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_danger"
                     app:tint="@color/colorPrimary"
                     tools:src="@drawable/ic_danger" />
@@ -172,21 +172,21 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageMap"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imageDanger"
-                    app:layout_constraintTop_toBottomOf="@+id/imageInfo"
-                    app:srcCompat="@drawable/ic_document"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_work"
                     app:tint="@color/colorPrimary" />
 
                 <ImageView
                     android:id="@+id/imageMap"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:layout_constraintBottom_toTopOf="@+id/imageDanger"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imageInfo"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageDocuments"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_map"
                     app:tint="@color/colorPrimary" />
@@ -195,7 +195,7 @@
                     android:id="@+id/imageInfo"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:layout_constraintBottom_toTopOf="@+id/imageDocuments"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imageMap"
@@ -205,6 +205,7 @@
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
