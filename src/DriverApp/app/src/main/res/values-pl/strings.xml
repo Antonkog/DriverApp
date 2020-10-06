@@ -181,6 +181,6 @@
   <string name="log_document_fcm">Dokument od Abony za pośrednictwem FCM</string>
   <string name="log_vehicle_fcm">Pojazd z Abony przez FCM</string>
 
-  <string name="local_time">Czas lokalny</string>
+  <string name="local_time">(Czas lokalny)</string>
 
 </resources>

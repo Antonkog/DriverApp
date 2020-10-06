@@ -102,7 +102,7 @@ public class CommItemAdapterExt extends
   private final int clrTractorSwap = ContextCompat.getColor(ContextUtils.getApplicationContext(), R.color.clrTractorSwap);
   private final int clrDelay = ContextCompat.getColor(ContextUtils.getApplicationContext(), R.color.clrDelay);
   private final int clrUnknown = ContextCompat.getColor(ContextUtils.getApplicationContext(), R.color.clrUnknown);
-  private final String DEFAULT_DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss";
+  private final String DEFAULT_DATE_FORMAT = "EEE, d MMM yyyy HH:mm";
 
   SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT,
     Locale.getDefault());
@@ -271,7 +271,7 @@ public class CommItemAdapterExt extends
           );
           TimeZone startTimeZoneRegion = TimeZone.getTimeZone(startTimeZone);
           String localTime = getLocalTimeFromGivenTimeZone(sdf.format(taskItem.getTaskDueDateFinish()), startTimeZoneRegion);
-          holder.tv_local_time_task_finish.setText(mContext.getString(R.string.local_time) + " - " + localTime);
+          holder.tv_local_time_task_finish.setText(localTime + " " + mContext.getString(R.string.local_time));
           holder.tv_local_time_task_finish.setVisibility(View.VISIBLE);
         } else {
           holder.tv_local_time_task_finish.setVisibility(View.GONE);
