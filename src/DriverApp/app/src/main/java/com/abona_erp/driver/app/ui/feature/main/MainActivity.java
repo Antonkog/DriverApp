@@ -739,7 +739,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
         runOnUiThread(new Runnable() {
           @Override
           public void run() {
-            CustomDialogFragment docFragment =  CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.DOCUMENT, event.getNotify().getOrderNo());
+            CustomDialogFragment docFragment =  CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.DOCUMENT, event.getDocumentOrderNo());
             docFragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.DOCUMENT.name());
           }
         });

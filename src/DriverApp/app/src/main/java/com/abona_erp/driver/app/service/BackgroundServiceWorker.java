@@ -19,7 +19,6 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.DateConverter;
-import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
@@ -55,7 +54,6 @@ import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
-import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationEvent;
@@ -165,7 +163,7 @@ public class BackgroundServiceWorker extends Service {
             mHandler.postDelayed(this, delay);
             return;
           } else if (TextSecurePreferences.isUpdateAllTasks()) {
-            EventBus.getDefault().post(new LogEvent(getString(R.string.log_update_schedule), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
+            //EventBus.getDefault().post(new LogEvent(getString(R.string.log_update_schedule), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
             updateGetAllTasks();
             mHandler.postDelayed(this, delay);
             return;
@@ -472,9 +470,9 @@ public class BackgroundServiceWorker extends Service {
                         DelayReasonUtil.getDelayReasonsFromService(notify.getMandantId());
                       } else if (response.code() == 401) {
 
-                            EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
-                                    LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
-                                    activityItem.getTaskId()));
+                            //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
+//                                    LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
+//                                    activityItem.getTaskId()));
 
                             handleAccessToken();
                       }
@@ -482,9 +480,9 @@ public class BackgroundServiceWorker extends Service {
       
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
-                      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_sent_error),
-                              LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
-                              activityItem.getTaskId()));
+                      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_sent_error),
+//                              LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
+//                              activityItem.getTaskId()));
                       allowRequest = true;
                       Log.e(TAG, t.getMessage());
                     }
@@ -520,9 +518,9 @@ public class BackgroundServiceWorker extends Service {
           
                         if (response.body().getIsException())
                         {
-                          EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_error),
-                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
-                                  confirmationItem.getTaskId()));
+                          //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_error),
+//                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
+//                                  confirmationItem.getTaskId()));
   
                           showErrorMessage(response.body().getText());
                           return;
@@ -646,9 +644,9 @@ public class BackgroundServiceWorker extends Service {
                         switch (response.code()) {
                           case 401:
                           {
-                            EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
-                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
-                                    confirmationItem.getTaskId()));
+                            //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
+//                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
+//                                    confirmationItem.getTaskId()));
                             handleAccessToken();
                           }
                             break;
@@ -964,14 +962,14 @@ public class BackgroundServiceWorker extends Service {
           public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
             if (response.isSuccessful() && response.body() != null) {
               if(response.body().getAllTask().size() > 0)
-              EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
+              //EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
               handleGetAllTasks(response.body());
             } else {
               
               switch (response.code()) {
                 case 401: {
                   handleAccessToken();
-                  EventBus.getDefault().post(new LogEvent(getString(R.string.log_token_error), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
+                  //EventBus.getDefault().post(new LogEvent(getString(R.string.log_token_error), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
                 } break;
               }
             }
@@ -979,7 +977,7 @@ public class BackgroundServiceWorker extends Service {
   
           @Override
           public void onFailure(Call<ResultOfAction> call, Throwable t) {
-            EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_error), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
+            //EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_error), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
           }
         });
       }

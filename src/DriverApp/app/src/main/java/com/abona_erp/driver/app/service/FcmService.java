@@ -28,8 +28,9 @@ import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.logging.Log;
-import com.abona_erp.driver.app.ui.event.LogEvent;
+import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
+import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.ServiceUtil;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -111,14 +112,15 @@ public class FcmService extends FirebaseMessagingService {
 
     CommItem commItem = App.getInstance().gsonUtc.fromJson(data.toString(), CommItem.class);
 
-    boolean exist = (commItem!= null && commItem.getTaskItem()!= null && commItem.getTaskItem().getTaskId()!= null);
-    if (commItem.getHeader().getDataType().equals(DataType.DOCUMENT)) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),exist? commItem.getTaskItem().getTaskId() : 0));
-    } else if (commItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
-    } else if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
-      EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
+    if (commItem!= null && commItem.getHeader().getDataType().equals(DataType.DOCUMENT) && commItem.getDocumentItem() != null) {
+      EventBus.getDefault().post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_NEW_DOCUMENTS), null).addDocumentOrderNo(commItem.getDocumentItem().getOrderNo()));
+      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),exist? commItem.getTaskItem().getTaskId() : 0));
     }
+//    else if (commItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
+//      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
+//    } else if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
+//      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
+//    }
 
     FirebaseJobDispatcher dispatcher =
       new FirebaseJobDispatcher(new GooglePlayDriver(this));
