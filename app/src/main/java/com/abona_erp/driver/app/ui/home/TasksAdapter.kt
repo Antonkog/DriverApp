@@ -11,8 +11,9 @@ import com.kivi.remote.presentation.base.recycler.LazyAdapter
 class TasksAdapter(itemClickListener: HomeFragment) : LazyAdapter<TaskEntity, TaskItemBinding>(itemClickListener) {
 val TAG = "TasksAdapter"
     override fun bindData(data: TaskEntity, binding: TaskItemBinding) {
-
      binding.textTaskName.text = data.actionType.name
+     binding.textOrderNo.text = ""+ data.orderDetails?.orderNo
+     binding.textFinishTime.text = data.taskDueDateFinish
     }
 
     override fun getLayoutId(): Int = R.layout.task_item

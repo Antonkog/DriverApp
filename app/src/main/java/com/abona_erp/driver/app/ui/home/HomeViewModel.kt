@@ -46,12 +46,12 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
 
     fun filterPending(){
         currentStatus = TaskStatus.RUNNING.status
-        filteredTasks.postValue(runningTasks)
+        filteredTasks.postValue(pendingTasks)
     }
 
     fun filterCompleted(){
         currentStatus = TaskStatus.FINISHED.status
-        filteredTasks.postValue(runningTasks)
+        filteredTasks.postValue(completedTasks)
     }
 
     fun setTasks(tasks :List<TaskEntity>) {
@@ -82,7 +82,7 @@ class HomeViewModel @ViewModelInject constructor(@ApplicationContext private val
         repository.postActivity(context, activity)
     }
 
-    fun setVisibleTaskID(taskEntity: TaskEntity) {
+    fun setVisibleTaskIDs(taskEntity: TaskEntity) {
         Log.e(TAG, "saving task " + taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleOrderId, taskEntity.orderDetails?.orderNo ?: 0)
