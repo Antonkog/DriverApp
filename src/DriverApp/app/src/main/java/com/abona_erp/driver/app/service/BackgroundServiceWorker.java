@@ -58,9 +58,7 @@ import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.LogEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
-import com.abona_erp.driver.app.ui.event.RegistrationErrorEvent;
-import com.abona_erp.driver.app.ui.event.RegistrationFinishedEvent;
-import com.abona_erp.driver.app.ui.event.RegistrationStartEvent;
+import com.abona_erp.driver.app.ui.event.RegistrationEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
@@ -1051,7 +1049,7 @@ public class BackgroundServiceWorker extends Service {
           if (deviceProfiles.size() > 0) {
             Log.i(TAG, ">>>>>>> PREPARE DEVICE REGISTRATION");
             
-            App.eventBus.post(new RegistrationStartEvent());
+            App.eventBus.post(new RegistrationEvent(RegistrationEvent.State.STARTED));
   
             CommItem commItem = new CommItem();
             Header header = new Header();
@@ -1083,9 +1081,9 @@ public class BackgroundServiceWorker extends Service {
                     TextSecurePreferences.setRegistrationStarted(false);
                     
                     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DEVICE_REGISTRATED), null));
-                    App.eventBus.post(new RegistrationFinishedEvent());
+                    App.eventBus.post(new RegistrationEvent(RegistrationEvent.State.FINISHED));
                   } else {
-                    App.eventBus.post(new RegistrationErrorEvent());
+                    App.eventBus.post(new RegistrationEvent(RegistrationEvent.State.ERROR));
                   }
                 } else {
         

@@ -2,6 +2,7 @@
 <resources>
   <color name="colorPrimary">@color/clrAbona</color>
   <color name="colorPrimaryDark">#1F1C2C</color>
+  <color name="dark">@color/colorPrimaryDark</color>
   <color name="colorAccent">#E30613</color>
 
   <color name="clrAbona">#E30613</color>

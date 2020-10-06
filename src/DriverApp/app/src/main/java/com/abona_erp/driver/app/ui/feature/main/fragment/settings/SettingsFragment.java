@@ -1,11 +1,6 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.settings;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
@@ -29,22 +21,14 @@ import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
-import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
-import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
+import com.abona_erp.driver.app.util.CustomDialogFragment;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
-import com.abona_erp.driver.app.util.dynamiclanguage.DynamicLanguageContextWrapper;
-import com.kongzue.dialog.interfaces.OnInputDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.util.InputInfo;
-import com.kongzue.dialog.util.TextInfo;
-import com.kongzue.dialog.v3.InputDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,9 +52,8 @@ public class SettingsFragment extends Fragment {
   private AppCompatImageButton mBtnBack;
 
   private MainViewModel mainViewModel;
-  
-  private DriverDatabase mDb = DriverDatabase.getDatabase();
-  private DeviceProfileDAO mDeviceDao = mDb.deviceProfileDAO();
+
+  private DeviceProfileDAO mDeviceDao = DriverDatabase.getDatabase().deviceProfileDAO();
   
   public SettingsFragment() {
     // Required empty public constructor.
@@ -96,19 +79,6 @@ public class SettingsFragment extends Fragment {
     super.onResume();
   }
 
-  private void updateLanguage() {
-    DynamicLanguageContextWrapper.updateContext(getContext(),
-            TextSecurePreferences.getLanguage(getContext()));
-    getActivity().recreate();
-    updatePreferenceFlags();
-  }
-
-  public static void updatePreferenceFlags() {
-    TextSecurePreferences.setUpdateLangCode(true);
-    TextSecurePreferences.setUpdateAllTasks(true);
-    TextSecurePreferences.setUpdateDelayReason(true);
-  }
-  
   private void initComponents(@NonNull View root) {
     
     mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_settings_back);
@@ -118,12 +88,20 @@ public class SettingsFragment extends Fragment {
         App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
       }
     });
-    
-    mDeviceId = (AsapTextView)root.findViewById(R.id.tv_device_id);
-    versionName = (AsapTextView)root.findViewById(R.id.app_version_name);
-    restApiVersion = (AsapTextView)root.findViewById(R.id.rest_api_version);
-    mDeviceManufacturer = (AsapTextView)root.findViewById(R.id.tv_device_manufacturer);
-    mDeviceCreated = (AsapTextView)root.findViewById(R.id.tv_device_created);
+
+    AsapTextView  langText =  root.findViewById(R.id.txt_language);
+    switch (TextSecurePreferences.getLanguage(getContext())){
+      case Constants.LANG_TO_SERVER_ENGLISH: langText.setText(getResources().getString(R.string.preference_language_eng)); break;
+      case Constants.LANG_TO_SERVER_GERMAN: langText.setText(getResources().getString(R.string.preference_language_ger)); break;
+      case Constants.LANG_TO_SERVER_RUSSIAN: langText.setText(getResources().getString(R.string.preference_language_rus)); break;
+      case Constants.LANG_TO_SERVER_POLISH: langText.setText(getResources().getString(R.string.preference_language_pol)); break;
+    }
+
+    mDeviceId =  root.findViewById(R.id.tv_device_id);
+    versionName =  root.findViewById(R.id.app_version_name);
+    restApiVersion =  root.findViewById(R.id.rest_api_version);
+    mDeviceManufacturer =  root.findViewById(R.id.tv_device_manufacturer);
+    mDeviceCreated = root.findViewById(R.id.tv_device_created);
     
     try {
       versionName.setText(BuildConfig.VERSION_NAME);
@@ -183,116 +161,20 @@ public class SettingsFragment extends Fragment {
     mLlLanguage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        
-        String[] listItems = {
-          "English (US)",
-          "Deutsch",
-          "Русский",
-          "Polski"
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getContext(), R.style.AbonaDialog));
-        builder.setTitle("Select Language");
-        
-        builder.setItems(listItems, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialogInterface, int i) {
-            
-            String currentLanguage = TextSecurePreferences.getLanguage(getContext());
-            
-            switch (i) {
-              case 0: // ENGLISCH
-                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_ENGLISH)) {
-                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_ENGLISH);
-                  updateLanguage();
-                }
-                break;
-              
-              case 1: // DEUTSCH
-                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_GERMAN)) {
-                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_GERMAN);
-                  updateLanguage();
-                }
-                break;
-                
-              case 2: // RUSSISCH
-                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_RUSSIAN)) {
-                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_RUSSIAN);
-                  updateLanguage();
-                }
-                break;
-                
-              case 3: // POLNISCH
-                if (!currentLanguage.equalsIgnoreCase(Constants.LANG_TO_SERVER_POLISH)) {
-                  TextSecurePreferences.setLanguage(getContext(), Constants.LANG_TO_SERVER_POLISH);
-                  updateLanguage();
-                }
-                break;
-            }
-          }
-        });
-        
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.LANGUAGE);
+        fragment.show(getActivity().getSupportFragmentManager(), CustomDialogFragment.DialogType.LANGUAGE.name());
       }
     });
 
-    mBtnSave = (Button)root.findViewById(R.id.btn_settings_save);
+    mBtnSave = (Button)root.findViewById(R.id.btn_device_reset);
     mBtnSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-
-        InputDialog.build((AppCompatActivity) getContext())
-                .setStyle(DialogSettings.STYLE.STYLE_IOS)
-                .setTheme(DialogSettings.THEME.LIGHT)
-                .setTitle(getContext().getResources().getString(R.string.action_security_code))
-                .setMessage(getContext().getResources().getString(R.string.action_security_code_message))
-                .setInputInfo(new InputInfo()
-                        .setMAX_LENGTH(4)
-                        .setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
-                        .setTextInfo(new TextInfo()
-                                .setFontColor(Color.RED))
-                )
-                .setOkButton(getContext().getResources().getString(R.string.action_ok))
-                .setOnOkButtonClickListener(new OnInputDialogButtonClickListener() {
-                  @Override
-                  public boolean onClick(BaseDialog baseDialog, View v, String inputStr) {
-                    if (inputStr.equals("0000")) {
-                      // DEVICE RESET BEGIN
-                      AsyncTask.execute(() -> {
-                        mDb.lastActivityDAO().deleteAll();
-                        mDb.notifyDao().deleteAll();
-                        mDb.offlineConfirmationDAO().deleteAll();
-                        mDb.delayReasonDAO().deleteAll();
-                        mDb.offlineDelayReasonDAO().deleteAll();
-                        mDb.logDAO().deleteAll();
-
-                        // DEVICE RESET END
-                        
-                        TextSecurePreferences.setLoginPageEnable(true);
-                        TextSecurePreferences.setDeviceFirstTimeRun(false);
-                        TextSecurePreferences.setDeviceRegistrated(false);
-                        TextSecurePreferences.setStopService(true);
-
-                        getActivity().runOnUiThread(() -> {
-
-                          stopBackgroundWorkerService();
-                          //start a same new one
-                          getActivity().startActivity(new Intent(getContext().getApplicationContext(), LoginActivity.class));
-                          //finish current
-                          getActivity().finish();
-                        });
-                      });
-
-                    }
-                    return false;
-                  }
-                })
-                .setCancelButton(getContext().getResources().getString(R.string.action_cancel))
-                .setOnCancelButtonClickListener((baseDialog, v, inputStr) -> false)
-                .show();
+        CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.DEVICE_RESET);
+        fragment.show(getActivity().getSupportFragmentManager(),  CustomDialogFragment.DialogType.DEVICE_RESET.name());
       }
     });
+
     
     mBtnProtocol = (AppCompatButton)root.findViewById(R.id.btn_protocol);
     mBtnProtocol.setOnClickListener(new View.OnClickListener() {
@@ -301,11 +183,5 @@ public class SettingsFragment extends Fragment {
         App.eventBus.post(new ProtocolEvent());
       }
     });
-  }
-
-  public void stopBackgroundWorkerService() {
-    Intent serviceIntent = new Intent(getContext(), BackgroundServiceWorker.class);
-    serviceIntent.putExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, true);
-    getContext().startService(serviceIntent);
   }
 }

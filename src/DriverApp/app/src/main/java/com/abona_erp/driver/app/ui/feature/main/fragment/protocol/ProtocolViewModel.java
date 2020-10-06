@@ -28,8 +28,5 @@ public class ProtocolViewModel extends AndroidViewModel {
   public void insert(LogItem item) {
     _repo.insert(item);
   }
-  
-  public void deleteAllLogs() {
-    _repo.deleteAllLogs();
-  }
+
 }

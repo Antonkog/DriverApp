@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
@@ -10,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,10 +24,6 @@ import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ImageEvent;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.GalleryListener;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
-import com.kongzue.dialog.interfaces.OnDialogButtonClickListener;
-import com.kongzue.dialog.util.BaseDialog;
-import com.kongzue.dialog.util.DialogSettings;
-import com.kongzue.dialog.v3.MessageDialog;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -136,36 +133,31 @@ public class GalleryViewAdapter extends RecyclerView.Adapter<GalleryViewAdapter.
         
         @Override
         public void onClick(View view) {
-          MessageDialog.build((AppCompatActivity) mContext)
-            .setStyle(DialogSettings.STYLE.STYLE_IOS)
-            .setTheme(DialogSettings.THEME.LIGHT)
-            .setTitle(mContext.getResources().getString(R.string.action_delete_photo))
+          AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+          alertDialog.setTitle(mContext.getResources().getString(R.string.action_delete_photo))
             .setMessage(mContext.getResources().getString(R.string.action_delete_photo_message))
-            .setOkButton(mContext.getResources().getString(R.string.action_delete),
-              new OnDialogButtonClickListener() {
-              
-              @Override
-              public boolean onClick(BaseDialog baseDialog, View v) {
-                
-                int key = mPhotos.keyAt(getLayoutPosition());
-                Log.i(">>>>>>>", "DELETE INDEX : " + key);
-                mPhotos.remove(key);
-                
-                ImageEvent event = new ImageEvent(null);
-                //event.setPosition(getLayoutPosition());
-                event.setPosition(key);
-                App.eventBus.post(event);
-                return false;
-              }
-            })
-            .setCancelButton(mContext.getResources().getString(R.string.action_cancel),
-              new OnDialogButtonClickListener() {
-                @Override
-                public boolean onClick(BaseDialog baseDialog, View v) {
-                  return false;
-                }
-              })
-            .show();
+                  .setPositiveButton(mContext.getResources().getString(R.string.action_delete), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                      int key = mPhotos.keyAt(getLayoutPosition());
+                      Log.i(">>>>>>>", "DELETE INDEX : " + key);
+                      mPhotos.remove(key);
+
+                      ImageEvent event = new ImageEvent(null);
+                      //event.setPosition(getLayoutPosition());
+                      event.setPosition(key);
+                      App.eventBus.post(event);
+                      dialog.dismiss();
+                    }
+                  })
+                  .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                      dialog.dismiss();
+                    }
+                  })
+                  .show();
         }
       });
       

@@ -27,7 +27,6 @@
   <string name="action_lets_start">Давайте начнем</string>
   <string name="action_security_code">Код безопасности</string>
   <string name="action_security_code_message">Введите код безопасности</string>
-  <string name="action_error">Сообщение об ошибке</string>
   <string name="action_warning_notice">Предупреждение</string>
   <string name="client_id_is_not_active">Идентификатор клиента не активен!</string>
   <string name="no_internet">Нет  интернет соединения!</string>
@@ -108,7 +107,7 @@
   <string name="action_type_general">Общий</string>
   <string name="action_type_delay">Задержка</string>
   <string name="action_type_unknown">Неизвестно</string>
-  <string name="need_permissions">Нужны разрешения!</string>
+  <string name="need_permissions_title">Нужны разрешения!</string>
   <string name="permission_message_settings">Это приложение требует разрешения для использования этой функции. Вы можете предоставить их в настройках приложения.</string>
   <string name="current_location">Текущее местоположение</string>
   <string name="destination_location">Место назначения</string>
@@ -122,7 +121,7 @@
   <string name="label_changed">Изменен</string>
   <string name="label_done">Выполнено</string>
   <string name="preference_language">Язык</string>
-  <string name="preference_language_show">Русский</string>
+  <string name="preference_language_eng">Русский</string>
   <string name="more">Больше</string>
   <string name="less">Меньше</string>
   <!-- MULTILANG -->
@@ -169,4 +168,5 @@
   <string name="log_task_updated_fcm">Задача обновлена через FCM</string>
   <string name="log_document_fcm">Документ от Абоны через FCM</string>
   <string name="log_vehicle_fcm">Автомобиль от Абоны через FCM</string>
+  <string name="dialog_login_error">Ошибка во время авторизации</string>
 </resources>

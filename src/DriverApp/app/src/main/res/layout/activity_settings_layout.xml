@@ -79,11 +79,12 @@
               />
 
             <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:id="@+id/txt_language"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:textSize="14sp"
               android:textColor="@color/clrFont"
-              android:text="@string/preference_language_show"
+              android:text="@string/preference_language_eng"
               />
 
           </LinearLayout>
@@ -330,7 +331,7 @@
               />
 
             <androidx.appcompat.widget.AppCompatButton
-              android:id="@+id/btn_settings_save"
+              android:id="@+id/btn_device_reset"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_gravity="end"

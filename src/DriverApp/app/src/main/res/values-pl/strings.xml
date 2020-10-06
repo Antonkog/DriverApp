@@ -26,7 +26,7 @@
   <string name="action_lets_start">Zaczynajmy</string>
   <string name="action_security_code">Kod bezpieczeństwa</string>
   <string name="action_security_code_message">Wpisz kod bezpieczeństwa</string>
-  <string name="action_error">Komunikat o błędzie</string>
+  <string name="dialog_login_error">Komunikat o błędzie</string>
   <string name="action_warning_notice">Ostrzeżenie</string>
   <string name="client_id_is_not_active">Identyfikator klienta nie jest aktywny!</string>
   <string name="no_internet">Brak internetu!</string>
@@ -115,7 +115,7 @@
   <string name="action_type_delay">Opóźnienie</string>
   <string name="action_type_unknown">Nieznany</string>
 
-  <string name="need_permissions">Potrzebujesz uprawnień!</string>
+  <string name="need_permissions_title">Potrzebujesz uprawnień!</string>
   <string name="permission_message_settings">Ta aplikacja wymaga pozwolenia na korzystanie z tej funkcji. Możesz przyznać je w ustawieniach aplikacji.</string>
 
   <string name="current_location">Aktualna lokalizacja</string>
@@ -136,7 +136,7 @@
   <string name="label_done">Gotowy</string>
 
   <string name="preference_language">Język</string>
-  <string name="preference_language_show">Polski</string>
+  <string name="preference_language_eng">Polski</string>
     <string name="order">Zamówienie</string>
   <string name="action">Akcja</string>
   <string name="timestamp">Czas</string>
