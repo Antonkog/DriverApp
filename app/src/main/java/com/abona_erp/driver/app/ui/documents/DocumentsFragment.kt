@@ -66,7 +66,7 @@ class DocumentsFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Docume
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu?.findItem(R.id.action_send_doc).let {
+        menu.findItem(R.id.action_send_doc).let {
             it?.setVisible(true)
         }
     }

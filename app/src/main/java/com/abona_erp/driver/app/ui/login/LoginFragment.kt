@@ -43,6 +43,7 @@ class LoginFragment : BaseFragment() {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> navigateHome()
                 LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Toast.makeText(requireContext(), R.string.error_log_in, Toast.LENGTH_LONG ).show()
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Toast.makeText(requireContext(), R.string.need_log_in, Toast.LENGTH_LONG ).show()
+                else -> Toast.makeText(requireContext(), R.string.error_log_in, Toast.LENGTH_LONG ).show()
             }
         })
 

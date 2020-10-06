@@ -36,7 +36,7 @@ interface DriverActDao {
     suspend fun insertFromCommItem(commonItem: CommResponseItem) {
         if (commonItem.allTask.isNotEmpty()) {
             var strActList = commonItem.allTask.flatMap {
-                it.activities.map { it ->
+                it.activities.map {
                     //ActivityEntity(it.activityId, it.mandantId, it.taskId, it.started, it.finished, it.name, ConfirmationType.RECEIVED) //todo: check if make sense not to override confirmation type from server.
                     val reasons = it.delayReasons?.map { item -> item.toDelayReasonEntity() }
                     ActivityEntity(

@@ -7,8 +7,5 @@ class SwapInfoItem {
     @SerializedName("SwapVehicleItem")
     @Expose
     var vehicleItem: VehicleItem? = null
-        set(swapVehicleItem) {
-            field = vehicleItem
-        }
 
 }

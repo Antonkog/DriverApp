@@ -145,9 +145,9 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskEntity>
         if (homeViewModel.getVisibleTaskId() != 0) {
             try {
                 val task = it.first { taskEntity -> taskEntity.taskId == homeViewModel.getVisibleTaskId() }
-                homeBinding.tasksRecycler.scrollToPosition(it.indexOf(task))
+                homeBinding.tasksRecycler.scrollToPosition(it.indexOf(task)) //setting position of current task, if it exist
             }catch (e : NoSuchElementException){
-                homeBinding.tasksRecycler.scrollToPosition(0) //setting position of current task, if it exist
+                homeBinding.tasksRecycler.scrollToPosition(0) //setting position of first task, if current not exist
             }
         } else homeViewModel.setVisibleTaskIDs(it[0]) //else on create set id of first element.
     }
