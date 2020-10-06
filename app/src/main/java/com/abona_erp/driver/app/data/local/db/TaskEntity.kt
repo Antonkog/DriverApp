@@ -1,11 +1,7 @@
 package com.abona_erp.driver.app.data.local.db
 
 import androidx.room.*
-import com.abona_erp.driver.app.data.model.Address
-import com.abona_erp.driver.app.data.model.Contact
-import com.abona_erp.driver.app.data.model.OrderDetails
-import com.abona_erp.driver.app.data.model.PalletExchange
-import com.google.gson.annotations.SerializedName
+import com.abona_erp.driver.app.data.model.*
 
 @Entity (tableName = "task_entity",
     primaryKeys = ["taskId", "mandantId"]
@@ -17,8 +13,8 @@ data class TaskEntity(
     val activityIds: List<Int>,
     @ColumnInfo val changeReason: Int,
     @Embedded val address : Address?,
-//    @TypeConverters(GsonToDbConverter::class) val constacts: List<Contact>?,
-//    @TypeConverters(GsonToDbConverter::class) val dangerousGoods : List<DangerousGoods>?,
+    @ColumnInfo val constacts: List<Contact>?,
+    @Embedded val dangerousGoods : DangerousGoods?,
     @Embedded   val orderDetails : OrderDetails?,
     @Embedded   val palletExchange: PalletExchange?,
     @ColumnInfo val finished: Boolean,

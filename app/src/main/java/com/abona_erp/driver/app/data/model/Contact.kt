@@ -7,9 +7,9 @@ data class Contact(
     @SerializedName("ContactType")
     val contactType: Int,
     @SerializedName("Name")
-    val name: Any,
+    val name: String,
     @SerializedName("Number")
-    val number: Any,
+    val number: String,
     @SerializedName("NumberType")
     val numberType: Int
 )

@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 
 data class DangerousGoods(
     @SerializedName("ADRClass")
-    val aDRClass: Any,
+    val aDRClass: Int,
     @SerializedName("DangerousGoodsClassType")
     val dangerousGoodsClassType: Int,
     @SerializedName("IsGoodsDangerous")
     val isGoodsDangerous: Boolean,
     @SerializedName("UNNo")
-    val uNNo: Any
+    val uNNo: String?
 )

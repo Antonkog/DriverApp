@@ -54,6 +54,8 @@ class MainViewModel @ViewModelInject constructor(private val gson: Gson, private
                             it.activities.map { it.activityId },
                             it.changeReason,
                             it.address,
+                            it.contacts,
+                            it.dangerousGoods,
                             it.orderDetails,
                             it.palletExchange,
                             false,

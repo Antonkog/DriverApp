@@ -1,5 +1,6 @@
 package com.abona_erp.driver.app.data.local.dao
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.abona_erp.driver.app.data.local.db.ActionType
@@ -43,10 +44,11 @@ interface DriverTaskDao {
             var strCustList = commonItem.allTask.map { it ->
                 TaskEntity(
                     it.taskId, ActionType.getActionType(it.actionType), it.status, it.activities.map { it.activityId },
-                    it.changeReason, it.address, it.orderDetails, it.palletExchange,
+                    it.changeReason, it.address, it.contacts, it.dangerousGoods, it.orderDetails, it.palletExchange,
                     false,  it.taskDueDateStart, it.taskDueDateFinish, it.mandantId, it.kundenName,
                             ConfirmationType.RECEIVED)//todo: check if make sense not to override confirmation type from server.
             }
+            Log.e("DriverTaskDao", "intsert taskEntity  size: " + strCustList.size)
             insertOrReplace(strCustList)
         }
     }

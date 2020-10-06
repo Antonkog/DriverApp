@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.data.local.db
 
 import androidx.room.TypeConverter
 import com.abona_erp.driver.app.data.model.ActivityStatus
+import com.abona_erp.driver.app.data.model.Contact
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -89,32 +90,15 @@ class Converters {
         return Gson().toJson(someObjects)
     }
 
+
     @TypeConverter
-    fun stringToContactsList(data: String?): List<Contact> {
-        if (data == null) {
-            return emptyList()
-        }
-        val listType =
-            object : TypeToken<List<Contact>>() {}.type
-        return Gson().fromJson(data, listType)
+    fun contactListToString(list: List<Contact>?): String? {
+        return if(list == null) null else Gson().toJson(list)
     }
 
     @TypeConverter
-    fun stringToGoods(data: String?): List<DangerousGoods> {
-        if (data == null) {
-            return emptyList()
-        }
-        val listType =
-            object : TypeToken<List<DangerousGoods>>() {}.type
-        return Gson().fromJson(data, listType)
+    fun stringToContactsList(jsonData: String?): List<Contact>? {
+        return if (jsonData == null) null else  Gson().fromJson(jsonData, object : TypeToken<List<Contact>?>() {}.type)
     }
 
-    @TypeConverter
-    fun contactListToString(someObjects: List<Contact>): String {
-        return Gson().toJson(someObjects)
-    }  @TypeConverter
-
-    fun goodsToString(someObjects: List<DangerousGoods>): String {
-        return Gson().toJson(someObjects)
-    }
 }

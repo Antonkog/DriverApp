@@ -107,6 +107,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskEntity>
 
         if (!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
         // else homeViewModel.getTasks()
+        homeViewModel.refreshTasks()
         return view
     }
 
