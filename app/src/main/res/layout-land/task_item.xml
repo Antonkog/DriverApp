@@ -63,6 +63,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textFinish" />
 
             <TextView
+                style="@style/TextDescription"
                 android:id="@+id/textOrder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,6 +74,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/progress_rest" />
 
             <TextView
+                style="@style/TextTaskSmall"
                 android:id="@+id/textOrderNo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,6 +84,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textOrder" />
 
             <TextView
+                style="@style/TextDescription"
                 android:id="@+id/textDueIn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -92,6 +95,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/progress_task" />
 
             <TextView
+                style="@style/TextDescription"
                 android:id="@+id/textFinish"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -102,6 +106,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textDueIn" />
 
             <TextView
+                style="@style/TextTaskSmall"
                 android:id="@+id/textDueInTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -112,6 +117,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/progress_task" />
 
             <TextView
+                style="@style/TextTaskSmall"
                 android:id="@+id/textFinishTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -156,54 +162,77 @@
 
                 <ImageView
                     android:id="@+id/imageDanger"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    style="@style/ActionImage"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imageDocuments"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_danger"
-                    app:tint="@color/colorPrimary"
+                    app:srcCompat="@drawable/ic_class_1_explosives"
                     tools:src="@drawable/ic_danger" />
 
                 <ImageView
                     android:id="@+id/imageDocuments"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    style="@style/ActionImageTint"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imageMap"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imageDanger"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_work"
-                    app:tint="@color/colorPrimary" />
+                    app:srcCompat="@drawable/ic_work"/>
 
                 <ImageView
                     android:id="@+id/imageMap"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    style="@style/ActionImageTint"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imageInfo"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imageDocuments"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_map"
-                    app:tint="@color/colorPrimary" />
+                    app:srcCompat="@drawable/ic_map" />
 
                 <ImageView
                     android:id="@+id/imageInfo"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    style="@style/ActionImageTint"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageHistory"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imageMap"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_info_wh"
-                    app:tint="@color/colorPrimary" />
+                    app:srcCompat="@drawable/ic_info_wh"/>
 
 
+                <ImageView
+                    android:id="@+id/imageHistory"
+                    style="@style/ActionImageTint"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageMessage"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imageInfo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_history" />
+
+
+                <ImageView
+                    android:id="@+id/imageMessage"
+                    style="@style/ActionImageTint"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imagePallet"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imageHistory"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_message" />
+
+
+                <ImageView
+                    android:id="@+id/imagePallet"
+                    style="@style/ActionImageTint"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imageMessage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_pallet"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

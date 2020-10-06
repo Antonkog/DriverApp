@@ -22,10 +22,25 @@
         <item name="android:textSize">40sp</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
-
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="TextTaskSmall" parent="TextMain">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="TextDescription" parent="TextTaskSmall">
+        <item name="android:textColor">@color/black_80</item>
     </style>
 
-
+    <style name="ActionImage" parent="AppTheme">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/icon_size_X</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">4dp</item>
+    </style>
+    <style name="ActionImageTint" parent="ActionImage">
+        <item name="tint">@color/black</item>
+    </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

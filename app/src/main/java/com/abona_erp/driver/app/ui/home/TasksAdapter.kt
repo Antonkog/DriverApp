@@ -16,5 +16,17 @@ val TAG = "TasksAdapter"
      binding.textFinishTime.text = data.taskDueDateFinish
     }
 
+    /*
+      btn_contact_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_contact_info);  //phone
+      btn_notes_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_message_info);
+      btn_dangerous_goods_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_dangerous_goods_info);
+      btn_palette_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_palette_info);
+      btn_document_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_document_info);
+      btn_task_history = (AppCompatImageButton)itemView.findViewById(R.id.btn_task_history);
+      btn_task_info = (AppCompatImageButton)itemView.findViewById(R.id.btn_task_info);
+
+      btn_camera = (AppCompatImageButton)itemView.findViewById(R.id.btn_camera);
+      btn_map = (AppCompatImageButton)itemView.findViewById(R.id.btn_map);
+     */
     override fun getLayoutId(): Int = R.layout.task_item
 }
