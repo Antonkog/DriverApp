@@ -29,7 +29,7 @@ allprojects {
 
 ext {
     archLifecycleVersion = '2.2.0'
-    roomVersion = '2.2.2'
+    roomVersion = '2.2.5'
     glideVersion = '4.11.0'
 }
 
