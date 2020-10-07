@@ -57,6 +57,7 @@
 
     <string name="need_permissions">Need Permissions!</string>
 
+    <string name="error_from_server">Error while parsing data from server</string>
 
 
 <!--    screen names-->

@@ -8,6 +8,7 @@ import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.local.db.DocumentEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.*
+import com.abona_erp.driver.app.ui.home.TaskWithActivities
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
@@ -41,7 +42,9 @@ interface AppRepository {
     //that is LiveData from db
     fun observeTasks(deviceId: String): LiveData<List<TaskEntity>>
     fun observeActivities(taskId : Int): LiveData<List<ActivityEntity>>
+    fun observeAllActivities(): LiveData<List<ActivityEntity>>
     fun observeDocuments(taskId : Int): LiveData<List<DocumentEntity>>
+    fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>>
 
     suspend fun getDocuments(forceUpdate: Boolean , mandantId: Int,  orderNo: Int, deviceId: String ): ResultWithStatus<List<DocumentEntity>>
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWithStatus<List<TaskEntity>>

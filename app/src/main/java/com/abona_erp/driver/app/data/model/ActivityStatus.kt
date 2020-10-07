@@ -7,7 +7,7 @@ enum class ActivityStatus(val status: Int, val resId: Int)
     PENDING(0, R.string.pending),
     RUNNING(1, R.string.running),
     FINISHED(2, R.string.completed),
-    ENUM_ERROR(-1, R.string.error_log_in);
+    ENUM_ERROR(-1, R.string.error_from_server);
 
     companion object {
         fun getActivityStatus(status: Int): ActivityStatus {

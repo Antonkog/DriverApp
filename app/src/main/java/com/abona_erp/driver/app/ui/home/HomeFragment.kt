@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.home_fragment.view.*
 
 
 @AndroidEntryPoint
-class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskEntity> {
+class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithActivities> {
 
     val TAG = "HomeFragment"
     private val homeViewModel by viewModels<HomeViewModel>()
@@ -74,7 +74,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskEntity>
 
                     val task = adapter.data[firstVisiblePosition]
                     homeViewModel.setVisibleTaskIDs(task)
-                    Log.e(TAG, "visible task id = ${task.taskId} , first vis pos: $firstVisiblePosition , lastvispos =  $lastVisiblePosition"  )
+                    Log.e(TAG, "visible task id = ${task.taskEntity.taskId} , first vis pos: $firstVisiblePosition , lastvispos =  $lastVisiblePosition"  )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -142,10 +142,10 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskEntity>
         }
     }
 
-    private fun setAdapterPosition(it: List<TaskEntity>) {
+    private fun setAdapterPosition(it: List<TaskWithActivities>) {
         if (homeViewModel.getVisibleTaskId() != 0) {
             try {
-                val task = it.first { taskEntity -> taskEntity.taskId == homeViewModel.getVisibleTaskId() }
+                val task = it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == homeViewModel.getVisibleTaskId() }
                 homeBinding.tasksRecycler.scrollToPosition(it.indexOf(task)) //setting position of current task, if it exist
             }catch (e : NoSuchElementException){
                 homeBinding.tasksRecycler.scrollToPosition(0) //setting position of first task, if current not exist
@@ -153,7 +153,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskEntity>
         } else homeViewModel.setVisibleTaskIDs(it[0]) //else on create set id of first element.
     }
 
-    override fun onLazyItemClick(data: TaskEntity) {
-        Log.e(TAG, "got click taskid " + data.taskId)
+    override fun onLazyItemClick(data: TaskWithActivities) {
+        Log.e(TAG, "got click taskid " + data.taskEntity.taskId)
     }
 }

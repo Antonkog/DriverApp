@@ -23,6 +23,7 @@ import com.abona_erp.driver.app.data.local.db.DocumentEntity
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.model.CommResponseItem
 import com.abona_erp.driver.app.data.model.DocumentResponse
+import com.abona_erp.driver.app.ui.home.TaskWithActivities
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +38,14 @@ class LocalDataSource internal constructor(
 
     fun observeActivities(taskId: Int): LiveData<List<ActivityEntity>> {
         return db.driverActDao().getAllByTask(taskId)
+    }
+
+    fun observeAllActivities(): LiveData<List<ActivityEntity>> {
+        return db.driverActDao().getAll()
+    }
+
+    fun observeTasksWithActivities(): LiveData<List<TaskWithActivities>> {
+        return db.driverTaskDao().observeTaskWithActivities()
     }
 
     fun observeTasks(): LiveData<List<TaskEntity>> {

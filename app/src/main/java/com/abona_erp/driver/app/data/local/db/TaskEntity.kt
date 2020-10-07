@@ -17,7 +17,6 @@ data class TaskEntity(
     @Embedded val dangerousGoods : DangerousGoods?,
     @Embedded   val orderDetails : OrderDetails?,
     @Embedded   val palletExchange: PalletExchange?,
-    @ColumnInfo val finished: Boolean,
     @ColumnInfo val taskDueDateStart: String?,
     @ColumnInfo val taskDueDateFinish: String?,
     @ColumnInfo  val mandantId: Int,

@@ -4,23 +4,24 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
 import com.abona_erp.driver.app.R
+import com.abona_erp.driver.app.data.local.db.ConfirmationType
 import com.abona_erp.driver.app.data.local.db.DangerousGoodsClass
 import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.databinding.TaskItemBinding
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 
 
-class TasksAdapter(itemClickListener: HomeFragment) : LazyAdapter<TaskEntity, TaskItemBinding>(
+class TasksAdapter(itemClickListener: HomeFragment) : LazyAdapter<TaskWithActivities, TaskItemBinding>(
     itemClickListener
 ) {
     lateinit var mResources : Resources
 val TAG = "TasksAdapter"
-    override fun bindData(data: TaskEntity, binding: TaskItemBinding) {
+    override fun bindData(data: TaskWithActivities, binding: TaskItemBinding) {
         mResources = binding.root.resources
-     binding.textTaskName.text = data.actionType.name
-     binding.textOrderNo.text = ""+ data.orderDetails?.orderNo
-     binding.textFinishTime.text = data.taskDueDateFinish
-
+     binding.textTaskName.text = data.taskEntity.actionType.name
+     binding.textOrderNo.text = ""+ data.taskEntity.orderDetails?.orderNo
+     binding.textFinishTime.text = data.taskEntity.taskDueDateFinish
+     binding.textActName.text = data.activities.firstOrNull{it.confirmstatus == ConfirmationType.RECEIVED}?.name ?: ""
     }
 
     override fun getLayoutId(): Int = R.layout.task_item

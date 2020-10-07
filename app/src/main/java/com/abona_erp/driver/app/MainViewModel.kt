@@ -58,7 +58,6 @@ class MainViewModel @ViewModelInject constructor(private val gson: Gson, private
                             it.dangerousGoods,
                             it.orderDetails,
                             it.palletExchange,
-                            false,
                             it.taskDueDateStart,
                             it.taskDueDateFinish,
                             it.mandantId,
