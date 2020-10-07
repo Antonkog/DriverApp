@@ -2,11 +2,12 @@ package com.abona_erp.driver.app.ui.home
 
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.view.View
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import com.abona_erp.driver.app.R
 import com.abona_erp.driver.app.data.local.db.ConfirmationType
 import com.abona_erp.driver.app.data.local.db.DangerousGoodsClass
-import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.databinding.TaskItemBinding
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 
@@ -22,12 +23,42 @@ val TAG = "TasksAdapter"
      binding.textOrderNo.text = ""+ data.taskEntity.orderDetails?.orderNo
      binding.textFinishTime.text = data.taskEntity.taskDueDateFinish
      binding.textActName.text = data.activities.firstOrNull{it.confirmstatus == ConfirmationType.RECEIVED}?.name ?: ""
+        setDangerGoodsImage(data, binding)
+        setPalletsImage(data, binding)
+    }
+
+    private fun setPalletsImage(
+        data: TaskWithActivities,
+        binding: TaskItemBinding
+    ) {
+        if (data.taskEntity.palletExchange?.palletsAmount ?: 0 > 0)
+            binding.imagePallet.visibility = View.VISIBLE
+        else binding.imagePallet.visibility = View.GONE
+
+        binding.imagePallet.setOnClickListener { v -> Toast.makeText(binding.imageDanger.context, " click on imagePallet", Toast.LENGTH_SHORT).show() }
+    }
+
+    private fun setDangerGoodsImage(
+        data: TaskWithActivities,
+        binding: TaskItemBinding
+    ) {
+        if (data.taskEntity.dangerousGoods?.isGoodsDangerous == true) {
+            binding.imageDanger.visibility = View.VISIBLE
+            val drawable = getDangerousGoodsClass(
+                DangerousGoodsClass.getActionType(
+                    data.taskEntity?.dangerousGoods?.dangerousGoodsClassType ?: 0
+                )
+            )
+            binding.imageDanger.setImageDrawable(drawable)
+        } else binding.imageDanger.visibility = View.GONE
+
+        binding.imageDanger.setOnClickListener { v -> Toast.makeText(binding.imageDanger.context, " click on danger", Toast.LENGTH_SHORT).show() }
     }
 
     override fun getLayoutId(): Int = R.layout.task_item
 
 
-    private fun getDangerousGoodsClass(dangerousGoodsClass: DangerousGoodsClass): Drawable? {
+    private fun getDangerousGoodsClass(dangerousGoodsClass: DangerousGoodsClass?): Drawable? {
         return when (dangerousGoodsClass) {
             DangerousGoodsClass.CLASS_1_EXPLOSIVES -> ResourcesCompat.getDrawable(
                 mResources,
