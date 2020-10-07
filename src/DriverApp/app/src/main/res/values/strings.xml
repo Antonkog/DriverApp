@@ -224,6 +224,8 @@
   <string name="dialog_register" translatable="false">Device registration</string>
 
   <string name="dialog_login_error">Login error, while getting response from server</string>
+  <string name="dialog_server_error_title" translatable="false">Error:</string>
+  <string name="dialog_exception_empty_array" translatable="false">Got empty list from server!</string>
 
 
   <string name="permission_message_settings">69/5000</string>

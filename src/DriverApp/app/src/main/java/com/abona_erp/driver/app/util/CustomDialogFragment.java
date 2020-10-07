@@ -72,7 +72,9 @@ public class CustomDialogFragment extends DialogFragment {
         LANGUAGE,
         DEVICE_RESET,
         DOCUMENT,
-        EXIT
+        EXIT,
+        SERVER_ERROR,
+        TASKS_UPDATE_COMPLETE
     }
 
 
@@ -122,8 +124,15 @@ public class CustomDialogFragment extends DialogFragment {
             case PROTOCOL:  return getPasswordDialog();
             case DOCUMENT:  return getDocumentDialog();
             case EXIT:  return getExitDialog();
+            case SERVER_ERROR: return getErrorDialog();
+            case TASKS_UPDATE_COMPLETE: return getTaskUpdateDialog();
             default: return getBaseDialogBuilder().create();
         }
+    }
+
+    private Dialog getTaskUpdateDialog() {
+        return getBaseDialogBuilder().setTitle(R.string.action_update)
+                .setMessage(R.string.action_update_message).create();
     }
 
 
@@ -169,6 +178,12 @@ public class CustomDialogFragment extends DialogFragment {
     private Dialog getRegistationSuccessDialog() {
         return getBaseDialogBuilder().setTitle(R.string.dialog_register).setMessage(message).create();
     }
+
+
+    private Dialog getErrorDialog() {
+        return getBaseDialogBuilder().setTitle(R.string.dialog_server_error_title).setMessage(message).create();
+    }
+
 
     private Dialog getLoginErrorDialog() {
         return getBaseDialogBuilder().setTitle(R.string.action_warning_notice).setMessage(getResources().getString(R.string.dialog_login_error) + " " + message).create();

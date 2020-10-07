@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -792,7 +791,8 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   
   @Subscribe
   public void onMessageEvent(RestApiErrorEvent event) {
-    getOkDialog("Warning", event.getMessage());
+    CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.SERVER_ERROR, event.getMessage());
+    fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.SETTINGS.name());
   }
   
   @Subscribe
@@ -970,24 +970,18 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
               });
           }
           // Aktualisiert:
-          getOkDialog(
-            getApplicationContext().getResources()
-              .getString(R.string.action_update),
-            getApplicationContext().getResources()
-              .getString(R.string.action_update_message));
+          CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.TASKS_UPDATE_COMPLETE);
+          fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.TASKS_UPDATE_COMPLETE.name());
         } else {
           // Kein Update vorhanden:
-          getOkDialog(
-            getApplicationContext().getResources()
-              .getString(R.string.action_update),
-            getApplicationContext().getResources()
-              .getString(R.string.action_update_message));
+          CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.SERVER_ERROR, getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
+          fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.SERVER_ERROR.name());
         }
+
       } else if (resultOfAction.getIsException()) {
         // Exception from REST-API
-        getOkDialog(getApplicationContext().getResources().getString(R.string.action_warning_notice),
-          getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
-
+        CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.SERVER_ERROR, getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
+        fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.SERVER_ERROR.name());
         mMainViewModel.addLog(getResources().getString(R.string.action_exception_on_rest_api), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
       } else {
         // Unknown Error
@@ -1199,28 +1193,6 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
         Analytics.class, Crashes.class);
       Analytics.setEnabled(true);
     }
-  }
-  
-  private AlertDialog getOkDialog(String title, String message) {
-
-
-        // 1. Instantiate an AlertDialog.Builder with its constructor
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-
-// 2. Chain together various setter methods to set the dialog characteristics
-        builder.setMessage(message)
-                .setTitle(title)
-                .setPositiveButton(getApplicationContext().getResources().getString(R.string.action_ok), new DialogInterface.OnClickListener() {
-                  @Override
-                  public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                  }
-                });
-
-
-              AlertDialog dialog = builder.create();
-             return dialog;
-
   }
   
   private void fetchRestApiVersion() {
