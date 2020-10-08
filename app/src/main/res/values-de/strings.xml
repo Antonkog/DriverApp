@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- MULTILANG -->
+  <string name="action_cancel">Abbrechen</string>
+  <string name="action_ok">OK</string>
+  <string name="action_save">Speichern</string>
+  <string name="action_upload">Hochladen</string>
+  <string name="action_delete">Löschen</string>
+  <string name="action_warning">Warnung</string>
+  <string name="action_start">Starten</string>
+  <string name="action_open">Öffnen</string>
+  <string name="action_download">Herunterladen</string>
+  <string name="action_exit">Beenden</string>
+  <string name="action_quit">Verlassen</string>
+  <string name="action_upload_photos">Fotos Hochladen?</string>
+  <string name="action_upload_photos_message">Möchten Sie die Fotos hochladen?</string>
+  <string name="action_uploading_photos">Fotos werden hochgeladen&#8230;</string>
+  <string name="action_delete_photo">Foto löschen?</string>
+  <string name="action_delete_photo_message">Möchten Sie dieses Foto wirklich löschen?</string>
+  <string name="action_photo_no_longer_exists">Foto existiert nicht mehr!</string>
+  <string name="action_photo_damaged">Foto beschädigt oder existiert nicht mehr!</string>
+  <string name="action_start_order">Auftrag starten</string>
+  <string name="action_start_task_msg">Möchten Sie den Task starten?</string>
+  <string name="menu_protocol">Protokoll</string>
+  <string name="menu_settings">Einstellungen</string>
+  <string name="menu_about">Über</string>
+  <string name="action_lets_start">Lasst uns beginnen</string>
+  <string name="action_security_code">Sicherheitscode</string>
+  <string name="action_security_code_message">Geben Sie den Sicherheitscode ein.</string>
+  <string name="dialog_login_error">Fehlermeldung</string>
+  <string name="action_warning_notice">Warnhinweis</string>
+  <string name="client_id_is_not_active">Client-ID ist nicht aktive!</string>
+  <string name="no_internet">Kein Internet!</string>
+  <string name="action_next">Nächster Schritt</string>
+  <string name="action_finished">Fertig</string>
+  <string name="action_start_activity">Starten</string>
+  <string name="action_close">Schließen</string>
+  <string name="action_previous_task_message">Sie müssen zuerst die vorherige Aufgabe erledigen!</string>
+  <string name="action_update">Aktualisieren</string>
+  <string name="action_update_message">Aktualisierung abgeschlossen!</string>
+  <string name="action_exception_on_rest_api">Fehler in der REST-API!</string>
+  <string name="action_later">Später</string>
+
+  <string name="next">Weiter</string>
+  <string name="start">Starten</string>
+
+  <string name="document_type">Dokument Typ</string>
+  <string name="document_type_na">Keine (N/A)</string>
+  <string name="document_type_pod">Zustellnachweis (POD)</string>
+  <string name="document_type_cmr">CMR</string>
+  <string name="document_type_pn">Paletten Hinweis (PN)</string>
+  <string name="document_type_sc">Sicherheitszertifikat (SC)</string>
+  <string name="document_type_si">Versandbild (SI)</string>
+  <string name="document_type_dsi">Beschädigtes Versandbild (DSI)</string>
+  <string name="document_type_dvi">Beschädigtes Fahrzeugbild (DVI)</string>
+
+  <string name="editing_camera">Kamera</string>
+  <string name="editing_category">Kategorie</string>
+  <string name="editing_tools">Werkzeuge</string>
+  <string name="editing_brush">Pinsel</string>
+  <string name="editing_text">Text</string>
+  <string name="editing_eraser">Radierer</string>
+  <string name="editing_undo">Zurück</string>
+  <string name="editing_redo">Vor</string>
+
+  <string name="yes">Ja</string>
+  <string name="no">Nein</string>
+  <string name="search">Suche</string>
+  <string name="map">Karte</string>
+  <string name="camera">Kamera</string>
+  <string name="document">Dokument</string>
+  <string name="contact">Kontakt</string>
+  <string name="contacts_available">Kontakte verfügbar</string>
+  <string name="notes">Bemerkungen</string>
+  <plurals name="numberOfNotesAvailable">
+    <item quantity="one">%d Bemerkung verfügbar</item>
+    <item quantity="other">%d Bemerkungen verfügbar</item>
+  </plurals>
+    <string name="number_of_paletts">Anzahl der Paletten</string>
+  <string name="client">Mandant</string>
+  <string name="geo_data">Geodaten</string>
+  <string name="name">Name</string>
+  <string name="loading_order">Ladereihenfolge</string>
+  <string name="contact_type_persecutor">Verfolger</string>
+  <string name="contact_type_second_persecutor">2. Verfolger</string>
+  <string name="contact_type_customer">Kunde</string>
+  <string name="dangerous_goods">Gefahrgut</string>
+  <string name="palette_exchange">Palettentausch</string>
+
+  <string name="registration_number">Kein Fahrzeug</string>
+  <string name="task_status">Task Status</string>
+  <string name="task_finish">Task fertig stellen</string>
+  <string name="due_in">Fällig in</string>
+  <string name="order_no">Bestellnummer</string>
+  <string name="task_id">Auftragsnummer</string>
+  <string name="task">Aufgabe</string>
+  <string name="activity_status">Aktivität Status</string>
+  <string name="task_total_status">Task Total Status</string>
+  <string name="customer">Kunde</string>
+  <string name="customer_no">KD-No</string>
+  <string name="reference_1">Referenz 1</string>
+  <string name="reference_2">Referenz 2</string>
+  <string name="description">Beschreibung</string>
+  <string name="address">Anschrift</string>
+
+  <string name="new_document">Neues Dokument!</string>
+  <string name="new_document_message">Sie haben ein neues Dokument erhalten.</string>
+  <string name="exit_message">Möchten Sie die ABONA Driver App beenden?</string>
+  <string name="order_documents">Bilder zum Auftrag</string>
+  <string name="order_documents_message">Zuerst Auftrag starten!</string>
+
+  <string name="action_type_pick_up">Ladestelle</string>
+  <string name="action_type_drop_off">Abladestelle</string>
+  <string name="action_type_tractor_swap">Zugmaschine Wechsel</string>
+  <string name="action_type_general">Allgemein</string>
+  <string name="action_type_delay">Verzögerung</string>
+  <string name="action_type_unknown">Unbekannt</string>
+
+  <string name="need_permissions_title">Berechtigungen!</string>
+  <string name="permission_message_settings">Diese App benötigt die Erlaubnis, diese Funktion zu nutzen. Sie können sie in den App-Einstellungen gewähren.</string>
+
+  <string name="current_location">Aktuelle Position</string>
+  <string name="destination_location">Zielort</string>
+
+  <string name="preference_language">Sprache</string>
+
+    <string name="more">Mehr</string>
+  <string name="less">Weniger</string>
+  <!-- MULTILANG -->
+
+
+
+
+  <string name="pending">Offen</string>
+  <string name="running">In Arbeit\u0020</string>
+  <string name="cmr">CMR\u0020</string>
+  <string name="completed">Erledigt\u0020</string>
+
+  <string name="label_new">NEU</string>
+  <string name="label_updated">UPDATED</string>
+  <string name="label_deleted">GELÖSCHT</string>
+  <string name="label_changed">GEÄNDERT</string>
+  <string name="label_done">ERLEDIGT</string>
+    <string name="order">"Bestellung "</string>
+  <string name="action">"Aktion "</string>
+  <string name="timestamp">Zeitstempel</string>
+    <string name="airplane_warning">Bei Flugzeugmodus ist die Funktion der ABONA Driver App eingeschränkt</string>
+
+  <string name = "alarm_title">Bitte überprüfen Sie die Aufgabe</string>
+  <string name = "alarm_text">Ihre Aufgabenzeit geht zu Ende</string>
+
+  <string name ="alarm_check_text">Ich werde Sie vor Ende der Aufgabe benachrichtigen</string>
+
+  <string name ="alarm_check_failed">Alarm wurde nicht gesetzt</string>
+  <string name ="alarm_check_failed_reason"> Grund: Aufgabe wurde geändert</string>
+  <string name="alarm_check_notime_reason">Grund: Die Aufgabenzeit ist abgelaufen</string>
+    <string name="preference_notification">Benachrichtigung</string>
+  <string name="preference_notification_show">Minuten vor Ende der Aufgabe</string>
+  <string name="delay_started">Gestartet:</string>
+  <string name="delay_finished">Fertig:</string>
+  <string name="delay_delay">Verzögern:</string>
+    <string name="task_information">Aufgabeninformationen</string>
+
+  <string name="device_id">Geräte ID</string>
+  <string name="model">Modell</string>
+  <string name="manufacturer">Hersteller</string>
+  <string name="created_at">Erstellt am</string>
+  <string name="protocol">Protokoll</string>
+  <string name="device_reset">Gerät zurücksetzen</string>
+
+  <string name="menu_history">Geschichte</string>
+
+  <string name="log_activity_started">:aktivität gestartet</string>
+  <string name="log_activity_finished">:aktivität beendet</string>
+
+
+  <string name="log_confirm_open">Fahrer hatte Aufgabe gelesen</string>
+  <string name="log_confirm_send">Aufgabe gelesen: an Server gesendet</string>
+  <string name="log_confirm_error">Fehler beim Senden der Bestätigung</string>
+
+  <string name="log_title_activity">Aktivitätsänderung</string>
+
+  <string name="log_activity_status_change">Aktivitätsänderung: an Server gesendet</string>
+  <string name="log_activity_sent_error">Fehler beim Senden der Aktivitätsänderung</string>
+
+  <string name="log_task_updated_fcm">Aufgabe wurde über FCM aktualisiert</string>
+  <string name="log_document_fcm">Dokument von Abona über FCM</string>
+  <string name="log_vehicle_fcm">Fahrzeug von Abona über FCM</string>
+
+
+  <string name="local_time">(Ortszeit)</string>
+
+</resources>

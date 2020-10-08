@@ -44,4 +44,21 @@
         android:label="@string/screen_settings"
         tools:layout="@layout/settings_fragment"/>
 
+    <dialog
+        android:id="@+id/customDialogFragment"
+        android:name="com.abona_erp.driver.app.ui.utils.CustomDialogFragment"
+        android:label="CustomDialogFragment" >
+        <argument
+            android:name="ordinal"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="message"
+            app:argType="string"
+            android:defaultValue=" " />
+        <argument
+            android:name="orderNo"
+            android:defaultValue="0" />
+    </dialog>
+
 </navigation>
