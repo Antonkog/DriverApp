@@ -88,7 +88,7 @@ class HomeViewModel @ViewModelInject constructor(
                     runningTasks.add(it)
                 }
                 TaskStatus.FINISHED -> {
-                    runningTasks.add(it)
+                    completedTasks.add(it)
                 }
             }
         }

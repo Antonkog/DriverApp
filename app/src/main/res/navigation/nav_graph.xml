@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_nav_home_to_taskInfoFragment"
             app:destination="@id/taskInfoFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_activities"
+            app:destination="@id/nav_activities" />
     </fragment>
 
     <fragment

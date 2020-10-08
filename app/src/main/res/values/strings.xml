@@ -20,6 +20,7 @@
     <string name="txt_address" translatable="false">Address</string>
     <string name="txt_order" translatable="false">Order</string>
     <string name="txt_order_placeholder" translatable="false">2020/138/45*</string>
+    <string name="button_to_activities" translatable="false">Activities</string>
 
 
 

@@ -32,16 +32,15 @@ val TAG = "TasksAdapter"
 
 //        setDangerGoodsImage(data, binding)
 //        setPalletsImage(data, binding)
-        setInfoImage(data, binding)
-    }
 
-
-    private fun setInfoImage(data: TaskWithActivities, binding: TaskItemBinding) {
         binding.imageInfo.setOnClickListener {
             val bundle = bundleOf("task_entity" to data.taskEntity)
             navController.navigate(R.id.action_nav_home_to_taskInfoFragment, bundle)
         }
+        binding.activityButton.setOnClickListener {navController.navigate(R.id.action_nav_home_to_nav_activities)}
     }
+
+
 
     private fun setPalletsImage(
         data: TaskWithActivities,
