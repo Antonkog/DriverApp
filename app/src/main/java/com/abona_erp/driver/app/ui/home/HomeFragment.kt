@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.abona_erp.driver.app.R
-import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.databinding.HomeFragmentBinding
 import com.abona_erp.driver.app.ui.base.BaseFragment
 import com.google.android.material.tabs.TabLayout
@@ -20,7 +19,6 @@ import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.home_fragment.view.*
 
 
 @AndroidEntryPoint
@@ -30,7 +28,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
     private val homeViewModel by viewModels<HomeViewModel>()
 
     //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
-    private var adapter = TasksAdapter(this)
+    private lateinit var adapter :TasksAdapter
 
     private lateinit var homeBinding: HomeFragmentBinding
 
@@ -52,6 +50,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
 
         homeBinding.lifecycleOwner = this.viewLifecycleOwner
 
+        adapter =  TasksAdapter(this, findNavController())
 
         homeBinding.tasksRecycler.adapter = adapter
 
@@ -94,7 +93,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
 
         homeViewModel.filteredTasks.observe(viewLifecycleOwner, Observer {
             if (it != null && it.isNotEmpty()) {
-                Log.e(TAG, "got tasks $it")
+//                Log.e(TAG, "got tasks $it")
                 adapter.swapData(it)
                 setAdapterPosition(it) //got new tasks, change position. NoSuchElementException: Collection contains no element matching the predicate.
             } else Log.e(TAG, "got empty or null tasks $it")

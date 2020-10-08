@@ -1,8 +1,11 @@
 package com.abona_erp.driver.app.data.model
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Address(
     @SerializedName("City")
     val city: String?,
@@ -24,4 +27,4 @@ data class Address(
     val street: String?,
     @SerializedName("ZIP")
     val zIP: String?
-)
+) : Parcelable

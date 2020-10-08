@@ -63,6 +63,8 @@
 <!--    screen names-->
     <string name="screen_login" translatable="false">Login</string>
     <string name="screen_home" translatable="false">Tasks</string>
+    <string name="screen_task_info" translatable="false">Task Info</string>
+
     <string name="screen_activities" translatable="false">Activities</string>
     <string name="screen_documents" translatable="false">Documents</string>
     <string name="screen_delay_reason" translatable="false">Delay Reason</string>
@@ -289,6 +291,7 @@
         <string name="dialog_not_found_message" translatable="false">Task existiert nicht mehr!</string>
 
         <string name="dialog_register" translatable="false">Device registration</string>
+        <string name="dialog_model" translatable="false">Additional info:</string>
 
         <string name="dialog_login_error">Login error, while getting response from server</string>
 

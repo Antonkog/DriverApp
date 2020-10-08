@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.os.bundleOf
+import androidx.navigation.NavController
 import com.abona_erp.driver.app.R
 import com.abona_erp.driver.app.data.local.db.ConfirmationType
 import com.abona_erp.driver.app.data.local.db.DangerousGoodsClass
@@ -12,10 +14,11 @@ import com.abona_erp.driver.app.databinding.TaskItemBinding
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 
 
-class TasksAdapter(itemClickListener: HomeFragment) : LazyAdapter<TaskWithActivities, TaskItemBinding>(
+class TasksAdapter(itemClickListener: HomeFragment, val navController: NavController) : LazyAdapter<TaskWithActivities, TaskItemBinding>(
     itemClickListener
 ) {
     lateinit var mResources : Resources
+    lateinit var dialogBuilder: DialogBuilder
 val TAG = "TasksAdapter"
     override fun bindData(data: TaskWithActivities, binding: TaskItemBinding) {
         mResources = binding.root.resources
@@ -23,8 +26,21 @@ val TAG = "TasksAdapter"
      binding.textOrderNo.text = ""+ data.taskEntity.orderDetails?.orderNo
      binding.textFinishTime.text = data.taskEntity.taskDueDateFinish
      binding.textActName.text = data.activities.firstOrNull{it.confirmstatus == ConfirmationType.RECEIVED}?.name ?: ""
-        setDangerGoodsImage(data, binding)
-        setPalletsImage(data, binding)
+
+        val context  = binding.root.context
+        dialogBuilder = DialogBuilder(context)
+
+//        setDangerGoodsImage(data, binding)
+//        setPalletsImage(data, binding)
+        setInfoImage(data, binding)
+    }
+
+
+    private fun setInfoImage(data: TaskWithActivities, binding: TaskItemBinding) {
+        binding.imageInfo.setOnClickListener {
+            val bundle = bundleOf("task_entity" to data.taskEntity)
+            navController.navigate(R.id.action_nav_home_to_taskInfoFragment, bundle)
+        }
     }
 
     private fun setPalletsImage(
@@ -35,7 +51,11 @@ val TAG = "TasksAdapter"
             binding.imagePallet.visibility = View.VISIBLE
         else binding.imagePallet.visibility = View.GONE
 
-        binding.imagePallet.setOnClickListener { v -> Toast.makeText(binding.imageDanger.context, " click on imagePallet", Toast.LENGTH_SHORT).show() }
+
+        binding.imagePallet.setOnClickListener {
+
+
+        }
     }
 
     private fun setDangerGoodsImage(
@@ -46,13 +66,17 @@ val TAG = "TasksAdapter"
             binding.imageDanger.visibility = View.VISIBLE
             val drawable = getDangerousGoodsClass(
                 DangerousGoodsClass.getActionType(
-                    data.taskEntity?.dangerousGoods?.dangerousGoodsClassType ?: 0
+                    data.taskEntity.dangerousGoods?.dangerousGoodsClassType ?: 0
                 )
             )
             binding.imageDanger.setImageDrawable(drawable)
         } else binding.imageDanger.visibility = View.GONE
 
-        binding.imageDanger.setOnClickListener { v -> Toast.makeText(binding.imageDanger.context, " click on danger", Toast.LENGTH_SHORT).show() }
+        binding.imageDanger.setOnClickListener { Toast.makeText(
+            binding.imageDanger.context,
+            " click on danger",
+            Toast.LENGTH_SHORT
+        ).show() }
     }
 
     override fun getLayoutId(): Int = R.layout.task_item

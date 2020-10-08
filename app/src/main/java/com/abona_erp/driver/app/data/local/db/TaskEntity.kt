@@ -1,12 +1,15 @@
 package com.abona_erp.driver.app.data.local.db
 
+import android.os.Parcelable
 import androidx.room.*
 import com.abona_erp.driver.app.data.model.*
+import kotlinx.android.parcel.Parcelize
 
 @Entity (tableName = "task_entity",
     primaryKeys = ["taskId", "mandantId"]
 )
-data class TaskEntity(
+@Parcelize
+ data class TaskEntity(
     @ColumnInfo  val taskId: Int,
     @ColumnInfo val actionType: ActionType,
     @ColumnInfo val status: TaskStatus,
@@ -22,4 +25,4 @@ data class TaskEntity(
     @ColumnInfo  val mandantId: Int,
     @ColumnInfo val kundenName: String?,
     @ColumnInfo  val confirmationType: ConfirmationType //used for saving ui state - based on user actions
-)
+) : Parcelable

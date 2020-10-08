@@ -80,7 +80,7 @@ class HomeViewModel @ViewModelInject constructor(
 
     private fun divideTasksAndActivityByStatus(tasks: List<TaskWithActivities>) {
         tasks.forEach {
-            when (it.taskEntity?.status) {
+            when (it.taskEntity.status) {
                 TaskStatus.PENDING -> {
                     pendingTasks.add(it)
                 }
