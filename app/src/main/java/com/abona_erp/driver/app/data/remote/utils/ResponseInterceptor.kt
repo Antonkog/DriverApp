@@ -19,6 +19,7 @@ class ResponseInterceptor (@ApplicationContext val context: Context) : Intercept
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
         val response: Response = chain.proceed(request)
+        if(response.code == 401) makeAuth()
            when( response.body?.string()){
                null, "null" -> //return response.newBuilder().message("null body").code(Constant.ERROR_NULL_CODE).build()
                return chain.proceed(chain.request())

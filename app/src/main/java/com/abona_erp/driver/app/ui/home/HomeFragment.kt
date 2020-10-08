@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithActivities> {
 
-    val TAG = "HomeFragment"
+    val TAG : String = "HomeFragment"
     private val homeViewModel by viewModels<HomeViewModel>()
 
     //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)

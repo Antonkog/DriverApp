@@ -15,6 +15,8 @@ import com.abona_erp.driver.app.ui.utils.DeviceUtils
 import com.abona_erp.driver.app.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.lang.Exception
 
 class DriverActViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: AppRepository, private val  prefs: SharedPreferences) :  BaseViewModel() {  //taskRepo : ApiRepository,
 
@@ -37,9 +39,15 @@ class DriverActViewModel @ViewModelInject constructor(@ApplicationContext privat
 
     fun postActivityChange(entity: ActivityEntity){
         viewModelScope.launch {
-           val result =  repository.postActivity(context, entity.toActivity(DeviceUtils.getUniqueID(context)))
-
-            Log.e(TAG, " got result: $result")
+            try {
+                val result =  repository.postActivity(context, entity.toActivity(DeviceUtils.getUniqueID(context)))
+            } catch (e : HttpException){
+                if(e.code() == 401){
+                    Log.e(TAG, e.message)
+                }
+            } catch (e: Exception){
+                Log.e(TAG, e.message)
+            }
         }
     }
 }
