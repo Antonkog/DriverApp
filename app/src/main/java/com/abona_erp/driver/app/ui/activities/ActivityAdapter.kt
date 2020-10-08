@@ -19,7 +19,8 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
     override fun bindData(data: ActivityEntity, binding: ActivityItemBinding) {
 
         val jsonObject = JSONObject(Gson().toJson(data).trim())
-        val map: Map<String, String> = JsonParser.parseJson(jsonObject)
+        val map: HashMap<String, String> = java.util.HashMap()
+         JsonParser.parseJson(jsonObject, map)
 
         val linearContent: LinearLayout = binding.linlayDescription
         if (linearContent.childCount > 0) linearContent.removeAllViews()

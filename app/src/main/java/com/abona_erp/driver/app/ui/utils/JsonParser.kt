@@ -4,7 +4,6 @@ import android.util.Log
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 
 object JsonParser {
 
@@ -16,13 +15,11 @@ object JsonParser {
      * @throws JSONException
      */
     @Throws(JSONException::class)
-    fun parseJson(objJson: Any?): Map<String, String> {
-        val map = HashMap<String, String>()
-
+    fun parseJson(objJson: Any?, map :HashMap<String, String>): Map<String, String> {
         // If obj is a json array
         if (objJson is JSONArray) {
             for (i in 0 until objJson.length()) {
-                parseJson(objJson[i])
+                parseJson(objJson[i], map)
             }
         } else if (objJson is JSONObject) {
             val it: Iterator<*> = objJson.keys()
@@ -33,13 +30,13 @@ object JsonParser {
                     is JSONArray -> {
                         Log.e(TAG, " JSONArray: $jobject")
                         parseJson(
-                            jobject
+                            jobject, map
                         )
                     }
                     is JSONObject -> {
                         Log.e(TAG, " JSONObject: $jobject")
                         parseJson(
-                            jobject
+                            jobject, map
                         )
                     }
                     else -> {
