@@ -123,9 +123,8 @@
   <string name="destination_location">Zielort</string>
 
   <string name="preference_language">Sprache</string>
-  <string name="preference_language_eng">Deutsch</string>
 
-  <string name="more">Mehr</string>
+    <string name="more">Mehr</string>
   <string name="less">Weniger</string>
   <!-- MULTILANG -->
 

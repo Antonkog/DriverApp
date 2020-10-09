@@ -136,7 +136,6 @@
   <string name="label_done">Gotowy</string>
 
   <string name="preference_language">Język</string>
-  <string name="preference_language_eng">Polski</string>
     <string name="order">Zamówienie</string>
   <string name="action">Akcja</string>
   <string name="timestamp">Czas</string>
