@@ -51,9 +51,82 @@ class TaskInfoFragment : Fragment() {
     private fun addTestRows(task: TaskEntity) {
         val jsonObject = JSONObject(Gson().toJson(task).trim())
         val map: HashMap<String, String> = java.util.HashMap()
-        JsonParser.parseJson(jsonObject, map)
-
         val linearContent: LinearLayout = taskInfoFragmentBinding.infoContainer
+        /*
+
+        /*
+{
+  "actionType": "1",
+  "activityIds": [
+    15,
+    16,
+    17
+  ],
+  "address": {
+    "City": "Kharkiv",
+    "Latitude": 0,
+    "Longitude": 0,
+    "Name1": "medical goods",
+    "Nation": "UA",
+    "Street": "Test4 str",
+    "ZIP": "11500"
+  },
+  "changeReason": 0,
+  "confirmationType": "RECEIVED",
+  "constacts": [
+    {
+      "ContactType": 0,
+      "Number": "004915114744063",
+      "NumberType": 0
+    }
+  ],
+  "dangerousGoods": {
+    "ADRClass": 0,
+    "DangerousGoodsClassType": 0,
+    "IsGoodsDangerous": true,
+    "UNNo": ""
+  },
+  "kundenName": "ANTON KOGAN TEST4",
+  "mandantId": 3,
+  "orderDetails": {
+    "CustomerName": "ANTON KOGAN TEST4",
+    "CustomerNo": 60238,
+    "OrderNo": 202040165,
+    "ReferenceIdCustomer1": "4321"
+  },
+  "palletExchange": {
+    "ExchangeType": 0,
+    "IsDPL": false,
+    "PalletsAmount": -1
+  },
+  "status": "0",
+  "taskDueDateFinish": "2020-10-06T00:00:00",
+  "taskDueDateStart": "0001-01-01T00:00:00",
+  "taskId": 9961
+}         */
+         */
+        val include= arrayOf(
+            "address",
+            "Longitude",
+            "Latitude",
+            "ReferenceId2",
+            "LoadingOrder",
+            "DangerousGoods",
+            "ADRClass",
+            "UNNo",
+            "palletExchange",
+            "ExchangeType",
+            "PalletsAmount",
+            "IsDPL",
+            "constacts",
+            "Name",
+            "Number",
+            "orderDetails",
+            "ReferenceIdCustomer1",
+            "Notes"
+        )
+        JsonParser.parseJson(jsonObject, map, include)
+
 
         map.entries.forEach { entry ->
             run {
