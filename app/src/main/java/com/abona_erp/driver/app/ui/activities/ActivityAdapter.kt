@@ -1,6 +1,7 @@
 package com.abona_erp.driver.app.ui.activities
 
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.gson.Gson
@@ -8,6 +9,7 @@ import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.abona_erp.driver.app.R
 import com.abona_erp.driver.app.data.local.db.ActivityEntity
 import com.abona_erp.driver.app.data.model.Activity
+import com.abona_erp.driver.app.data.model.ActivityStatus
 import com.abona_erp.driver.app.databinding.ActivityItemBinding
 import com.abona_erp.driver.app.ui.utils.JsonParser
 import org.json.JSONObject
@@ -31,6 +33,12 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
                 row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
                 linearContent.addView(row)
             }
+        }
+
+        when(data.activityStatus){
+            ActivityStatus.PENDING -> binding.buttonActConfirm.text = binding.root.resources.getString(R.string.activity_start)
+            ActivityStatus.RUNNING -> binding.buttonActConfirm.text =  binding.root.resources.getString(R.string.next)
+            ActivityStatus.FINISHED -> binding.buttonActConfirm.visibility = View.GONE
         }
 
         binding.buttonActConfirm.setOnClickListener {

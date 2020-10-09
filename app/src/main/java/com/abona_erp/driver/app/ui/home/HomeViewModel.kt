@@ -33,7 +33,7 @@ class HomeViewModel @ViewModelInject constructor(
 
     val filteredTasks  : MutableLiveData<List<TaskWithActivities>> = MutableLiveData()
 
-    var runningTasks  : LinkedList<TaskWithActivities> =LinkedList()
+    var runningTasks  : LinkedList<TaskWithActivities> = LinkedList()
     var pendingTasks  : LinkedList<TaskWithActivities> = LinkedList()
     var completedTasks  : LinkedList<TaskWithActivities> = LinkedList()
 
@@ -47,18 +47,21 @@ class HomeViewModel @ViewModelInject constructor(
     }
 
     fun filterRunning(){
-        currentStatus = TaskStatus.PENDING.status
-        filteredTasks.postValue(runningTasks)
+        currentStatus = TaskStatus.RUNNING.status
+        postTasksToFragmentByStatus()
+        Log.e(TAG, "posting Running ")
     }
 
     fun filterPending(){
-        currentStatus = TaskStatus.RUNNING.status
-        filteredTasks.postValue(pendingTasks)
+        currentStatus = TaskStatus.PENDING.status
+        postTasksToFragmentByStatus()
+        Log.e(TAG, "posting Pending ")
     }
 
     fun filterCompleted(){
         currentStatus = TaskStatus.FINISHED.status
-        filteredTasks.postValue(completedTasks)
+        postTasksToFragmentByStatus()
+        Log.e(TAG, "posting Completed ")
     }
 
 
@@ -74,6 +77,8 @@ class HomeViewModel @ViewModelInject constructor(
             TaskStatus.PENDING.status -> filteredTasks.postValue(pendingTasks)
             TaskStatus.RUNNING.status -> filteredTasks.postValue(runningTasks)
             TaskStatus.FINISHED.status -> filteredTasks.postValue(completedTasks)
+            TaskStatus.CMR.status -> filteredTasks.postValue(runningTasks)
+            TaskStatus.BREAK.status -> filteredTasks.postValue(runningTasks)
         }
     }
 

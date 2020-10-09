@@ -45,21 +45,18 @@
                 android:id="@+id/tab_pending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="@string/pending"
                 android:text="@string/pending" />
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/tab_running"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="@string/running"
                 android:text="@string/running" />
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/tab_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="@string/completed"
                 android:text="@string/completed" />
 
         </com.google.android.material.tabs.TabLayout>

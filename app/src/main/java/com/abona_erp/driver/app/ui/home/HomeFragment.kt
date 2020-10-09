@@ -96,7 +96,10 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
 //                Log.e(TAG, "got tasks $it")
                 adapter.swapData(it)
                 setAdapterPosition(it) //got new tasks, change position. NoSuchElementException: Collection contains no element matching the predicate.
-            } else Log.e(TAG, "got empty or null tasks $it")
+            } else {
+                adapter.swapData(listOf())
+                Log.e(TAG, "got empty or null tasks $it")
+            }
 //            Log.e(TAG, "got tasks ${it}")
         })
 
@@ -127,9 +130,9 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
         return object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.text) {
-                    getString(R.string.pending )-> homeViewModel.filterPending()
-                    getString(R.string.running )-> homeViewModel.filterRunning()
-                    getString(R.string.completed )-> homeViewModel.filterCompleted()
+                    getString(R.string.pending) -> homeViewModel.filterPending()
+                    getString(R.string.running) -> homeViewModel.filterRunning()
+                    getString(R.string.completed) -> homeViewModel.filterCompleted()
                 }
             }
 

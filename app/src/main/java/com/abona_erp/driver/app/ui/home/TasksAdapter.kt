@@ -26,6 +26,7 @@ val TAG = "TasksAdapter"
      binding.textOrderNo.text = ""+ data.taskEntity.orderDetails?.orderNo
      binding.textFinishTime.text = data.taskEntity.taskDueDateFinish
      binding.textActName.text = data.activities.firstOrNull{it.confirmstatus == ConfirmationType.RECEIVED}?.name ?: ""
+        binding.textOrderNo.text = ""+ data.taskEntity.taskId
 
         val context  = binding.root.context
         dialogBuilder = DialogBuilder(context)
