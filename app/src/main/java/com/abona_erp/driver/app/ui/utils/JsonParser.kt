@@ -58,7 +58,7 @@ object JsonParser {
                         if(include == null || include.contains(key)) // here is check for include param
                         {
                             map[key] = jobject.toString()
-                          //  Log.e(TAG, " adding to map: $key $jobject")
+                            Log.e(TAG, " adding to map: $key $jobject")
                         }
                     }
                 }

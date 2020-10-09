@@ -19,10 +19,12 @@ import kotlinx.android.parcel.Parcelize
     @ColumnInfo val constacts: List<Contact>?,
     @Embedded val dangerousGoods : DangerousGoods?,
     @Embedded   val orderDetails : OrderDetails?,
+    @Embedded val taskDetails : TaskDetails?,
     @Embedded   val palletExchange: PalletExchange?,
     @ColumnInfo val taskDueDateStart: String?,
     @ColumnInfo val taskDueDateFinish: String?,
     @ColumnInfo  val mandantId: Int,
     @ColumnInfo val kundenName: String?,
+    @ColumnInfo val notesItem: List<NotesItem>?,
     @ColumnInfo  val confirmationType: ConfirmationType //used for saving ui state - based on user actions
 ) : Parcelable

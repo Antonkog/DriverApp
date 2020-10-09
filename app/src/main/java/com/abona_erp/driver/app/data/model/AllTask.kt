@@ -34,7 +34,7 @@ data class AllTask(
     @SerializedName("NextTaskId")
     val nextTaskId: Int,
     @SerializedName("Notes")
-    val notes: Any,
+    val notes: List<NotesItem>,
     @SerializedName("OrderDetails")
     val orderDetails: OrderDetails,
     @SerializedName("OrderNo")

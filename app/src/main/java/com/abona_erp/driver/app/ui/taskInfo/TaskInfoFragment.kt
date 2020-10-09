@@ -109,7 +109,6 @@ class TaskInfoFragment : Fragment() {
             "address",
             "Longitude",
             "Latitude",
-            "ReferenceId2",
             "LoadingOrder",
             "DangerousGoods",
             "ADRClass",
@@ -121,10 +120,12 @@ class TaskInfoFragment : Fragment() {
             "constacts",
             "Name",
             "Number",
-            "orderDetails",
-            "ReferenceIdCustomer1",
+            "taskDetails",
+            "ReferenceId1",
+            "ReferenceIdCustomer2",
             "Notes"
         )
+
         JsonParser.parseJson(jsonObject, map, include)
 
 

@@ -3,6 +3,7 @@ package com.abona_erp.driver.app.data.local.db
 import androidx.room.TypeConverter
 import com.abona_erp.driver.app.data.model.ActivityStatus
 import com.abona_erp.driver.app.data.model.Contact
+import com.abona_erp.driver.app.data.model.NotesItem
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -101,4 +102,13 @@ class Converters {
         return if (jsonData == null) null else  Gson().fromJson(jsonData, object : TypeToken<List<Contact>?>() {}.type)
     }
 
+    @TypeConverter
+    fun notesListToString(list: List<NotesItem>?): String? {
+        return if(list == null) null else Gson().toJson(list)
+    }
+
+    @TypeConverter
+    fun stringNotesList(jsonData: String?): List<NotesItem>? {
+        return if (jsonData == null) null else  Gson().fromJson(jsonData, object : TypeToken<List<NotesItem>?>() {}.type)
+    }
 }

@@ -49,8 +49,8 @@ interface DriverTaskDao {
             var strCustList = commonItem.allTask.map { it ->
                 TaskEntity(
                     it.taskId, ActionType.getActionType(it.actionType), it.status, it.activities.map { it.activityId },
-                    it.changeReason, it.address, it.contacts, it.dangerousGoods, it.orderDetails, it.palletExchange,
-                    it.taskDueDateStart, it.taskDueDateFinish, it.mandantId, it.kundenName,
+                    it.changeReason, it.address, it.contacts, it.dangerousGoods, it.orderDetails, it.taskDetails , it.palletExchange,
+                    it.taskDueDateStart, it.taskDueDateFinish, it.mandantId, it.kundenName, it.notes,
                             ConfirmationType.RECEIVED)//todo: check if make sense not to override confirmation type from server.
             }
             Log.e("DriverTaskDao", "intsert taskEntity  size: " + strCustList.size)

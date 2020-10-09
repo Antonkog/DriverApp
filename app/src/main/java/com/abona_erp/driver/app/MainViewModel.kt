@@ -51,17 +51,19 @@ class MainViewModel @ViewModelInject constructor(private val gson: Gson, private
                             it.taskId,
                             it.actionType,
                             it.status,
-                            it.activities.map { it.activityId },
+                            it.activities.map {it.activityId },
                             it.changeReason,
                             it.address,
                             it.contacts,
                             it.dangerousGoods,
                             it.orderDetails,
+                            it.taskDetails,
                             it.palletExchange,
                             it.taskDueDateStart,
                             it.taskDueDateFinish,
                             it.mandantId,
                             it.kundenName,
+                            it.notes,
                             ConfirmationType.RECEIVED
                         )
                     )

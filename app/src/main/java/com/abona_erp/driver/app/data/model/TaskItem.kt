@@ -59,5 +59,7 @@ data class TaskItem(
     @SerializedName("VehicleNextTaskId")
     val vehicleNextTaskId: Int,
     @SerializedName("VehiclePreviousTaskId")
-    val vehiclePreviousTaskId: Int
+    val vehiclePreviousTaskId: Int,
+    @SerializedName("Notes")
+    val notes: List<NotesItem>
 )
