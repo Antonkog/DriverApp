@@ -37,7 +37,6 @@ import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RefreshUiEvent;
 import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
-import com.abona_erp.driver.app.ui.feature.main.BaseFragment;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.fragment.MainFragmentViewModel;
@@ -69,7 +68,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PhotoFragment extends BaseFragment
+public class PhotoFragment extends Fragment
   implements MenuToolsAdapter.OnItemSelected,
     GalleryListener, CustomDMSDocumentTypeDialog.OnSelectedTypeEventListener {
 
@@ -120,16 +119,6 @@ public class PhotoFragment extends BaseFragment
     
     mViewModel = ViewModelProviders.of(this)
       .get(MainFragmentViewModel.class);
-  }
-
-  @Override
-  public void injectDependencies() {
-    getFragmentComponent().inject(this);
-  }
-
-  @Override
-  public void onBackPressed(){
-    onBackPress();
   }
 
   @Override
@@ -441,7 +430,7 @@ public class PhotoFragment extends BaseFragment
   
   private void initComponents(@NonNull View root) {
     mBtnBack = root.findViewById(R.id.btn_photo_back);
-    mBtnBack.setOnClickListener(view -> onBackPress());
+    mBtnBack.setOnClickListener(view -> onBackPressed());
     
     mRvGalleryView = (RecyclerView)root.findViewById(R.id.rvGalleryView);
     mRvMenu = (RecyclerView)root.findViewById(R.id.rv_gallery_menu);
@@ -457,7 +446,7 @@ public class PhotoFragment extends BaseFragment
     mRvGalleryView.setAdapter(mGalleryViewAdapter);
   }
 
-  private void onBackPress() {
+  public void onBackPressed() {
     if (mNotify == null || mNotify.getPhotoUrls() == null) {
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
     } else {

@@ -221,8 +221,8 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   private void tellFragmentsOnBackPress(){
     List<Fragment> fragments = getSupportFragmentManager().getFragments();
     for(Fragment f : fragments){
-      if(f != null && f instanceof BaseFragment)
-        ((BaseFragment)f).onBackPressed();
+      if(f != null && f instanceof PhotoFragment)
+        ((PhotoFragment)f).onBackPressed(); // PhotoFragment of BaseFragment - use base fragment if not only that place
     }
   }
 

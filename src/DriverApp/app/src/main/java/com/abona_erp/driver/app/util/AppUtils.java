@@ -23,15 +23,23 @@ import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.core.base.ContextUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.TimeZone;
+
+import co.nedim.maildroidx.MaildroidX;
+import co.nedim.maildroidx.MaildroidXType;
+import io.reactivex.Completable;
 
 public class AppUtils {
   
@@ -143,7 +151,7 @@ public class AppUtils {
    * @param message
    * @throws Exception
    */
-  private static void sendLogFile(Context context, String message) throws Exception{
+  private static void sendIntentLogFile(Context context, String message) {
     Intent email = new Intent(Intent.ACTION_SEND);
     email.setType("plain/text");
     email.putExtra(Intent.EXTRA_EMAIL, new String[]{context.getString(R.string.email_support)});
@@ -194,6 +202,42 @@ public class AppUtils {
     return getLogFile(context).delete();
   }
 
+
+  public static Completable getEmailCompleable(Context context, String deviceProfileString, List<ChangeHistory> logsByOrderNum){
+   return Completable.create(emitter -> {
+     if (logsByOrderNum.isEmpty()) emitter.onError(new NoSuchElementException("ChangeHistory list empty"));
+     removeLogFile(context);
+     appendLogsInFile(context, logsByOrderNum);
+     new MaildroidX.Builder()
+             .smtp("smtp.omc-mail.de")
+             .port("25")
+             .smtpUsername("syst8514@systemhaus-alber.de")
+             .smtpPassword("syst8514")
+             .type((MaildroidXType.HTML))
+             .from("logging@abona-erp.com")
+             .to("logging@abona-erp.com")
+             .subject(context.getString(R.string.history_email_theme))
+             .body(deviceProfileString)
+             .attachment(getLogFile(context).getAbsolutePath())
+             .onCompleteCallback(new MaildroidX.onCompleteCallback() {
+               @Override
+               public void onSuccess() {
+                 emitter.onComplete();
+               }
+
+               @Override
+               public void onFail(@NotNull String s) {
+                 emitter.onError(new Throwable("email was n't sent"));
+               }
+
+               @Override
+               public long getTimeout() {
+                 return 5000;
+               }
+             }).send();
+   });
+  }
+
   /**method to add logs based on action history
    * created by Anton Kogan
    * @param context
@@ -202,8 +246,14 @@ public class AppUtils {
    * @throws Exception
    */
   public static void sendEmail(Context context, String deviceProfileString, List<ChangeHistory> logsByOrderNum) throws Exception {
-    if (logsByOrderNum.isEmpty()) return;
-    removeLogFile(context);
+      if(logsByOrderNum.isEmpty()) throw new NoSuchElementException("empty ChangeHistory");
+      removeLogFile(context);
+      appendLogsInFile(context, logsByOrderNum);
+      sendIntentLogFile(context, deviceProfileString);
+  }
+
+
+  private static void appendLogsInFile(Context context, List<ChangeHistory> logsByOrderNum) throws IOException {
     FileWriter myWriter = new FileWriter(getLogFile(context));
     BufferedWriter bufferedWriter = new BufferedWriter(myWriter);
     bufferedWriter.append(logsByOrderNum.get(0).getCsvHeader());
@@ -211,6 +261,5 @@ public class AppUtils {
       bufferedWriter.append(logsByOrderNum.get(i).getAsCsv());
     }
     bufferedWriter.close();
-    sendLogFile(context, deviceProfileString);
   }
 }
