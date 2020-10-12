@@ -317,6 +317,8 @@
   <string name="created_at">Created at</string>
   <string name="protocol">Protocol</string>
   <string name="device_reset">Device Reset</string>
-  <string name="local_time">(Local Time)</string>
+  <string name="destination_timeZone">(Destination TimeZone)</string>
+  <string name="your_timeZone">(Your TimeZone)</string>
+  <string name="overdue">(Overdue)</string>
 
 </resources>

@@ -188,6 +188,8 @@
   <string name="log_vehicle_fcm">Fahrzeug von Abona über FCM</string>
 
 
-  <string name="local_time">(Ortszeit)</string>
+  <string name="destination_timeZone">(Ankunftsort)</string>
+  <string name="your_timeZone">(Deine Zeitzone)</string>
+  <string name="overdue">(Überfällig)</string>
 
 </resources>

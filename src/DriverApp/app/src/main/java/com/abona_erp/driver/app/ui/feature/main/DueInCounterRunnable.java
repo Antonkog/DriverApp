@@ -58,13 +58,15 @@ public class DueInCounterRunnable implements Runnable {
     long days = hours / 24;
     String d = diff < 0 ? "- " : "";
     d += String.valueOf(Math.abs(days));
-    if (tv_DueIn != null) {
-      tv_DueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
-    }
+    String dueInText = d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min";
     
     if (diff < 0) {
       if (iv_Warning != null) {
         iv_Warning.setVisibility(View.VISIBLE);
+      }
+      if (tv_DueIn != null) {
+        tv_DueIn.setTextColor(context.getColor(R.color.clrLabelDeleted));
+        tv_DueIn.setText(dueInText+"\n"+context.getString(R.string.overdue));
       }
       if (ll_Background != null) {
         ll_Background.setBackground(context.getResources().getDrawable(R.drawable.warning_header_bg));
@@ -73,6 +75,12 @@ public class DueInCounterRunnable implements Runnable {
       if (iv_Warning != null) {
         iv_Warning.setVisibility(View.GONE);
       }
+
+      if (tv_DueIn != null) {
+        tv_DueIn.setTextColor(context.getColor(R.color.clrFont));
+        tv_DueIn.setText(dueInText);
+      }
+
       if (ll_Background != null) {
         ll_Background.setBackground(context.getResources().getDrawable(R.drawable.header_bg));
       }
