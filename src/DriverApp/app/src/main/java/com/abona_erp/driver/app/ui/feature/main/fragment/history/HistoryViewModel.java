@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.feature.main.fragment.history;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -10,13 +11,14 @@ import androidx.lifecycle.MutableLiveData;
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.util.AppUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 
 public class HistoryViewModel extends AndroidViewModel {
   private final String TAG = "HistoryViewModel";
@@ -90,6 +92,18 @@ public class HistoryViewModel extends AndroidViewModel {
     }
   }
 
+  /**
+   * method to send email based on device profile and action history
+   * author: Anton Kogan
+   * @param context
+   * @param deviceProfileString
+   * @return Completable
+   */
+  public Completable subscribeEmailSent(Context context, String deviceProfileString) {
+      return AppUtils.getEmailCompleable(context, deviceProfileString, logsByOrderNum).observeOn(Schedulers.computation());
+  }
+
+
   /**method to send email based on device profile and action history
    * author: Anton Kogan
    * @param context
@@ -103,7 +117,6 @@ public class HistoryViewModel extends AndroidViewModel {
       e.printStackTrace();
     }
   }
-
   /**
    * Get the DeviceProfile
    *

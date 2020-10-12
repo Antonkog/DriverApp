@@ -176,6 +176,9 @@ dependencies {
     // Event Bus
     implementation 'org.greenrobot:eventbus:3.1.1'
 
+    //smtp mail client
+    implementation 'com.github.nedimf:maildroid:v0.0.5' // is based on  javax.mail-api
+    // implementation group: 'javax.mail', name: 'javax.mail-api', version: '1.6.2' //standard smtp lib
     implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.7'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'de.hdodenhof:circleimageview:3.0.2'
