@@ -101,9 +101,10 @@
           />
 
         <LinearLayout
-          android:orientation="vertical"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content">
+            android:id="@+id/due_in_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
           <com.abona_erp.driver.app.ui.widget.AsapTextView
             android:layout_width="wrap_content"

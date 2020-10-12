@@ -89,6 +89,7 @@ public class CommItemAdapterExt extends
   private DueInCounterRunnable dueInCounter;
   public  AsapTextView tv_due_in;
   public AppCompatImageView iv_warning;
+  public LinearLayout ll_due_in;
   
   private List<Notify> mDataList;
 
@@ -262,7 +263,7 @@ public class CommItemAdapterExt extends
     
     synchronized (CommItemAdapterExt.this) {
       if (taskItem.getTaskDueDateFinish() != null) {
-        holder.tv_task_finish.setText(sdf.format(taskItem.getTaskDueDateFinish()));
+        holder.tv_task_finish.setText(sdf.format(taskItem.getTaskDueDateFinish())+ " " +mContext.getString(R.string.destination_timeZone));
         if (mCommItem.getTaskItem().getAddress().getLatitude() != 0.0 ||
                 mCommItem.getTaskItem().getAddress().getLongitude() != 0.0) {
           String startTimeZone = TimeZoneMapper.latLngToTimezoneString(
@@ -271,7 +272,7 @@ public class CommItemAdapterExt extends
           );
           TimeZone startTimeZoneRegion = TimeZone.getTimeZone(startTimeZone);
           String localTime = getLocalTimeFromGivenTimeZone(sdf.format(taskItem.getTaskDueDateFinish()), startTimeZoneRegion);
-          holder.tv_local_time_task_finish.setText(localTime + " " + mContext.getString(R.string.local_time));
+          holder.tv_local_time_task_finish.setText(localTime + " " + mContext.getString(R.string.your_timeZone));
           holder.tv_local_time_task_finish.setVisibility(View.VISIBLE);
         } else {
           holder.tv_local_time_task_finish.setVisibility(View.GONE);
@@ -279,9 +280,9 @@ public class CommItemAdapterExt extends
 
         if (taskItem.getTaskStatus() != null) {
           if (taskItem.getTaskStatus().equals(TaskStatus.PENDING) || taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
-            enableDueInTimer(mCommItem, true, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
+            enableDueInTimer(true, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish(), ll_due_in);
           } else {
-            enableDueInTimer(mCommItem, false, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish());
+            enableDueInTimer(false, tv_due_in, iv_warning, taskItem.getTaskDueDateFinish(), ll_due_in);
           }
         }
       }
@@ -523,6 +524,7 @@ public class CommItemAdapterExt extends
   
       btn_camera = (AppCompatImageButton)itemView.findViewById(R.id.btn_camera);
       btn_map = (AppCompatImageButton)itemView.findViewById(R.id.btn_map);
+      ll_due_in = (LinearLayout)itemView.findViewById(R.id.due_in_layout);
     }
   }
   
@@ -606,7 +608,7 @@ public class CommItemAdapterExt extends
   }
   
   @SuppressLint({"DefaultLocale", "SetTextI18n"})
-  private void enableDueInTimer(CommItem commItem, boolean enable, AsapTextView dueIn, AppCompatImageView ivWarning, Date finishDate) {
+  private void enableDueInTimer(boolean enable, AsapTextView dueIn, AppCompatImageView ivWarning, Date finishDate, LinearLayout dueInLayout) {
     
     if (enable) {
       _handler.removeCallbacks(dueInCounter);
@@ -614,34 +616,11 @@ public class CommItemAdapterExt extends
       dueInCounter.iv_Warning = ivWarning;
       dueInCounter.ll_Background = null;
       dueInCounter.endDate = finishDate;
+      dueInLayout.setVisibility(View.VISIBLE);
       _handler.postDelayed(dueInCounter, 250);
     } else {
       _handler.removeCallbacks(dueInCounter);
-      
-      if (finishDate == null) return;
-      if (commItem == null || commItem.getTaskItem() == null || commItem.getTaskItem().getActivities() == null) return;
-      if (commItem.getTaskItem().getActivities().size() <= 0) return;
-      int lastIdx = commItem.getTaskItem().getActivities().size() - 1;
-      if (commItem.getTaskItem().getActivities().get(lastIdx).getFinished() == null) return;
-      Calendar endTaskCalendar = Calendar.getInstance();
-      endTaskCalendar.setTime(commItem.getTaskItem().getActivities().get(lastIdx).getFinished());
-  
-      Calendar finishCalendar = Calendar.getInstance();
-      finishCalendar.setTime(finishDate);
-  
-      long diff = (finishCalendar.getTimeInMillis() - endTaskCalendar.getTimeInMillis() - TimeZone.getDefault().getOffset(System.currentTimeMillis())) / 1000 / 60;
-      long hours = diff / 60;
-  
-      long days = hours / 24;
-      String d = diff < 0 ? "-" : "";
-      d += String.valueOf(Math.abs(days));
-      dueIn.setText(d + "d " + String.format("%02d", Math.abs(hours % 24)) + "h " + String.format("%02d", Math.abs(diff % 60)) + "min");
-  
-      if (diff < 0) {
-        ivWarning.setVisibility(View.VISIBLE);
-      } else {
-        ivWarning.setVisibility(View.GONE);
-      }
+      dueInLayout.setVisibility(View.GONE);
     }
   }
   
