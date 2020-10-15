@@ -1,4 +1,4 @@
-package com.abona_erp.driver.app.ui.home
+package com.abona_erp.driver.app.ui.fhome
 
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
@@ -26,13 +26,13 @@ val TAG = "TasksAdapter"
      binding.textOrderNo.text = ""+ data.taskEntity.orderDetails?.orderNo
      binding.textFinishTime.text = data.taskEntity.taskDueDateFinish
      binding.textActName.text = data.activities.firstOrNull{it.confirmstatus == ConfirmationType.RECEIVED}?.name ?: ""
-        binding.textOrderNo.text = ""+ data.taskEntity.taskId
+        binding.textOrderNo.text = ""+ data.taskEntity.orderDetails?.orderNo
 
         val context  = binding.root.context
         dialogBuilder = DialogBuilder(context)
 
-//        setDangerGoodsImage(data, binding)
-//        setPalletsImage(data, binding)
+        setDangerGoodsImage(data, binding)
+        setPalletsImage(data, binding)
 
         binding.imageInfo.setOnClickListener {
             val bundle = bundleOf("task_entity" to data.taskEntity)
@@ -50,7 +50,6 @@ val TAG = "TasksAdapter"
         if (data.taskEntity.palletExchange?.palletsAmount ?: 0 > 0)
             binding.imagePallet.visibility = View.VISIBLE
         else binding.imagePallet.visibility = View.GONE
-
 
         binding.imagePallet.setOnClickListener {
 
@@ -72,11 +71,14 @@ val TAG = "TasksAdapter"
             binding.imageDanger.setImageDrawable(drawable)
         } else binding.imageDanger.visibility = View.GONE
 
-        binding.imageDanger.setOnClickListener { Toast.makeText(
+        binding.imageDanger.setOnClickListener {
+            Toast.makeText(
             binding.imageDanger.context,
             " click on danger",
             Toast.LENGTH_SHORT
-        ).show() }
+        ).show()
+
+        }
     }
 
     override fun getLayoutId(): Int = R.layout.task_item

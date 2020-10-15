@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.abona_erp.driver.app.ui.home.HomeFragment"
+        android:name="com.abona_erp.driver.app.ui.fhome.HomeFragment"
         android:label="@string/screen_home"
         tools:layout="@layout/home_fragment">
         <action
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/nav_login"
-        android:name="com.abona_erp.driver.app.ui.login.LoginFragment"
+        android:name="com.abona_erp.driver.app.ui.flogin.LoginFragment"
         android:label="@string/screen_login"
         tools:layout="@layout/login_fragment" >
         <action
@@ -39,21 +39,21 @@
 
     <fragment
         android:id="@+id/nav_documents"
-        android:name="com.abona_erp.driver.app.ui.documents.DocumentsFragment"
+        android:name="com.abona_erp.driver.app.ui.fdocuments.DocumentsFragment"
         android:label="@string/screen_documents"
         tools:layout="@layout/documents_fragment" />
 
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.abona_erp.driver.app.ui.settings.SettingsFragment"
+        android:name="com.abona_erp.driver.app.ui.fsettings.SettingsFragment"
         android:label="@string/screen_settings"
         tools:layout="@layout/settings_fragment"/>
 
 
     <fragment
         android:id="@+id/taskInfoFragment"
-        android:name="com.abona_erp.driver.app.ui.taskInfo.TaskInfoFragment"
+        android:name="com.abona_erp.driver.app.ui.ftaskInfo.TaskInfoFragment"
         android:label="@string/screen_task_info"
         tools:layout="@layout/task_info_fragment" >
         <argument

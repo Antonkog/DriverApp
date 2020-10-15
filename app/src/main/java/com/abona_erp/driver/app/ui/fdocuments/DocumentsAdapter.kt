@@ -1,9 +1,8 @@
-package com.abona_erp.driver.app.ui.documents
+package com.abona_erp.driver.app.ui.fdocuments
 
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.abona_erp.driver.app.R
 import com.abona_erp.driver.app.data.local.db.DocumentEntity
-import com.abona_erp.driver.app.data.model.DocumentResponse
 import com.abona_erp.driver.app.databinding.DocumentItemBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy

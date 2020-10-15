@@ -3,7 +3,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.fhome.HomeFragment">
 
     <data>
 
@@ -13,7 +13,7 @@
 
         <variable
             name="viewmodel"
-            type="com.abona_erp.driver.app.ui.home.HomeViewModel" />
+            type="com.abona_erp.driver.app.ui.fhome.HomeViewModel" />
 
     </data>
 

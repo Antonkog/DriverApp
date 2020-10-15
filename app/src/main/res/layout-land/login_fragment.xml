@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.login.LoginFragment">
+    tools:context=".ui.flogin.LoginFragment">
 
   <data>
 
@@ -12,7 +12,7 @@
 
     <variable
         name="viewmodel"
-        type="com.abona_erp.driver.app.ui.login.LoginViewModel" />
+        type="com.abona_erp.driver.app.ui.flogin.LoginViewModel" />
 
   </data>
 

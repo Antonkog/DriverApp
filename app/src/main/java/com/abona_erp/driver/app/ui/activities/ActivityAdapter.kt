@@ -39,6 +39,7 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
             ActivityStatus.PENDING -> binding.buttonActConfirm.text = binding.root.resources.getString(R.string.activity_start)
             ActivityStatus.RUNNING -> binding.buttonActConfirm.text =  binding.root.resources.getString(R.string.next)
             ActivityStatus.FINISHED -> binding.buttonActConfirm.visibility = View.GONE
+            ActivityStatus.ENUM_ERROR -> binding.buttonActConfirm.visibility = View.GONE
         }
 
         binding.buttonActConfirm.setOnClickListener {

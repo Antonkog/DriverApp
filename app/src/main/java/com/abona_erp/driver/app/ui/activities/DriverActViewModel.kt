@@ -41,12 +41,14 @@ class DriverActViewModel @ViewModelInject constructor(@ApplicationContext privat
         viewModelScope.launch {
             try {
                 val result =  repository.postActivity(context, entity.toActivity(DeviceUtils.getUniqueID(context)))
+
+               //todo: implement callback action.
             } catch (e : HttpException){
                 if(e.code() == 401){
-                    Log.e(TAG, e.message)
+                    Log.e(TAG, e.message ?: "Auth error" )
                 }
             } catch (e: Exception){
-                Log.e(TAG, e.message)
+                Log.e(TAG, e.message ?: "Auth error" )
             }
         }
     }

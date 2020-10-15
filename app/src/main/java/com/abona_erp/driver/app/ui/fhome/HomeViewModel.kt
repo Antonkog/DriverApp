@@ -1,4 +1,4 @@
-package com.abona_erp.driver.app.ui.home
+package com.abona_erp.driver.app.ui.fhome
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,8 +7,6 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.abona_erp.driver.app.data.Constant
-import com.abona_erp.driver.app.data.local.db.ActivityEntity
-import com.abona_erp.driver.app.data.local.db.TaskEntity
 import com.abona_erp.driver.app.data.local.db.TaskStatus
 import com.abona_erp.driver.app.data.local.preferences.PrivatePreferences
 import com.abona_erp.driver.app.data.local.preferences.putAny
@@ -94,6 +92,9 @@ class HomeViewModel @ViewModelInject constructor(
                 }
                 TaskStatus.FINISHED -> {
                     completedTasks.add(it)
+                }
+                TaskStatus.BREAK, TaskStatus.CMR ->{
+                    runningTasks.add(it)
                 }
             }
         }

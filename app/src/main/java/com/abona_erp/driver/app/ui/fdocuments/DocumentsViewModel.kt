@@ -1,4 +1,4 @@
-package com.abona_erp.driver.app.ui.documents
+package com.abona_erp.driver.app.ui.fdocuments
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import android.provider.ContactsContract
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
@@ -24,8 +23,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FileUtils.toFile
 import java.io.*
 
 

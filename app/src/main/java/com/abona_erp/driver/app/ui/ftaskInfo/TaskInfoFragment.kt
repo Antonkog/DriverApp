@@ -1,4 +1,4 @@
-package com.abona_erp.driver.app.ui.taskInfo
+package com.abona_erp.driver.app.ui.ftaskInfo
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

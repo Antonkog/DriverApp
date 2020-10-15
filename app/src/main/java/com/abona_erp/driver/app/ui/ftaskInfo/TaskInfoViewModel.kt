@@ -1,4 +1,4 @@
-package com.abona_erp.driver.app.ui.taskInfo
+package com.abona_erp.driver.app.ui.ftaskInfo
 
 import androidx.lifecycle.ViewModel
 
