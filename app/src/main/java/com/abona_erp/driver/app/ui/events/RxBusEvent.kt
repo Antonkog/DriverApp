@@ -7,7 +7,7 @@ class RxBusEvent {
 //        val showDialog: Boolean,
 //        val message: String? = null
 //    )
-    data class LogOut(val logout: Boolean)
+    data class AuthError(val message: String)
     data class FirebaseMessage(val message: String)
     data class DocumentMessage(val uri: Uri)
 //    data class MessageEvent(val message: String)

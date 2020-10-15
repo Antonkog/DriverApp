@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driver.app.data.Constant
@@ -16,15 +17,23 @@ import com.abona_erp.driver.app.data.remote.AppRepository
 import com.abona_erp.driver.app.ui.RxBus
 import com.abona_erp.driver.app.ui.base.BaseViewModel
 import com.abona_erp.driver.app.ui.events.RxBusEvent
+import com.abona_erp.driver.app.ui.flogin.LoginViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 class MainViewModel @ViewModelInject constructor(private val gson: Gson, private val repository: AppRepository, private val  prefs: SharedPreferences, @Assisted private val savedStateHandle: SavedStateHandle) :  BaseViewModel() {
     private val TAG = "MainViewModel"
+    val navigateToLogin = MutableLiveData<Boolean>()
+
     init {
         RxBus.listen(RxBusEvent.FirebaseMessage::class.java).subscribe { event->
             viewModelScope.launch {
                 handleFirebaseMessage(event.message)
+            }
+        }
+        RxBus.listen(RxBusEvent.AuthError::class.java).subscribe { event->
+            viewModelScope.launch {
+                navigateToLogin.postValue(true)
             }
         }
     }

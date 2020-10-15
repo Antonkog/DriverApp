@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.FileProvider
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel by viewModels<MainViewModel> ()
     private lateinit var navController : NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -56,6 +58,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         navView.setupWithNavController(navController)
+
+        mainViewModel.navigateToLogin.observe(this, Observer {
+            mainViewModel.resetAuthTime()
+            navController.navigate(R.id.nav_login)
+        })
     }
 
 
@@ -102,6 +109,7 @@ class MainActivity : AppCompatActivity() {
 
         startActivityForResult(intent, OPEN_DOC_REQUEST_CODE)
     }
+
     private fun openDocumentPicker() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             /**

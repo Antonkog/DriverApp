@@ -1,16 +1,14 @@
 package com.abona_erp.driver.app.data.remote.utils
 
 import android.content.Context
-import android.util.Log
 import com.abona_erp.driver.app.data.Constant
-import com.abona_erp.driver.app.data.model.ResultOfAction
+import com.abona_erp.driver.app.ui.RxBus
+import com.abona_erp.driver.app.ui.events.RxBusEvent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 import java.io.IOException
 
 class ResponseInterceptor (@ApplicationContext val context: Context) : Interceptor {
@@ -19,8 +17,8 @@ class ResponseInterceptor (@ApplicationContext val context: Context) : Intercept
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
         val response: Response = chain.proceed(request)
-        if(response.code == 401) makeAuth()
-           when( response.body?.string()){
+        if(response.code == 401) makeAuth(response.message)
+           when( response.peekBody(2048)?.string()){
                null, "null" -> //return response.newBuilder().message("null body").code(Constant.ERROR_NULL_CODE).build()
                return chain.proceed(chain.request())
                    .newBuilder()
@@ -34,7 +32,7 @@ class ResponseInterceptor (@ApplicationContext val context: Context) : Intercept
         return response
     }
 
-    private fun makeAuth() {
-        Log.e(TAG, "no auth")
+    private fun makeAuth(message: String) {
+       RxBus.publish(RxBusEvent.AuthError(message))
     }
 }
