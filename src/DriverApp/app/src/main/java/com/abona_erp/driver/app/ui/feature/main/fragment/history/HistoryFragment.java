@@ -1,6 +1,8 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.history;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,25 +18,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
-import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.MovableFloatingActionButton;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.google.android.material.tabs.TabLayout;
 
-import io.reactivex.CompletableObserver;
+import org.jetbrains.annotations.NotNull;
+
+import co.nedim.maildroidx.MaildroidX;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class HistoryFragment extends Fragment {
 
   private static final String TAG = HistoryFragment.class.getSimpleName();
 
-  private CompositeDisposable disposables = new CompositeDisposable();
   private HistoryViewModel historyViewModel;
   private RecyclerView recyclerView;
   private HistoryAdapter historyAdapter;
@@ -45,6 +46,7 @@ public class HistoryFragment extends Fragment {
   private int currentTaskId = 0, currentOrderNo = 0;
   private TabLayout tabLayout;
   private final int tabTaskPosition = 0, tabOrdersPosition = 1;
+  private Handler smtpHandler = new Handler(Looper.getMainLooper());
   public HistoryFragment() {
     // Required empty public constructor.
   }
@@ -71,7 +73,6 @@ public class HistoryFragment extends Fragment {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    disposables.clear();
   }
 
 
@@ -143,28 +144,34 @@ public class HistoryFragment extends Fragment {
   }
 
   private void sendEmailWithMessage(String message){
-      historyViewModel.subscribeEmailSent(getContext(), message)
-     .subscribeOn(Schedulers.computation())
-              .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(new CompletableObserver() {
-              @Override
-              public void onSubscribe(Disposable d) {
-                disposables.add(d);
-                showProgressBar();
-              }
+   MaildroidX.onCompleteCallback callback =  new MaildroidX.onCompleteCallback() {
+      @Override
+      public void onSuccess() {
+        hideProgressBar();
+      }
 
-              @Override
-              public void onComplete() {
-                hideProgressBar();
-              }
+      @Override
+      public void onFail(@NotNull String s) {
+        android.util.Log.e(TAG, "email: failed to send" );
+        hideProgressBar();
+        historyViewModel.sendEmailIntentMessage(getContext(), message);
+      }
 
-              @Override
-              public void onError(Throwable e) {
-                Log.e(TAG, e.getMessage());
-                hideProgressBar();
-                historyViewModel.sendEmailMessage(getContext(), message);
-              }
-            });
+      @Override
+      public long getTimeout() {
+        return Constants.TIMEOUT_SMTP_SEND;
+      }
+    };
+
+    showProgressBar();
+    historyViewModel.sendEmailSmtp(getContext(), message, callback);
+    // no callback from library, need to check
+    smtpHandler.postDelayed(() -> {
+      if(progressBar.getVisibility() == View.VISIBLE){
+        android.util.Log.e(TAG, "email was n't send in 5 seconds" );
+        historyViewModel.sendEmailIntentMessage(getContext(), message);
+      }
+    }, Constants.TIMEOUT_SMTP_SEND +100);//100 millisec. after timeout
   }
 
   private void refreshByOrderNo() {
