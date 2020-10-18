@@ -3,6 +3,7 @@ package com.abona_erp.driver.app.ui.feature.main.fragment.history;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ import org.jetbrains.annotations.NotNull;
 
 import co.nedim.maildroidx.MaildroidX;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class HistoryFragment extends Fragment {
@@ -47,6 +50,9 @@ public class HistoryFragment extends Fragment {
   private TabLayout tabLayout;
   private final int tabTaskPosition = 0, tabOrdersPosition = 1;
   private Handler smtpHandler = new Handler(Looper.getMainLooper());
+
+  private CompositeDisposable historyDisposibles = new CompositeDisposable();
+
   public HistoryFragment() {
     // Required empty public constructor.
   }
@@ -73,17 +79,13 @@ public class HistoryFragment extends Fragment {
   @Override
   public void onDestroy() {
     super.onDestroy();
+    if(!historyDisposibles.isDisposed()) historyDisposibles.dispose();
   }
 
 
   private void initComponents(@NonNull View root) {
-    AppCompatImageButton  mBtnBack = (AppCompatImageButton)root.findViewById(R.id.btn_history_back);
-    mBtnBack.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-      }
-    });
+    AppCompatImageButton  mBtnBack = root.findViewById(R.id.btn_history_back);
+    mBtnBack.setOnClickListener(v -> App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null)));
 
     recyclerView = root.findViewById(R.id.recyclerView);
 
@@ -100,11 +102,15 @@ public class HistoryFragment extends Fragment {
     historyViewModel.getFilteredLogs().observe(getViewLifecycleOwner(), logItems -> historyAdapter.swapData(logItems));
 
 
-    tabLayout = root.findViewById(R.id.tabs);
-    if (currentTaskId != 0)
-      tabLayout.getTabAt(tabTaskPosition).setText(getResources().getString(R.string.task) + " " + currentTaskId);
-    if (currentOrderNo != 0)
-      tabLayout.getTabAt(tabOrdersPosition).setText(getResources().getString(R.string.order) + " " + AppUtils.parseOrderNo(currentOrderNo));
+    try {
+      tabLayout = root.findViewById(R.id.tabs);
+      if (currentTaskId != 0)
+        tabLayout.getTabAt(tabTaskPosition).setText(getResources().getString(R.string.task) + " " + currentTaskId);
+      if (currentOrderNo != 0)
+        tabLayout.getTabAt(tabOrdersPosition).setText(getResources().getString(R.string.order) + " " + AppUtils.parseOrderNo(currentOrderNo));
+    } catch (NullPointerException e){
+      Log.e(TAG, "wrong tab position" + e.getMessage());
+    }
 
     tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
       @Override
@@ -138,9 +144,11 @@ public class HistoryFragment extends Fragment {
   }
 
   private void getDeviceInfoAndSendEmail() {
-    historyViewModel.getDeviceProfile().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-            result -> sendEmailWithMessage(result.toString()),
-            error -> sendEmailWithMessage(" \n deviceId:" + DeviceUtils.getUniqueID(getContext())));
+    historyDisposibles.add(
+      historyViewModel.getDeviceProfile().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+              result -> sendEmailWithMessage(result.toString()),
+              error -> sendEmailWithMessage(" \n deviceId:" + DeviceUtils.getUniqueID(getContext())))
+    );
   }
 
   private void sendEmailWithMessage(String message){
@@ -167,8 +175,9 @@ public class HistoryFragment extends Fragment {
     historyViewModel.sendEmailSmtp(getContext(), message, callback);
     // no callback from library, need to check
     smtpHandler.postDelayed(() -> {
-      if(progressBar.getVisibility() == View.VISIBLE){
+      if(progressBar.getVisibility() == View.VISIBLE){// no callback from lib on timeout and thet's why progress visible.
         android.util.Log.e(TAG, "email was n't send in 5 seconds" );
+        hideProgressBar();
         historyViewModel.sendEmailIntentMessage(getContext(), message);
       }
     }, Constants.TIMEOUT_SMTP_SEND +100);//100 millisec. after timeout
