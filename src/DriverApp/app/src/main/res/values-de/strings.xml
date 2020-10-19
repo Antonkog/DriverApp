@@ -191,5 +191,7 @@
   <string name="destination_timeZone">(Ankunftsort)</string>
   <string name="your_timeZone">(Deine Zeitzone)</string>
   <string name="overdue">(Überfällig)</string>
+  <string name="synchronization">Synchronisation</string>
+  <string name="sync_empty_table">Keine zu synchronisierenden Elemente</string>
 
 </resources>

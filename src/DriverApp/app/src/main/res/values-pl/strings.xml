@@ -183,5 +183,7 @@
   <string name="destination_timeZone">(Destination TimeZone)</string>
   <string name="your_timeZone">(Twoja strefa czasowa)</string>
   <string name="overdue">(zaległy)</string>
+  <string name="synchronization">Synchronizacja</string>
+  <string name="sync_empty_table">Brak elementów do synchronizacji</string>
 
 </resources>

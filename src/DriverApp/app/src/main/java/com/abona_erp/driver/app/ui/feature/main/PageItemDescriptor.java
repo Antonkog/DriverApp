@@ -22,7 +22,8 @@ public class PageItemDescriptor {
     PAGE_DEVICE_REGISTRATED,
     PAGE_NEW_DOCUMENTS,
     PAGE_PROTOCOL,
-    PAGE_HISTORY
+    PAGE_HISTORY,
+    PAGE_SYNC_PROGRESS
   })
   public @interface PageItemDef {}
   
@@ -38,6 +39,7 @@ public class PageItemDescriptor {
   public static final int PAGE_NEW_DOCUMENTS      = 9;
   public static final int PAGE_PROTOCOL           = 10;
   public static final int PAGE_HISTORY       = 11;
+  public static final int PAGE_SYNC_PROGRESS      = 12;
 
   public PageItemDescriptor(@PageItemDef int pageItem) {
     this.pageItem = pageItem;

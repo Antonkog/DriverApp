@@ -320,5 +320,6 @@
   <string name="destination_timeZone">(Destination TimeZone)</string>
   <string name="your_timeZone">(Your TimeZone)</string>
   <string name="overdue">(Overdue)</string>
-
+  <string name="synchronization">Synchronization</string>
+  <string name="sync_empty_table">No elements to synchronize</string>
 </resources>

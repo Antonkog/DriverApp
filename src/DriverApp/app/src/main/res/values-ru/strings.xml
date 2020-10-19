@@ -170,5 +170,7 @@
   <string name="destination_timeZone">(Часовой пояс места назначения)</string>
   <string name="your_timeZone">(Ваш часовой пояс)</string>
   <string name="overdue">(просроченный)</string>
+  <string name="synchronization">Синхронизация</string>
+  <string name="sync_empty_table">Нет элементов для синхронизации</string>
 
 </resources>

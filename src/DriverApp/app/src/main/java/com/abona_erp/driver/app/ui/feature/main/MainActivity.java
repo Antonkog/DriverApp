@@ -81,6 +81,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.protocol.ProtocolFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.sync.SyncProgressFragment;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.CustomDialogFragment;
@@ -288,6 +289,11 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
 
     settingsImage.setOnClickListener(v->{
       loadSettingsFragment();
+      hideMainActivityItems();
+    });
+
+    findViewById(R.id.badge_process_image).setOnClickListener(v->{
+      loadSyncProgressFragment();
       hideMainActivityItems();
     });
 
@@ -1032,6 +1038,11 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   private void loadSettingsFragment() {
     loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SETTINGS),
             null), new SettingsFragment());
+  }
+
+  private void loadSyncProgressFragment() {
+    loadFragment(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_SYNC_PROGRESS),
+            null), new SyncProgressFragment());
   }
 
   private void loadHistoryFragment(int taskId, int orderNo) {
