@@ -321,4 +321,12 @@
   <string name="your_timeZone">(Your TimeZone)</string>
   <string name="overdue">(Overdue)</string>
 
+<!--  Synchronization-->
+  <string name="synchronization">Synchronization</string>
+  <string name="sync_empty_table">No elements to synchronize</string>
+  <string name="delay_reasons">Delay reasons</string>
+  <string name="offline_confirmations">Driver activity and Task confirmations</string>
+  <string name="delay_minutes">Delay: %d minutes</string>
+  <string name="sync_activity">Activity to synchronize</string>
+  <string name="sync_task">Task to synchronize</string>
 </resources>

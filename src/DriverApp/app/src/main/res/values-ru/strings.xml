@@ -170,5 +170,12 @@
   <string name="destination_timeZone">(Часовой пояс места назначения)</string>
   <string name="your_timeZone">(Ваш часовой пояс)</string>
   <string name="overdue">(просроченный)</string>
+  <string name="synchronization">Синхронизация</string>
+  <string name="sync_empty_table">Нет элементов для синхронизации</string>
+    <string name="delay_reasons">Причины задержки</string>
+  <string name="offline_confirmations">Действия водителя и подтверждения задач</string>
+  <string name="delay_minutes">Задержка: %d минут</string>
+    <string name="sync_activity">Активность ожидает синхронизации</string>
+  <string name="sync_task">Задача ожидает синхронизации</string>
 
 </resources>

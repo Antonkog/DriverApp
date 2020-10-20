@@ -15,6 +15,7 @@ import com.abona_erp.driver.app.data.dao.LastActivityDAO;
 import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
+import com.abona_erp.driver.app.data.dao.OfflineDelayReasonDAO;
 import com.abona_erp.driver.app.data.entity.ActionType;
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DelayReasonEntity;
@@ -23,6 +24,7 @@ import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.entity.OfflineDelayReasonEntity;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
@@ -59,8 +61,10 @@ public class DriverRepository {
   //private List<DeviceProfile> mAllDeviceProfiles;
   
   private OfflineConfirmationDAO mOfflineConfirmationDAO;
+  private OfflineDelayReasonDAO offlineDelayReasonDAO;
   private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmation;
-  
+  private LiveData<List<OfflineDelayReasonEntity>> offlineDelays;
+
   private LogDAO mLogDAO;
   private DelayReasonDAO mDelayReasonDAO;
   private ChangeHistoryDao changeHistoryDao;
@@ -83,8 +87,10 @@ public class DriverRepository {
     //mAllDeviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
     
     mOfflineConfirmationDAO = db.offlineConfirmationDAO();
+    offlineDelayReasonDAO = db.offlineDelayReasonDAO();
     mAllOfflineConfirmation = mOfflineConfirmationDAO.getAllLiveDataConfirmations();
-    
+    offlineDelays = offlineDelayReasonDAO.getAllLiveDataOfflineDelayReasons();
+
     mLogDAO = db.logDAO();
 
     mDelayReasonDAO = db.delayReasonDAO();
@@ -107,7 +113,13 @@ public class DriverRepository {
   public LiveData<List<OfflineConfirmation>> getAllLiveDataConfirmations() {
     return mAllOfflineConfirmation;
   }
-  
+
+
+
+  public LiveData<List<OfflineDelayReasonEntity>> getOfflineDelayReasons() {
+    return offlineDelays;
+  }
+
   public LiveData<List<Notify>> getAllPendingNotifications() {
     return mAllPendingNotifications;
   }
