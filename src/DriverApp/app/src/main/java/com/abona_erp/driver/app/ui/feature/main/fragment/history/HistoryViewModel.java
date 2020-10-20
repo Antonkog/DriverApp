@@ -8,20 +8,22 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.entity.ChangeHistory;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.util.AppUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Completable;
+import co.nedim.maildroidx.MaildroidX;
+import co.nedim.maildroidx.MaildroidXType;
 import io.reactivex.Flowable;
-import io.reactivex.schedulers.Schedulers;
 
 public class HistoryViewModel extends AndroidViewModel {
-  private final String TAG = "HistoryViewModel";
+  private static final String TAG = "HistoryViewModel";
   private DriverRepository _repo;
   private MutableLiveData<List<ChangeHistory>> filteredLogs = new MutableLiveData<>();
   private List<ChangeHistory> logsByTaskId = new ArrayList<>();
@@ -97,21 +99,43 @@ public class HistoryViewModel extends AndroidViewModel {
    * author: Anton Kogan
    * @param context
    * @param deviceProfileString
-   * @return Completable
+   * @param callback =  MaildroidX.onCompleteCallback
    */
-  public Completable subscribeEmailSent(Context context, String deviceProfileString) {
-      return AppUtils.getEmailCompleable(context, deviceProfileString, logsByOrderNum).observeOn(Schedulers.computation());
+  public void sendEmailSmtp(Context context, String deviceProfileString, MaildroidX.onCompleteCallback callback) {
+       sendEmailSmtp(context, deviceProfileString, logsByOrderNum, callback);
   }
 
+  public static void sendEmailSmtp(Context context, String deviceProfileString, List<ChangeHistory> logsByOrderNum,MaildroidX.onCompleteCallback callback){
+    if (logsByOrderNum.isEmpty())  callback.onFail("ChangeHistory list empty");
+    try {
+      AppUtils.removeLogFile(context);
+      AppUtils.appendLogsInFile(context, logsByOrderNum);
+    }catch (IOException e){
+      callback.onFail("can't append log file, " + e.getMessage());
+    }
+
+    new MaildroidX.Builder()
+            .smtp("smtp.omc-mail.de")
+            .port("25")
+            .smtpUsername("syst8514@systemhaus-alber.de")
+            .smtpPassword("syst8514")
+            .type((MaildroidXType.HTML))
+            .from("logging@abona-erp.com")
+            .to("logging@abona-erp.com")
+            .subject(context.getString(R.string.history_email_theme))
+            .body(deviceProfileString)
+            .attachment(AppUtils.getLogFile(context).getAbsolutePath())
+            .onCompleteCallback(callback).send();
+  }
 
   /**method to send email based on device profile and action history
    * author: Anton Kogan
    * @param context
    * @param deviceProfileString
    */
-  public void sendEmailMessage(Context context, String deviceProfileString) {
+  public void sendEmailIntentMessage(Context context, String deviceProfileString) {
     try {
-      AppUtils.sendEmail(context, deviceProfileString, logsByOrderNum);
+      AppUtils.sendEmailIntent(context, deviceProfileString, logsByOrderNum);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       e.printStackTrace();

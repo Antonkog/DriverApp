@@ -48,7 +48,8 @@ public class AppUtils {
    * it can be conveniently overriden for local testing.
    */
   public static final int SDK_INT = Build.VERSION.SDK_INT;
-  
+  private static final String TAG = "AppUtils";
+
   public static void playNotificationTone() {
     try {
       Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -194,48 +195,12 @@ public class AppUtils {
    * @param context
    * @return
    */
-  private static File getLogFile(Context context) {
+  public static File getLogFile(Context context) {
     return new  File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + Constants.LOG_FILE_PREFIX  + Constants.LOG_FILE_EXTENSION);
   }
 
   public static boolean removeLogFile(Context context) {
     return getLogFile(context).delete();
-  }
-
-
-  public static Completable getEmailCompleable(Context context, String deviceProfileString, List<ChangeHistory> logsByOrderNum){
-   return Completable.create(emitter -> {
-     if (logsByOrderNum.isEmpty()) emitter.onError(new NoSuchElementException("ChangeHistory list empty"));
-     removeLogFile(context);
-     appendLogsInFile(context, logsByOrderNum);
-     new MaildroidX.Builder()
-             .smtp("smtp.omc-mail.de")
-             .port("25")
-             .smtpUsername("syst8514@systemhaus-alber.de")
-             .smtpPassword("syst8514")
-             .type((MaildroidXType.HTML))
-             .from("logging@abona-erp.com")
-             .to("logging@abona-erp.com")
-             .subject(context.getString(R.string.history_email_theme))
-             .body(deviceProfileString)
-             .attachment(getLogFile(context).getAbsolutePath())
-             .onCompleteCallback(new MaildroidX.onCompleteCallback() {
-               @Override
-               public void onSuccess() {
-                 emitter.onComplete();
-               }
-
-               @Override
-               public void onFail(@NotNull String s) {
-                 emitter.onError(new Throwable("email was n't sent"));
-               }
-
-               @Override
-               public long getTimeout() {
-                 return 5000;
-               }
-             }).send();
-   });
   }
 
   /**method to add logs based on action history
@@ -245,7 +210,7 @@ public class AppUtils {
    * @param logsByOrderNum
    * @throws Exception
    */
-  public static void sendEmail(Context context, String deviceProfileString, List<ChangeHistory> logsByOrderNum) throws Exception {
+  public static void sendEmailIntent(Context context, String deviceProfileString, List<ChangeHistory> logsByOrderNum) throws Exception {
       if(logsByOrderNum.isEmpty()) throw new NoSuchElementException("empty ChangeHistory");
       removeLogFile(context);
       appendLogsInFile(context, logsByOrderNum);
@@ -253,7 +218,7 @@ public class AppUtils {
   }
 
 
-  private static void appendLogsInFile(Context context, List<ChangeHistory> logsByOrderNum) throws IOException {
+  public static void appendLogsInFile(Context context, List<ChangeHistory> logsByOrderNum) throws IOException {
     FileWriter myWriter = new FileWriter(getLogFile(context));
     BufferedWriter bufferedWriter = new BufferedWriter(myWriter);
     bufferedWriter.append(logsByOrderNum.get(0).getCsvHeader());
