@@ -6,9 +6,8 @@ import com.abona_erp.driver.app.di.modules.ActivityModule;
 import com.abona_erp.driver.app.di.modules.ApplicationModule;
 import com.abona_erp.driver.app.di.scopes.ApplicationScope;
 import com.abona_erp.driver.app.service.ForegroundAlarmService;
-import com.abona_erp.driver.app.service.NotificationService;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
-import com.abona_erp.driver.app.worker.DeviceProfileWorker;
+import com.abona_erp.driver.app.worker.FCMParserWorker;
 import com.abona_erp.driver.app.worker.NotifyWorker;
 
 import dagger.Component;
@@ -25,5 +24,5 @@ public interface ApplicationComponent {
     /*void inject(DeviceProfileWorker profileWorker);*/
 
     void inject(ForegroundAlarmService foregroundAlarmService);
-    void inject(NotificationService notificationService);
+    void inject(FCMParserWorker FCMParserWorker);
 }

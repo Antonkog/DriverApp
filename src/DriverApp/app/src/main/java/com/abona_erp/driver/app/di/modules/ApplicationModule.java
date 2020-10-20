@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import androidx.room.Room;
+import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
@@ -74,6 +75,12 @@ public class ApplicationModule {
     @ApplicationScope
     static SharedPreferences provideSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    @Provides
+    @ApplicationScope
+    static WorkManager provideWorkManager(Context context) {
+        return WorkManager.getInstance(context);
     }
 
     @Provides

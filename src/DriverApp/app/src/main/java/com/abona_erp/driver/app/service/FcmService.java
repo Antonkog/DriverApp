@@ -14,6 +14,9 @@ import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
@@ -29,10 +32,13 @@ import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.ServiceUtil;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.app.worker.FCMParserWorker;
+import com.abona_erp.driver.app.worker.NotifyWorker;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
@@ -53,6 +59,7 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 @SuppressLint("NewApi")
 public class FcmService extends FirebaseMessagingService {
@@ -122,16 +129,30 @@ public class FcmService extends FirebaseMessagingService {
 //      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
 //    }
 
-    FirebaseJobDispatcher dispatcher =
-      new FirebaseJobDispatcher(new GooglePlayDriver(this));
-    Job myJob = dispatcher.newJobBuilder()
-      .setService(NotificationService.class)
-      .setTag("notify-job")
-      .setExtras(bundle)
-      .build();
-    dispatcher.schedule(myJob);
+
+    setOneTimeWork(data.toString());
   }
-  
+
+  public static void setOneTimeWork(String rawMessageExtras) {
+    OneTimeWorkRequest taskAlarmRequest =
+            new OneTimeWorkRequest.Builder(FCMParserWorker.class)
+                    .setInputData(createInputDataForUri(rawMessageExtras))
+                    .addTag(Constants.PARSE_FCM_TAG_SUFFIX)
+                    .build();
+    WorkManager.getInstance(App.getInstance()).enqueue(taskAlarmRequest);
+  }
+
+  /**
+   * Creates the input data bundle which includes the Uri to operate on
+   * @return Data which contains the Image Uri as a String
+   */
+  public static Data createInputDataForUri(String  extras) {
+    Data.Builder builder = new Data.Builder();
+    builder.putString(Constants.EXTRAS_FCM_MESSAGE, extras);
+    return builder.build();
+  }
+
+
   /**
    * Create and show a simple notification containing the received
    * FCM message.

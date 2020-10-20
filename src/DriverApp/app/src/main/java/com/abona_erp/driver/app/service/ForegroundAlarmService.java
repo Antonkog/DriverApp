@@ -120,7 +120,7 @@ public class ForegroundAlarmService extends Service {
         OneTimeWorkRequest taskAlarmRequest =
                 new OneTimeWorkRequest.Builder(NotifyWorker.class)
                         .setInputData(ForegroundAlarmService.createInputDataForUri(taskId))
-                        .addTag(taskId + Constants.WORK_TAG_SUFFIX)
+                        .addTag(taskId + Constants.ALARM_TAG_SUFFIX)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                         .build();
         workManager.enqueue(taskAlarmRequest);

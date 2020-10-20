@@ -5,7 +5,9 @@ import android.Manifest;
 public interface Constants {
 
     String EXTRAS_ALARM_TASK_ID = "extras_alarm_task_id";
-    String WORK_TAG_SUFFIX = "alarmTask";
+    String EXTRAS_FCM_MESSAGE = "extras_alarm_task_id";
+    String ALARM_TAG_SUFFIX = "alarmTask";
+    String PARSE_FCM_TAG_SUFFIX = "parseFCMTask";
     String WORK_TAG_DEVICE_UPDATE = "deviceUpdateTask";
     String SECURITY_CODE = "0000";
     int REPEAT_TIME = 5;
@@ -34,6 +36,8 @@ public interface Constants {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
     };
+
+    int NOTIFICATION_FMC_MESSAGE = 111;
     int NOTIFICATION_CHECK_ALARM_ID = 112;
     int NOTIFICATION_NOT_EXIST_ALARM_ID = 113;
     String NOTIFICATION_CHANNEL_ID = "Abona Tasks";

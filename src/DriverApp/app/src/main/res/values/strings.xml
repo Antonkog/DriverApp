@@ -261,6 +261,12 @@
   <string name="alarm_check_failed_reason">Reason: task was changed</string>
   <string name="alarm_check_notime_reason">Reason: task time ended</string>
 
+
+<!--  fcm message come-->
+
+  <string name="new_message_fcm" translatable="false">New message from Firebase</string>
+
+
   <string name="minus_string" translatable="false">-</string>
   <string name="colon_string" translatable="false">:</string>
 

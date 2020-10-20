@@ -62,21 +62,6 @@ public class NotifyWorker extends Worker implements AlarmChecker {
         Log.d(TAG, " alarm work started: " + taskId);
         showCheckingNotification();
 
-        checkTaskExist(taskId).subscribe(exist -> {
-            if (exist) {
-                Log.d(TAG, "alarm task exist " + taskId);
-                showExistNotification(taskId);
-            } else {
-                if (taskTimeFinish) {
-                    showTimeOverdueNotification();
-                } else {
-                    showNotExistNotification();
-                }
-                Log.d(TAG, "alarm task not found " + taskId);
-                WorkManager.getInstance(appContext).cancelAllWorkByTag(taskId + Constants.WORK_TAG_SUFFIX);
-            }
-            removeCheckingNotification(); //in this case onStopJob not called.
-        });
 
         removeCheckingNotification();
         // Indicate whether the work finished successfully with the Result
