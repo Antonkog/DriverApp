@@ -193,5 +193,10 @@
   <string name="overdue">(Überfällig)</string>
   <string name="synchronization">Synchronisation</string>
   <string name="sync_empty_table">Keine zu synchronisierenden Elemente</string>
+    <string name="delay_reasons">Verzögerungsgründe</string>
+  <string name="offline_confirmations">Fahreraktivität und Aufgabenbestätigungen</string>
+  <string name="delay_minutes">Verzögerung: %d minuten</string>
+    <string name="sync_activity">Aktivität zum Synchronisieren</string>
+  <string name="sync_task">Aufgabe zum Synchronisieren</string>
 
 </resources>

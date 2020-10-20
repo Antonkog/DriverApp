@@ -185,5 +185,10 @@
   <string name="overdue">(zaległy)</string>
   <string name="synchronization">Synchronizacja</string>
   <string name="sync_empty_table">Brak elementów do synchronizacji</string>
+    <string name="delay_reasons">"Powody opóźnienia "</string>
+  <string name="offline_confirmations">"Aktywność kierowcy i potwierdzenia zadań "</string>
+  <string name="delay_minutes">Opóźnienie: %d minut</string>
+    <string name="sync_activity">Aktywność oczekuje na synchronizację</string>
+  <string name="sync_task">Zadanie oczekuje na synchronizację</string>
 
 </resources>

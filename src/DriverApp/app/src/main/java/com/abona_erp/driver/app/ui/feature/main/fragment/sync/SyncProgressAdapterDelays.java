@@ -57,9 +57,15 @@ public class SyncProgressAdapterDelays extends RecyclerView.Adapter<SyncProgress
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.txtWhat.setText( "Delay: "+ offlineDelays.get(position).getDelayInMinutes() + "minutes");
-        holder.txtWhen.setText(offlineDelays.get(position).getTimestamp().toString());
+        String format = holder.title.getContext().getResources().getString(R.string.delay_minutes);
+
+        int minutes = offlineDelays.get(position).getDelayInMinutes();
+
+        holder.txtWhat.setText(String.format(format,minutes));
+
+        holder.txtWhen.setText(formatUTCTZ(offlineDelays.get(position).getTimestamp()));
     }
+
     public final String formatUTCTZ(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd-MM-yyyy");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

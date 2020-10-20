@@ -62,7 +62,7 @@ public class SyncProgressAdapter extends RecyclerView.Adapter<SyncProgressAdapte
     public void onBindViewHolder(MyViewHolder holder, int position) {
         OfflineConfirmation current = offlineConfirmations.get(position);
         holder.txtWhen.setVisibility(View.GONE);
-        holder.txtWhat.setText(ConfirmationType.getConfirmationTypeByOrdinal(current.getConfirmType()).name());
+        holder.txtWhat.setText(ConfirmationType.getNameByOrdinal(holder.txtWhat.getContext(), current.getConfirmType()));
     }
     public final String formatUTCTZ(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd-MM-yyyy");

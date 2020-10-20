@@ -1,6 +1,9 @@
 package com.abona_erp.driver.app.data.model;
 
 
+import android.content.Context;
+
+import com.abona_erp.driver.app.R;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -44,6 +47,23 @@ public enum ConfirmationType {
     }
     return NOT_CONFIRMED;
   }
+
+
+  public static String getNameByOrdinal(Context context, int confirmationTypeOrdinal) {
+    switch (getConfirmationTypeByOrdinal(confirmationTypeOrdinal)) {
+        case TASK_CONFIRMED_BY_DEVICE:
+        case TASK_CONFIRMED_BY_USER:
+        case TASK_CONFIRMED_BY_ABONA:
+          return context.getResources().getString(R.string.sync_task);
+        case ACTIVITY_CONFIRMED_BY_ABONA:
+        case ACTIVITY_CONFIRMED_BY_DEVICE:
+        case ACTIVITY_CONFIRMED_BY_USER:
+          return context.getResources().getString(R.string.sync_activity);
+      default:
+        return "unknown sync data type" + getConfirmationTypeByOrdinal(confirmationTypeOrdinal).name();
+    }
+  }
+
   
   static class Serializer implements JsonSerializer<ConfirmationType>, JsonDeserializer<ConfirmationType> {
     
