@@ -322,4 +322,6 @@
   <string name="overdue">(Overdue)</string>
   <string name="synchronization">Synchronization</string>
   <string name="sync_empty_table">No elements to synchronize</string>
+  <string name="delay_reasons" translatable="false">Delay reasons</string>
+  <string name="offline_confirmations" translatable="false">Other confirmations</string>
 </resources>

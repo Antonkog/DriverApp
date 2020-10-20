@@ -26,10 +26,10 @@ public class SyncProgressFragment extends Fragment {
 
   private CompositeDisposable disposables = new CompositeDisposable();
   private SyncProgressViewModel syncProgressViewModel;
-  private RecyclerView recyclerView;
+  private RecyclerView rvConfirmations, rvDelays;
   private SyncProgressAdapter syncProgressAdapter;
-  private RecyclerView.LayoutManager layoutManager;
-  private TextView textEmpty;
+  private SyncProgressAdapterDelays syncProgressAdapterDelays;
+  private RecyclerView.LayoutManager layoutManagerConfirmations, layoutManagerDelays;
 
   public SyncProgressFragment() {
     // Required empty public constructor.
@@ -65,34 +65,34 @@ public class SyncProgressFragment extends Fragment {
       }
     });
 
-    recyclerView = root.findViewById(R.id.recyclerView);
+    rvConfirmations = root.findViewById(R.id.recyclerConfirmations);
+    rvDelays = root.findViewById(R.id.recyclerDelays);
 
-    layoutManager = new LinearLayoutManager(getContext());
+    layoutManagerConfirmations = new LinearLayoutManager(getContext());
+    layoutManagerDelays = new LinearLayoutManager(getContext());
 
-    recyclerView.setLayoutManager(layoutManager);
+    rvConfirmations.setLayoutManager(layoutManagerConfirmations);
+    rvDelays.setLayoutManager(layoutManagerDelays);
 
     // specify an adapter (see also next example)
     syncProgressAdapter = new SyncProgressAdapter();
+    syncProgressAdapterDelays = new SyncProgressAdapterDelays();
 
-    recyclerView.setAdapter(syncProgressAdapter);
+    rvConfirmations.setAdapter(syncProgressAdapter);
+    rvDelays.setAdapter(syncProgressAdapterDelays);
 
     syncProgressViewModel.setConfirmations();
     syncProgressViewModel.getAllOfflineConfirmations().observe(getViewLifecycleOwner(), offlineConfirmations -> {
-      if(offlineConfirmations.size() == 0) showPlaceHolder();
-      else hidePlaceHolder();
+      syncProgressAdapter.swapData(offlineConfirmations);
+      root.findViewById(R.id.text_confirm_header).setVisibility((offlineConfirmations.size() == 0) ? View.GONE : View.VISIBLE);
     });
 
-    textEmpty = root.findViewById(R.id.text_sync_done);
+    syncProgressViewModel.getAllDelayConfirmations().observe(getViewLifecycleOwner(), offlineDelayReasonEntityList -> {
+      syncProgressAdapterDelays.swapData(offlineDelayReasonEntityList);
+      root.findViewById(R.id.text_delay_header).setVisibility((offlineDelayReasonEntityList.size() == 0) ? View.GONE : View.VISIBLE);
+    });
+
   }
 
 
-  public void showPlaceHolder(){
-    textEmpty.setVisibility(View.VISIBLE);
-    recyclerView.setVisibility(View.GONE);
-  }
-
-  public void hidePlaceHolder(){
-    textEmpty.setVisibility(View.GONE);
-    recyclerView.setVisibility(View.VISIBLE);
-  }
 }

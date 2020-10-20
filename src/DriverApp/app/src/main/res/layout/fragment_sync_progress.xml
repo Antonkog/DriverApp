@@ -20,27 +20,57 @@
       app:layout_constraintTop_toTopOf="@+id/btn_sync_back" />
 
 
-  <TextView
-      android:id="@+id/text_sync_done"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/sync_empty_table"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/recyclerView" />
 
-
-  <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/recyclerView"
+  <ScrollView
+      android:id="@+id/scrollView"
       android:layout_width="match_parent"
-      android:layout_height="0dp"
+      android:layout_height="wrap_content"
       android:layout_marginTop="8dp"
-      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/btn_sync_back"
-      tools:listitem="@layout/history_item" />
+      app:layout_constraintTop_toBottomOf="@+id/btn_sync_back">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/text_delay_header"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:layout_margin="8dp"
+          android:text="@string/delay_reasons" />
+
+
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/recyclerDelays"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="8dp"
+          tools:listitem="@layout/history_item" />
+
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/text_confirm_header"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:layout_margin="8dp"
+          android:text="@string/offline_confirmations" />
+
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/recyclerConfirmations"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="8dp"
+          tools:listitem="@layout/history_item" />
+    </LinearLayout>
+  </ScrollView>
+
 
   <androidx.appcompat.widget.AppCompatImageButton
       android:id="@+id/btn_sync_back"

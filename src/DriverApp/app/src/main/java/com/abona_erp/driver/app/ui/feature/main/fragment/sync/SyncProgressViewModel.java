@@ -1,34 +1,30 @@
 package com.abona_erp.driver.app.ui.feature.main.fragment.sync;
 
 import android.app.Application;
-import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.abona_erp.driver.app.data.entity.ChangeHistory;
-import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.entity.OfflineDelayReasonEntity;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
-import com.abona_erp.driver.app.util.AppUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
-import io.reactivex.schedulers.Schedulers;
 
 public class SyncProgressViewModel extends AndroidViewModel {
   private final String TAG = "HistoryViewModel";
   private DriverRepository _repo;
-  private LiveData<List<OfflineConfirmation>> mAllOfflineConfirmations;
+  private LiveData<List<OfflineConfirmation>> offlineConfirmations;
+  private LiveData<List<OfflineDelayReasonEntity>> offlineDelays;
 
 
   LiveData<List<OfflineConfirmation>> getAllOfflineConfirmations() {
-    return mAllOfflineConfirmations;
+    return offlineConfirmations;
+  }
+
+
+  LiveData<List<OfflineDelayReasonEntity>> getAllDelayConfirmations() {
+    return offlineDelays;
   }
 
 
@@ -37,7 +33,9 @@ public class SyncProgressViewModel extends AndroidViewModel {
     _repo = new DriverRepository(application);
   }
 
-  void setConfirmations(){
-    mAllOfflineConfirmations = _repo.getAllLiveDataConfirmations();
+  void setConfirmations()
+  {
+    offlineConfirmations = _repo.getAllLiveDataConfirmations();
+    offlineDelays = _repo.getOfflineDelayReasons();
   }
 }

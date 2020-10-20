@@ -29,9 +29,18 @@ public enum ConfirmationType {
     this.confirmationType = confirmationType;
   }
   
-  static ConfirmationType getConfirmationTypeByCode(int confirmationType) {
+   public static ConfirmationType getConfirmationTypeByCode(int confirmationType) {
     for (ConfirmationType type : values()) {
       if (type.confirmationType == confirmationType) return type;
+    }
+    return NOT_CONFIRMED;
+  }
+
+
+  //because they all by ordinal every fragment, and now i can't refactor // A. Kogan
+  public static ConfirmationType getConfirmationTypeByOrdinal(int confirmationTypeOrdinal) {
+    for (ConfirmationType type : values()) {
+      if (type.ordinal() == confirmationTypeOrdinal) return type;
     }
     return NOT_CONFIRMED;
   }
