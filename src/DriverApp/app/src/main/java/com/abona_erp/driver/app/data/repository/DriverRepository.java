@@ -307,6 +307,10 @@ public class DriverRepository {
     changeCurrentHistoryInDB(changeHistory, existingHistoryItem);
   }
 
+  public void insert(OfflineConfirmation offlineConfirmation) {
+    AsyncTask.execute(() -> mOfflineConfirmationDAO.insert(offlineConfirmation));
+  }
+
   private static class insertAsyncTask extends AsyncTask<Notify, Void, Void> {
 
     private NotifyDao mDAO;
