@@ -64,10 +64,12 @@ import com.abona_erp.driver.app.service.ForegroundAlarmService;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
+import com.abona_erp.driver.app.ui.event.GetAllTaskEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
+import com.abona_erp.driver.app.ui.event.QREvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
@@ -79,6 +81,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.history.HistoryFragment
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.protocol.ProtocolFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.qr.QRFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.sync.SyncProgressFragment;
@@ -595,6 +598,12 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     Log.i(TAG, "isMyServiceRunning?" + "false");
     return false;
   }
+  
+  @Subscribe
+  public void onMessageEvent(GetAllTaskEvent event) {
+    Log.i(TAG, "GetAllTask starting...");
+    onUpdateClick();
+  }
 
   @Subscribe
   public void onMessageEvent(ProgressBarEvent event) {
@@ -767,6 +776,15 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
             0, 0, orderNo, mandantId, confirmId);
     EventBus.getDefault().post(changeHistoryEvent);
     com.abona_erp.driver.app.logging.Log.e(TAG, " posting doc event  : " + confirmId + " confirmed " + confirmed);
+  }
+  
+  @Subscribe
+  public void onMessageEvent(QREvent event) {
+    getSupportFragmentManager()
+      .beginTransaction()
+      .replace(R.id.main_container, QRFragment.newInstance())
+      .addToBackStack(null)
+      .commit();
   }
 
   @Subscribe

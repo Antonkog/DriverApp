@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp">
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:padding="16dp"
+      android:textAppearance="@style/TextAppearance.AppCompat.Title"
+      android:textColor="@color/clrFont"
+      android:text="SCAN CODE"
+      />
+
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+      android:id="@+id/zxing_barcode_scanner"
+      android:layout_width="400dp"
+      android:layout_height="200dp"
+      android:layout_gravity="center"
+      app:zxing_scanner_layout="@layout/custom_barcode_scanner">
+    </com.journeyapps.barcodescanner.DecoratedBarcodeView>
+
+    <com.abona_erp.driver.app.ui.widget.AsapTextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:layout_marginStart="16dp"
+      android:text="Code eingeben:"
+      />
+
+    <EditText
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      />
+
+    <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/btn_close"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:paddingStart="64dp"
+      android:paddingEnd="64dp"
+      android:layout_marginTop="16dp"
+      android:text="@string/action_ok"
+      />
+
+  </LinearLayout>
+
+</LinearLayout>
