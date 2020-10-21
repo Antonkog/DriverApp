@@ -4,6 +4,11 @@ import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.Build;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import androidx.room.Room;
@@ -29,6 +34,7 @@ import com.abona_erp.driver.app.util.gson.GmtDateTypeAdapter;
 import com.abona_erp.driver.app.util.gson.GmtDateUtcTypeAdapter;
 import com.abona_erp.driver.app.util.gson.IntegerJsonDeserializer;
 import com.abona_erp.driver.app.util.gson.StringJsonDeserializer;
+import com.abona_erp.driver.core.base.ContextUtils;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -88,6 +94,25 @@ public class ApplicationModule {
     NotificationManager provideNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
     }
+
+
+    @Provides
+    @ApplicationScope
+    public MediaPlayer provideRingtonePlayer() {
+        MediaPlayer player = new MediaPlayer();
+
+        player.setWakeMode(ContextUtils.getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            player.setAudioAttributes(new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build());
+        } else {
+            player.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+        }
+        return player;
+    }
+
 
     @Provides
     @ApplicationScope

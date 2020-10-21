@@ -32,6 +32,19 @@ public enum TaskStatus {
     }
     return PENDING;
   }
+
+  /**
+   * gut int when sending to server
+   * @param taskStatus
+   * @return -1 if not found !!!
+   */
+  public static int getCodeByStatusType(TaskStatus taskStatus) {
+    for (TaskStatus status : values()) {
+      if (status == taskStatus)
+        return status.taskStatus;
+    }
+    return -1;
+  }
   
   static class Serializer implements JsonSerializer<TaskStatus>, JsonDeserializer<TaskStatus> {
     
