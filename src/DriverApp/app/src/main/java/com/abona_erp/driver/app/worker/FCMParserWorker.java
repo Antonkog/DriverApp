@@ -7,14 +7,11 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -34,10 +31,8 @@ import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
-import com.abona_erp.driver.app.data.model.DataType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.TaskActionType;
-import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.manager.ApiManager;
@@ -51,9 +46,10 @@ import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DelayReasonUtil;
-import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.core.base.ContextUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -62,8 +58,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -86,16 +82,17 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
     @Inject
     DriverRepository mRepository;
 
+    @Inject
+    MediaPlayer mMediaPlayer;
+
+    @Inject
+    @Named("GSON_UTC")
+    public Gson gsonUtc;
+
     private Context appContext;
 
 
-
-    CommItem commItem = new CommItem();
-
-
-
-    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    private MediaPlayer mMediaPlayer;
+    private Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
 
     public FCMParserWorker(
@@ -108,25 +105,30 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
     @Override
     public Result doWork() {
-
-        setRingtonePlayer();
+        mMediaPlayer.setOnPreparedListener(this);
 
         String extras = getInputData().getString(Constants.EXTRAS_FCM_MESSAGE);
 
-        Log.d(TAG, "FCM parse work started: " + extras);
+        Log.d(TAG, "FCM parse work started: \n" + System.currentTimeMillis() + " \n" + extras);
+
         showFCMNotification();
 
         parseCommonItem(extras);
+
+        Log.d(TAG, "FCM parse work finish: \n" + System.currentTimeMillis() + " \n");
+
+        removeParseNotification();
 
         // Indicate whether the work finished successfully with the Result
         return Result.success();
     }
 
-    public void showFCMNotification() {
-        NotificationCompat.Builder builder = prepareNotification(appContext.getResources().getString(R.string.new_message_fcm), appContext.getResources().getString(R.string.alarm_check_failed_reason));
-        notificationManager.notify(Constants.NOTIFICATION_NOT_EXIST_ALARM_ID, builder.build());
-    }
 
+    @Override
+    public void showFCMNotification() {
+        NotificationCompat.Builder builder = prepareNotification(appContext.getResources().getString(R.string.new_message_fcm), appContext.getResources().getString(R.string.new_message_fcm_sync));
+        notificationManager.notify(Constants.NOTIFICATION_FMC_MESSAGE, builder.build());
+    }
 
     private NotificationCompat.Builder prepareNotification(String title, String message) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, Constants.NOTIFICATION_CHANNEL_ID)
@@ -147,6 +149,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         return builder;
     }
 
+    @Override
     public void removeParseNotification() {
         notificationManager.cancel(Constants.NOTIFICATION_NOT_EXIST_ALARM_ID);
     }
@@ -161,222 +164,239 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
     }
 
 
-    /**
-     * that is old method to parse CommonItem, implemented not by me, from NotificationService.java that was removed.
-     * @param raw strng from FirebaseMessagingService
-     * @return true if parsed, but need to rewrite this method.
-     */
     @Override
-    public boolean parseCommonItem(String raw) {
-
-        commItem = App.getInstance().gsonUtc.fromJson(raw, CommItem.class);
-
-        // CHECK VEHICLE REGISTRATION NUMBER:
-        if (commItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
-            VehicleRegistrationEvent event = new VehicleRegistrationEvent();
-            if (commItem.getVehicleItem() != null) {
-                if (commItem.getVehicleItem().getRegistrationNumber() != null) {
-                    TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
-                            commItem.getVehicleItem().getRegistrationNumber());
-                } else {
-                    TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
-                            getApplicationContext().getResources().getString(R.string.registration_number));
-
-                    // RESET ALL ITEMS:
-                    event.setDeleteAll(true);
-                    mRepository.deleteAllNotify();
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mRepository.deleteAllLastActivities();
-                            DriverDatabase db = DriverDatabase.getDatabase();
-                            OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
-                            dao.deleteAll();
-                        }
-                    });
-                }
-                if (commItem.getVehicleItem().getClientName() != null) {
-                    TextSecurePreferences.setClientName(getApplicationContext(),
-                            commItem.getVehicleItem().getClientName());
-                } else {
-                    TextSecurePreferences.setClientName(getApplicationContext(), "");
-                }
-
-                // Drivers
-                if (commItem.getVehicleItem().getDrivers() != null) {
-                    if (commItem.getVehicleItem().getDrivers().size() > 0) {
-                        if (commItem.getVehicleItem().getDrivers().get(0).getImageUrl() != null) {
-                            // First Driver
-                            App.eventBus.post(new ProfileEvent(commItem.getVehicleItem().getDrivers().get(0).getImageUrl()));
-                        }
-                    }
-                }
-            } else {
-                TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
-                        getApplicationContext().getResources().getString(R.string.registration_number));
-                TextSecurePreferences.setClientName(getApplicationContext(), "");
-            }
-
-            App.eventBus.post(event);
-            startRingtone(notification);
-            return true;
-        } else if (commItem.getHeader().getDataType().equals(DataType.DOCUMENT)) {
-            App.eventBus.post(new DocumentEvent(commItem.getDocumentItem().getMandantId(), commItem.getDocumentItem().getOrderNo()));
-            return true;
-        }
-
+    public void showPercentage(CommItem commItem) {
+        // percent - need to check if header exist
         if (commItem.getPercentItem() != null) {
             if (commItem.getPercentItem().getTotalPercentFinished() != null && commItem.getPercentItem().getTotalPercentFinished() >= 0) {
                 TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(commItem.getPercentItem().getTotalPercentFinished()));
             }
         }
+    }
 
+    @Override
+    public void addDocument(CommItem commItem) {
+        App.eventBus.post(new DocumentEvent(commItem.getDocumentItem().getMandantId(), commItem.getDocumentItem().getOrderNo()));
+
+    }
+
+    @Override
+    public void removeAllTasks(CommItem commItem) {
+        TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
+                getApplicationContext().getResources().getString(R.string.registration_number));
+        VehicleRegistrationEvent event = new VehicleRegistrationEvent();
+
+        // RESET ALL ITEMS:
+        event.setDeleteAll(true);
+        mRepository.deleteAllNotify();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                mRepository.deleteAllLastActivities();
+                DriverDatabase db = DriverDatabase.getDatabase();
+                OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+                dao.deleteAll();
+            }
+        });
+
+        TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
+                getApplicationContext().getResources().getString(R.string.registration_number));
+        TextSecurePreferences.setClientName(getApplicationContext(), "");
+
+        App.eventBus.post(event);
+        startRingtone(notification);
+    }
+
+    @Override
+    public void addVehicle(CommItem commItem) {
+        TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
+                commItem.getVehicleItem().getRegistrationNumber());
+
+        if (commItem.getVehicleItem().getClientName() != null) {
+            TextSecurePreferences.setClientName(getApplicationContext(),
+                    commItem.getVehicleItem().getClientName());
+        } else {
+            TextSecurePreferences.setClientName(getApplicationContext(), "");
+        }
+        // Drivers
+        if (commItem.getVehicleItem().getDrivers() != null) {
+            if (commItem.getVehicleItem().getDrivers().size() > 0) {
+                if (commItem.getVehicleItem().getDrivers().get(0).getImageUrl() != null) {
+                    // First Driver
+                    App.eventBus.post(new ProfileEvent(commItem.getVehicleItem().getDrivers().get(0).getImageUrl()));
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public boolean vehicleExist(CommItem commItem) {
+       return commItem.getVehicleItem() != null && commItem.getVehicleItem().getRegistrationNumber() != null;
+    }
+
+
+    @Override
+    public boolean parseCommonItem(String raw) {
+        try {
+            CommItem commItem = App.getInstance().gsonUtc.fromJson(raw, CommItem.class);
+
+            switch (commItem.getHeader().getDataType()){
+                case VEHICLE:
+                    if(vehicleExist(commItem)){
+                        addVehicle(commItem);
+                    } else {
+                        removeAllTasks(commItem);
+                    }
+                    break;
+                case TASK:
+                    addTasksAndActivities(commItem, raw);
+                    break;
+                case DOCUMENT:
+                    addDocument(commItem);
+                    break;
+            }
+
+            showPercentage(commItem);
+
+        } catch (JsonSyntaxException e){
+            Log.e(TAG, "CommonItem model expected. and this is not common item: " + raw.toString() + "\n" + e.getMessage());
+        }
+
+        return false;
+    }
+
+    @Override
+    public void addTasksAndActivities(CommItem commItem, String raw) {
         if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
+            //add alarm
             ForegroundAlarmService.startNotificationWithDelay(commItem.getTaskItem());
+
+            //add task
             mRepository.getNotifyByMandantTaskId(commItem.getTaskItem().getMandantId(), commItem.getTaskItem().getTaskId()).observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new DisposableSingleObserver<Notify>() {
                         @Override
                         public void onSuccess(Notify notify) {
                             Log.d(TAG, "***** VORHANDEN - UPDATEN *****");
-
                             notify.setData(raw);
-                            notify.setRead(false);
-                            if (commItem.getPercentItem() != null) {
-                                if (commItem.getPercentItem().getPercentFinished() != null && commItem.getPercentItem().getPercentFinished() >= 0) {
-                                    notify.setPercentFinished((int)Math.round(commItem.getPercentItem().getPercentFinished()));
-                                }
-                            }
-                            if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-                                notify.setStatus(0);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-                                notify.setStatus(50);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
-                                notify.setStatus(90);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-                                notify.setStatus(100);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
-                                notify.setStatus(51);
-                            }
-                            notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
-                            notify.setOrderNo(commItem.getTaskItem().getOrderNo());
-                            notify.setModifiedAt(AppUtils.getCurrentDateTime());
-
-                            mRepository.update(notify);
-                            startRingtone(notification);
-
-                            mRepository.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(), commItem.getTaskItem().getMandantId()).observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe(new DisposableSingleObserver<LastActivity>() {
-                                        @Override
-                                        public void onSuccess(LastActivity lastActivity) {
-                                            lastActivity.setCustomer(commItem.getTaskItem().getKundenName());
-                                            lastActivity.setOrderNo(AppUtils.parseOrderNo(commItem.getTaskItem().getOrderNo()));
-                                            lastActivity.setStatusType(1);
-                                            lastActivity.setConfirmStatus(0);
-                                            lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-
-                                            if (commItem.getTaskItem().getActionType().equals(TaskActionType.PICK_UP)) {
-                                                lastActivity.setTaskActionType(0);
-                                            } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.DROP_OFF)) {
-                                                lastActivity.setTaskActionType(1);
-                                            } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.TRACTOR_SWAP)) {
-                                                lastActivity.setTaskActionType(3);
-                                            } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.GENERAL)) {
-                                                lastActivity.setTaskActionType(2);
-                                            } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.DELAY)) {
-                                                lastActivity.setTaskActionType(4);
-                                            } else if (commItem.getTaskItem().getActionType().equals(TaskActionType.UNKNOWN)) {
-                                                lastActivity.setTaskActionType(100);
-                                            }
-
-                  /*
-                  SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                    Locale.getDefault());
-                  Date timestamp = new Date();
-                  lastActivity.setModifiedAt(sdf.format(timestamp));
-                   */
-                                            ArrayList<String> _list = lastActivity.getDetailList();
-
-                                            LastActivityDetails _detail = new LastActivityDetails();
-                                            _detail.setDescription("UPDATE");
-                                            SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                                                    Locale.getDefault());
-                                            _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
-                                            _list.add(App.getInstance().gson.toJson(_detail));
-                                            lastActivity.setDetailList(_list);
-                                            if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING) || commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-                                                lastActivity.setVisible(true);
-                                            } else {
-                                                lastActivity.setVisible(false);
-                                            }
-                                            mRepository.update(lastActivity);
-
-                                            DriverDatabase db = DriverDatabase.getDatabase();
-                                            OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
-
-                                            OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
-                                            offlineConfirmation.setNotifyId(notify.getId());
-                                            offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal());
-                                            postHistoryEvent(notify, offlineConfirmation);
-
-                                            AsyncTask.execute(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    dao.insert(offlineConfirmation);
-                                                }
-                                            });
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-
-                                        }
-                                    });
+                            updateFoundDbTask(notify, commItem);
+                            updateActivities(notify, commItem);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.i(TAG, "******* TASK NICHT VORHANDEN - HINZUFÜGEN *******");
-
                             Notify notify = new Notify();
-                            notify.setMandantId(commItem.getTaskItem().getMandantId());
-                            notify.setTaskId(commItem.getTaskItem().getTaskId());
-                            if (commItem.getPercentItem() != null) {
-                                if (commItem.getPercentItem().getPercentFinished() != null && commItem.getPercentItem().getPercentFinished() >= 0) {
-                                    notify.setPercentFinished((int)Math.round(commItem.getPercentItem().getPercentFinished()));
-                                }
-                            }
                             notify.setData(raw);
-                            notify.setRead(false);
-                            if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-                                notify.setStatus(0);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-                                notify.setStatus(50);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
-                                notify.setStatus(90);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-                                notify.setStatus(100);
-                            } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
-                                notify.setStatus(51);
-                            }
-                            notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
-                            notify.setOrderNo(commItem.getTaskItem().getOrderNo());
-                            notify.setCreatedAt(AppUtils.getCurrentDateTime());
-                            notify.setModifiedAt(AppUtils.getCurrentDateTime());
-                            mRepository.insert(notify);
-                            startRingtone(notification);
+                            insertNewTask(commItem, notify);
                         }
                     });
 
             DelayReasonUtil.getDelayReasonsFromService(commItem.getTaskItem().getMandantId());
         } else {
-            Log.w(TAG, "Keine gültiger Task Item");
+            Log.e(TAG, "Keine gültiger Task Item");
         }
-        return false;
     }
 
-     @Override
+    @Override
+    public void insertNewTask(CommItem commItem, Notify notify) {
+        Log.i(TAG, "******* TASK NICHT VORHANDEN - HINZUFÜGEN *******");
+
+        notify.setMandantId(commItem.getTaskItem().getMandantId());
+        notify.setTaskId(commItem.getTaskItem().getTaskId());
+        if (commItem.getPercentItem() != null) {
+            if (commItem.getPercentItem().getPercentFinished() != null && commItem.getPercentItem().getPercentFinished() >= 0) {
+                notify.setPercentFinished((int)Math.round(commItem.getPercentItem().getPercentFinished()));
+            }
+        }
+        notify.setRead(false);
+        int statusCode = TaskStatus.getCodeByStatusType(commItem.getTaskItem().getTaskStatus());
+        notify.setStatus(statusCode);
+        notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
+        notify.setOrderNo(commItem.getTaskItem().getOrderNo());
+        notify.setCreatedAt(AppUtils.getCurrentDateTime());
+        notify.setModifiedAt(AppUtils.getCurrentDateTime());
+        mRepository.insert(notify);
+        startRingtone(notification);
+    }
+
+    @Override
+    public void updateFoundDbTask(Notify notify, CommItem commItem) {
+        notify.setRead(false);
+        if (commItem.getPercentItem() != null) {
+            if (commItem.getPercentItem().getPercentFinished() != null && commItem.getPercentItem().getPercentFinished() >= 0) {
+                notify.setPercentFinished((int)Math.round(commItem.getPercentItem().getPercentFinished()));
+            }
+        }
+        int statusCode = TaskStatus.getCodeByStatusType(commItem.getTaskItem().getTaskStatus());
+        notify.setStatus(statusCode);
+        notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
+        notify.setOrderNo(commItem.getTaskItem().getOrderNo());
+        notify.setModifiedAt(AppUtils.getCurrentDateTime());
+
+        mRepository.update(notify);
+        startRingtone(notification);
+    }
+
+    @Override
+    public void updateActivities(Notify notify, CommItem commItem) {
+        mRepository.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(), commItem.getTaskItem().getMandantId()).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new DisposableSingleObserver<LastActivity>() {
+                    @Override
+                    public void onSuccess(LastActivity lastActivity) {
+                        updateDbActivitys(lastActivity, commItem, notify);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "No LastActivity Item");
+                    }
+                });
+    }
+
+    @Override
+    public void updateDbActivitys(LastActivity lastActivity, CommItem commItem, Notify notify) {
+        lastActivity.setCustomer(commItem.getTaskItem().getKundenName());
+        lastActivity.setOrderNo(AppUtils.parseOrderNo(commItem.getTaskItem().getOrderNo()));
+        lastActivity.setStatusType(1);
+        lastActivity.setConfirmStatus(0);
+        lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
+        lastActivity.setTaskActionType(TaskActionType.getCodeByTaskActionType(commItem.getTaskItem().getActionType()));
+
+        ArrayList<String> _list = lastActivity.getDetailList();
+
+        LastActivityDetails _detail = new LastActivityDetails();
+        _detail.setDescription("UPDATE");
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                Locale.getDefault());
+        _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
+        _list.add(App.getInstance().gson.toJson(_detail));
+        lastActivity.setDetailList(_list);
+        if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING) || commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+            lastActivity.setVisible(true);
+        } else {
+            lastActivity.setVisible(false);
+        }
+        mRepository.update(lastActivity);
+
+        DriverDatabase db = DriverDatabase.getDatabase();
+        OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+
+        OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
+        offlineConfirmation.setNotifyId(notify.getId());
+        offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal());
+        postHistoryEvent(notify, offlineConfirmation);
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                dao.insert(offlineConfirmation);
+            }
+        });
+    }
+
+    @Override
      public void startRingtone(Uri uri) {
         try {
             mMediaPlayer.reset();
@@ -395,32 +415,17 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         }
     }
 
-    private void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
+    @Override
+    public void setRingtonePlayer() {
+        //player is set in inject(this) method.
+    }
+
+    @Override
+    public void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
         EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_task_updated_fcm),
                 LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
                 item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
     }
-
-
-
-    @Override
-    public void setRingtonePlayer() {
-        mMediaPlayer = new MediaPlayer();
-
-        mMediaPlayer.setWakeMode(ContextUtils.getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mMediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build());
-        } else {
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-        }
-        mMediaPlayer.setOnPreparedListener(this);
-    }
-
-
-
 
     @Override
     public void onPrepared(MediaPlayer mp) {

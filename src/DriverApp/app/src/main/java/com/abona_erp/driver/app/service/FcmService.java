@@ -44,6 +44,7 @@ import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.JsonSyntaxException;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.greenrobot.eventbus.EventBus;
@@ -117,20 +118,20 @@ public class FcmService extends FirebaseMessagingService {
     Bundle bundle = new Bundle();
     bundle.putString("data", data.toString());
 
-    CommItem commItem = App.getInstance().gsonUtc.fromJson(data.toString(), CommItem.class);
-
-    if (commItem!= null && commItem.getHeader().getDataType().equals(DataType.DOCUMENT) && commItem.getDocumentItem() != null) {
-      EventBus.getDefault().post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_NEW_DOCUMENTS), null).addDocumentOrderNo(commItem.getDocumentItem().getOrderNo()));
-      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_document_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),exist? commItem.getTaskItem().getTaskId() : 0));
+    try {
+      CommItem commItem = App.getInstance().gsonUtc.fromJson(data.toString(), CommItem.class);
+      sendNewDocEvent(commItem);
+    } catch (JsonSyntaxException e){
+      Log.e(TAG, "CommonItem model expected. and this is not common item: " + data.toString() + "\n" + e.getMessage());
     }
-//    else if (commItem.getHeader().getDataType().equals(DataType.VEHICLE)) {
-//      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_vehicle_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
-//    } else if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
-//      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_task_updated_fcm), LogType.FCM, LogLevel.INFO, getBaseContext().getString(R.string.log_title_fcm),  exist? commItem.getTaskItem().getTaskId() : 0));
-//    }
-
 
     setOneTimeWork(data.toString());
+  }
+
+  private void sendNewDocEvent(CommItem commItem) {
+    if (commItem!= null && commItem.getHeader().getDataType().equals(DataType.DOCUMENT) && commItem.getDocumentItem() != null) {
+      EventBus.getDefault().post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_NEW_DOCUMENTS), null).addDocumentOrderNo(commItem.getDocumentItem().getOrderNo()));
+    }
   }
 
   public static void setOneTimeWork(String rawMessageExtras) {

@@ -32,6 +32,14 @@ public enum TaskActionType {
     }
     return UNKNOWN;
   }
+
+  public static int getCodeByTaskActionType(TaskActionType taskActionType) {
+    for (TaskActionType type : values()) {
+      if (type == taskActionType) return type.taskActionType;
+    }
+    return UNKNOWN.taskActionType;
+  }
+
   
   static class Serializer implements JsonSerializer<TaskActionType>, JsonDeserializer<TaskActionType> {
     

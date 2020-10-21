@@ -198,5 +198,7 @@
   <string name="delay_minutes">Verzögerung: %d minuten</string>
     <string name="sync_activity">Aktivität zum Synchronisieren</string>
   <string name="sync_task">Aufgabe zum Synchronisieren</string>
+    <string name="new_message_fcm">Neue Nachricht von Firebase</string>
+  <string name="new_message_fcm_sync">Hinzufügen neuer Informationen zur Datenbank</string>
 
 </resources>

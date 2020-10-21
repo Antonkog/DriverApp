@@ -264,7 +264,8 @@
 
 <!--  fcm message come-->
 
-  <string name="new_message_fcm" translatable="false">New message from Firebase</string>
+  <string name="new_message_fcm">New message from Firebase</string>
+  <string name="new_message_fcm_sync">Adding new information to database&#8230;</string>
 
 
   <string name="minus_string" translatable="false">-</string>
