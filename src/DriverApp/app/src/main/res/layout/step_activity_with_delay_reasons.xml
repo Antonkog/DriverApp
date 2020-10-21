@@ -35,7 +35,7 @@
       <ImageView
         android:layout_width="@dimen/spacing_mlarge"
         android:layout_height="@dimen/spacing_mlarge"
-        android:tint="@color/clrFont"
+        app:tint="@color/clrFont"
         android:src="@drawable/shape_round_solid"
         app:srcCompat="@drawable/shape_round_solid"
         />
@@ -238,6 +238,7 @@
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatImageButton
+      android:id="@+id/btn_special_func"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
       android:paddingStart="15dp"
@@ -247,6 +248,7 @@
       tools:visibility="visible"
       />
 
+    <!--
     <ImageView
       android:layout_width="24dp"
       android:layout_height="24dp"
@@ -256,6 +258,7 @@
       android:visibility="gone"
       tools:visibility="visible"
       />
+      -->
 
   </RelativeLayout>
 

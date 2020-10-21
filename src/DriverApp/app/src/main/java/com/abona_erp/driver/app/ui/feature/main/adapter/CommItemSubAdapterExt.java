@@ -42,6 +42,7 @@ import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
+import com.abona_erp.driver.app.ui.event.QREvent;
 import com.abona_erp.driver.app.ui.event.TabChangeEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -49,6 +50,7 @@ import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.CustomDelayReasonDialog;
 import com.abona_erp.driver.app.ui.widget.CustomDelayReasonHistory;
 import com.abona_erp.driver.app.ui.widget.DelayReasonHistoryAdapter;
+import com.abona_erp.driver.app.ui.widget.qrcode.CustomQRDialog;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.core.base.ContextUtils;
 
@@ -618,6 +620,13 @@ public class CommItemSubAdapterExt
         }
       }
     });
+    
+    holder.btn_special_func.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        App.eventBus.post(new QREvent());
+      }
+    });
   }
   
   @Override
@@ -647,6 +656,7 @@ public class CommItemSubAdapterExt
     final AppCompatButton btn_activity_next;
     final AppCompatImageButton btn_add_delay_reason;
     final AppCompatImageButton btn_delay_reason_history;
+    final AppCompatImageButton btn_special_func;
   
     final AsapTextView tv_delay_reason_in_minutes;
     
@@ -669,6 +679,7 @@ public class CommItemSubAdapterExt
       btn_activity_next = itemView.findViewById(R.id.btn_activity_next);
       btn_add_delay_reason = itemView.findViewById(R.id.btn_add_delay_reason);
       btn_delay_reason_history = itemView.findViewById(R.id.btn_delay_reason_history);
+      btn_special_func = itemView.findViewById(R.id.btn_special_func);
       
       tv_delay_reason_in_minutes = itemView.findViewById(R.id.tv_delay_reason_in_minutes);
     }

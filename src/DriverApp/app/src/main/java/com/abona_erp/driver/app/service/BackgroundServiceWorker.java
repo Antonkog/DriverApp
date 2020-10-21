@@ -54,6 +54,7 @@ import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
+import com.abona_erp.driver.app.ui.event.GetAllTaskEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationEvent;
@@ -1189,6 +1190,8 @@ public class BackgroundServiceWorker extends Service {
   @Override
   public void onLowMemory() {
     Log.i(TAG, "onLowMemory() called!");
+    Log.i(TAG, "Send Event to GetAllTask");
+    App.eventBus.post(new GetAllTaskEvent());
     super.onLowMemory();
   }
   
