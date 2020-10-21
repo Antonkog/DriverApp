@@ -74,10 +74,10 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
     private final String TAG = "FCMParserWorker";
 
     @Inject
-    public NotificationManager notificationManager;
+    NotificationManager notificationManager;
 
     @Inject
-    public ApiManager apiManager;
+    ApiManager apiManager;
 
     @Inject
     DriverRepository mRepository;
@@ -87,7 +87,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
     @Inject
     @Named("GSON_UTC")
-    public Gson gsonUtc;
+    Gson gsonUtc;
 
     private Context appContext;
 
@@ -169,7 +169,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         // percent - need to check if header exist
         if (commItem.getPercentItem() != null) {
             if (commItem.getPercentItem().getTotalPercentFinished() != null && commItem.getPercentItem().getTotalPercentFinished() >= 0) {
-                TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(commItem.getPercentItem().getTotalPercentFinished()));
+                TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int) Math.round(commItem.getPercentItem().getTotalPercentFinished()));
             }
         }
     }
@@ -232,7 +232,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
     @Override
     public boolean vehicleExist(CommItem commItem) {
-       return commItem.getVehicleItem() != null && commItem.getVehicleItem().getRegistrationNumber() != null;
+        return commItem.getVehicleItem() != null && commItem.getVehicleItem().getRegistrationNumber() != null;
     }
 
 
@@ -241,9 +241,9 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         try {
             CommItem commItem = App.getInstance().gsonUtc.fromJson(raw, CommItem.class);
 
-            switch (commItem.getHeader().getDataType()){
+            switch (commItem.getHeader().getDataType()) {
                 case VEHICLE:
-                    if(vehicleExist(commItem)){
+                    if (vehicleExist(commItem)) {
                         addVehicle(commItem);
                     } else {
                         removeAllTasks(commItem);
@@ -259,8 +259,8 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
             showPercentage(commItem);
 
-        } catch (JsonSyntaxException e){
-            Log.e(TAG, "CommonItem model expected. and this is not common item: " + raw.toString() + "\n" + e.getMessage());
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "CommonItem model expected. and this is not common item: " + raw + "\n" + e.getMessage());
         }
 
         return false;
@@ -287,6 +287,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
                         @Override
                         public void onError(Throwable e) {
                             Notify notify = new Notify();
+                            notify.setCreatedAt(AppUtils.getCurrentDateTime());
                             notify.setData(raw);
                             insertNewTask(commItem, notify);
                         }
@@ -301,39 +302,14 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
     @Override
     public void insertNewTask(CommItem commItem, Notify notify) {
         Log.i(TAG, "******* TASK NICHT VORHANDEN - HINZUFÜGEN *******");
-
-        notify.setMandantId(commItem.getTaskItem().getMandantId());
-        notify.setTaskId(commItem.getTaskItem().getTaskId());
-        if (commItem.getPercentItem() != null) {
-            if (commItem.getPercentItem().getPercentFinished() != null && commItem.getPercentItem().getPercentFinished() >= 0) {
-                notify.setPercentFinished((int)Math.round(commItem.getPercentItem().getPercentFinished()));
-            }
-        }
-        notify.setRead(false);
-        int statusCode = TaskStatus.getCodeByStatusType(commItem.getTaskItem().getTaskStatus());
-        notify.setStatus(statusCode);
-        notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
-        notify.setOrderNo(commItem.getTaskItem().getOrderNo());
-        notify.setCreatedAt(AppUtils.getCurrentDateTime());
-        notify.setModifiedAt(AppUtils.getCurrentDateTime());
+        notify = Notify.addFromCommonItem(commItem, notify);
         mRepository.insert(notify);
         startRingtone(notification);
     }
 
     @Override
     public void updateFoundDbTask(Notify notify, CommItem commItem) {
-        notify.setRead(false);
-        if (commItem.getPercentItem() != null) {
-            if (commItem.getPercentItem().getPercentFinished() != null && commItem.getPercentItem().getPercentFinished() >= 0) {
-                notify.setPercentFinished((int)Math.round(commItem.getPercentItem().getPercentFinished()));
-            }
-        }
-        int statusCode = TaskStatus.getCodeByStatusType(commItem.getTaskItem().getTaskStatus());
-        notify.setStatus(statusCode);
-        notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
-        notify.setOrderNo(commItem.getTaskItem().getOrderNo());
-        notify.setModifiedAt(AppUtils.getCurrentDateTime());
-
+        notify = Notify.addFromCommonItem(commItem, notify);
         mRepository.update(notify);
         startRingtone(notification);
     }
@@ -357,47 +333,22 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
     @Override
     public void updateDbActivitys(LastActivity lastActivity, CommItem commItem, Notify notify) {
-        lastActivity.setCustomer(commItem.getTaskItem().getKundenName());
-        lastActivity.setOrderNo(AppUtils.parseOrderNo(commItem.getTaskItem().getOrderNo()));
-        lastActivity.setStatusType(1);
-        lastActivity.setConfirmStatus(0);
-        lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-        lastActivity.setTaskActionType(TaskActionType.getCodeByTaskActionType(commItem.getTaskItem().getActionType()));
+        lastActivity = LastActivity.updateFromCommItem(lastActivity, commItem);
 
-        ArrayList<String> _list = lastActivity.getDetailList();
-
-        LastActivityDetails _detail = new LastActivityDetails();
-        _detail.setDescription("UPDATE");
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                Locale.getDefault());
-        _detail.setTimestamp(sdf.format(AppUtils.getCurrentDateTime()));
-        _list.add(App.getInstance().gson.toJson(_detail));
-        lastActivity.setDetailList(_list);
-        if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING) || commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-            lastActivity.setVisible(true);
-        } else {
-            lastActivity.setVisible(false);
-        }
         mRepository.update(lastActivity);
-
-        DriverDatabase db = DriverDatabase.getDatabase();
-        OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
 
         OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
         offlineConfirmation.setNotifyId(notify.getId());
         offlineConfirmation.setConfirmType(ConfirmationType.TASK_CONFIRMED_BY_DEVICE.ordinal());
+
         postHistoryEvent(notify, offlineConfirmation);
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                dao.insert(offlineConfirmation);
-            }
-        });
+        mRepository.insert(offlineConfirmation);
     }
 
+
     @Override
-     public void startRingtone(Uri uri) {
+    public void startRingtone(Uri uri) {
         try {
             mMediaPlayer.reset();
             mMediaPlayer.setDataSource(ContextUtils.getApplicationContext(), uri);
