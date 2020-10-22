@@ -7,7 +7,6 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -58,8 +57,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 /**
  * Created on 20.10.2020 by Anton Kogan. Email: akogan777@gmail.com.
  */
-public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.OnPreparedListener {
-
+public class FCMParserWorker extends Worker implements FCMParser {
 
     private final String TAG = "FCMParserWorker";
 
@@ -71,9 +69,6 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
     @Inject
     DriverRepository mRepository;
-
-    @Inject
-    MediaPlayer mMediaPlayer;
 
     @Inject
     @Named("GSON_UTC")
@@ -102,7 +97,6 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
      */
     @Override
     public Result doWork() {
-        mMediaPlayer.setOnPreparedListener(this);
 
         String extras = getInputData().getString(Constants.EXTRAS_FCM_MESSAGE);
 
@@ -114,8 +108,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
         Log.d(TAG, "FCM parse work finish: \n" + System.currentTimeMillis() + " \n");
 
-        removeParseNotification();
-
+        hideFCMNotification();
         // Indicate whether the work finished successfully with the Result
         return Result.success();
     }
@@ -147,7 +140,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
     }
 
     @Override
-    public void removeParseNotification() {
+    public void hideFCMNotification() {
         notificationManager.cancel(Constants.NOTIFICATION_NOT_EXIST_ALARM_ID);
     }
 
@@ -209,7 +202,6 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
                 getApplicationContext().getResources().getString(R.string.registration_number));
         VehicleRegistrationEvent event = new VehicleRegistrationEvent(item);
         App.eventBus.post(event);
-        startRingtone(notification);
     }
 
     @Override
@@ -299,14 +291,12 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         Log.i(TAG, "******* TASK NICHT VORHANDEN - HINZUFÜGEN *******");
         notify = Notify.addFromCommonItem(commItem, notify);
         mRepository.insert(notify);
-        startRingtone(notification);
     }
 
     @Override
     public void updateFoundDbTask(Notify notify, CommItem commItem) {
         notify = Notify.addFromCommonItem(commItem, notify);
         mRepository.update(notify);
-        startRingtone(notification);
     }
 
     @Override
@@ -340,40 +330,10 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         mRepository.insert(offlineConfirmation);
     }
 
-
-    @Override
-    public void startRingtone(Uri uri) {
-        try {
-            mMediaPlayer.reset();
-            mMediaPlayer.setDataSource(ContextUtils.getApplicationContext(), uri);
-            mMediaPlayer.prepareAsync();
-            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mMediaPlayer.stop();
-                    mMediaPlayer.release();
-                    mMediaPlayer = null;
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void setRingtonePlayer() {
-        //player is set in inject(this) method.
-    }
-
     @Override
     public void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation) {
         EventBus.getDefault().post(new ChangeHistoryEvent(getApplicationContext().getString(R.string.log_title_fcm), getApplicationContext().getString(R.string.log_task_updated_fcm),
                 LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
                 item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        mp.start();
     }
 }
