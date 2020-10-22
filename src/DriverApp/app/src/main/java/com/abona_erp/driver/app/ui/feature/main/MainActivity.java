@@ -275,9 +275,9 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     }
     if(!EventBus.getDefault().isRegistered(this)) App.eventBus.register(this);
 
-    mVehicleClientName = (AsapTextView)findViewById(R.id.tv_vehicle_client_name);
+    mVehicleClientName = findViewById(R.id.tv_vehicle_client_name);
     mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
-    mVehicleRegistrationNumber = (AsapTextView)findViewById(R.id.tv_vehicle_registration_number);
+    mVehicleRegistrationNumber = findViewById(R.id.tv_vehicle_registration_number);
     mVehicleRegistrationNumber.setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
 
     ((AsapTextView)findViewById(R.id.tv_vehicle_client_name))
@@ -789,19 +789,12 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
 
   @Subscribe
   public void onMessageEvent(VehicleRegistrationEvent event) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mVehicleRegistrationNumber != null) {
-          mVehicleRegistrationNumber.setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
-        }
-        if (mVehicleClientName != null) {
-          mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
-        }
-        
-//        if (event.isDeleteAll()) {
-//          mMainPieView.setPercentage(0);
-//        }
+    runOnUiThread(() -> {
+      if (event.getVehicleItem().getRegistrationNumber() != null && !event.getVehicleItem().getRegistrationNumber().trim().isEmpty()) {
+        mVehicleRegistrationNumber.setText(event.getVehicleItem().getRegistrationNumber());
+      }
+      if (event.getVehicleItem().getClientName() != null && !event.getVehicleItem().getClientName().trim().isEmpty()) {
+        mVehicleClientName.setText(event.getVehicleItem().getClientName());
       }
     });
   }
