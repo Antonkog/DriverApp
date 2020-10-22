@@ -23,7 +23,7 @@ public interface FCMParser {
 
     void updateActivities(Notify notify, CommItem commItem);
 
-    void updateDbActivitys(LastActivity lastActivity, CommItem commItem, Notify notify);
+    void updateDbActivities(LastActivity lastActivity, CommItem commItem, Notify notify);
 
     void startRingtone(Uri uri);
 
@@ -36,7 +36,7 @@ public interface FCMParser {
 
     void addDocument(CommItem commItem);
 
-    void showPercentage(CommItem commItem);
+    void saveCommonTaskPercentage(CommItem commItem);
 
     void removeAllTasks(CommItem commItem);
 

@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
@@ -31,16 +30,13 @@ import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
-import com.abona_erp.driver.app.data.model.LastActivityDetails;
-import com.abona_erp.driver.app.data.model.TaskActionType;
-import com.abona_erp.driver.app.data.model.TaskStatus;
+import com.abona_erp.driver.app.data.model.VehicleItem;
 import com.abona_erp.driver.app.data.repository.DriverRepository;
 import com.abona_erp.driver.app.manager.ApiManager;
 import com.abona_erp.driver.app.service.FCMParser;
 import com.abona_erp.driver.app.service.ForegroundAlarmService;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
-import com.abona_erp.driver.app.ui.event.ProfileEvent;
 import com.abona_erp.driver.app.ui.event.VehicleRegistrationEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
@@ -53,16 +49,10 @@ import com.google.gson.JsonSyntaxException;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -103,6 +93,13 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         App.getInstance().getApplicationComponent().inject(this);
     }
 
+    /**
+     *
+     * Worker classes are instantiated at runtime by WorkManager and the doWork() method is called on a pre-specified background thread (see Configuration.getExecutor()).
+     * This method is for synchronous processing of your work, meaning that once you return from that method, the Worker is considered to be finished and will be destroyed.
+     * If you need to do your work asynchronously or call asynchronous APIs, you should use ListenableWorker.
+     * @return
+     */
     @Override
     public Result doWork() {
         mMediaPlayer.setOnPreparedListener(this);
@@ -165,7 +162,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
 
     @Override
-    public void showPercentage(CommItem commItem) {
+    public void saveCommonTaskPercentage(CommItem commItem) {
         // percent - need to check if header exist
         if (commItem.getPercentItem() != null) {
             if (commItem.getPercentItem().getTotalPercentFinished() != null && commItem.getPercentItem().getTotalPercentFinished() >= 0) {
@@ -180,29 +177,37 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
     }
 
+    /**
+     * removing tasks if no Vehicle - means deactivated.
+     * @param commItem
+     */
     @Override
     public void removeAllTasks(CommItem commItem) {
-        TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
-                getApplicationContext().getResources().getString(R.string.registration_number));
-        VehicleRegistrationEvent event = new VehicleRegistrationEvent();
-
-        // RESET ALL ITEMS:
-        event.setDeleteAll(true);
-        mRepository.deleteAllNotify();
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                mRepository.deleteAllLastActivities();
-                DriverDatabase db = DriverDatabase.getDatabase();
-                OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
-                dao.deleteAll();
-            }
-        });
+        Log.e(TAG,  getApplicationContext().getResources().getString(R.string.registration_number));
 
         TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
                 getApplicationContext().getResources().getString(R.string.registration_number));
         TextSecurePreferences.setClientName(getApplicationContext(), "");
 
+
+        // assuming that we already in background thread
+        mRepository.deleteAllLastActivities();
+        mRepository.deleteAllNotify();
+
+        DriverDatabase db = DriverDatabase.getDatabase();
+        OfflineConfirmationDAO dao = db.offlineConfirmationDAO();
+        dao.deleteAll();
+    }
+
+
+    /**
+     * as we posting from background - need to catch on main thread
+     * @param item
+     */
+    private void postVehicleEvent(VehicleItem item) {
+        TextSecurePreferences.setVehicleRegistrationNumber(getApplicationContext(),
+                getApplicationContext().getResources().getString(R.string.registration_number));
+        VehicleRegistrationEvent event = new VehicleRegistrationEvent(item);
         App.eventBus.post(event);
         startRingtone(notification);
     }
@@ -218,16 +223,6 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
         } else {
             TextSecurePreferences.setClientName(getApplicationContext(), "");
         }
-        // Drivers
-        if (commItem.getVehicleItem().getDrivers() != null) {
-            if (commItem.getVehicleItem().getDrivers().size() > 0) {
-                if (commItem.getVehicleItem().getDrivers().get(0).getImageUrl() != null) {
-                    // First Driver
-                    App.eventBus.post(new ProfileEvent(commItem.getVehicleItem().getDrivers().get(0).getImageUrl()));
-                }
-            }
-        }
-
     }
 
     @Override
@@ -243,6 +238,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
             switch (commItem.getHeader().getDataType()) {
                 case VEHICLE:
+                    postVehicleEvent(commItem.getVehicleItem());
                     if (vehicleExist(commItem)) {
                         addVehicle(commItem);
                     } else {
@@ -257,7 +253,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
                     break;
             }
 
-            showPercentage(commItem);
+            saveCommonTaskPercentage(commItem);
 
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "CommonItem model expected. and this is not common item: " + raw + "\n" + e.getMessage());
@@ -270,11 +266,10 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
     public void addTasksAndActivities(CommItem commItem, String raw) {
         if (commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getTaskId() != null) {
             //add alarm
-            ForegroundAlarmService.startNotificationWithDelay(commItem.getTaskItem());
+            ForegroundAlarmService.startNotificationWithDelay(commItem.getTaskItem()); //workmanager api used.
 
-            //add task
-            mRepository.getNotifyByMandantTaskId(commItem.getTaskItem().getMandantId(), commItem.getTaskItem().getTaskId()).observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
+            //add task, already we in background thread
+            mRepository.getNotifyByMandantTaskId(commItem.getTaskItem().getMandantId(), commItem.getTaskItem().getTaskId())
                     .subscribe(new DisposableSingleObserver<Notify>() {
                         @Override
                         public void onSuccess(Notify notify) {
@@ -316,12 +311,11 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
 
     @Override
     public void updateActivities(Notify notify, CommItem commItem) {
-        mRepository.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(), commItem.getTaskItem().getMandantId()).observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
+        mRepository.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(), commItem.getTaskItem().getMandantId())
                 .subscribe(new DisposableSingleObserver<LastActivity>() {
                     @Override
                     public void onSuccess(LastActivity lastActivity) {
-                        updateDbActivitys(lastActivity, commItem, notify);
+                        updateDbActivities(lastActivity, commItem, notify);
                     }
 
                     @Override
@@ -332,7 +326,7 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
     }
 
     @Override
-    public void updateDbActivitys(LastActivity lastActivity, CommItem commItem, Notify notify) {
+    public void updateDbActivities(LastActivity lastActivity, CommItem commItem, Notify notify) {
         lastActivity = LastActivity.updateFromCommItem(lastActivity, commItem);
 
         mRepository.update(lastActivity);
