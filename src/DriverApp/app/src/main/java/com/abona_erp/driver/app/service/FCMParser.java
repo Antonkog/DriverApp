@@ -43,4 +43,6 @@ public interface FCMParser {
     void removeParseNotification();
 
     void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation);
+    
+    void addDelayReason(CommItem commItem);
 }

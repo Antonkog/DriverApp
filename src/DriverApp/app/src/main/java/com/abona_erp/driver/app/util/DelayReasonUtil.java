@@ -14,6 +14,7 @@ import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -123,6 +124,7 @@ public class DelayReasonUtil {
     OfflineDelayReasonEntity entity = new OfflineDelayReasonEntity();
     entity.setNotifyId(notifyId);
     entity.setWaitingReasonId(waitingReasonId);
+    entity.setWaitingReasonAppId(UUID.randomUUID().toString());
     entity.setActivityId(activityId);
     entity.setMandantId(mandantId);
     entity.setTaskId(taskId);

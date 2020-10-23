@@ -12,6 +12,10 @@ public class DelayReasonItem {
   @Expose
   private Integer waitingReasongId;
   
+  @SerializedName("WaitingReasonAppId")
+  @Expose
+  private String waitingReasonAppId;
+  
   /** TransportOrderStatusValue.Oid */
   @SerializedName("ActivityId")
   @Expose
@@ -73,6 +77,14 @@ public class DelayReasonItem {
   
   public void setWaitingReasongId(Integer waitingReasongId) {
     this.waitingReasongId = waitingReasongId;
+  }
+  
+  public String getWaitingReasonAppId() {
+    return this.waitingReasonAppId;
+  }
+  
+  public void setWaitingReasonAppId(String waitingReasonAppId) {
+    this.waitingReasonAppId = waitingReasonAppId;
   }
   
   public Integer getActivityId() {

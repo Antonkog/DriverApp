@@ -29,6 +29,7 @@ import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
+import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
@@ -55,6 +56,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -255,6 +257,9 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
                 case DOCUMENT:
                     addDocument(commItem);
                     break;
+                case DELAY_REASONS:
+                    addDelayReason(commItem);
+                    break;
             }
 
             showPercentage(commItem);
@@ -377,7 +382,48 @@ public class FCMParserWorker extends Worker implements FCMParser, MediaPlayer.On
                 LogType.FCM, ActionType.UPDATE_TASK, ChangeHistoryState.TO_BE_CONFIRMED_BY_APP,
                 item.getTaskId(), item.getId(), item.getOrderNo(), item.getMandantId(), offlineConfirmation.getId()));
     }
-
+    
+    @Override
+    public void addDelayReason(CommItem commItem) {
+        // DELAY REASON BEARBEITEN.
+        // 1. Task suchen
+        // 2. Activity suchen
+        // 3. Ersetzen der Delay Reason Liste
+        
+        mRepository.getNotifyByMandantTaskId(
+          commItem.getDelayReasonItems().get(0).getMandantId(),
+          commItem.getDelayReasonItems().get(0).getTaskId()
+        ).observeOn(Schedulers.io())
+          .subscribe(new DisposableSingleObserver<Notify>() {
+              @Override
+              public void onSuccess(Notify notify) {
+                  
+                  CommItem comm = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
+                  List<ActivityItem> activities = comm.getTaskItem().getActivities();
+                  if (activities.size() > 0) {
+                      for (int i = 0; i < activities.size(); i++) {
+                          if (activities.get(i).getActivityId() == commItem.getDelayReasonItems().get(0).getActivityId()) {
+                              activities.get(i).setDelayReasonItems(commItem.getDelayReasonItems());
+                          }
+                      }
+                      notify.setData(App.getInstance().gson.toJson(comm));
+                      AsyncTask.execute(new Runnable() {
+                          @Override
+                          public void run() {
+                              
+                              mRepository.update(notify);
+                          }
+                      });
+                  }
+              }
+    
+              @Override
+              public void onError(Throwable e) {
+        
+              }
+          });
+    }
+    
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();

@@ -230,6 +230,7 @@ public class BackgroundServiceWorker extends Service {
   
           DelayReasonItem delayReasonItem = new DelayReasonItem();
           delayReasonItem.setWaitingReasongId(offlineDelayReasonEntities.get(0).getWaitingReasonId());
+          delayReasonItem.setWaitingReasonAppId(offlineDelayReasonEntities.get(0).getWaitingReasonAppId());
           delayReasonItem.setActivityId(offlineDelayReasonEntities.get(0).getActivityId());
           delayReasonItem.setMandantId(offlineDelayReasonEntities.get(0).getMandantId());
           delayReasonItem.setTaskId(offlineDelayReasonEntities.get(0).getTaskId());
@@ -255,22 +256,32 @@ public class BackgroundServiceWorker extends Service {
           call.enqueue(new Callback<ResultOfAction>() {
             @Override
             public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
-    
+             // Log.i(TAG, response.body().getCommItem().toString());
+
               if (response.body() == null) return;
               if (response.body().getIsSuccess() && !response.body().getIsException()) {
                 
                 ResultOfAction resultOfAction = response.body();
                 if (resultOfAction == null) return;
-                if (resultOfAction.getCommItem() == null) return;
+                //if (resultOfAction.getCommItem() == null) return;
   
+                int activityId = offlineDelayReasonEntities.get(0).getActivityId();
                 mNotifyDAO.loadNotifyById(offlineDelayReasonEntities.get(0).getNotifyId())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribeOn(Schedulers.io())
                   .subscribe(new DisposableSingleObserver<Notify>() {
                     @Override
                     public void onSuccess(Notify notify) {
-    
-                      notify.setData(App.getInstance().gson.toJson(resultOfAction.getCommItem()));
+                    
+                      CommItem commItem = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
+                      //commItem.setDelayReasonItems(resultOfAction.getDelayReasonItems());
+                      List<ActivityItem> activities = commItem.getTaskItem().getActivities();
+                      for (int i = 0; i < activities.size(); i++) {
+                        if (activities.get(i).getActivityId() == activityId) {
+                          activities.get(i).setDelayReasonItems(resultOfAction.getDelayReasonItems());
+                        }
+                      }
+                      notify.setData(App.getInstance().gson.toJson(commItem));
                       AsyncTask.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -278,6 +289,16 @@ public class BackgroundServiceWorker extends Service {
                           mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
                         }
                       });
+                    
+/*
+                      notify.setData(App.getInstance().gson.toJson(resultOfAction.getCommItem()));
+                      AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                          mNotifyDAO .updateNotify(notify);
+                          mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
+                        }
+                      });*/
                     }
   
                     @Override
@@ -372,13 +393,13 @@ public class BackgroundServiceWorker extends Service {
                           showErrorMessage(response.body().getText());
                         }
                         if (response.body() != null && response.body().getIsSuccess()) {
-                          
+                          /*
                           if (response.body().getCommItem().getPercentItem() != null) {
                             if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
                               TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
                             }
                           }
-
+                          */
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
