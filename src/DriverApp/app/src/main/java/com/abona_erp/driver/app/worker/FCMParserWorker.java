@@ -50,11 +50,7 @@ import com.google.gson.JsonSyntaxException;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
