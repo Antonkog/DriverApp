@@ -38,4 +38,6 @@ public interface FCMParser {
     void hideFCMNotification();
 
     void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation);
+    
+    void addDelayReason(CommItem commItem);
 }

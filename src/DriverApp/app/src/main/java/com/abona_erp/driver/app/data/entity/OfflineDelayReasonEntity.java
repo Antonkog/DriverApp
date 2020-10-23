@@ -23,6 +23,9 @@ public class OfflineDelayReasonEntity {
   @ColumnInfo(name = "waiting_reason_id")
   private int waitingReasonId;
   
+  @ColumnInfo(name = "WaitingReasonAppId")
+  private String waitingReasonAppId;
+  
   @ColumnInfo(name = "activity_id")
   @NotNull
   private int activityId;
@@ -71,6 +74,14 @@ public class OfflineDelayReasonEntity {
   
   public void setWaitingReasonId(int waitingReasonId) {
     this.waitingReasonId = waitingReasonId;
+  }
+  
+  public String getWaitingReasonAppId() {
+    return this.waitingReasonAppId;
+  }
+  
+  public void setWaitingReasonAppId(String waitingReasonAppId) {
+    this.waitingReasonAppId = waitingReasonAppId;
   }
   
   public int getActivityId() {
