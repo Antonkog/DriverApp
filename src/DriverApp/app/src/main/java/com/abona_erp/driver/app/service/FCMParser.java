@@ -10,8 +10,7 @@ import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.model.CommItem;
 
 public interface FCMParser {
-
-    void setRingtonePlayer();//already set in  Dagger DI
+    void showFCMNotification();
 
     boolean parseCommonItem(String message);
 
@@ -23,11 +22,7 @@ public interface FCMParser {
 
     void updateActivities(Notify notify, CommItem commItem);
 
-    void updateDbActivitys(LastActivity lastActivity, CommItem commItem, Notify notify);
-
-    void startRingtone(Uri uri);
-
-    void showFCMNotification();
+    void updateDbActivities(LastActivity lastActivity, CommItem commItem, Notify notify);
 
     boolean vehicleExist(CommItem commItem);
 
@@ -36,11 +31,11 @@ public interface FCMParser {
 
     void addDocument(CommItem commItem);
 
-    void showPercentage(CommItem commItem);
+    void saveCommonTaskPercentage(CommItem commItem);
 
     void removeAllTasks(CommItem commItem);
 
-    void removeParseNotification();
+    void hideFCMNotification();
 
     void postHistoryEvent(Notify item, OfflineConfirmation offlineConfirmation);
     
