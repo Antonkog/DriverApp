@@ -1,4 +1,4 @@
-package com.abona_erp.driverapp.ui.activities
+package com.abona_erp.driverapp.ui.factivities
 
 import android.view.LayoutInflater
 import android.view.View
