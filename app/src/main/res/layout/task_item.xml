@@ -4,9 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_VIII"
         android:background="@color/colorPrimary"
         android:elevation="@dimen/elevation_IV"
@@ -140,111 +144,96 @@
                 android:id="@+id/activity_button"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
                 android:text="@string/button_to_activities"
-                app:layout_constraintBottom_toBottomOf="@+id/textActName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imagePhone" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textActName" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/buttons_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textActName">
+                app:layout_constraintTop_toBottomOf="@+id/activity_button">
 
-
-                <ImageView
-                    android:id="@+id/imageDocuments"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toTopOf="@+id/imageDanger"
-                    app:layout_constraintEnd_toStartOf="@+id/imageMap"
+                <LinearLayout
+                    android:id="@+id/constant_button_container"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toTopOf="@+id/mutable_button_container"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_document" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/imageMap"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageDocuments"
-                    app:layout_constraintEnd_toStartOf="@+id/imageInfo"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageDocuments"
-                    app:layout_constraintTop_toTopOf="@+id/imageDocuments"
-                    app:srcCompat="@drawable/ic_map" />
 
-                <ImageView
-                    android:id="@+id/imageInfo"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageDocuments"
-                    app:layout_constraintEnd_toStartOf="@+id/imageHistory"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageMap"
-                    app:layout_constraintTop_toTopOf="@+id/imageDocuments"
-                    app:srcCompat="@drawable/ic_info_wh" />
+                    <ImageView
+                        android:id="@+id/imageDocuments"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_document" />
 
-                <ImageView
-                    android:id="@+id/imageHistory"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageDocuments"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.25"
-                    app:layout_constraintStart_toEndOf="@+id/imageInfo"
-                    app:layout_constraintTop_toTopOf="@+id/imageDocuments"
-                    app:srcCompat="@drawable/ic_history" />
+                    <ImageView
+                        android:id="@+id/imageMap"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_map" />
 
-                <ImageView
-                    android:id="@+id/imageDanger"
-                    style="@style/ActionImage"
-                    android:layout_marginTop="24dp"
+                    <ImageView
+                        android:id="@+id/imageInfo"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_info_wh" />
+
+                    <ImageView
+                        android:id="@+id/imageHistory"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_history" />
+
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/mutable_button_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageMessage"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imageDocuments"
-                    app:srcCompat="@drawable/ic_class_1_explosives" />
-
-                <ImageView
-                    android:id="@+id/imageMessage"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageDanger"
-                    app:layout_constraintEnd_toStartOf="@+id/imagePallet"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageDanger"
-                    app:layout_constraintTop_toTopOf="@+id/imageDanger"
-                    app:srcCompat="@drawable/ic_message" />
-
-
-                <ImageView
-                    android:id="@+id/imagePallet"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageDanger"
-                    app:layout_constraintEnd_toStartOf="@+id/spaceImg"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageMessage"
-                    app:layout_constraintTop_toTopOf="@+id/imageDanger"
-                    app:srcCompat="@drawable/ic_pallet" />
-
-                <Space
-                    android:id="@+id/spaceImg"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageDanger"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imagePallet"
-                    app:layout_constraintTop_toTopOf="@+id/imageDanger" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constant_button_container">
+
+                    <ImageView
+                        android:id="@+id/imageDanger"
+                        style="@style/ActionImage"
+                        app:srcCompat="@drawable/ic_class_1_explosives" />
+
+                    <ImageView
+                        android:id="@+id/imageMessage"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_message" />
+
+
+                    <ImageView
+                        android:id="@+id/imagePallet"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_pallet" />
+
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+
+    </ScrollView>
 
 
 </layout>

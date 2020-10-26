@@ -3,242 +3,210 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_VIII"
         android:background="@color/colorPrimary"
         android:elevation="@dimen/elevation_IV"
         android:translationZ="@dimen/elevation_IV"
         app:cardCornerRadius="@dimen/elevation_IV">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-            <ProgressBar
-                android:id="@+id/progress_rest"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ProgressBar
-                android:id="@+id/progress_task"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textTaskName" />
-
-            <TextView
-                android:id="@+id/textTaskName"
-                style="@style/TextTask"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/task_txt_placeholder"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textOrder" />
-
-            <TextView
-                android:id="@+id/textActName"
-                style="@style/TextTask"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/task_txt_placeholder"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textFinish" />
-
-            <TextView
-                style="@style/TextDescription"
-                android:id="@+id/textOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/txt_order"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progress_rest" />
-
-            <TextView
-                style="@style/TextTaskSmall"
-                android:id="@+id/textOrderNo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/txt_order_placeholder"
-                app:layout_constraintStart_toEndOf="@+id/textOrder"
-                app:layout_constraintTop_toTopOf="@+id/textOrder" />
-
-            <TextView
-                style="@style/TextDescription"
-                android:id="@+id/textDueIn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/txt_due_in"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progress_task" />
-
-            <TextView
-                style="@style/TextDescription"
-                android:id="@+id/textFinish"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/txt_finish"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textDueIn" />
-
-            <TextView
-                style="@style/TextTaskSmall"
-                android:id="@+id/textDueInTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/task_duein_placeholder"
-                app:layout_constraintStart_toEndOf="@+id/textDueIn"
-                app:layout_constraintTop_toBottomOf="@+id/progress_task" />
-
-            <TextView
-                style="@style/TextTaskSmall"
-                android:id="@+id/textFinishTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/task_finish_placeholder"
-                app:layout_constraintBottom_toBottomOf="@+id/textFinish"
-                app:layout_constraintStart_toStartOf="@+id/textDueInTime"
-                app:layout_constraintTop_toTopOf="@+id/textFinish" />
-
-            <ImageView
-                android:id="@+id/imagePhone"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                app:tint="@color/colorPrimary"
-                app:layout_constraintBottom_toBottomOf="@+id/textFinishTime"
-                app:layout_constraintEnd_toEndOf="@+id/progress_task"
-                app:layout_constraintTop_toTopOf="@+id/textDueInTime"
-                app:srcCompat="@android:drawable/ic_menu_call" />
-
-            <Button
-                android:id="@+id/activity_button"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/button_to_activities"
-                app:layout_constraintBottom_toBottomOf="@+id/textActName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imagePhone" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/buttons_container"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textActName">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <ImageView
-                    android:id="@+id/imageDanger"
-                    style="@style/ActionImage"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageDocuments"
-                    app:layout_constraintHorizontal_bias="0.5"
+
+                <ProgressBar
+                    android:id="@+id/progress_rest"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_class_1_explosives"
-                    tools:src="@drawable/ic_danger" />
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/progress_task"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textTaskName" />
+
+                <TextView
+                    android:id="@+id/textTaskName"
+                    style="@style/TextTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/task_txt_placeholder"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textOrder" />
+
+                <TextView
+                    android:id="@+id/textActName"
+                    style="@style/TextTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/task_txt_placeholder"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textFinish" />
+
+                <TextView
+                    style="@style/TextDescription"
+                    android:id="@+id/textOrder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/txt_order"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/progress_rest" />
+
+                <TextView
+                    style="@style/TextTaskSmall"
+                    android:id="@+id/textOrderNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/txt_order_placeholder"
+                    app:layout_constraintStart_toEndOf="@+id/textOrder"
+                    app:layout_constraintTop_toTopOf="@+id/textOrder" />
+
+                <TextView
+                    style="@style/TextDescription"
+                    android:id="@+id/textDueIn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/txt_due_in"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/progress_task" />
+
+                <TextView
+                    style="@style/TextDescription"
+                    android:id="@+id/textFinish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/txt_finish"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textDueIn" />
+
+                <TextView
+                    style="@style/TextTaskSmall"
+                    android:id="@+id/textDueInTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/task_duein_placeholder"
+                    app:layout_constraintStart_toEndOf="@+id/textDueIn"
+                    app:layout_constraintTop_toBottomOf="@+id/progress_task" />
+
+                <TextView
+                    style="@style/TextTaskSmall"
+                    android:id="@+id/textFinishTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/task_finish_placeholder"
+                    app:layout_constraintBottom_toBottomOf="@+id/textFinish"
+                    app:layout_constraintStart_toStartOf="@+id/textDueInTime"
+                    app:layout_constraintTop_toTopOf="@+id/textFinish" />
 
                 <ImageView
-                    android:id="@+id/imageDocuments"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageMap"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageDanger"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_work"/>
+                    android:id="@+id/imagePhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:tint="@color/colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="@+id/textFinishTime"
+                    app:layout_constraintEnd_toEndOf="@+id/progress_task"
+                    app:layout_constraintTop_toTopOf="@+id/textDueInTime"
+                    app:srcCompat="@android:drawable/ic_menu_call" />
 
-                <ImageView
-                    android:id="@+id/imageMap"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageInfo"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageDocuments"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_map" />
-
-                <ImageView
-                    android:id="@+id/imageInfo"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageHistory"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageMap"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_info_wh"/>
+                <Button
+                    android:id="@+id/activity_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/button_to_activities"
+                    app:layout_constraintBottom_toBottomOf="@+id/textActName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imagePhone" />
 
 
-                <ImageView
-                    android:id="@+id/imageHistory"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageMessage"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageInfo"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_history" />
-
-
-                <ImageView
-                    android:id="@+id/imageMessage"
-                    style="@style/ActionImageTint"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imagePallet"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageHistory"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_message" />
-
-
-                <ImageView
-                    android:id="@+id/imagePallet"
-                    style="@style/ActionImageTint"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageMessage"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_pallet"/>
+                    app:layout_constraintTop_toBottomOf="@+id/textActName">
+
+
+                    <ImageView
+                        android:id="@+id/imageDanger"
+                        style="@style/ActionImage"
+                        app:srcCompat="@drawable/ic_class_1_explosives" />
+
+                    <ImageView
+                        android:id="@+id/imageDocuments"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_work" />
+
+                    <ImageView
+                        android:id="@+id/imageMap"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_map" />
+
+                    <ImageView
+                        android:id="@+id/imageInfo"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_info_wh" />
+
+
+                    <ImageView
+                        android:id="@+id/imageHistory"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_history" />
+
+
+                    <ImageView
+                        android:id="@+id/imageMessage"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_message" />
+
+
+                    <ImageView
+                        android:id="@+id/imagePallet"
+                        style="@style/ActionImageTint"
+                        app:srcCompat="@drawable/ic_pallet" />
+                </LinearLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+    </ScrollView>
 
 
 </layout>

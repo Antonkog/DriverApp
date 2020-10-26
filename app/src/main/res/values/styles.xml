@@ -33,11 +33,12 @@
     </style>
 
     <style name="ActionImage" parent="AppTheme">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">@dimen/icon_size_X</item>
         <item name="android:layout_height">@dimen/icon_size_X</item>
         <item name="android:layout_margin">8dp</item>
         <item name="android:padding">4dp</item>
     </style>
+
     <style name="ActionImageTint" parent="ActionImage">
         <item name="tint">@color/black</item>
     </style>

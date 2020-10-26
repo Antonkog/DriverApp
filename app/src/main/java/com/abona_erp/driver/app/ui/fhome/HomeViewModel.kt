@@ -47,19 +47,19 @@ class HomeViewModel @ViewModelInject constructor(
     fun filterRunning(){
         currentStatus = TaskStatus.RUNNING.status
         postTasksToFragmentByStatus()
-        Log.e(TAG, "posting Running ")
+        Log.e(TAG, "posting Running " + runningTasks.size)
     }
 
     fun filterPending(){
         currentStatus = TaskStatus.PENDING.status
         postTasksToFragmentByStatus()
-        Log.e(TAG, "posting Pending ")
+        Log.e(TAG, "posting Pending " + pendingTasks.size)
     }
 
     fun filterCompleted(){
         currentStatus = TaskStatus.FINISHED.status
         postTasksToFragmentByStatus()
-        Log.e(TAG, "posting Completed ")
+        Log.e(TAG, "posting Completed " + completedTasks.size)
     }
 
 
@@ -75,29 +75,35 @@ class HomeViewModel @ViewModelInject constructor(
             TaskStatus.PENDING.status -> filteredTasks.postValue(pendingTasks)
             TaskStatus.RUNNING.status -> filteredTasks.postValue(runningTasks)
             TaskStatus.FINISHED.status -> filteredTasks.postValue(completedTasks)
-            TaskStatus.CMR.status -> filteredTasks.postValue(runningTasks)
-            TaskStatus.BREAK.status -> filteredTasks.postValue(runningTasks)
+            TaskStatus.CMR.status -> Log.e(TAG, "error  TaskStatus.CMR.status - not implemented")
+            TaskStatus.BREAK.status -> Log.e(TAG, "error  TaskStatus.BREAK.status - not implemented")
         }
     }
 
 
     private fun divideTasksAndActivityByStatus(tasks: List<TaskWithActivities>) {
-        tasks.forEach {
-            when (it.taskEntity.status) {
-                TaskStatus.PENDING -> {
-                    pendingTasks.add(it)
-                }
-                TaskStatus.RUNNING -> {
-                    runningTasks.add(it)
-                }
-                TaskStatus.FINISHED -> {
-                    completedTasks.add(it)
-                }
-                TaskStatus.BREAK, TaskStatus.CMR ->{
-                    runningTasks.add(it)
+        if(!tasks.isNullOrEmpty()){
+            pendingTasks.clear()
+            runningTasks.clear()
+            completedTasks.clear()
+            tasks.forEach {
+                when (it.taskEntity.status) {
+                    TaskStatus.PENDING -> {
+                        pendingTasks.add(it)
+                    }
+                    TaskStatus.RUNNING -> {
+                        runningTasks.add(it)
+                    }
+                    TaskStatus.FINISHED -> {
+                        completedTasks.add(it)
+                    }
+                    TaskStatus.BREAK, TaskStatus.CMR ->{
+                        Log.e(TAG , " TaskStatus.BREAK , TaskStatus.CMR not implemented")
+                    }
                 }
             }
         }
+
     }
     fun loggedIn(): Boolean {
         val currentTime = System.currentTimeMillis()
