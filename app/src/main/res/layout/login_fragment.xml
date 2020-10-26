@@ -4,81 +4,81 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.flogin.LoginFragment">
 
-  <data>
+    <data>
 
-    <import type="android.view.View" />
+        <import type="android.view.View" />
 
-    <import type="androidx.core.content.ContextCompat" />
+        <import type="androidx.core.content.ContextCompat" />
 
-    <variable
-        name="viewmodel"
-        type="com.abona_erp.driver.app.ui.flogin.LoginViewModel" />
+        <variable
+            name="viewmodel"
+            type="com.abona_erp.driverapp.ui.flogin.LoginViewModel" />
 
-  </data>
-
-
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-  <EditText
-      android:id="@+id/editName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="100dp"
-      android:ems="10"
-      android:inputType="textPersonName"
-      android:hint="@string/name_hint"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
-
-  <EditText
-      android:id="@+id/editPassword"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/margin_XVI"
-      android:ems="10"
-      android:inputType="textPassword"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/editName"
-      android:hint="@string/password_hint" />
-
-  <EditText
-      android:id="@+id/editClientId"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/margin_XVI"
-      android:ems="10"
-      android:inputType="number"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/editPassword"
-      android:hint="@string/client_id_hint"/>
-
-  <Button
-      android:id="@+id/button_test"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/set_test_data"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/editClientId" />
-
-  <Button
-      android:id="@+id/button_log_in"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/screen_login"
-      app:layout_constraintBottom_toTopOf="@+id/button_test"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/editClientId" />
+    </data>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/editName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="@string/name_hint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_XVI"
+            android:ems="10"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editName"
+            android:hint="@string/password_hint" />
+
+        <EditText
+            android:id="@+id/editClientId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_XVI"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editPassword"
+            android:hint="@string/client_id_hint" />
+
+        <Button
+            android:id="@+id/button_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/set_test_data"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editClientId" />
+
+        <Button
+            android:id="@+id/button_log_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/screen_login"
+            app:layout_constraintBottom_toTopOf="@+id/button_test"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editClientId" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>

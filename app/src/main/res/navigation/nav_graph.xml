@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.abona_erp.driver.app.ui.fhome.HomeFragment"
+        android:name="com.abona_erp.driverapp.ui.fhome.HomeFragment"
         android:label="@string/screen_home"
         tools:layout="@layout/home_fragment">
         <action
@@ -23,9 +23,9 @@
 
     <fragment
         android:id="@+id/nav_login"
-        android:name="com.abona_erp.driver.app.ui.flogin.LoginFragment"
+        android:name="com.abona_erp.driverapp.ui.flogin.LoginFragment"
         android:label="@string/screen_login"
-        tools:layout="@layout/login_fragment" >
+        tools:layout="@layout/login_fragment">
         <action
             android:id="@+id/action_loginFragment_to_nav_home"
             app:destination="@id/nav_home" />
@@ -33,32 +33,32 @@
 
     <fragment
         android:id="@+id/nav_activities"
-        android:name="com.abona_erp.driver.app.ui.activities.DriverActFragment"
+        android:name="com.abona_erp.driverapp.ui.activities.DriverActFragment"
         android:label="@string/screen_activities"
-        tools:layout="@layout/driver_act_fragment"/>
+        tools:layout="@layout/driver_act_fragment" />
 
     <fragment
         android:id="@+id/nav_documents"
-        android:name="com.abona_erp.driver.app.ui.fdocuments.DocumentsFragment"
+        android:name="com.abona_erp.driverapp.ui.fdocuments.DocumentsFragment"
         android:label="@string/screen_documents"
         tools:layout="@layout/documents_fragment" />
 
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.abona_erp.driver.app.ui.fsettings.SettingsFragment"
+        android:name="com.abona_erp.driverapp.ui.fsettings.SettingsFragment"
         android:label="@string/screen_settings"
-        tools:layout="@layout/settings_fragment"/>
+        tools:layout="@layout/settings_fragment" />
 
 
     <fragment
         android:id="@+id/taskInfoFragment"
-        android:name="com.abona_erp.driver.app.ui.ftaskInfo.TaskInfoFragment"
+        android:name="com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragment"
         android:label="@string/screen_task_info"
-        tools:layout="@layout/task_info_fragment" >
+        tools:layout="@layout/task_info_fragment">
         <argument
             android:name="task_entity"
-            app:argType="com.abona_erp.driver.app.data.local.db.TaskEntity" />
+            app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity" />
     </fragment>
 
 </navigation>

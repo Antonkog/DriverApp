@@ -13,7 +13,7 @@
 
         <variable
             name="viewmodel"
-            type="com.abona_erp.driver.app.ui.fmap.MapViewModel" />
+            type="com.abona_erp.driverapp.ui.fmap.MapViewModel" />
 
     </data>
 

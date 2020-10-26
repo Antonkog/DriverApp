@@ -5,7 +5,6 @@
     tools:context=".ui.fdocuments.DocumentsFragment">
 
 
-
     <data>
 
         <import type="android.view.View" />
@@ -14,11 +13,9 @@
 
         <variable
             name="viewmodel"
-            type="com.abona_erp.driver.app.ui.fdocuments.DocumentsViewModel" />
+            type="com.abona_erp.driverapp.ui.fdocuments.DocumentsViewModel" />
 
     </data>
-
-
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

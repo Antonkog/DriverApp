@@ -12,7 +12,7 @@
 
         <variable
             name="viewmodel"
-            type="com.abona_erp.driver.app.ui.activities.DriverActViewModel" />
+            type="com.abona_erp.driverapp.ui.activities.DriverActViewModel" />
 
     </data>
 
@@ -25,7 +25,7 @@
             android:id="@+id/activityRecycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/activity_item"/>
+            tools:listitem="@layout/activity_item" />
 
         <TextView
             android:id="@+id/text_home"

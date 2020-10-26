@@ -1,17 +1,17 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
-apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
 
     defaultConfig {
-        applicationId "com.abona_erp.driver.app"
+        applicationId "com.abona_erp.driverapp"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1040801
@@ -104,9 +104,11 @@ dependencies {
     //rabbitMQ
     implementation 'com.rabbitmq:amqp-client:5.8.0'
 
+    implementation platform('com.google.firebase:firebase-bom:25.12.0') //When using the BoM, you don't specify individual library versions in the dependency lines.
+
     //Firebase
-    implementation 'com.google.firebase:firebase-messaging:20.3.0'
-    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // Add the SDK for Firebase Cloud Messaging
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
