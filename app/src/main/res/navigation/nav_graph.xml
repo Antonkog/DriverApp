@@ -19,6 +19,12 @@
         <action
             android:id="@+id/action_nav_home_to_nav_activities"
             app:destination="@id/nav_activities" />
+        <action
+            android:id="@+id/action_nav_home_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_dangerousGoodsFragment"
+            app:destination="@id/dangerousGoodsFragment" />
     </fragment>
 
     <fragment
@@ -59,6 +65,26 @@
         <argument
             android:name="task_entity"
             app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.abona_erp.driverapp.ui.fmap.MapFragment"
+        android:label="@string/screen_map"
+        tools:layout="@layout/map_fragment">
+        <argument
+            android:name="map_data"
+            app:argType="com.abona_erp.driverapp.data.model.Address" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dangerousGoodsFragment"
+        android:name="com.abona_erp.driverapp.ui.fdanger.DangerousGoodsFragment"
+        android:label="@string/screen_danger_goods"
+        tools:layout="@layout/dangerous_goods_fragment" >
+    <argument
+        android:name="goods_data"
+        app:argType="com.abona_erp.driverapp.data.model.DangerousGoods" />
     </fragment>
 
 </navigation>

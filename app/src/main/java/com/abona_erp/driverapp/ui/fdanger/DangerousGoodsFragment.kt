@@ -1,6 +1,7 @@
-package com.abona_erp.driverapp.ui.fmap
+package com.abona_erp.driverapp.ui.fdanger
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,39 +10,41 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.Address
-import com.abona_erp.driverapp.databinding.MapFragmentBinding
-import com.abona_erp.driverapp.ui.base.BaseFragment
-import com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragmentArgs
+import com.abona_erp.driverapp.data.model.DangerousGoods
+import com.abona_erp.driverapp.databinding.DangerousGoodsFragmentBinding
+import com.abona_erp.driverapp.ui.fmap.MapFragmentArgs
 import com.abona_erp.driverapp.ui.utils.JsonParser
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
 
 @AndroidEntryPoint
-class MapFragment : BaseFragment() {
+class DangerousGoodsFragment : Fragment() {
 
-    val TAG = "MapFragment"
 
-    private val mapViewModel by viewModels<MapViewModel>()
-    private lateinit var mapBinding: MapFragmentBinding
 
-    val args: MapFragmentArgs by navArgs()
+    val TAG = "DangerousGoodsFragment"
+
+    private val mapViewModel by viewModels<DangerousGoodsViewModel>()
+
+    private lateinit var dangerFragmentBinding: DangerousGoodsFragmentBinding
+
+    val args: DangerousGoodsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.map_fragment, container, false)
-
-        mapBinding = MapFragmentBinding.bind(view).apply {
+        val view = inflater.inflate(R.layout.dangerous_goods_fragment, container, false)
+        dangerFragmentBinding = DangerousGoodsFragmentBinding.bind(view).apply {
             viewmodel = mapViewModel
         }
 
-        mapBinding.lifecycleOwner = this.viewLifecycleOwner
+        dangerFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
-       val data =  args.mapData
+        val data =  args.goodsData
+
         addTestRows(data)
         return view
 
@@ -49,18 +52,18 @@ class MapFragment : BaseFragment() {
 
 
 
-    private fun addTestRows(address: Address) {
-        val jsonObject = JSONObject(Gson().toJson(address).trim())
+    private fun addTestRows(dangerGoods: DangerousGoods) {
+        val jsonObject = JSONObject(Gson().toJson(dangerGoods).trim())
 
 
-        val linearContent: LinearLayout = mapBinding.infoContainer
+        val linearContent: LinearLayout = dangerFragmentBinding.infoContainer
 
         val map: HashMap<String, String> = java.util.HashMap()
         JsonParser.parseJson(jsonObject, map)
 
         map.entries.forEach { entry ->
             run {
-                val row = LayoutInflater.from(mapBinding.root.context)
+                val row = LayoutInflater.from(dangerFragmentBinding.root.context)
                     .inflate(R.layout.task_row, null, false)
                 row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
                 linearContent.addView(row)

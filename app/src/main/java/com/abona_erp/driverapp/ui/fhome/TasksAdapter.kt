@@ -41,6 +41,18 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
             val bundle = bundleOf("task_entity" to data.taskEntity)
             navController.navigate(R.id.action_nav_home_to_taskInfoFragment, bundle)
         }
+
+
+        binding.imageMap.setOnClickListener {
+            val bundle = bundleOf("map_data" to data.taskEntity.address)
+            navController.navigate(R.id.action_nav_home_to_mapFragment, bundle)
+        }
+
+        binding.imageDanger.setOnClickListener {
+            val bundle = bundleOf("goods_data" to data.taskEntity.dangerousGoods)
+            navController.navigate(R.id.action_nav_home_to_dangerousGoodsFragment, bundle)
+        }
+
         binding.activityButton.setOnClickListener { navController.navigate(R.id.action_nav_home_to_nav_activities) }
     }
 

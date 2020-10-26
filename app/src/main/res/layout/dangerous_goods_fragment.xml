@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.fmap.MapFragment">
+    tools:context=".ui.fdanger.DangerousGoodsFragment">
 
 
     <data>
@@ -13,7 +13,7 @@
 
         <variable
             name="viewmodel"
-            type="com.abona_erp.driverapp.ui.fmap.MapViewModel" />
+            type="com.abona_erp.driverapp.ui.fdanger.DangerousGoodsViewModel" />
 
     </data>
 

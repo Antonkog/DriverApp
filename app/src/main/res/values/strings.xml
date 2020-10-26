@@ -65,6 +65,8 @@
     <string name="screen_login" translatable="false">Login</string>
     <string name="screen_home" translatable="false">Tasks</string>
     <string name="screen_task_info" translatable="false">Task Info</string>
+    <string name="screen_danger_goods" translatable="false">Dangerous goods</string>
+    <string name="screen_map" translatable="false">Map</string>
 
     <string name="screen_activities" translatable="false">Activities</string>
     <string name="screen_documents" translatable="false">Documents</string>
