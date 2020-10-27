@@ -8,7 +8,6 @@ import com.abona_erp.driverapp.data.local.db.DocumentEntity
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.ui.fhome.TaskWithActivities
-import com.google.gson.JsonObject
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.Response
@@ -17,7 +16,7 @@ import java.io.InputStream
 interface AppRepository {
 
     fun registerDevice(commItem: CommItem): Observable<ResultOfAction>
-    fun getClientEndpoint(clientId: String): Observable<JsonObject>
+    fun getClientEndpoint(clientId: String): Single<ServerUrlResponse>
     fun getAuthToken(
         grantType: String,
         userName: String,

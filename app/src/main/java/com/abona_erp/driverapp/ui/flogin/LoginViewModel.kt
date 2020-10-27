@@ -17,7 +17,6 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -53,6 +52,13 @@ class LoginViewModel
 
     fun authenticate(username: String, password: String, clientId: Int) {
         prefs.putAny(Constant.mandantId, clientId)
+
+
+        changeEndpoint(clientId)
+
+
+
+
         app.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -65,6 +71,7 @@ class LoginViewModel
                         prefs.putLong(Constant.token_created, System.currentTimeMillis())
                         setFcmToken()
                         setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
+
                     } else {
                         Log.e(TAG, "INVALID_AUTHENTICATION $result")
                         authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
@@ -78,20 +85,18 @@ class LoginViewModel
             )
     }
 
-    fun getEndpointActive(clientId: String) {
-        app.getClientEndpoint(clientId)
+
+    /**
+     * this method for getting new Endpoint for each client, and change base url to new one
+     * see:   Manifest:      android:usesCleartextTraffic="true" because auth url is not https
+     */
+    private fun changeEndpoint(clientId: Int) {
+        app.getClientEndpoint("" + clientId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { result ->
-                    Log.e(TAG, result.toString())
-                    Log.e(TAG, "got endpoint")
-                },
-                { error ->
-                    Log.e(TAG, error?.localizedMessage ?: "get endpoint error")
-                }
-
-            )
+                { result -> Log.d(TAG, "got new url: " + result) },
+                { error -> Log.e(TAG, " error while getting new Endpoint: " + error.message) })
     }
 
     fun setFcmToken() {
@@ -124,7 +129,7 @@ class LoginViewModel
                         Log.e(TAG, "device set success")
                         authenticationState.value = AuthenticationState.AUTHENTICATED
 
-                   //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
+                        //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
 
                     } else {
                         Log.e(TAG, "device set error: ${result.text}")

@@ -12,7 +12,6 @@ import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.abona_erp.driverapp.ui.fhome.TaskWithActivities
 import com.abona_erp.driverapp.ui.utils.UtilModel
-import com.google.gson.JsonObject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -156,7 +155,7 @@ class AppRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getClientEndpoint(clientId: String): Observable<JsonObject> {
+    override fun getClientEndpoint(clientId: String): Single<ServerUrlResponse> {
         return authService.getClientEndpoint(clientId)
     }
 
