@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_nav_home_to_dangerousGoodsFragment"
             app:destination="@id/dangerousGoodsFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_documents"
+            app:destination="@id/nav_documents" />
     </fragment>
 
     <fragment

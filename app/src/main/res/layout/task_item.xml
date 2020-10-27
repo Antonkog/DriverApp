@@ -135,6 +135,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 app:tint="@color/colorPrimary"
+                android:contentDescription="@string/cd_phone_call"
                 app:layout_constraintBottom_toBottomOf="@+id/textFinishTime"
                 app:layout_constraintEnd_toEndOf="@+id/progress_task"
                 app:layout_constraintTop_toTopOf="@+id/textDueInTime"
@@ -150,9 +151,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textActName" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <GridLayout
                 android:id="@+id/buttons_container"
                 android:layout_width="0dp"
+                android:columnCount="4"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
@@ -161,72 +163,64 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_button">
 
-                <LinearLayout
-                    android:id="@+id/constant_button_container"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toTopOf="@+id/mutable_button_container"
-                    app:layout_constraintEnd_toEndOf="parent"
+
+                <ImageView
+                    android:id="@+id/imageDocuments"
+                    style="@style/ActionImageTint"
+                    android:contentDescription="@string/cd_documents"
+                    app:layout_constraintEnd_toStartOf="@+id/imageHistory"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imageMap"
+                    app:srcCompat="@drawable/ic_document" />
+
+                <ImageView
+                    android:id="@+id/imageMap"
+                    style="@style/ActionImageTint"
+                    app:layout_constraintEnd_toStartOf="@+id/imageDocuments"
+                    android:contentDescription="@string/cd_map"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imageInfo"
+                    app:srcCompat="@drawable/ic_map" />
+
+                <ImageView
+                    android:id="@+id/imageInfo"
+                    style="@style/ActionImageTint"
+                    android:contentDescription="@string/cd_info"
+                    app:layout_constraintEnd_toStartOf="@+id/imageMap"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:srcCompat="@drawable/ic_info_wh" />
 
-
-                    <ImageView
-                        android:id="@+id/imageDocuments"
-                        style="@style/ActionImageTint"
-                        app:srcCompat="@drawable/ic_document" />
-
-                    <ImageView
-                        android:id="@+id/imageMap"
-                        style="@style/ActionImageTint"
-                        app:srcCompat="@drawable/ic_map" />
-
-                    <ImageView
-                        android:id="@+id/imageInfo"
-                        style="@style/ActionImageTint"
-                        app:srcCompat="@drawable/ic_info_wh" />
-
-                    <ImageView
-                        android:id="@+id/imageHistory"
-                        style="@style/ActionImageTint"
-                        app:srcCompat="@drawable/ic_history" />
-
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/mutable_button_container"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                <ImageView
+                    android:id="@+id/imageHistory"
+                    style="@style/ActionImageTint"
+                    android:contentDescription="@string/cd_history"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constant_button_container">
-
-                    <ImageView
-                        android:id="@+id/imageDanger"
-                        style="@style/ActionImage"
-                        app:srcCompat="@drawable/ic_class_1_explosives" />
-
-                    <ImageView
-                        android:id="@+id/imageMessage"
-                        style="@style/ActionImageTint"
-                        app:srcCompat="@drawable/ic_message" />
+                    app:layout_constraintStart_toEndOf="@+id/imageDocuments"
+                    app:srcCompat="@drawable/ic_history" />
 
 
-                    <ImageView
-                        android:id="@+id/imagePallet"
-                        style="@style/ActionImageTint"
-                        app:srcCompat="@drawable/ic_pallet" />
+                <ImageView
+                    android:id="@+id/imageDanger"
+                    android:contentDescription="@string/cd_danger"
+                    style="@style/ActionImage"
+                    app:srcCompat="@drawable/ic_class_1_explosives" />
 
-                </LinearLayout>
+                <ImageView
+                    android:id="@+id/imageMessage"
+                    android:contentDescription="@string/cd_message"
+                    style="@style/ActionImageTint"
+                    app:srcCompat="@drawable/ic_message" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ImageView
+                    android:id="@+id/imagePallet"
+                    style="@style/ActionImageTint"
+                    app:srcCompat="@drawable/ic_pallet" />
+
+
+            </GridLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

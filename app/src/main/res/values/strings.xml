@@ -390,5 +390,14 @@
         <string name="device_reset">Device Reset</string>
         <string name="local_time">(Local Time)</string>
 
+        <string name="cd_phone_call" translatable="false">call</string>
+        <string name="cd_map" translatable="false">map</string>
+        <string name="cd_info" translatable="false">info</string>
+        <string name="cd_documents" translatable="false">documents</string>
+        <string name="cd_history" translatable="false">history</string>
+        <string name="cd_danger" translatable="false">danger</string>
+        <string name="cd_message" translatable="false">message</string>
+        <string name="cd_pallets" translatable="false">pallets</string>
+
     <!--new from base app end-->
 </resources>

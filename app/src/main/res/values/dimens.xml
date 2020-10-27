@@ -18,11 +18,7 @@
     <!--genaral spacing-->
     <dimen name="spacing_badage">8dp</dimen>
 
-
-    <!--  icon sizes-->
-    <dimen name="icon_size_SX">24dp</dimen>
-    <dimen name="icon_size_X">48dp</dimen>
-    <dimen name="icon_size_XX">72dp</dimen>
-    <dimen name="icon_size_XXX">128dp</dimen>
+<!--    using sw for icons, as they are squere-->
+    <dimen name="icon_action_size">64dp</dimen>
 
 </resources>
