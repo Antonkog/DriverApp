@@ -1,5 +1,9 @@
 package com.abona_erp.driverapp.data.local.db
 
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
+import androidx.core.content.res.ResourcesCompat
+import com.abona_erp.driverapp.R
 import com.google.gson.annotations.SerializedName
 
 enum class DangerousGoodsClass(val typeCode: Int) {
