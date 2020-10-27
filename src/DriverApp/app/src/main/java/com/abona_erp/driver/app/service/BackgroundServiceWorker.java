@@ -32,6 +32,7 @@ import com.abona_erp.driver.app.data.entity.LastActivity;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.entity.OfflineDelayReasonEntity;
+import com.abona_erp.driver.app.data.model.ActivityDelayItem;
 import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
 import com.abona_erp.driver.app.data.model.CommItem;
@@ -220,100 +221,141 @@ public class BackgroundServiceWorker extends Service {
     
         List<OfflineDelayReasonEntity> offlineDelayReasonEntities = mOfflineDelayReasonDAO.getAllOfflineDelayReasons();
         if (offlineDelayReasonEntities.size() > 0) {
-        
-          CommItem reqItem = new CommItem();
-          Header header = new Header();
-          header.setTimestampSenderUTC(new Date());
-          header.setDataType(DataType.DELAY_REASONS);
-          header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
-          reqItem.setHeader(header);
-  
-          DelayReasonItem delayReasonItem = new DelayReasonItem();
-          delayReasonItem.setWaitingReasongId(offlineDelayReasonEntities.get(0).getWaitingReasonId());
-          delayReasonItem.setWaitingReasonAppId(offlineDelayReasonEntities.get(0).getWaitingReasonAppId());
-          delayReasonItem.setActivityId(offlineDelayReasonEntities.get(0).getActivityId());
-          delayReasonItem.setMandantId(offlineDelayReasonEntities.get(0).getMandantId());
-          delayReasonItem.setTaskId(offlineDelayReasonEntities.get(0).getTaskId());
-          delayReasonItem.setTimestampUtc(offlineDelayReasonEntities.get(0).getTimestamp());
-          delayReasonItem.setDelayInMinutes(offlineDelayReasonEntities.get(0).getDelayInMinutes());
-          if (offlineDelayReasonEntities.get(0).getDelaySource() == 0) {
-            delayReasonItem.setDelaySource(DelaySource.NA);
-          } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 1) {
-            delayReasonItem.setDelaySource(DelaySource.DISPATCHER);
-          } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 2) {
-            delayReasonItem.setDelaySource(DelaySource.CUSTOMER);
-          } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 3) {
-            delayReasonItem.setDelaySource(DelaySource.DRIVER);
-          }
-          delayReasonItem.setComment(offlineDelayReasonEntities.get(0).getComment());
           
-          List<DelayReasonItem> items = new ArrayList<>();
-          items.add(delayReasonItem);
-          reqItem.setDelayReasonItems(items);
-          
-          Call<ResultOfAction> call = App.getInstance().apiManager
-            .getDelayReasonApi().setDelayReasons(reqItem);
-          call.enqueue(new Callback<ResultOfAction>() {
-            @Override
-            public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
-             // Log.i(TAG, response.body().getCommItem().toString());
-
-              if (response.body() == null) return;
-              if (response.body().getIsSuccess() && !response.body().getIsException()) {
-                
-                ResultOfAction resultOfAction = response.body();
-                if (resultOfAction == null) return;
-                //if (resultOfAction.getCommItem() == null) return;
+          Log.i(">>>>>>>>>>", "Delay Reasons vorhanden, wird abgearbeitet..." + offlineDelayReasonEntities.get(0).getInProgress());
+          if (offlineDelayReasonEntities.get(0).getInProgress() == 0) {
+            
+            OfflineDelayReasonEntity entity = offlineDelayReasonEntities.get(0);
+            entity.setInProgress(1);
+            AsyncTask.execute(new Runnable() {
+              @Override
+              public void run() {
+                mOfflineDelayReasonDAO.update(entity);
+              }
+            });
+            
+            CommItem reqItem = new CommItem();
+            Header header = new Header();
+            header.setTimestampSenderUTC(new Date());
+            header.setDataType(DataType.DELAY_REASONS);
+            header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+            reqItem.setHeader(header);
   
-                int activityId = offlineDelayReasonEntities.get(0).getActivityId();
-                mNotifyDAO.loadNotifyById(offlineDelayReasonEntities.get(0).getNotifyId())
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribeOn(Schedulers.io())
-                  .subscribe(new DisposableSingleObserver<Notify>() {
-                    @Override
-                    public void onSuccess(Notify notify) {
-                    
-                      CommItem commItem = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
-                      //commItem.setDelayReasonItems(resultOfAction.getDelayReasonItems());
-                      List<ActivityItem> activities = commItem.getTaskItem().getActivities();
-                      for (int i = 0; i < activities.size(); i++) {
-                        if (activities.get(i).getActivityId() == activityId) {
-                          activities.get(i).setDelayReasonItems(resultOfAction.getDelayReasonItems());
-                        }
-                      }
-                      notify.setData(App.getInstance().gson.toJson(commItem));
-                      AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                          mNotifyDAO .updateNotify(notify);
-                          mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
-                        }
-                      });
-                    
-/*
-                      notify.setData(App.getInstance().gson.toJson(resultOfAction.getCommItem()));
-                      AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                          mNotifyDAO .updateNotify(notify);
-                          mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
-                        }
-                      });*/
-                    }
+            DelayReasonItem delayReasonItem = new DelayReasonItem();
+            delayReasonItem.setWaitingReasongId(offlineDelayReasonEntities.get(0).getWaitingReasonId());
+            delayReasonItem.setWaitingReasonAppId(offlineDelayReasonEntities.get(0).getWaitingReasonAppId());
+            delayReasonItem.setActivityId(offlineDelayReasonEntities.get(0).getActivityId());
+            delayReasonItem.setMandantId(offlineDelayReasonEntities.get(0).getMandantId());
+            delayReasonItem.setTaskId(offlineDelayReasonEntities.get(0).getTaskId());
+            delayReasonItem.setTimestampUtc(offlineDelayReasonEntities.get(0).getTimestamp());
+            delayReasonItem.setDelayInMinutes(offlineDelayReasonEntities.get(0).getDelayInMinutes());
+            if (offlineDelayReasonEntities.get(0).getDelaySource() == 0) {
+              delayReasonItem.setDelaySource(DelaySource.NA);
+            } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 1) {
+              delayReasonItem.setDelaySource(DelaySource.DISPATCHER);
+            } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 2) {
+              delayReasonItem.setDelaySource(DelaySource.CUSTOMER);
+            } else if (offlineDelayReasonEntities.get(0).getDelaySource() == 3) {
+              delayReasonItem.setDelaySource(DelaySource.DRIVER);
+            }
+            delayReasonItem.setComment(offlineDelayReasonEntities.get(0).getComment());
   
+            List<DelayReasonItem> items = new ArrayList<>();
+            items.add(delayReasonItem);
+            //reqItem.setDelayReasonItems(items);
+  
+            ActivityDelayItem activityDelayItem = new ActivityDelayItem();
+            activityDelayItem.setMandantId(offlineDelayReasonEntities.get(0).getMandantId());
+            activityDelayItem.setTaskId(offlineDelayReasonEntities.get(0).getTaskId());
+            activityDelayItem.setActivityId(offlineDelayReasonEntities.get(0).getActivityId());
+            activityDelayItem.setDelayReasonItems(items);
+            reqItem.setActivityDelayItem(activityDelayItem);
+  
+            Call<ResultOfAction> call = App.getInstance().apiManager
+              .getDelayReasonApi().setDelayReasons(reqItem);
+            call.enqueue(new Callback<ResultOfAction>() {
+              @Override
+              public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                // Log.i(TAG, response.body().getCommItem().toString());
+      
+                if (response.body() == null) {
+                  AsyncTask.execute(new Runnable() {
                     @Override
-                    public void onError(Throwable e) {
-    
+                    public void run() {
+                      mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
                     }
                   });
+                  return;
+                }
+                if (response.body().getIsSuccess() && !response.body().getIsException()) {
+        
+                  ResultOfAction resultOfAction = response.body();
+                  if (resultOfAction == null) return;
+                  //if (resultOfAction.getCommItem() == null) return;
+        
+                  //int activityId = offlineDelayReasonEntities.get(0).getActivityId();
+                  mNotifyDAO.loadNotifyById(offlineDelayReasonEntities.get(0).getNotifyId())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new DisposableSingleObserver<Notify>() {
+                      @Override
+                      public void onSuccess(Notify notify) {
+              
+                        CommItem commItem = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
+                        //commItem.setDelayReasonItems(resultOfAction.getDelayReasonItems());
+                        List<ActivityItem> activities = commItem.getTaskItem().getActivities();
+                        for (int i = 0; i < activities.size(); i++) {
+                          if (activities.get(i).getActivityId() == resultOfAction.getActivityDelayItem().getActivityId()) {
+                            activities.get(i).setDelayReasonItems(resultOfAction.getActivityDelayItem().getDelayReasonItems());
+                          }
+                        }
+                        notify.setData(App.getInstance().gson.toJson(commItem));
+                        AsyncTask.execute(new Runnable() {
+                          @Override
+                          public void run() {
+                            mNotifyDAO .updateNotify(notify);
+                            mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
+                          }
+                        });
+                      }
+            
+                      @Override
+                      public void onError(Throwable e) {
+                        AsyncTask.execute(new Runnable() {
+                          @Override
+                          public void run() {
+                            mOfflineDelayReasonDAO.delete(offlineDelayReasonEntities.get(0));
+                          }
+                        });
+                      }
+                    });
+                } else {
+                  // Zurücksetzen.
+                  OfflineDelayReasonEntity entity = offlineDelayReasonEntities.get(0);
+                  entity.setInProgress(0);
+                  AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                      mOfflineDelayReasonDAO.update(entity);
+                    }
+                  });
+                }
               }
-            }
-  
-            @Override
-            public void onFailure(Call<ResultOfAction> call, Throwable t) {
     
-            }
-          });
+              @Override
+              public void onFailure(Call<ResultOfAction> call, Throwable t) {
+                // Zurücksetzen.
+                OfflineDelayReasonEntity entity = offlineDelayReasonEntities.get(0);
+                entity.setInProgress(0);
+                AsyncTask.execute(new Runnable() {
+                  @Override
+                  public void run() {
+                    mOfflineDelayReasonDAO.update(entity);
+                  }
+                });
+              }
+            });
+          }
         }
       }
     });

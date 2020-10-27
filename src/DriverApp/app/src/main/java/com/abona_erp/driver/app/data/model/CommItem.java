@@ -47,6 +47,10 @@ public class CommItem {
   @Expose
   private List<DelayReasonItem> delayReasonItems;
   
+  @SerializedName("ActivityDelayItem")
+  @Expose
+  private ActivityDelayItem activityDelayItem;
+  
   // ------------------------------------------------------------------------
   // GETTER & SETTER
   
@@ -128,5 +132,13 @@ public class CommItem {
   
   public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
     this.delayReasonItems = delayReasonItems;
+  }
+  
+  public ActivityDelayItem getActivityDelayItem() {
+    return activityDelayItem;
+  }
+  
+  public void setActivityDelayItem(ActivityDelayItem activityDelayItem) {
+    this.activityDelayItem = activityDelayItem;
   }
 }
