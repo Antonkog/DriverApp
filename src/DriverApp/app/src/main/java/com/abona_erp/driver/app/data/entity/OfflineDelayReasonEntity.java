@@ -48,6 +48,10 @@ public class OfflineDelayReasonEntity {
   @ColumnInfo(name = "comment")
   private String comment;
   
+  @ColumnInfo(name = "in_progress")
+  @NotNull
+  private int inProgress;
+  
   @ColumnInfo(name = "timestamp")
   @TypeConverters({TimestampConverter.class})
   private Date timestamp;
@@ -138,5 +142,13 @@ public class OfflineDelayReasonEntity {
   
   public void setTimestamp(Date timestamp) {
     this.timestamp = timestamp;
+  }
+  
+  public int getInProgress() {
+    return inProgress;
+  }
+  
+  public void setInProgress(int inProgress) {
+    this.inProgress = inProgress;
   }
 }

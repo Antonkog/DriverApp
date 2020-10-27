@@ -31,6 +31,10 @@ public class ResultOfAction {
   @Expose
   private List<DelayReasonItem> delayReasonItems;
   
+  @SerializedName("ActivityDelayItem")
+  @Expose
+  private ActivityDelayItem activityDelayItem;
+  
   public boolean getIsSuccess() {
     return isSuccess;
   }
@@ -78,7 +82,15 @@ public class ResultOfAction {
   public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
     this.delayReasonItems = delayReasonItems;
   }
-
+  
+  public ActivityDelayItem getActivityDelayItem() {
+    return activityDelayItem;
+  }
+  
+  public void setActivityDelayItem(ActivityDelayItem activityDelayItem) {
+    this.activityDelayItem = activityDelayItem;
+  }
+  
   @Override
   public String toString() {
     return "ResultOfAction{" +

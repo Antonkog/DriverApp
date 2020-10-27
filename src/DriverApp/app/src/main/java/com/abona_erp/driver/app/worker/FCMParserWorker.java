@@ -346,14 +346,9 @@ public class FCMParserWorker extends Worker implements FCMParser {
     
     @Override
     public void addDelayReason(CommItem commItem) {
-        // DELAY REASON BEARBEITEN.
-        // 1. Task suchen
-        // 2. Activity suchen
-        // 3. Ersetzen der Delay Reason Liste
-        
         mRepository.getNotifyByMandantTaskId(
-          commItem.getDelayReasonItems().get(0).getMandantId(),
-          commItem.getDelayReasonItems().get(0).getTaskId()
+          commItem.getActivityDelayItem().mandantId,
+          commItem.getActivityDelayItem().taskId
         ).observeOn(Schedulers.io())
           .subscribe(new DisposableSingleObserver<Notify>() {
               @Override
@@ -363,15 +358,14 @@ public class FCMParserWorker extends Worker implements FCMParser {
                   List<ActivityItem> activities = comm.getTaskItem().getActivities();
                   if (activities.size() > 0) {
                       for (int i = 0; i < activities.size(); i++) {
-                          if (activities.get(i).getActivityId() == commItem.getDelayReasonItems().get(0).getActivityId()) {
-                              activities.get(i).setDelayReasonItems(commItem.getDelayReasonItems());
+                          if (activities.get(i).getActivityId() == commItem.getActivityDelayItem().getActivityId()) {
+                              activities.get(i).setDelayReasonItems(commItem.getActivityDelayItem().getDelayReasonItems());
                           }
                       }
                       notify.setData(App.getInstance().gson.toJson(comm));
                       AsyncTask.execute(new Runnable() {
                           @Override
                           public void run() {
-                              
                               mRepository.update(notify);
                           }
                       });
