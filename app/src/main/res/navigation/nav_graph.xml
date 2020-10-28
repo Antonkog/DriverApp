@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.abona_erp.driverapp.ui.fhome.HomeFragment"
+        android:name="com.abona_erp.driverapp.ui.ftasks.TasksFragment"
         android:label="@string/screen_home"
-        tools:layout="@layout/home_fragment">
+        tools:layout="@layout/tasks_fragment">
         <action
             android:id="@+id/action_nav_home_to_loginFragment"
             app:destination="@id/nav_login" />
@@ -84,10 +84,10 @@
         android:id="@+id/dangerousGoodsFragment"
         android:name="com.abona_erp.driverapp.ui.fdanger.DangerousGoodsFragment"
         android:label="@string/screen_danger_goods"
-        tools:layout="@layout/dangerous_goods_fragment" >
-    <argument
-        android:name="goods_data"
-        app:argType="com.abona_erp.driverapp.data.model.DangerousGoods" />
+        tools:layout="@layout/dangerous_goods_fragment">
+        <argument
+            android:name="goods_data"
+            app:argType="com.abona_erp.driverapp.data.model.DangerousGoods" />
     </fragment>
 
 </navigation>

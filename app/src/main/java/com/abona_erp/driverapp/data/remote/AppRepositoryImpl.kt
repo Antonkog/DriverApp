@@ -10,7 +10,7 @@ import com.abona_erp.driverapp.data.local.db.DocumentEntity
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
-import com.abona_erp.driverapp.ui.fhome.TaskWithActivities
+import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable

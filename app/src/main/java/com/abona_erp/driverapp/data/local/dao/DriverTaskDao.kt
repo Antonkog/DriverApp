@@ -8,7 +8,7 @@ import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.CommResponseItem
-import com.abona_erp.driverapp.ui.fhome.TaskWithActivities
+import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 
 @Dao
 interface DriverTaskDao {

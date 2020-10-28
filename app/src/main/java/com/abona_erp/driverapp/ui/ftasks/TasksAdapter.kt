@@ -1,4 +1,4 @@
-package com.abona_erp.driverapp.ui.fhome
+package com.abona_erp.driverapp.ui.ftasks
 
 import android.content.res.Resources
 import android.view.View
@@ -13,7 +13,7 @@ import com.abona_erp.driverapp.ui.utils.UtilModel.toDangerousGoodsClass
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 
 
-class TasksAdapter(itemClickListener: HomeFragment, val navController: NavController) :
+class TasksAdapter(itemClickListener: TasksFragment, val navController: NavController) :
     LazyAdapter<TaskWithActivities, TaskItemBinding>(
         itemClickListener
     ) {
@@ -23,16 +23,16 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
     override fun bindData(data: TaskWithActivities, binding: TaskItemBinding) {
         mResources = binding.root.resources
 
-      val nameId =  when(data.taskEntity.actionType){
-           ActionType.PICK_UP -> R.string.action_type_pick_up
-          ActionType.DROP_OFF -> R.string.action_type_drop_off
-          ActionType.GENERAL -> R.string.action_type_general
-          ActionType.TRACTOR_SWAP -> R.string.action_type_tractor_swap
-          ActionType.DELAY ->R.string.action_type_delay
-          ActionType.UNKNOWN -> R.string.action_type_unknown
-          ActionType.ENUM_ERROR -> R.string.action_type_unknown
-      }
-        binding.textTaskName.text =  mResources.getString(nameId)
+        val nameId = when (data.taskEntity.actionType) {
+            ActionType.PICK_UP -> R.string.action_type_pick_up
+            ActionType.DROP_OFF -> R.string.action_type_drop_off
+            ActionType.GENERAL -> R.string.action_type_general
+            ActionType.TRACTOR_SWAP -> R.string.action_type_tractor_swap
+            ActionType.DELAY -> R.string.action_type_delay
+            ActionType.UNKNOWN -> R.string.action_type_unknown
+            ActionType.ENUM_ERROR -> R.string.action_type_unknown
+        }
+        binding.textTaskName.text = mResources.getString(nameId)
 
         binding.progressTask.progress = data.taskEntity.status.intId
 
@@ -47,11 +47,11 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
         dialogBuilder = DialogBuilder(context)
 
 
-
-        val address =  data.taskEntity.address
+        val address = data.taskEntity.address
 
         if (address != null) {
-            binding.mapLayout.textAddrestFirst.text = String.format("${address.nation}, ${address.city}")
+            binding.mapLayout.textAddrestFirst.text =
+                String.format("${address.nation}, ${address.city}")
             binding.mapLayout.textAddressSecond.text = address.street
         }
 
@@ -96,10 +96,10 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
             binding.imageDanger.visibility = View.VISIBLE
             data.taskEntity.dangerousGoods?.dangerousGoodsClassType?.toDangerousGoodsClass()
                 ?.getImageResource(binding.root.resources)?.let {
-                binding.imageDanger.setImageDrawable(it)
-            }
+                    binding.imageDanger.setImageDrawable(it)
+                }
 
-            binding.imageDanger.setOnClickListener{
+            binding.imageDanger.setOnClickListener {
                 val bundle = bundleOf("goods_data" to data.taskEntity.dangerousGoods)
                 navController.navigate(R.id.action_nav_home_to_dangerousGoodsFragment, bundle)
             }

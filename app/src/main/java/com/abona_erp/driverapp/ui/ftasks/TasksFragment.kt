@@ -1,4 +1,4 @@
-package com.abona_erp.driverapp.ui.fhome
+package com.abona_erp.driverapp.ui.ftasks
 
 import android.os.Bundle
 import android.util.Log
@@ -11,26 +11,25 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.databinding.HomeFragmentBinding
+import com.abona_erp.driverapp.databinding.TasksFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithActivities> {
+class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithActivities> {
 
     val TAG: String = "HomeFragment"
-    private val homeViewModel by viewModels<HomeViewModel>()
+    private val homeViewModel by viewModels<TasksViewModel>()
 
     //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
     private lateinit var adapter: TasksAdapter
 
-    private lateinit var homeBinding: HomeFragmentBinding
+    private lateinit var tasksBinding: TasksFragmentBinding
 
 
     override fun onCreateView(
@@ -38,21 +37,21 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.home_fragment, container, false)
+        val view = inflater.inflate(R.layout.tasks_fragment, container, false)
 
-//        homeBinding = HomeFragmentBinding.inflate(layoutInflater, container, false).apply {
+//        tasksBinding = TasksFragmentBinding.inflate(layoutInflater, container, false).apply {
 //            viewmodel = homeViewModel
 //        }
-        homeBinding = HomeFragmentBinding.bind(view).apply {
+        tasksBinding = TasksFragmentBinding.bind(view).apply {
             viewmodel = homeViewModel
         }
 
 
-        homeBinding.lifecycleOwner = this.viewLifecycleOwner
+        tasksBinding.lifecycleOwner = this.viewLifecycleOwner
 
         adapter = TasksAdapter(this, findNavController())
 
-        homeBinding.tasksRecycler.adapter = adapter
+        tasksBinding.tasksRecycler.adapter = adapter
 
 //        TabLayoutMediator(homeBinding.tabLayout, homeBinding.tasksPager) { _, _ ->
         //Some implementation
@@ -60,7 +59,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
 //        }.attach()
 
 
-        homeBinding.tasksRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        tasksBinding.tasksRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
@@ -89,7 +88,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
             }
         })
 
-        homeBinding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
+        tasksBinding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
 
         homeViewModel.tasks.observe(viewLifecycleOwner, Observer {
             homeViewModel.setTasks(it)
@@ -108,7 +107,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
         })
 
         homeViewModel.error.observe(viewLifecycleOwner, Observer {
-            if (it != null && it.isNotEmpty()) homeBinding.textHome.text = it.toString()
+            if (it != null && it.isNotEmpty()) tasksBinding.textHome.text = it.toString()
         })
 
         if (!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
@@ -121,7 +120,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // recyclerview init
-        homeBinding.tasksRecycler.initWithLinLay(
+        tasksBinding.tasksRecycler.initWithLinLay(
             LinearLayoutManager.VERTICAL,
             adapter,
             listOf()
@@ -153,9 +152,9 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
             try {
                 val task =
                     it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == homeViewModel.getVisibleTaskId() }
-                homeBinding.tasksRecycler.scrollToPosition(it.indexOf(task)) //setting position of current task, if it exist
+                tasksBinding.tasksRecycler.scrollToPosition(it.indexOf(task)) //setting position of current task, if it exist
             } catch (e: NoSuchElementException) {
-                homeBinding.tasksRecycler.scrollToPosition(0) //setting position of first task, if current not exist
+                tasksBinding.tasksRecycler.scrollToPosition(0) //setting position of first task, if current not exist
             }
         } else homeViewModel.setVisibleTaskIDs(it[0]) //else on create set id of first element.
     }

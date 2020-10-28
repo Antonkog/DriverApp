@@ -1,4 +1,4 @@
-package com.abona_erp.driverapp.ui.fhome
+package com.abona_erp.driverapp.ui.ftasks
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 
-class HomeViewModel @ViewModelInject constructor(
+class TasksViewModel @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
     private val repository: AppRepository,
     private val prefs: SharedPreferences,
