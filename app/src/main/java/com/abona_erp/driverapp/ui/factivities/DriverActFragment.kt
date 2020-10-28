@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
+import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.databinding.DriverActFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
@@ -18,7 +19,7 @@ import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<ActivityEntity> {
+class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<ActivityWrapper> {
     val TAG = "DriverActFragment"
 
     private val driverActViewModel by viewModels<DriverActViewModel>()
@@ -45,9 +46,13 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
 
         driverActViewModel.getActivityObservable().observe(viewLifecycleOwner, Observer {
-            if (it != null && it.isNotEmpty()) {
-                adapter.swapData(it)
+            if (it!= null&& it.isNotEmpty()) {
+                driverActViewModel.wrapActivities(it)
             }
+        })
+
+        driverActViewModel.wrappedActivities.observe(viewLifecycleOwner, Observer {
+            adapter.swapData(it)
         })
 
         driverActViewModel.error.observe(viewLifecycleOwner, Observer {
@@ -73,8 +78,8 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     }
 
-    override fun onLazyItemClick(data: ActivityEntity) {
-        Log.d(TAG, " on activity click : ${data.activityId}")
-        driverActViewModel.postActivityChange(data)
+    override fun onLazyItemClick(data: ActivityWrapper) {
+        Log.d(TAG, " on activity click : ${data.activity.activityId}")
+        driverActViewModel.postActivityChange(data.activity)
     }
 }

@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
+import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
@@ -28,6 +29,7 @@ class DriverActViewModel @ViewModelInject constructor(
 
     //    val mutableActitities  = MutableLiveData<List<ActivityEntity>> ()
     val error = MutableLiveData<String>()
+    val wrappedActivities = MutableLiveData<List<ActivityWrapper>>()
 
 //    fun getActivities(deviceId: String) {
 //        viewModelScope.launch(Dispatchers.IO) {
@@ -63,5 +65,24 @@ class DriverActViewModel @ViewModelInject constructor(
                 Log.e(TAG, e.message ?: "Auth error")
             }
         }
+    }
+
+    fun wrapActivities(it: List<ActivityEntity>) {
+       val firstVisible =  it.firstOrNull{ // if Running exist show next, else show Start if not finished.
+            activityEntity ->   activityEntity.activityStatus == ActivityStatus.RUNNING
+       } ?:  it.firstOrNull{
+               activityEntity ->  activityEntity.activityStatus == ActivityStatus.PENDING
+       }
+
+        val pendingNotExist = it.none{ it.activityStatus == ActivityStatus.PENDING }
+
+        val wrapped = it.map { activityEntity ->
+            ActivityWrapper(
+                activityEntity,
+                activityEntity.activityId == firstVisible?.activityId ?: false,
+                pendingNotExist
+            )}
+
+        wrappedActivities.postValue(wrapped)
     }
 }
