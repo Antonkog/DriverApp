@@ -5,6 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -52,6 +54,7 @@ import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.data.remote.NetworkUtil;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
+import com.abona_erp.driver.app.data.remote.interceptor.HostSelectionInterceptor;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
@@ -81,6 +84,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -158,7 +162,11 @@ public class BackgroundServiceWorker extends Service {
             return;
           }
           
-          
+          if (!isUpdateDevice()) {
+            allowRequest = true;
+            mHandler.postDelayed(this, delay);
+            return;
+          }
           
           if (TextSecurePreferences.isUpdateLangCode()) {
             updateLangCode();
@@ -1015,6 +1023,76 @@ public class BackgroundServiceWorker extends Service {
     return true;
   }
   
+  private boolean isUpdateDevice() {
+    
+    if (TextSecurePreferences.getDeviceUpdate()) {
+      Log.i(TAG, ">>>>>>>>>> UPDATE DEVICE...");
+      
+      AsyncTask.execute(new Runnable() {
+        @Override
+        public void run() {
+    
+          List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
+          if (deviceProfiles.size() > 0) {
+  
+            CommItem commItem = new CommItem();
+            Header header = new Header();
+            header.setDataType(DataType.DEVICE_PROFILE);
+            header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+            commItem.setHeader(header);
+  
+            DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
+            //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
+            deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+            deviceProfileItem.setModel(Build.MODEL);
+            deviceProfileItem.setManufacturer(Build.MANUFACTURER);
+            try {
+              PackageInfo pInfo = ContextUtils.getApplicationContext()
+                .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
+              deviceProfileItem.setVersionCode(pInfo.versionCode);
+              deviceProfileItem.setVersionName(pInfo.versionName);
+            } catch (PackageManager.NameNotFoundException e) {
+              e.printStackTrace();
+            }
+            //deviceProfileItem.setLanguageCode(Locale.getDefault().toString());
+            commItem.setDeviceProfileItem(deviceProfileItem);
+            
+            Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
+            call.enqueue(new Callback<ResultOfAction>() {
+              @Override
+              public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                allowRequest = true;
+                if (response.isSuccessful()) {
+                  if (response.body().getIsSuccess() && !response.body().getIsException()) {
+                    TextSecurePreferences.setDeviceUpdate(false);
+                  }
+                } else {
+  
+                  // error case:
+                  switch (response.code()) {
+                    case 401:
+                      handleAccessToken();
+                      break;
+                  }
+                }
+              }
+  
+              @Override
+              public void onFailure(Call<ResultOfAction> call, Throwable t) {
+                Log.d(TAG, ">>>>>>> ERROR ON DEVICE UPDATE!!!");
+                allowRequest = true;
+              }
+            });
+          }
+        }
+      });
+      
+      return false;
+    }
+    
+    return true;
+  }
+  
   private void updateGetAllTasks() {
     
     AsyncTask.execute(new Runnable() {
@@ -1130,7 +1208,7 @@ public class BackgroundServiceWorker extends Service {
             deviceProfileItem.setVersionCode(deviceProfiles.get(0).getVersionCode());
             deviceProfileItem.setVersionName(deviceProfiles.get(0).getVersionName());
             commItem.setDeviceProfileItem(deviceProfileItem);
-  
+            
             Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override

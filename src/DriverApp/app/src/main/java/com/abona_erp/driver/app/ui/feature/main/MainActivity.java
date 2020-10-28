@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -333,6 +334,9 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     startBackgroundWorkerService();
     
     fetchRestApiVersion();
+    
+    
+    updateDeviceIsNeeded();
   }
 
   private void observeConfirmations() {
@@ -1290,5 +1294,20 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     Intent serviceIntent = new Intent(this, BackgroundServiceWorker.class);
     serviceIntent.putExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, true);
     startService(serviceIntent);
+  }
+  
+  private void updateDeviceIsNeeded() {
+    try {
+      PackageInfo pInfo = getApplicationContext().getPackageManager()
+        .getPackageInfo(getApplicationContext().getPackageName(), 0);
+      if (pInfo.versionCode > TextSecurePreferences.getAppVersionCode()) {
+        TextSecurePreferences.setDeviceUpdate(true);
+      }
+      if (!TextSecurePreferences.getAppVersionName().equals(pInfo.versionName)) {
+        TextSecurePreferences.setDeviceUpdate(true);
+      }
+    } catch (PackageManager.NameNotFoundException e) {
+      e.printStackTrace();
+    }
   }
 }

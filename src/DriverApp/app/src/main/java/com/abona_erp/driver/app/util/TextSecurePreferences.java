@@ -56,11 +56,15 @@ public class TextSecurePreferences {
   public static final String UPDATE_LANG_CODE    = "pref_update_lang_code";
   public static final String UPDATE_ALL_TASKS    = "pref_update_all_tasks";
   public static final String UPDATE_DELAY_REASON = "pref_update_delay_reason";
+  public static final String UPDATE_DEVICE = "pref_update_device";
   
   public static final String PREF_MANDANT_ID = "pref_mandant_id";
   
   public static final String PREF_STOP_SERVICE = "pref_stop_service";
   public static final String PREF_REGISTRATION_STARTED = "pref_registration_started";
+  
+  public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
+  public static final String PREF_APP_VERSION_NAME = "pref_app_version_name";
   
   public static String getRestApiVersion() {
     return getStringPreference(ContextUtils.getApplicationContext(),
@@ -320,6 +324,33 @@ public class TextSecurePreferences {
   
   public static void setEndpoint(String endpoint) {
     setStringPreference(ContextUtils.getApplicationContext(), PREF_ENDPOINT, endpoint);
+  }
+  
+  public static Boolean getDeviceUpdate() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+      UPDATE_DEVICE, false);
+  }
+  
+  public static void setDeviceUpdate(Boolean update) {
+    setBooleanPreference(ContextUtils.getApplicationContext(), UPDATE_DEVICE, update);
+  }
+  
+  public static Integer getAppVersionCode() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(),
+      PREF_APP_VERSION_CODE, 0);
+  }
+  
+  public static void setAppVersionCode(Integer versionCode) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_APP_VERSION_CODE, versionCode);
+  }
+  
+  public static String getAppVersionName() {
+    return getStringPreference(ContextUtils.getApplicationContext(),
+      PREF_APP_VERSION_NAME, "");
+  }
+  
+  public static void setAppVersionName(String versionName) {
+    setStringPreference(ContextUtils.getApplicationContext(), PREF_APP_VERSION_NAME, versionName);
   }
   
   public static void setBooleanPreference(Context context, String key, boolean value) {

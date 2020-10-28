@@ -238,6 +238,9 @@ public class FCMParserWorker extends Worker implements FCMParser {
                     if (vehicleExist(commItem)) {
                         addVehicle(commItem);
                     } else {
+                        commItem.getVehicleItem().setRegistrationNumber(getApplicationContext().getResources().getString(R.string.registration_number));
+                        VehicleRegistrationEvent event = new VehicleRegistrationEvent(commItem.getVehicleItem());
+                        App.eventBus.post(event);
                         removeAllTasks(commItem);
                     }
                     break;
