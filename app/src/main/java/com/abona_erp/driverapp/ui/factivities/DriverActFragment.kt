@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.databinding.DriverActFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
@@ -80,6 +79,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     override fun onLazyItemClick(data: ActivityWrapper) {
         Log.d(TAG, " on activity click : ${data.activity.activityId}")
-        driverActViewModel.postActivityChange(data.activity)
+        driverActViewModel.postActivityChange(data)
     }
 }

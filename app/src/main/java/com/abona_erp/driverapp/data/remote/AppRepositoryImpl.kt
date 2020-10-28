@@ -86,12 +86,16 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.insertActivity(activityEntity)
     }
 
-    override suspend fun updateActivity(activityEntity: ActivityEntity) {
-        localDataSource.updateActivity(activityEntity)
+    override suspend fun updateActivity(activityEntity: ActivityEntity) :Int {
+       return localDataSource.updateActivity(activityEntity)
     }
 
     override suspend fun insertDocument(documentEntity: DocumentEntity) {
         localDataSource.insertDocument(documentEntity)
+    }
+
+    override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity {
+       return localDataSource.getNextActivityIfExist(activityEntity)
     }
 
     override suspend fun getTasks(

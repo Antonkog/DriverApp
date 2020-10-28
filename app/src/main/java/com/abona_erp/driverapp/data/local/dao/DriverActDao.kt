@@ -13,6 +13,9 @@ interface DriverActDao {
     @Query("SELECT * FROM activity_entity")
     fun getAll(): LiveData<List<ActivityEntity>>
 
+    @Query("SELECT * FROM activity_entity WHERE mandantId =:mandantId AND taskpId =:taskId AND activityId =:actId")
+    fun getActivity(actId: Int, taskId: Int, mandantId: Int): ActivityEntity
+
     @Query("SELECT * FROM activity_entity WHERE taskpId =:taskId")
     fun getAllByTask(taskId: Int): LiveData<List<ActivityEntity>>
 
@@ -32,8 +35,8 @@ interface DriverActDao {
     @Insert
     suspend fun insert(activities: List<ActivityEntity>)
 
-    @Insert
-    suspend fun update(activity: ActivityEntity)
+    @Update
+    suspend fun update(activity: ActivityEntity) : Int
 
     @Transaction
     suspend fun insertFromCommItem(commonItem: CommResponseItem) {

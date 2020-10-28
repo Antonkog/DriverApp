@@ -110,8 +110,12 @@ class LocalDataSource internal constructor(
         db.documentsDao().deleteDocuments()
     }
 
-    suspend fun updateActivity(activityEntity: ActivityEntity) {
-        db.driverActDao().update(activityEntity)
+    suspend fun updateActivity(activityEntity: ActivityEntity): Int {
+        return db.driverActDao().update(activityEntity)
+    }
+
+    fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity {
+      return  db.driverActDao().getActivity(activityEntity.activityId+1, activityEntity.taskpId, activityEntity.mandantId)
     }
 
 }
