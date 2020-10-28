@@ -23,7 +23,7 @@
 
 
             <ProgressBar
-                android:id="@+id/progress_rest"
+                android:id="@+id/progress_task"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -37,12 +37,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textTaskName" />
+                app:layout_constraintTop_toBottomOf="@+id/textFinish" />
 
             <TextView
                 android:id="@+id/textTaskName"
@@ -64,7 +64,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/task_txt_placeholder"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textFinish" />
+                app:layout_constraintTop_toBottomOf="@+id/map_layout" />
 
             <TextView
                 style="@style/TextDescription"
@@ -75,7 +75,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/txt_order"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progress_rest" />
+                app:layout_constraintTop_toBottomOf="@+id/progress_task" />
 
             <TextView
                 style="@style/TextTaskSmall"
@@ -88,37 +88,34 @@
                 app:layout_constraintTop_toTopOf="@+id/textOrder" />
 
             <TextView
-                style="@style/TextDescription"
                 android:id="@+id/textDueIn"
+                style="@style/TextDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:text="@string/txt_due_in"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/map_layout" />
+                app:layout_constraintStart_toEndOf="@+id/textTaskName"
+                app:layout_constraintTop_toTopOf="@+id/textTaskName" />
 
             <TextView
-                style="@style/TextDescription"
                 android:id="@+id/textFinish"
+                style="@style/TextDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/txt_finish"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textDueIn"
                 app:layout_constraintTop_toBottomOf="@+id/textDueIn" />
 
             <TextView
-                style="@style/TextTaskSmall"
                 android:id="@+id/textDueInTime"
+                style="@style/TextTaskSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:text="@string/task_duein_placeholder"
                 app:layout_constraintStart_toEndOf="@+id/textDueIn"
-                app:layout_constraintTop_toBottomOf="@+id/map_layout" />
+                app:layout_constraintTop_toTopOf="@+id/textTaskName" />
 
             <TextView
                 style="@style/TextTaskSmall"
@@ -130,16 +127,7 @@
                 app:layout_constraintStart_toStartOf="@+id/textDueInTime"
                 app:layout_constraintTop_toTopOf="@+id/textFinish" />
 
-            <ImageView
-                android:id="@+id/imagePhone"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                app:tint="@color/colorPrimary"
-                android:contentDescription="@string/cd_phone_call"
-                app:layout_constraintBottom_toBottomOf="@+id/textFinishTime"
-                app:layout_constraintEnd_toEndOf="@+id/map_layout"
-                app:layout_constraintTop_toTopOf="@+id/textDueInTime"
-                app:srcCompat="@android:drawable/ic_menu_call" />
+
 
             <Button
                 android:id="@+id/activity_button"
@@ -168,36 +156,28 @@
                     android:id="@+id/imageDocuments"
                     style="@style/ActionImageTint"
                     android:contentDescription="@string/cd_documents"
-                    app:layout_constraintEnd_toStartOf="@+id/imageHistory"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageMap"
                     app:srcCompat="@drawable/ic_document" />
 
+
+
+
                 <ImageView
-                    android:id="@+id/imageMap"
+                    android:id="@+id/imagePhone"
                     style="@style/ActionImageTint"
-                    app:layout_constraintEnd_toStartOf="@+id/imageDocuments"
-                    android:contentDescription="@string/cd_map"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageInfo"
-                    app:srcCompat="@drawable/ic_map" />
+                    android:contentDescription="@string/cd_phone_call"
+                    app:srcCompat="@android:drawable/ic_menu_call" />
+
 
                 <ImageView
                     android:id="@+id/imageInfo"
                     style="@style/ActionImageTint"
                     android:contentDescription="@string/cd_info"
-                    app:layout_constraintEnd_toStartOf="@+id/imageMap"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:srcCompat="@drawable/ic_info_wh" />
 
                 <ImageView
                     android:id="@+id/imageHistory"
                     style="@style/ActionImageTint"
                     android:contentDescription="@string/cd_history"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageDocuments"
                     app:srcCompat="@drawable/ic_history" />
 
 

@@ -48,19 +48,19 @@ class HomeViewModel @ViewModelInject constructor(
     }
 
     fun filterRunning() {
-        currentStatus = TaskStatus.RUNNING.status
+        currentStatus = TaskStatus.RUNNING.intId
         postTasksToFragmentByStatus()
         Log.e(TAG, "posting Running " + runningTasks.size)
     }
 
     fun filterPending() {
-        currentStatus = TaskStatus.PENDING.status
+        currentStatus = TaskStatus.PENDING.intId
         postTasksToFragmentByStatus()
         Log.e(TAG, "posting Pending " + pendingTasks.size)
     }
 
     fun filterCompleted() {
-        currentStatus = TaskStatus.FINISHED.status
+        currentStatus = TaskStatus.FINISHED.intId
         postTasksToFragmentByStatus()
         Log.e(TAG, "posting Completed " + completedTasks.size)
     }
@@ -75,11 +75,11 @@ class HomeViewModel @ViewModelInject constructor(
 
     private fun postTasksToFragmentByStatus() {
         when (currentStatus) {
-            TaskStatus.PENDING.status -> filteredTasks.postValue(pendingTasks)
-            TaskStatus.RUNNING.status -> filteredTasks.postValue(runningTasks)
-            TaskStatus.FINISHED.status -> filteredTasks.postValue(completedTasks)
-            TaskStatus.CMR.status -> Log.e(TAG, "error  TaskStatus.CMR.status - not implemented")
-            TaskStatus.BREAK.status -> Log.e(
+            TaskStatus.PENDING.intId -> filteredTasks.postValue(pendingTasks)
+            TaskStatus.RUNNING.intId -> filteredTasks.postValue(runningTasks)
+            TaskStatus.FINISHED.intId -> filteredTasks.postValue(completedTasks)
+            TaskStatus.CMR.intId -> Log.e(TAG, "error  TaskStatus.CMR.status - not implemented")
+            TaskStatus.BREAK.intId -> Log.e(
                 TAG,
                 "error  TaskStatus.BREAK.status - not implemented"
             )

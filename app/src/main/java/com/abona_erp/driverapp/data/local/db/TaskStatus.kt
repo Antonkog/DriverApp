@@ -2,7 +2,7 @@ package com.abona_erp.driverapp.data.local.db
 
 import com.google.gson.annotations.SerializedName
 
-enum class TaskStatus(var status: Int) { //
+enum class TaskStatus(var intId: Int) { //
     @SerializedName("0")
     PENDING(0),
     @SerializedName("50")

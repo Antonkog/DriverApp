@@ -10,15 +10,16 @@
 
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/imageMap"
             style="@style/ActionImageTint"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_map" />
 
+
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textAddrestFirst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TextTaskSmall"
@@ -37,7 +38,7 @@
             app:srcCompat="@android:drawable/ic_menu_mapmode" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textAddressSecond"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TextTaskSmall"
@@ -45,8 +46,8 @@
             android:layout_marginBottom="16dp"
             android:text="@string/task_address_two_placeholder"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView2"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintStart_toStartOf="@+id/textAddrestFirst"
+            app:layout_constraintTop_toBottomOf="@+id/textAddrestFirst" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

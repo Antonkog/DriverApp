@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.abona_erp.driverapp.R
+import com.abona_erp.driverapp.data.local.db.ActionType
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.databinding.TaskItemBinding
 import com.abona_erp.driverapp.ui.utils.UtilModel.getImageResource
@@ -21,7 +22,20 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
     val TAG = "TasksAdapter"
     override fun bindData(data: TaskWithActivities, binding: TaskItemBinding) {
         mResources = binding.root.resources
-        binding.textTaskName.text = data.taskEntity.actionType.name
+
+      val nameId =  when(data.taskEntity.actionType){
+           ActionType.PICK_UP -> R.string.action_type_pick_up
+          ActionType.DROP_OFF -> R.string.action_type_drop_off
+          ActionType.GENERAL -> R.string.action_type_general
+          ActionType.TRACTOR_SWAP -> R.string.action_type_tractor_swap
+          ActionType.DELAY ->R.string.action_type_delay
+          ActionType.UNKNOWN -> R.string.action_type_unknown
+          ActionType.ENUM_ERROR -> R.string.action_type_unknown
+      }
+        binding.textTaskName.text =  mResources.getString(nameId)
+
+        binding.progressTask.progress = data.taskEntity.status.intId
+
         binding.textOrderNo.text = "" + data.taskEntity.orderDetails?.orderNo
         binding.textFinishTime.text = data.taskEntity.taskDueDateFinish
         binding.textActName.text =
@@ -32,8 +46,14 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
         val context = binding.root.context
         dialogBuilder = DialogBuilder(context)
 
-        setDangerGoodsImage(data, binding)
-        setPalletsImage(data, binding)
+
+
+        val address =  data.taskEntity.address
+
+        if (address != null) {
+            binding.mapLayout.textAddrestFirst.text = String.format("${address.nation}, ${address.city}")
+            binding.mapLayout.textAddressSecond.text = address.street
+        }
 
         binding.imageInfo.setOnClickListener {
             val bundle = bundleOf("task_entity" to data.taskEntity)
@@ -41,15 +61,14 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
         }
 
 
-        binding.imageMap.setOnClickListener {
+        binding.mapLayout.imageMap.setOnClickListener {
             val bundle = bundleOf("map_data" to data.taskEntity.address)
             navController.navigate(R.id.action_nav_home_to_mapFragment, bundle)
         }
 
-        binding.imageDanger.setOnClickListener {
-            val bundle = bundleOf("goods_data" to data.taskEntity.dangerousGoods)
-            navController.navigate(R.id.action_nav_home_to_dangerousGoodsFragment, bundle)
-        }
+        setDangerGoodsImage(data, binding)
+        setPalletsImage(data, binding)
+
 
         binding.activityButton.setOnClickListener { navController.navigate(R.id.action_nav_home_to_nav_activities) }
     }
@@ -78,6 +97,11 @@ class TasksAdapter(itemClickListener: HomeFragment, val navController: NavContro
             data.taskEntity.dangerousGoods?.dangerousGoodsClassType?.toDangerousGoodsClass()
                 ?.getImageResource(binding.root.resources)?.let {
                 binding.imageDanger.setImageDrawable(it)
+            }
+
+            binding.imageDanger.setOnClickListener{
+                val bundle = bundleOf("goods_data" to data.taskEntity.dangerousGoods)
+                navController.navigate(R.id.action_nav_home_to_dangerousGoodsFragment, bundle)
             }
 
         } else binding.imageDanger.visibility = View.GONE
