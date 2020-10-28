@@ -126,7 +126,7 @@ class HomeFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAct
             adapter,
             listOf()
         )
-        homeBinding.tasksRecycler.addItemDivider()
+//        homeBinding.tasksRecycler.addItemDivider()
     }
 
 

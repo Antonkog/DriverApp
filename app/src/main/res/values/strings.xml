@@ -14,6 +14,8 @@
     <string name="task_txt_placeholder" translatable="false">Pick up*</string>
     <string name="task_duein_placeholder" translatable="false">0 d 11h 41m*</string>
     <string name="task_finish_placeholder" translatable="false">15 sep 2020*</string>
+    <string name="task_address_one_placeholder" translatable="false">UA, Kyiv, (lon, lat)</string>
+    <string name="task_address_two_placeholder" translatable="false">Some str. 121/3</string>
 
     <string name="txt_due_in" translatable="false">Due in</string>
     <string name="txt_finish" translatable="false">Finish</string>

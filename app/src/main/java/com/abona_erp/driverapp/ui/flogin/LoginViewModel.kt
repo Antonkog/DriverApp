@@ -144,7 +144,6 @@ class LoginViewModel
 
                 task.result?.token?.let {
                     // Log and toast
-                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                     PrivatePreferences.setFCMToken(context, it)
                 }
 
