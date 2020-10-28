@@ -34,8 +34,8 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
 
-        versionCode 1050000
-        versionName "1.09.00" // ungerade Zahlen -> immer 2 erhoehen
+        versionCode 1090000
+        versionName "1.09.01" // ungerade Zahlen -> immer 2 erhoehen
 	logger.quiet("Using versions for building name:$versionName code:$versionCode") 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

@@ -20,6 +20,7 @@ import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.remote.ApiService;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
+import com.abona_erp.driver.app.data.remote.interceptor.HostSelectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.MockInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.UserAgentInterceptor;
@@ -169,6 +170,7 @@ public class ApplicationModule {
         httpClient.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", BuildConfig.VERSION_NAME));
         httpClient.addInterceptor(new AccessTokenInterceptor());
         httpClient.addInterceptor(new RequestInterceptor());
+        httpClient.addInterceptor(new HostSelectionInterceptor());
         httpClient.protocols(Util.immutableList(Protocol.HTTP_1_1));
         httpClient.retryOnConnectionFailure(true);
         return httpClient.build();

@@ -19,6 +19,7 @@ import com.abona_erp.driver.app.data.remote.TaskService;
 import com.abona_erp.driver.app.data.remote.TokenService;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
 import com.abona_erp.driver.app.data.remote.interceptor.AccessTokenInterceptor;
+import com.abona_erp.driver.app.data.remote.interceptor.HostSelectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.MockInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.NetworkConnectionInterceptor;
 import com.abona_erp.driver.app.data.remote.interceptor.RequestInterceptor;
@@ -76,100 +77,100 @@ public class ApiManager implements Manager {
   }
   
   public RestService getRestApi() {
-    if (mRestService == null) {
+    //if (mRestService == null) {
       mRestService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
         + "api/AbonaApi/")
         .create(RestService.class);
-    }
+    //}
     return mRestService;
   }
   
   public TaskService getTaskApi() {
-    if (mTaskService == null) {
+    //if (mTaskService == null) {
       mTaskService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
         + "api/device/")
         .create(TaskService.class);
-    }
+    //}
     return mTaskService;
   }
   
   public FCMService getFCMApi() {
-    if (mFCMService == null) {
+    //if (mFCMService == null) {
       mFCMService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
         + "api/device/")
         .create(FCMService.class);
-    }
+    //}
     return mFCMService;
   }
   
   public TokenService getTokenApi() {
-    if (mTokenService == null) {
+    //if (mTokenService == null) {
       mTokenService = provideRetrofit(TextSecurePreferences.getEndpoint())
         .create(TokenService.class);
-    }
+    //}
     return mTokenService;
   }
   
   public ConfirmService getConfirmApi() {
-    if (mConfirmService == null) {
+    //if (mConfirmService == null) {
       mConfirmService = provideRetrofitUtc(
         TextSecurePreferences.getEndpoint()
         + "api/confirmation/")
         .create(ConfirmService.class);
-    }
+    //}
     return mConfirmService;
   }
   
   public ActivityService getActivityApi() {
-    if (mActivityService == null) {
+    //if (mActivityService == null) {
       mActivityService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
         + "api/activity/")
         .create(ActivityService.class);
-    }
+    //}
     return mActivityService;
   }
   
   public FileUploadService getFileUploadApi() {
-    if (mFileUploadService == null) {
+    //if (mFileUploadService == null) {
       mFileUploadService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
       + "api/uploader/")
         .create(FileUploadService.class);
-    }
+    //}
     return mFileUploadService;
   }
   
   public DocumentService getDocumentApi() {
-    if (mDocumentService == null) {
+    //if (mDocumentService == null) {
       mDocumentService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
       + "api/uploader/")
         .create(DocumentService.class);
-    }
+    //}
     return mDocumentService;
   }
   
   public FileDownloadService getFileDownloadApi() {
-    if (mFileDownloadService == null) {
+    //if (mFileDownloadService == null) {
       mFileDownloadService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
         + "api/uploader/")
         .create(FileDownloadService.class);
-    }
+    //}
     return mFileDownloadService;
   }
 
   public DelayReasonService getDelayReasonApi() {
-    if (mDelayReasonService == null) {
+    //if (mDelayReasonService == null) {
       mDelayReasonService = provideRetrofit(
         TextSecurePreferences.getEndpoint()
         + "api/activity/")
         .create(DelayReasonService.class);
-    }
+    //}
     return mDelayReasonService;
   }
 
@@ -209,6 +210,7 @@ public class ApiManager implements Manager {
     
     // Get Android User Agent:
     //String UA = System.getProperty("http.agent");
+    //httpClient.addInterceptor(new HostSelectionInterceptor());
     httpClient.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", versionName));
     httpClient.addInterceptor(new RequestInterceptor());
     /*
@@ -232,6 +234,7 @@ public class ApiManager implements Manager {
       }
     });
     httpClient.addInterceptor(new AccessTokenInterceptor());
+    //httpClient.addInterceptor(new HostSelectionInterceptor());
   
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -290,6 +293,7 @@ public class ApiManager implements Manager {
           .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
         versionName = pi.versionName;
       } catch (PackageManager.NameNotFoundException ignore) {}
+      apiClientBuilder.addInterceptor(new HostSelectionInterceptor());
       apiClientBuilder.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", versionName));
       apiClientBuilder.addInterceptor(new RequestInterceptor());
       apiClientBuilder.addInterceptor(new NetworkConnectionInterceptor() {
@@ -309,6 +313,7 @@ public class ApiManager implements Manager {
         }
       });
       apiClientBuilder.addInterceptor(new AccessTokenInterceptor());
+      //apiClientBuilder.addInterceptor(new HostSelectionInterceptor());
   
       if (BuildConfig.DEBUG) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -342,7 +347,9 @@ public class ApiManager implements Manager {
           .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
         versionName = pi.versionName;
       } catch (PackageManager.NameNotFoundException ignore) {}
+      authClientBuilder.addInterceptor(new HostSelectionInterceptor());
       authClientBuilder.addInterceptor(new UserAgentInterceptor("ABONA DriverApp", versionName));
+      //apiClientBuilder.addInterceptor(new HostSelectionInterceptor());
     }
     return authClientBuilder;
   }
