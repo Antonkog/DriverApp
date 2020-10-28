@@ -32,6 +32,9 @@ interface DriverActDao {
     @Insert
     suspend fun insert(activities: List<ActivityEntity>)
 
+    @Insert
+    suspend fun update(activity: ActivityEntity)
+
     @Transaction
     suspend fun insertFromCommItem(commonItem: CommResponseItem) {
         if (commonItem.allTask.isNotEmpty()) {

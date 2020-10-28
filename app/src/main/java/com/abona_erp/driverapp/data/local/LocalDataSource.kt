@@ -110,4 +110,8 @@ class LocalDataSource internal constructor(
         db.documentsDao().deleteDocuments()
     }
 
+    suspend fun updateActivity(activityEntity: ActivityEntity) {
+        db.driverActDao().update(activityEntity)
+    }
+
 }

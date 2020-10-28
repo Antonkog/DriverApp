@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithActivities> {
 
     val TAG: String = "HomeFragment"
-    private val homeViewModel by viewModels<TasksViewModel>()
+    private val tasksViewModel by viewModels<TasksViewModel>()
 
     //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
     private lateinit var adapter: TasksAdapter
@@ -43,7 +43,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 //            viewmodel = homeViewModel
 //        }
         tasksBinding = TasksFragmentBinding.bind(view).apply {
-            viewmodel = homeViewModel
+            viewmodel = tasksViewModel
         }
 
 
@@ -72,7 +72,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
                     val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
 
                     val task = adapter.data[firstVisiblePosition]
-                    homeViewModel.setVisibleTaskIDs(task)
+                    tasksViewModel.setVisibleTaskIDs(task)
                     Log.e(
                         TAG,
                         "visible task id = ${task.taskEntity.taskId} , first vis pos: $firstVisiblePosition , lastvispos =  $lastVisiblePosition"
@@ -90,11 +90,11 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 
         tasksBinding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
 
-        homeViewModel.tasks.observe(viewLifecycleOwner, Observer {
-            homeViewModel.setTasks(it)
+        tasksViewModel.tasks.observe(viewLifecycleOwner, Observer {
+            tasksViewModel.setTasks(it)
         })
 
-        homeViewModel.filteredTasks.observe(viewLifecycleOwner, Observer {
+        tasksViewModel.filteredTasks.observe(viewLifecycleOwner, Observer {
             if (it != null && it.isNotEmpty()) {
 //                Log.e(TAG, "got tasks $it")
                 adapter.swapData(it)
@@ -106,13 +106,16 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 //            Log.e(TAG, "got tasks ${it}")
         })
 
-        homeViewModel.error.observe(viewLifecycleOwner, Observer {
+        tasksViewModel.error.observe(viewLifecycleOwner, Observer {
             if (it != null && it.isNotEmpty()) tasksBinding.textHome.text = it.toString()
         })
 
-        if (!homeViewModel.loggedIn()) findNavController().navigate(R.id.nav_login)
+        if (!tasksViewModel.loggedIn()) {
+            Log.e(TAG,"  not logged in ")
+            findNavController().navigate(R.id.nav_login)
+        }
         // else homeViewModel.getTasks()
-        homeViewModel.refreshTasks()
+        tasksViewModel.refreshTasks()
         return view
     }
 
@@ -133,9 +136,9 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         return object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.text) {
-                    getString(R.string.pending) -> homeViewModel.filterPending()
-                    getString(R.string.running) -> homeViewModel.filterRunning()
-                    getString(R.string.completed) -> homeViewModel.filterCompleted()
+                    getString(R.string.pending) -> tasksViewModel.filterPending()
+                    getString(R.string.running) -> tasksViewModel.filterRunning()
+                    getString(R.string.completed) -> tasksViewModel.filterCompleted()
                 }
             }
 
@@ -148,15 +151,15 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     private fun setAdapterPosition(it: List<TaskWithActivities>) {
-        if (homeViewModel.getVisibleTaskId() != 0) {
+        if (tasksViewModel.getVisibleTaskId() != 0) {
             try {
                 val task =
-                    it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == homeViewModel.getVisibleTaskId() }
+                    it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == tasksViewModel.getVisibleTaskId() }
                 tasksBinding.tasksRecycler.scrollToPosition(it.indexOf(task)) //setting position of current task, if it exist
             } catch (e: NoSuchElementException) {
                 tasksBinding.tasksRecycler.scrollToPosition(0) //setting position of first task, if current not exist
             }
-        } else homeViewModel.setVisibleTaskIDs(it[0]) //else on create set id of first element.
+        } else tasksViewModel.setVisibleTaskIDs(it[0]) //else on create set id of first element.
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {

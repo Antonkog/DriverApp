@@ -86,6 +86,10 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.insertActivity(activityEntity)
     }
 
+    override suspend fun updateActivity(activityEntity: ActivityEntity) {
+        localDataSource.updateActivity(activityEntity)
+    }
+
     override suspend fun insertDocument(documentEntity: DocumentEntity) {
         localDataSource.insertDocument(documentEntity)
     }

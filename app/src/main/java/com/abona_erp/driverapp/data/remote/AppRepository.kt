@@ -66,6 +66,7 @@ interface AppRepository {
 
     suspend fun insertOrReplaceTask(taskEntity: TaskEntity)
     suspend fun insertActivity(activityEntity: ActivityEntity) // call api to set db
+    suspend fun updateActivity(activityEntity: ActivityEntity) // call api to set db
     suspend fun insertDocument(documentEntity: DocumentEntity)
 
 
