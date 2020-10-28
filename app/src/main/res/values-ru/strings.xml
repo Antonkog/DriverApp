@@ -168,4 +168,28 @@
   <string name="log_document_fcm">Документ от Абоны через FCM</string>
   <string name="log_vehicle_fcm">Автомобиль от Абоны через FCM</string>
   <string name="dialog_login_error">Ошибка во время авторизации</string>
+
+
+
+
+  <string name="action_log_out">Выйти</string>
+  <string name="action_send_doc">Отправить документ</string>
+
+  <string name="txt_due_in">Активно</string>
+  <string name="txt_finish">Окончание</string>
+  <string name="txt_address">Адрес</string>
+
+  <string name="txt_order">Заказ</string>
+  <string name="txt_order_placeholder" translatable = "false">2020/138/45 *</string>
+  <string name="button_to_activities">Задания</string>
+
+
+  <string name="activity_next">Следующая</string>
+  <string name="activity_start">Старт</string>
+  <string name="activity_finish">Готово</string>
+
+
+  <string name="need_permissions">Требуются разрешения!</string>
+  <string name="error_from_server">Ошибка при анализе данных с сервера</string>
+
 </resources>

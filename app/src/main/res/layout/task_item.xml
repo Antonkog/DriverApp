@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -20,6 +19,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5"/>
 
 
             <ProgressBar
@@ -42,27 +48,34 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textFinish" />
+                app:layout_constraintTop_toBottomOf="@+id/textDueInTime" />
 
             <TextView
                 android:id="@+id/textTaskName"
-                style="@style/TextTask"
-                android:layout_width="wrap_content"
+                style="@style/TextTaskBig"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:autoSizeTextType="uniform"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:text="@string/task_txt_placeholder"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textOrder" />
 
             <TextView
                 android:id="@+id/textActName"
-                style="@style/TextTask"
-                android:layout_width="wrap_content"
+                style="@style/TextTaskBig"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/task_txt_placeholder"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/map_layout" />
 
@@ -92,51 +105,48 @@
                 style="@style/TextDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/txt_due_in"
-                app:layout_constraintStart_toEndOf="@+id/textTaskName"
-                app:layout_constraintTop_toTopOf="@+id/textTaskName" />
+                app:layout_constraintStart_toStartOf="@+id/textTaskName"
+                app:layout_constraintTop_toBottomOf="@+id/textTaskName" />
 
             <TextView
                 android:id="@+id/textFinish"
                 style="@style/TextDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="@string/txt_finish"
-                app:layout_constraintStart_toStartOf="@+id/textDueIn"
-                app:layout_constraintTop_toBottomOf="@+id/textDueIn" />
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toTopOf="@+id/textDueIn" />
 
             <TextView
                 android:id="@+id/textDueInTime"
                 style="@style/TextTaskSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/task_duein_placeholder"
-                app:layout_constraintStart_toEndOf="@+id/textDueIn"
-                app:layout_constraintTop_toTopOf="@+id/textTaskName" />
+                app:layout_constraintStart_toStartOf="@+id/textDueIn"
+                app:layout_constraintTop_toBottomOf="@+id/textDueIn" />
+
 
             <TextView
-                style="@style/TextTaskSmall"
                 android:id="@+id/textFinishTime"
+                style="@style/TextTaskSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@string/task_finish_placeholder"
-                app:layout_constraintBottom_toBottomOf="@+id/textFinish"
-                app:layout_constraintStart_toStartOf="@+id/textDueInTime"
-                app:layout_constraintTop_toTopOf="@+id/textFinish" />
-
-
+                app:layout_constraintStart_toStartOf="@+id/textFinish"
+                app:layout_constraintTop_toBottomOf="@+id/textFinish" />
 
             <Button
                 android:id="@+id/activity_button"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/button_to_activities"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textActName"
                 app:layout_constraintTop_toBottomOf="@+id/textActName" />
 
             <GridLayout
@@ -144,9 +154,7 @@
                 android:layout_width="0dp"
                 android:columnCount="4"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_button">
@@ -165,7 +173,7 @@
                     android:id="@+id/imagePhone"
                     style="@style/ActionImageTint"
                     android:contentDescription="@string/cd_phone_call"
-                    app:srcCompat="@android:drawable/ic_menu_call" />
+                    app:srcCompat="@drawable/ic_baseline_call_24" />
 
 
                 <ImageView
@@ -201,6 +209,7 @@
 
 
             </GridLayout>
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

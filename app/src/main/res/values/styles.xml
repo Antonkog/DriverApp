@@ -15,19 +15,24 @@
 
     <style name="TextMain" parent="AppTheme">
 
-
     </style>
 
+
     <style name="TextTask" parent="TextMain">
-        <item name="android:textSize">30sp</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
+    <style name="TextTaskBig" parent="TextTask">
+        <item name="android:textSize">30sp</item>
+    </style>
+
     <style name="TextTaskSmall" parent="TextMain">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
     <style name="TextDescription" parent="TextTaskSmall">
         <item name="android:textColor">@color/black_80</item>
     </style>

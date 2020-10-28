@@ -190,4 +190,25 @@
 
   <string name="local_time">(Ortszeit)</string>
 
+
+
+  <string name="action_log_out">Abmelden</string>
+  <string name="action_send_doc">Dokument senden</string>
+
+  <string name="txt_due_in">Fällig in</string>
+  <string name="txt_finish">Beenden Sie</string>
+  <string name="txt_address">Adresse</string>
+
+  <string name="txt_order">Reihenfolge</string>
+  <string name="button_to_activities">Aktivitäten</string>
+
+
+  <string name="activity_next">Weiter</string>
+  <string name="activity_start">Start</string>
+  <string name="activity_finish">Beenden Sie</string>
+
+
+  <string name="need_permissions">Benötige Berechtigungen!</string>
+  <string name="error_from_server">Fehler beim Parsen der Daten vom Server</string>
+
 </resources>

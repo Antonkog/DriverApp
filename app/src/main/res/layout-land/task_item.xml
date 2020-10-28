@@ -45,7 +45,7 @@
 
                 <TextView
                     android:id="@+id/textTaskName"
-                    style="@style/TextTask"
+                    style="@style/TextTaskBig"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -56,7 +56,7 @@
 
                 <TextView
                     android:id="@+id/textActName"
-                    style="@style/TextTask"
+                    style="@style/TextTaskBig"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -111,8 +111,9 @@
                     style="@style/TextTaskSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:text="@string/task_duein_placeholder"
+                    app:layout_constraintBottom_toBottomOf="@+id/textDueIn"
                     app:layout_constraintStart_toEndOf="@+id/textDueIn"
                     app:layout_constraintTop_toTopOf="@+id/textDueIn" />
 
@@ -121,9 +122,10 @@
                     style="@style/TextTaskSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:text="@string/task_finish_placeholder"
                     app:layout_constraintBottom_toBottomOf="@+id/textFinish"
-                    app:layout_constraintStart_toStartOf="@+id/textDueInTime"
+                    app:layout_constraintStart_toEndOf="@+id/textFinish"
                     app:layout_constraintTop_toTopOf="@+id/textFinish" />
 
 
@@ -142,7 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginBottom="24dp"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"

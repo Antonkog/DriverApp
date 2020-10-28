@@ -182,4 +182,25 @@
 
   <string name="local_time">(Czas lokalny)</string>
 
+
+
+  <string name="action_log_out">Wyloguj się</string>
+  <string name="action_send_doc">Wyślij dokument</string>
+
+  <string name="txt_due_in">Termin za</string>
+  <string name="txt_finish">Zakończ</string>
+  <string name="txt_address">Adres</string>
+
+  <string name="txt_order">Zamów</string>
+  <string name="button_to_activities">Działania</string>
+
+
+  <string name="activity_next">Dalej</string>
+  <string name="activity_start">Start</string>
+  <string name="activity_finish">Zakończ</string>
+
+
+  <string name="need_permissions">Potrzebujesz uprawnień!</string>
+  <string name="error_from_server">Błąd podczas analizowania danych z serwera</string>
+
 </resources>

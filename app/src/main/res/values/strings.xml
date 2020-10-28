@@ -6,26 +6,24 @@
     <string name="nav_header_subtitle" translatable="false">ABONA Deutschland GmbH</string>
     <string name="nav_header_desc" translatable="false">Navigation header</string>
     <string name="action_settings" translatable="false">Settings</string>
-    <string name="action_log_out" translatable="false">Log out</string>
-    <string name="action_send_doc" translatable="false">Send document</string>
-
     <!--    task Card-->
 
     <string name="task_txt_placeholder" translatable="false">Pick up*</string>
     <string name="task_duein_placeholder" translatable="false">0 d 11h 41m*</string>
-    <string name="task_finish_placeholder" translatable="false">15 sep 2020*</string>
-    <string name="task_address_one_placeholder" translatable="false">UA, Kyiv, (lon, lat)</string>
-    <string name="task_address_two_placeholder" translatable="false">Some str. 121/3</string>
+    <string name="task_finish_placeholder" translatable="false">15 sep 10*</string>
+    <string name="task_address_one_placeholder" translatable="false">UA, Kyiv, (lon, lat)*</string>
+    <string name="task_address_two_placeholder" translatable="false">Some str. 121/3*</string>
 
-    <string name="txt_due_in" translatable="false">Due in</string>
-    <string name="txt_finish" translatable="false">Finish</string>
-    <string name="txt_address" translatable="false">Address</string>
-    <string name="txt_order" translatable="false">Order</string>
+    <string name="action_log_out">Log out</string>
+    <string name="action_send_doc">Send document</string>
+
+    <string name="txt_due_in">Due in</string>
+    <string name="txt_finish">Finish</string>
+    <string name="txt_address">Address</string>
+
+    <string name="txt_order">Order</string>
     <string name="txt_order_placeholder" translatable="false">2020/138/45*</string>
-    <string name="button_to_activities" translatable="false">Activities</string>
-
-
-
+    <string name="button_to_activities">Activities</string>
 
     <string name="pending">Pending</string>
     <string name="running">Running</string>
@@ -43,9 +41,9 @@
 <!--    activity-->
     <string name="activity_txt_placeholder" translatable="false">Driving to loading*</string>
 
-    <string name="activity_next" translatable="false">Next</string>
-    <string name="activity_start" translatable="false">Start</string>
-    <string name="activity_finish" translatable="false">Finish</string>
+    <string name="activity_next">Next</string>
+    <string name="activity_start">Start</string>
+    <string name="activity_finish">Finish</string>
 
 <!--used to parse status code and give string-->
     <string name="action_type_pick_up">Pick Up</string>
@@ -58,9 +56,8 @@
 
 
 
-    <string name="need_permissions" translatable="false">Need Permissions!</string>
-
-    <string name="error_from_server" translatable="false">Error while parsing data from server</string>
+    <string name="need_permissions">Need Permissions!</string>
+    <string name="error_from_server">Error while parsing data from server</string>
 
 
 <!--    screen names-->
