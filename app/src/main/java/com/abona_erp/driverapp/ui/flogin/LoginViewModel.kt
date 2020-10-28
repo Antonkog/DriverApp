@@ -8,19 +8,23 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.local.preferences.putLong
 import com.abona_erp.driverapp.data.model.CommItem
+import com.abona_erp.driverapp.data.model.ResultOfAction
+import com.abona_erp.driverapp.data.model.ServerUrlResponse
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlin.system.measureTimeMillis
 
 class LoginViewModel
 @ViewModelInject constructor(
@@ -53,94 +57,102 @@ class LoginViewModel
     fun authenticate(username: String, password: String, clientId: Int) {
         prefs.putAny(Constant.mandantId, clientId)
 
+        try {
+            runBlocking {//at first set endpoing, then set auth token, then set device profile.
+                viewModelScope.launch {
 
-        changeEndpoint(clientId)
+                    val time = measureTimeMillis {
 
-
-
-
-        app.getAuthToken(Constant.grantTypeToken, username, password).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result ->
-                    Log.e(TAG, result.body().toString())
-                    if (result.isSuccessful) {
-                        Log.e(TAG, "got auth")
-                        PrivatePreferences.setAccessToken(context, result.body()?.accessToken)
-
-                        prefs.putLong(Constant.token_created, System.currentTimeMillis())
                         setFcmToken()
-                        setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
 
-                    } else {
-                        Log.e(TAG, "INVALID_AUTHENTICATION $result")
-                        authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-                    }
-                },
-                { error ->
-                    Log.e(TAG, error?.localizedMessage ?: "INVALID_AUTHENTICATION")
-                    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-                }
+                        val endPointResponse = getClientEndpoint(clientId)
 
-            )
+                        if (endPointResponse.IsActive) {
+                            setNewClientEndpoint(endPointResponse.WebService)
+
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "ENDPOINT IS NOT ACTIVE FOR THIS USER",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
+                        }
+                        //if we dont get new url, we using standard common url, for now, so i put next`code outside of bracers.
+
+
+                        val tokenResult =
+                            app.getAuthToken(Constant.grantTypeToken, username, password)
+
+                        if (tokenResult.isSuccessful) {
+                            authenticationState.postValue(AuthenticationState.AUTHENTICATED)
+
+                            PrivatePreferences.setAccessToken(
+                                context,
+                                tokenResult.body()?.accessToken
+                            )
+
+                            prefs.putLong(Constant.token_created, System.currentTimeMillis())
+                        } else authenticationState.value =
+                            AuthenticationState.INVALID_AUTHENTICATION
+
+
+                        val deviceProfileResponse =
+                            setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
+
+                        if (deviceProfileResponse.isSuccess) {
+                            Log.d(TAG, deviceProfileResponse.toString())
+                            Log.d(TAG, "device set success")
+                            authenticationState.value = AuthenticationState.AUTHENTICATED
+
+                            //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
+
+                        } else {
+                            Log.e(TAG, "device set error: ${deviceProfileResponse.text}")
+                            authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                        }
+
+                    }//time debug
+                    Log.d(TAG, "Device authorization completed in $time ms")
+                }//viewmodel scope
+            }//blocking
+        } catch (error: Exception) {
+            Log.e(TAG, error.localizedMessage ?: "error while setting deviceProfile")
+        }
     }
-
 
     /**
      * this method for getting new Endpoint for each client, and change base url to new one
      * see:   Manifest:      android:usesCleartextTraffic="true" because auth url is not https
      */
-    private fun changeEndpoint(clientId: Int) {
-        app.getClientEndpoint("" + clientId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result -> Log.d(TAG, "got new url: " + result) },
-                { error -> Log.e(TAG, " error while getting new Endpoint: " + error.message) })
+    private suspend fun getClientEndpoint(clientId: Int): ServerUrlResponse {
+       return app.getClientEndpoint(""+clientId)
     }
 
-    fun setFcmToken() {
+    private fun setNewClientEndpoint(baseUrl: String ){
+        PrivatePreferences.setEndpoint(context, baseUrl)
+    }
+
+    private fun setFcmToken() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     Log.w(TAG, "getInstanceId failed", task.exception)
                     return@OnCompleteListener
                 }
-
                 // Get new Instance ID token
-                val token = task.result?.token
 
-                // Log and toast
-                Toast.makeText(context, token, Toast.LENGTH_SHORT).show()
+                task.result?.token?.let {
+                    // Log and toast
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    PrivatePreferences.setFCMToken(context, it)
+                }
 
-                PrivatePreferences.setFCMToken(context, token)
             })
     }
 
-
-    fun setDeviceProfile(commItem: CommItem) {
-        app.registerDevice(commItem)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result ->
-                    if (result.isSuccess) {
-                        Log.e(TAG, result.toString())
-                        Log.e(TAG, "device set success")
-                        authenticationState.value = AuthenticationState.AUTHENTICATED
-
-                        //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
-
-                    } else {
-                        Log.e(TAG, "device set error: ${result.text}")
-                        authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-                    }
-
-                },
-                { error ->
-                    Log.e(TAG, error.localizedMessage ?: "error while setting deviceProfile")
-                }
-            )
+    private suspend fun setDeviceProfile(commItem: CommItem): ResultOfAction {
+       return app.registerDevice(commItem)
     }
 
 

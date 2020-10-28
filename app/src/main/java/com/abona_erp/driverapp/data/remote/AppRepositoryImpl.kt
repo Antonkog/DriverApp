@@ -61,7 +61,7 @@ class AppRepositoryImpl @Inject constructor(
         return localDataSource.observeTasksWithActivities()
     }
 
-    override fun registerDevice(commItem: CommItem): Observable<ResultOfAction> {
+    override suspend fun registerDevice(commItem: CommItem): ResultOfAction {
         return api.setDeviceProfile(commItem)
     }
 
@@ -155,15 +155,15 @@ class AppRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getClientEndpoint(clientId: String): Single<ServerUrlResponse> {
+    override suspend fun getClientEndpoint(clientId: String): ServerUrlResponse {
         return authService.getClientEndpoint(clientId)
     }
 
-    override fun getAuthToken(
+    override suspend fun getAuthToken(
         grantType: String,
         userName: String,
         password: String
-    ): Observable<Response<TokenResponse>> {
+    ): Response<TokenResponse> {
         return api.authentication(grantType, userName, password)
     }
 

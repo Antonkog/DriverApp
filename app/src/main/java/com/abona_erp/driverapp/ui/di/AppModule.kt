@@ -25,6 +25,7 @@ import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.LocalDataSource
 import com.abona_erp.driverapp.data.local.db.AppDatabase
+import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.remote.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.abona_erp.driverapp.data.remote.utils.ResponseInterceptor
@@ -125,19 +126,20 @@ object AppModule {
             .baseUrl(Constant.baseRabbitUrl).build().create(RabbitService::class.java)
     }
 
+
     @Singleton
     @Provides
-    fun provideApiService(okHttpClient: OkHttpClient): ApiService {
+    fun provideApiService(@ApplicationContext context: Context, okHttpClient: OkHttpClient): ApiService {
         return Retrofit.Builder()
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(Gson()))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-            .baseUrl(Constant.defaultApiUrl).build().create(ApiService::class.java)
+            .baseUrl(PrivatePreferences.getEndpoint(context)).build().create(ApiService::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideAuthService(okHttpClient: OkHttpClient): AuthService {
+    fun provideAuthService(okHttpClient: OkHttpClient): AuthService { //here is only place where we use base url to get new url.
         return Retrofit.Builder()
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(Gson()))

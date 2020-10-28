@@ -11,15 +11,14 @@ import retrofit2.http.*
 interface ApiService {
     @FormUrlEncoded
     @POST("/authentication")
-    fun authentication(
+    suspend fun authentication(
         @Field("grant_type") grantType: String,
         @Field("username") username: String,
         @Field("password") password: String
-    ): Observable<Response<TokenResponse>>
+    ): Response<TokenResponse>
 
     @POST("/api/device/deviceprofile")
-    fun setDeviceProfile(@Body commItem: CommItem?): Observable<ResultOfAction>
-
+    suspend fun setDeviceProfile(@Body commItem: CommItem?): ResultOfAction
 
     @GET("api/device/GetAllTask")
     suspend fun getAllTasks(@Query("deviceId") deviceId: String?): CommResponseItem

@@ -8,5 +8,5 @@ import retrofit2.http.Path
 
 interface AuthService {
     @GET("Api/AbonaClients/GetServerURLByClientId/{id}/2")
-    fun getClientEndpoint(@Path("id") clientId: String): Single<ServerUrlResponse>
+    suspend fun getClientEndpoint(@Path("id") clientId: String): ServerUrlResponse
 }

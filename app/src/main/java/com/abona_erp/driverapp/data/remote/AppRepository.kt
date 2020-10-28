@@ -15,13 +15,13 @@ import java.io.InputStream
 
 interface AppRepository {
 
-    fun registerDevice(commItem: CommItem): Observable<ResultOfAction>
-    fun getClientEndpoint(clientId: String): Single<ServerUrlResponse>
-    fun getAuthToken(
+    suspend fun registerDevice(commItem: CommItem): ResultOfAction
+    suspend fun getClientEndpoint(clientId: String): ServerUrlResponse
+    suspend fun getAuthToken(
         grantType: String,
         userName: String,
         password: String
-    ): Observable<Response<TokenResponse>>
+    ): Response<TokenResponse>
 
     //RabbitMQ
     fun getLatestRabbitOrder(id: String): Observable<LatestOrder>
