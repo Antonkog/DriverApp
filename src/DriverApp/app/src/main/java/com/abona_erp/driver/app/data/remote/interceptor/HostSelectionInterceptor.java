@@ -14,8 +14,8 @@ public final class HostSelectionInterceptor implements Interceptor {
     Request request = chain.request();
     String reqUrl = request.url().host();
     
-    HttpUrl newUrl = request.url().newBuilder().host(TextSecurePreferences.getEndpoint()).build();
-    request = request.newBuilder().url(newUrl).build();
+//    HttpUrl newUrl = request.url().newBuilder().host(TextSecurePreferences.getEndpoint()).build();
+    //request = request.newBuilder().url(newUrl).build();
     return chain.proceed(request);
   }
 }
