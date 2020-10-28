@@ -1,6 +1,7 @@
 package com.abona_erp.driverapp.ui.utils
 
 import android.content.Context
+import android.content.Entity
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -9,6 +10,7 @@ import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
+import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.DangerousGoodsClass
 import com.abona_erp.driverapp.data.local.db.DelayReasonEntity
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
@@ -83,6 +85,26 @@ object UtilModel {
             started,
             activityStatus.status,
             taskpId
+        )
+    }
+
+
+    public fun Activity.toActivityEntity(): ActivityEntity {
+        val reasons = delayReasons?.map { item -> item.toDelayReasonEntity() }
+        return ActivityEntity(
+            activityId,
+            activityId,
+            reasons,
+            description,
+            finished,
+            mandantId,
+            name,
+            radiusGeoFence,
+            sequence,
+            taskId,
+            started,
+            ActivityStatus.getActivityStatus(status),
+            ConfirmationType.RECEIVED
         )
     }
 
