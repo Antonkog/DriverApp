@@ -25,7 +25,6 @@ public class DeviceUtils {
      * author A.KOGAN
      */
     public static String getUniqueID(Context context) {
-        if (BuildConfig.DEBUG) return "78c5b0bc3b2de700";
         StringBuilder idBuilder = new StringBuilder();
         try {
             idBuilder.append(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
