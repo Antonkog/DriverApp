@@ -18,6 +18,7 @@ import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 class DriverActViewModel @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
@@ -39,7 +40,7 @@ class DriverActViewModel @ViewModelInject constructor(
     fun postActivityChange(wrapper: ActivityWrapper) {
         val entity = wrapper.activity
 
-       val newAct = incremantActivityStatus(entity)
+       val newAct = setChangedData(entity)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = repository.postActivity(
@@ -77,11 +78,17 @@ class DriverActViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun incremantActivityStatus(entity: ActivityEntity): ActivityEntity {
+    private fun setChangedData(entity: ActivityEntity): ActivityEntity {
         return when (entity.activityStatus) {
-            ActivityStatus.PENDING -> entity.copy(activityStatus = ActivityStatus.RUNNING)
-            ActivityStatus.RUNNING -> entity.copy(activityStatus = ActivityStatus.FINISHED)
-            ActivityStatus.FINISHED -> entity
+            ActivityStatus.PENDING -> {
+                entity.copy(activityStatus = ActivityStatus.RUNNING, started = Date().toString())
+            }
+            ActivityStatus.RUNNING -> {
+                entity.copy(activityStatus = ActivityStatus.FINISHED)
+            }
+            ActivityStatus.FINISHED -> {
+                entity
+            }
             ActivityStatus.ENUM_ERROR -> entity
         }
     }

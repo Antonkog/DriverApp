@@ -29,7 +29,7 @@ class TasksViewModel @ViewModelInject constructor(
     private val prefs: SharedPreferences,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {  //taskRepo : ApiRepository,
-    private val TAG = "HomeViewModel"
+    private val TAG = "TasksViewModel"
 
     val tasks: LiveData<List<TaskWithActivities>> = repository.observeTaskWithActivities()
     val activities: LiveData<List<ActivityEntity>> = getActivityObservable()
@@ -53,19 +53,19 @@ class TasksViewModel @ViewModelInject constructor(
     fun filterRunning() {
         currentStatus = TaskStatus.RUNNING.intId
         postTasksToFragmentByStatus()
-        Log.e(TAG, "posting Running " + runningTasks.size)
+        Log.d(TAG, "posting Running " + runningTasks.size)
     }
 
     fun filterPending() {
         currentStatus = TaskStatus.PENDING.intId
         postTasksToFragmentByStatus()
-        Log.e(TAG, "posting Pending " + pendingTasks.size)
+        Log.d(TAG, "posting Pending " + pendingTasks.size)
     }
 
     fun filterCompleted() {
         currentStatus = TaskStatus.FINISHED.intId
         postTasksToFragmentByStatus()
-        Log.e(TAG, "posting Completed " + completedTasks.size)
+        Log.d(TAG, "posting Completed " + completedTasks.size)
     }
 
 
@@ -118,7 +118,7 @@ class TasksViewModel @ViewModelInject constructor(
     fun loggedIn(): Boolean {
         val currentTime = System.currentTimeMillis()
         val difference = currentTime - prefs.getLong(Constant.token_created, 0)
-        Log.i(TAG, "token time difference:  $difference")
+        Log.d(TAG, "token time difference:  $difference")
         return ((difference < Constant.tokenUpdateHours * 3600 * 1000) // hours to seconds to mills
                 && PrivatePreferences.getAccessToken(context) != null)
     }
@@ -132,7 +132,7 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun setVisibleTaskIDs(TaskWithActivities: TaskWithActivities) {
-        Log.e(TAG, "saving task " + TaskWithActivities.taskEntity.taskId)
+        Log.d(TAG, "saving task visible" + TaskWithActivities.taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, TaskWithActivities.taskEntity.taskId)
         prefs.putAny(
             Constant.currentVisibleOrderId,

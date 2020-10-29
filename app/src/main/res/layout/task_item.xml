@@ -160,14 +160,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_button">
 
 
-                <ImageView
-                    android:id="@+id/imageDocuments"
-                    style="@style/ActionImageTint"
-                    android:contentDescription="@string/cd_documents"
-                    app:srcCompat="@drawable/ic_document" />
-
-
-
 
                 <ImageView
                     android:id="@+id/imagePhone"
@@ -175,12 +167,25 @@
                     android:contentDescription="@string/cd_phone_call"
                     app:srcCompat="@drawable/ic_baseline_call_24" />
 
+                <ImageView
+                    android:id="@+id/imageDocuments"
+                    style="@style/ActionImageTint"
+                    android:contentDescription="@string/cd_documents"
+                    app:srcCompat="@drawable/ic_document" />
+
+                <ImageView
+                    android:id="@+id/imageMap"
+                    style="@style/ActionImageTint"
+                    android:contentDescription="@string/cd_map"
+                    app:srcCompat="@drawable/ic_map" />
 
                 <ImageView
                     android:id="@+id/imageInfo"
                     style="@style/ActionImageTint"
                     android:contentDescription="@string/cd_info"
                     app:srcCompat="@drawable/ic_info_wh" />
+
+
 
                 <ImageView
                     android:id="@+id/imageHistory"

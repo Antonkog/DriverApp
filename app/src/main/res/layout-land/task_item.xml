@@ -160,17 +160,11 @@
 
 
                     <ImageView
-                        android:id="@+id/imageDanger"
-                        style="@style/ActionImage"
-                        android:contentDescription="@string/cd_danger"
-                        app:srcCompat="@drawable/ic_class_1_explosives" />
-
-
-                    <ImageView
                         android:id="@+id/imageDocuments"
                         style="@style/ActionImageTint"
                         android:contentDescription="@string/cd_documents"
                         app:srcCompat="@drawable/ic_work" />
+
 
                     <ImageView
                         android:id="@+id/imageMap"
@@ -184,6 +178,11 @@
                         android:contentDescription="@string/cd_info"
                         app:srcCompat="@drawable/ic_info_wh" />
 
+                    <ImageView
+                        android:id="@+id/imageDanger"
+                        style="@style/ActionImage"
+                        android:contentDescription="@string/cd_danger"
+                        app:srcCompat="@drawable/ic_class_1_explosives" />
 
                     <ImageView
                         android:id="@+id/imageHistory"

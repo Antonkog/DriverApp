@@ -61,7 +61,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         }
 
 
-        binding.mapLayout.imageMap.setOnClickListener {
+        binding.imageMap.setOnClickListener {
             val bundle = bundleOf("map_data" to data.taskEntity.address)
             navController.navigate(R.id.action_nav_home_to_mapFragment, bundle)
         }
