@@ -20,9 +20,6 @@ import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 class DriverActViewModel @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
@@ -44,7 +41,7 @@ class DriverActViewModel @ViewModelInject constructor(
     fun postActivityChange(wrapper: ActivityWrapper) {
         val entity = wrapper.activity
 
-       val newAct = setChangedData(entity)
+        val newAct = setChangedData(entity)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = repository.postActivity(
@@ -78,7 +75,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 val result = repository.updateTask(task.copy(status = newStatus))
                 if (result == 0) {
                     Log.e(TAG, "error while changing task status, task not updated")
-                }else{
+                } else {
                     Log.d(TAG, "success while changing task status to $newStatus")
 
                 }
@@ -91,11 +88,14 @@ class DriverActViewModel @ViewModelInject constructor(
     ) {
         val nextAct = repository.getNextActivityIfExist(entity)
         if (nextAct != null && nextAct.activityStatus == ActivityStatus.PENDING) {
-            val newNextAct = nextAct.copy(activityStatus = ActivityStatus.RUNNING, started = context.getCurrentDateAbonaFormat() )
-           val result =  repository.updateActivity(newNextAct)
+            val newNextAct = nextAct.copy(
+                activityStatus = ActivityStatus.RUNNING,
+                started = context.getCurrentDateAbonaFormat()
+            )
+            val result = repository.updateActivity(newNextAct)
             Log.e(TAG, "update next activity to:\n $newNextAct  \n result:  $result")
 
-        } else{
+        } else {
 
             Log.e(TAG, "no next activity")
         }
@@ -104,10 +104,17 @@ class DriverActViewModel @ViewModelInject constructor(
     private fun setChangedData(entity: ActivityEntity): ActivityEntity {
         return when (entity.activityStatus) {
             ActivityStatus.PENDING -> {
-                entity.copy(activityStatus = ActivityStatus.RUNNING, started = context.getCurrentDateAbonaFormat())
+                entity.copy(
+                    activityStatus = ActivityStatus.RUNNING,
+                    started = context.getCurrentDateAbonaFormat()
+                )
             }
             ActivityStatus.RUNNING -> {
-                entity.copy(activityStatus = ActivityStatus.FINISHED, finished = context.getCurrentDateAbonaFormat())
+                entity.copy(
+                    activityStatus = ActivityStatus.FINISHED,
+                    started = context.getCurrentDateAbonaFormat(),
+                    finished = context.getCurrentDateAbonaFormat()
+                )
             }
             ActivityStatus.FINISHED -> entity
             ActivityStatus.ENUM_ERROR -> entity
@@ -115,20 +122,23 @@ class DriverActViewModel @ViewModelInject constructor(
     }
 
     fun wrapActivities(it: List<ActivityEntity>) {
-       val firstVisible =  it.firstOrNull{ // if Running exist show next, else show Start if not finished.
-            activityEntity ->   activityEntity.activityStatus == ActivityStatus.RUNNING
-       } ?:  it.firstOrNull{
-               activityEntity ->  activityEntity.activityStatus == ActivityStatus.PENDING
-       }
+        val firstVisible =
+            it.firstOrNull { // if Running exist show next, else show Start if not finished.
+                    activityEntity ->
+                activityEntity.activityStatus == ActivityStatus.RUNNING
+            } ?: it.firstOrNull { activityEntity ->
+                activityEntity.activityStatus == ActivityStatus.PENDING
+            }
 
-        val pendingNotExist = it.none{ it.activityStatus == ActivityStatus.PENDING }
+        val pendingNotExist = it.none { it.activityStatus == ActivityStatus.PENDING }
 
         val wrapped = it.map { activityEntity ->
             ActivityWrapper(
                 activityEntity,
                 activityEntity.activityId == firstVisible?.activityId ?: false,
                 pendingNotExist
-            )}
+            )
+        }
 
         wrappedActivities.postValue(wrapped)
     }

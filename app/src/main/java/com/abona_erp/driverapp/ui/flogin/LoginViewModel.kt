@@ -22,8 +22,11 @@ import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.system.measureTimeMillis
 
 class LoginViewModel
@@ -34,8 +37,8 @@ class LoginViewModel
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
 
+    val TAG = "LoginViewMode l"
 
-    val TAG = "LoginViewModel"
 
     enum class AuthenticationState {
         UNAUTHENTICATED,        // Initial state, the user needs to authenticate
@@ -44,6 +47,12 @@ class LoginViewModel
     }
 
     val authenticationState = MutableLiveData<AuthenticationState>()
+    val error = MutableLiveData<String>()
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+        error.postValue(exception.message)
+        Log.e(TAG, exception.message)
+    }
 
     init {
         // In this example, the user is always unauthenticated when LoginViewModel is launched
@@ -56,69 +65,62 @@ class LoginViewModel
 
     fun authenticate(username: String, password: String, clientId: Int) {
         prefs.putAny(Constant.mandantId, clientId)
+        //at first set endpoing, then set auth token, then set device profile.
+        viewModelScope.launch(exceptionHandler) {
 
-        try {
-            runBlocking {//at first set endpoing, then set auth token, then set device profile.
-                viewModelScope.launch {
+            val time = measureTimeMillis {
 
-                    val time = measureTimeMillis {
+                setFcmToken() //not using return val as saved in private preferences
 
-                        setFcmToken()
+                val endPointResponse = getClientEndpoint(clientId)
 
-                        val endPointResponse = getClientEndpoint(clientId)
-
-                        if (endPointResponse.IsActive) {
-                            setNewClientEndpoint(endPointResponse.WebService)
-
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "ENDPOINT IS NOT ACTIVE FOR THIS USER",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
-                        }
-                        //if we dont get new url, we using standard common url, for now, so i put next`code outside of bracers.
+                if (endPointResponse.IsActive) {
+                    setNewClientEndpoint(endPointResponse.WebService)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "ENDPOINT IS NOT ACTIVE FOR THIS USER",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
+                }
+                //if we dont get new url, we using standard common url, for now, so i put next`code outside of bracers.
 
 
-                        val tokenResult =
-                            app.getAuthToken(Constant.grantTypeToken, username, password)
+                val tokenResult =
+                    app.getAuthToken(Constant.grantTypeToken, username, password)
 
-                        if (tokenResult.isSuccessful) {
-                            authenticationState.postValue(AuthenticationState.AUTHENTICATED)
+                if (tokenResult.isSuccessful) {
+                    authenticationState.postValue(AuthenticationState.AUTHENTICATED)
 
-                            PrivatePreferences.setAccessToken(
-                                context,
-                                tokenResult.body()?.accessToken
-                            )
+                    PrivatePreferences.setAccessToken(
+                        context,
+                        tokenResult.body()?.accessToken
+                    )
 
-                            prefs.putLong(Constant.token_created, System.currentTimeMillis())
-                        } else authenticationState.value =
-                            AuthenticationState.INVALID_AUTHENTICATION
+                    prefs.putLong(Constant.token_created, System.currentTimeMillis())
+                } else authenticationState.value =
+                    AuthenticationState.INVALID_AUTHENTICATION
 
 
-                        val deviceProfileResponse =
-                            setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
+                val deviceProfileResponse =
+                    setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
 
-                        if (deviceProfileResponse.isSuccess) {
-                            Log.d(TAG, deviceProfileResponse.toString())
-                            Log.d(TAG, "device set success")
-                            authenticationState.value = AuthenticationState.AUTHENTICATED
+                if (deviceProfileResponse.isSuccess) {
+                    Log.d(TAG, deviceProfileResponse.toString())
+                    Log.d(TAG, "device set success")
+                    authenticationState.value = AuthenticationState.AUTHENTICATED
 
-                            //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
+                    //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
 
-                        } else {
-                            Log.e(TAG, "device set error: ${deviceProfileResponse.text}")
-                            authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-                        }
+                } else {
+                    Log.e(TAG, "device set error: ${deviceProfileResponse.text}")
+                    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                }
 
-                    }//time debug
-                    Log.d(TAG, "Device authorization completed in $time ms")
-                }//viewmodel scope
-            }//blocking
-        } catch (error: Exception) {
-            Log.e(TAG, error.localizedMessage ?: "error while setting deviceProfile")
-        }
+            }//time debug
+            Log.d(TAG, "Device authorization completed in $time ms")
+        }//viewmodel scope
     }
 
     /**
@@ -126,18 +128,19 @@ class LoginViewModel
      * see:   Manifest:      android:usesCleartextTraffic="true" because auth url is not https
      */
     private suspend fun getClientEndpoint(clientId: Int): ServerUrlResponse {
-       return app.getClientEndpoint(""+clientId)
+        return app.getClientEndpoint("" + clientId)
     }
 
-    private fun setNewClientEndpoint(baseUrl: String ){
+    private fun setNewClientEndpoint(baseUrl: String) {
         PrivatePreferences.setEndpoint(context, baseUrl)
     }
 
-    private fun setFcmToken() {
+    private suspend fun setFcmToken() = suspendCancellableCoroutine<String> { continuation ->
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     Log.w(TAG, "getInstanceId failed", task.exception)
+                    continuation.resumeWithException(Throwable("getInstanceId failed" + task.exception))
                     return@OnCompleteListener
                 }
                 // Get new Instance ID token
@@ -145,13 +148,13 @@ class LoginViewModel
                 task.result?.token?.let {
                     // Log and toast
                     PrivatePreferences.setFCMToken(context, it)
+                    continuation.resume(it)
                 }
-
             })
     }
 
     private suspend fun setDeviceProfile(commItem: CommItem): ResultOfAction {
-       return app.registerDevice(commItem)
+        return app.registerDevice(commItem)
     }
 
 

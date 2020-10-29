@@ -17,6 +17,10 @@ object Constant {
     const val tokenUpdateHours = 48
 
 
+    const val ERROR_REST_AUTH: Int = 401
+    const val ERROR_REST_TIMEOUT: Int = 408
+
+
     //preferences
     const val preferencesId = "com.abona_erp.driverapp.preferences"
     const val preferencesEndpoint = "endpoint"

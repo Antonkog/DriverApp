@@ -12,11 +12,7 @@ import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.databinding.LoginFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFragment : BaseFragment() {
@@ -64,6 +60,9 @@ class LoginFragment : BaseFragment() {
                 }
             })
 
+        loginViewModel.error.observe(viewLifecycleOwner, Observer { error ->
+            loginBinding.textError?.text = error
+        })
 
         loginBinding.buttonTest.setOnClickListener {
             loginBinding.editClientId.setText("" + Constant.testMandantId)

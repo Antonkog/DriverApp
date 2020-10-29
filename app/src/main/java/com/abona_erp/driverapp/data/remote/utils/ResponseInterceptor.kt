@@ -6,7 +6,6 @@ import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
-import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
@@ -17,20 +16,19 @@ class ResponseInterceptor(@ApplicationContext val context: Context) : Intercepto
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
+//        try {
         val response: Response = chain.proceed(request)
-        if (response.code == 401) makeAuth(response.message)
-//        when (response.peekBody(2048).string()) {//you cannot call response.body without closing stream
-//            "null", error("some error while parse response") ->//
-//                return chain.proceed(chain.request())
-//                    .newBuilder()
-//                    .code(Constant.ERROR_NULL_CODE)
-//                    .protocol(Protocol.HTTP_2)
-//                    .message("null body")
-//                    .addHeader("content-type", "application/json")
-//                    //  .body("null body".toResponseBody("application/json".toMediaTypeOrNull()))
-//                    .build()
-//        }
+        if (response.code == Constant.ERROR_REST_AUTH) makeAuth(response.message)
         return response
+//        } catch (e: SocketTimeoutException){
+//            return Response.Builder()
+//                .request(chain.request())
+//                .protocol(Protocol.HTTP_1_1)
+//                .code(Constant.ERROR_REST_TIMEOUT)
+//                .message("$TAG timeout exception")
+//                .body("client config invalid".toResponseBody(null))
+//                .build()
+//        }
     }
 
     private fun makeAuth(message: String) {

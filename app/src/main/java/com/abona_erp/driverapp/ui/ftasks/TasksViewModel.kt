@@ -19,6 +19,7 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -30,6 +31,7 @@ class TasksViewModel @ViewModelInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {  //taskRepo : ApiRepository,
     private val TAG = "TasksViewModel"
+
 
     val tasks: LiveData<List<TaskWithActivities>> = repository.observeTaskWithActivities()
     val activities: LiveData<List<ActivityEntity>> = getActivityObservable()
@@ -44,6 +46,12 @@ class TasksViewModel @ViewModelInject constructor(
 
 
     val error = MutableLiveData<String>()
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+        //  users.postValue(Resource.error("Something Went Wrong", null))
+        Log.e(TAG, exception.message)
+        error.postValue(exception.message)
+    }
 
     fun getActivityObservable(): LiveData<List<ActivityEntity>> {
         val taskId = prefs.getInt(Constant.currentVisibleTaskid, 0)
@@ -123,11 +131,11 @@ class TasksViewModel @ViewModelInject constructor(
                 && PrivatePreferences.getAccessToken(context) != null)
     }
 
-    fun refreshTasks() = viewModelScope.launch {
+    fun refreshTasks() = viewModelScope.launch(exceptionHandler) {
         repository.refreshTasks(DeviceUtils.getUniqueID(context))
     }
 
-    fun postActivityChange(activity: Activity) = viewModelScope.launch {
+    fun postActivityChange(activity: Activity) = viewModelScope.launch(exceptionHandler) {
         repository.postActivity(context, activity)
     }
 

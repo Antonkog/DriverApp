@@ -22,6 +22,7 @@ import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.io.*
 
@@ -39,6 +40,14 @@ class DocumentsViewModel @ViewModelInject constructor(
     //    val filteredDocuments : LiveData<List<DocumentEntity>> = repository.observeDocuments(prefs.getInt(Constant.currentVisibleTaskid,0))
     val error = MutableLiveData<Throwable>()
 
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+        //  users.postValue(Resource.error("Something Went Wrong", null))
+        Log.e(TAG, exception.message)
+        error.postValue(exception)
+    }
+
+
     init {
         refreshDocuments(
             prefs.getInt(Constant.mandantId, 0),
@@ -46,7 +55,7 @@ class DocumentsViewModel @ViewModelInject constructor(
             DeviceUtils.getUniqueID(context)
         )
         RxBus.listen(RxBusEvent.DocumentMessage::class.java).subscribe { event ->
-            viewModelScope.launch {
+            viewModelScope.launch(exceptionHandler) {
                 Log.e(TAG, " 123 got uri: ${event.uri} ")
                 uploadDocuments(DMSDocumentType.POD_CMR, event.uri)
             }
@@ -54,15 +63,14 @@ class DocumentsViewModel @ViewModelInject constructor(
     }
 
 
-    fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) = viewModelScope.launch {
-        viewModelScope.launch {
+    fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) =
+        viewModelScope.launch(exceptionHandler) {
             try {
                 repository.refreshDocuments(mandantId, orderNo, deviceId)
             } catch (e: Throwable) {
                 error.postValue(e)
             }
         }
-    }
 
     fun uploadDocuments(documentType: DMSDocumentType, uri: Uri) {
 //        val fileUri: Uri? = try {
