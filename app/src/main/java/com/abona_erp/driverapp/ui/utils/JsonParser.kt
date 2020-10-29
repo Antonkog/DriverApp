@@ -54,7 +54,7 @@ object JsonParser {
                         )
                     }
                     is JSONObject -> {
-                        Log.e(TAG, " JSONObject: $jobject")
+                        Log.d(TAG, " JSONObject: $jobject")
                         parseJson(
                             jobject, map, include
                         )
@@ -63,7 +63,7 @@ object JsonParser {
                         if (include == null || include.contains(key)) // here is check for include param
                         {
                             map[key] = jobject.toString()
-                            Log.e(TAG, " adding to map: $key $jobject")
+                            Log.d(TAG, " adding to map: $key $jobject")
                         }
                     }
                 }

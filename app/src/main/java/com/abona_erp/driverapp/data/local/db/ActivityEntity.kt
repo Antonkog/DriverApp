@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
+import androidx.room.ForeignKey.NO_ACTION
 import androidx.room.Index
 import com.abona_erp.driverapp.data.model.ActivityStatus
 
@@ -14,10 +15,11 @@ import com.abona_erp.driverapp.data.model.ActivityStatus
             entity = TaskEntity::class,
             parentColumns = ["taskId", "mandantId"],
             childColumns = ["taskpId", "mandantId"],
-            onDelete = CASCADE
+            onDelete = NO_ACTION
         )],
     primaryKeys = ["taskpId", "activityId", "mandantId"]
 )
+//            onDelete = CASCADE not using as we have custom update logic
 
 data class ActivityEntity(
     @ColumnInfo val activityId: Int,

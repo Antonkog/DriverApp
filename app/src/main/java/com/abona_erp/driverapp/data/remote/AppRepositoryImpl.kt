@@ -74,16 +74,16 @@ class AppRepositoryImpl @Inject constructor(
         getTasks(true, deviceId)
     }
 
-    override suspend fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) {
-        getDocuments(true, mandantId, orderNo, deviceId)
-    }
-
     override suspend fun insertOrReplaceTask(taskEntity: TaskEntity) {
         localDataSource.insertOrReplaceTask(taskEntity)
     }
 
-    override suspend fun insertActivity(activityEntity: ActivityEntity) {
-        localDataSource.insertActivity(activityEntity)
+    override suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
+        localDataSource.insertOrUpdateActivity(activityEntity)
+    }
+
+    override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity {
+        return localDataSource.getNextActivityIfExist(activityEntity)
     }
 
     override suspend fun updateActivity(activityEntity: ActivityEntity) :Int {
@@ -94,9 +94,10 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.insertDocument(documentEntity)
     }
 
-    override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity {
-       return localDataSource.getNextActivityIfExist(activityEntity)
+    override suspend fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) {
+        getDocuments(true, mandantId, orderNo, deviceId)
     }
+
 
     override suspend fun getTasks(
         forceUpdate: Boolean,
@@ -155,9 +156,7 @@ class AppRepositoryImpl @Inject constructor(
         val remoteTasks = api.getAllTasks(deviceId)
 
         if (remoteTasks.isSuccess && !remoteTasks.isException) {
-            localDataSource.deleteActivities()
-            localDataSource.deleteTasks()
-            localDataSource.insertFromCommItem(remoteTasks)
+            localDataSource.updateFromCommItem(remoteTasks)
         } else {
             throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text} ")
         }

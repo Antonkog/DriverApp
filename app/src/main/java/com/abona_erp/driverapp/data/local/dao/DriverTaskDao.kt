@@ -29,8 +29,8 @@ interface DriverTaskDao {
     @Query("DELETE FROM task_entity")
     suspend fun deleteTasks()
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(tasks: List<TaskEntity?>?)
+    @Insert
+    suspend fun insertTasks(tasks: List<TaskEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(tasks: TaskEntity)
@@ -44,7 +44,7 @@ interface DriverTaskDao {
     fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>>
 
     @Transaction
-    suspend fun insertFromCommItem(commonItem: CommResponseItem) {
+    suspend fun updateFromCommItem(commonItem: CommResponseItem) {
         if (commonItem.allTask.isNotEmpty()) {
             var strCustList = commonItem.allTask.map { it ->
                 TaskEntity(
@@ -64,14 +64,21 @@ interface DriverTaskDao {
                     it.mandantId,
                     it.kundenName,
                     it.notes,
-                    ConfirmationType.RECEIVED
+                    getStatus(it.taskId)
                 )//todo: check if make sense not to override confirmation type from server.
             }
-            Log.e("DriverTaskDao", "intsert taskEntity  size: " + strCustList.size)
-            insertOrReplace(strCustList)
+            Log.d("DriverTaskDao", "insert taskEntity  size: " + strCustList.size)
+            deleteTasks()
+            insertTasks(strCustList)
         }
     }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(activityEntity: ActivityEntity)
+    private suspend fun getStatus(taskid: Int): ConfirmationType {
+        getTasks().forEach { 
+            if(it.taskId == taskid){
+                return it.confirmationType
+            }
+        }
+        return ConfirmationType.RECEIVED
+    }
 }

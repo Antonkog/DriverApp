@@ -64,22 +64,18 @@ class LocalDataSource internal constructor(
         db.driverTaskDao().insertOrReplace(taskEntity)
     }
 
-    suspend fun insertActivity(activityEntity: ActivityEntity) {
-        db.driverTaskDao().insert(activityEntity)
+    suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
+        val old = db.driverActDao().getActivity(activityEntity.activityId, activityEntity.taskpId, activityEntity.mandantId)
+        if( old!= null){
+            db.driverActDao().update(activityEntity.copy(activityStatus =  old.activityStatus, confirmstatus = old.confirmstatus ))
+        }
+        else  db.driverActDao().insert(activityEntity)
     }
 
 
-    suspend fun deleteTasks() {
-        db.driverTaskDao().deleteTasks()
-    }
-
-    suspend fun deleteActivities() {
-        db.driverActDao().deleteActivities()
-    }
-
-    suspend fun insertFromCommItem(data: CommResponseItem) {
-        db.driverTaskDao().insertFromCommItem(data)
-        db.driverActDao().insertFromCommItem(data)
+    suspend fun updateFromCommItem(data: CommResponseItem) {
+        db.driverTaskDao().updateFromCommItem(data)
+        db.driverActDao().updateFromCommItem(data)
     }
 
     fun observeDocuments(): LiveData<List<DocumentEntity>> {

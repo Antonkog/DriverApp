@@ -37,17 +37,6 @@ interface AppRepository {
         inputStream: InputStream
     ): Single<UploadResult>
 
-    //API set activity change
-    suspend fun postActivity(context: Context, activity: Activity): ResultOfAction
-
-    suspend fun refreshTasks(deviceId: String) // call api to set db
-    suspend fun refreshDocuments(
-        mandantId: Int,
-        orderNo: Int,
-        deviceId: String
-    ) // call api to set db
-
-    //that is LiveData from db
     fun observeTasks(deviceId: String): LiveData<List<TaskEntity>>
     fun observeActivities(taskId: Int): LiveData<List<ActivityEntity>>
     fun observeAllActivities(): LiveData<List<ActivityEntity>>
@@ -64,9 +53,24 @@ interface AppRepository {
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWithStatus<List<TaskEntity>>
     //that responses not in db - safe place to keep credentials
 
+    //API set activity change
+    suspend fun postActivity(context: Context, activity: Activity): ResultOfAction
+
+    //rest API
+    suspend fun refreshTasks(deviceId: String) // call api to set db
+    suspend fun refreshDocuments(
+        mandantId: Int,
+        orderNo: Int,
+        deviceId: String
+    ) // call api to set db
+
+    //that is LiveData from dbxx
+    //fcm - one by one
     suspend fun insertOrReplaceTask(taskEntity: TaskEntity)
-    suspend fun insertActivity(activityEntity: ActivityEntity) // call api to set db
+    suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity)
+    //local change
     suspend fun updateActivity(activityEntity: ActivityEntity):Int // call api to set db
+    //new document
     suspend fun insertDocument(documentEntity: DocumentEntity)
     suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
 

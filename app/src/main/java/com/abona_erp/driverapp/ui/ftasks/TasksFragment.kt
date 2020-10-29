@@ -73,7 +73,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 
                     val task = adapter.data[firstVisiblePosition]
                     tasksViewModel.setVisibleTaskIDs(task)
-                    Log.e(
+                    Log.d(
                         TAG,
                         "visible task id = ${task.taskEntity.taskId} , first vis pos: $firstVisiblePosition , lastvispos =  $lastVisiblePosition"
                     )

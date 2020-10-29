@@ -17,8 +17,6 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
-import com.abona_erp.driverapp.ui.utils.DeviceUtils
-import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +83,7 @@ class MainViewModel @ViewModelInject constructor(
                         )
                     )
                     it.activities.forEach {
-                            fcmActivity -> repository.insertActivity(fcmActivity.toActivityEntity())
+                            fcmActivity -> repository.insertOrUpdateActivity(fcmActivity.toActivityEntity())
                     }
                 }
             }
