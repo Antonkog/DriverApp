@@ -98,6 +98,10 @@ class AppRepositoryImpl @Inject constructor(
         getDocuments(true, mandantId, orderNo, deviceId)
     }
 
+    override suspend fun updateTask(taskEntity: TaskEntity) : Int{
+        return localDataSource.updateTask(taskEntity)
+    }
+
 
     override suspend fun getTasks(
         forceUpdate: Boolean,
@@ -136,6 +140,10 @@ class AppRepositoryImpl @Inject constructor(
             }
         }
         return localDataSource.getDocuments()
+    }
+
+    override suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity {
+       return localDataSource.getParentTask(activityEntity)
     }
 
     suspend fun updateDocumentsFromRemoteDataSource(

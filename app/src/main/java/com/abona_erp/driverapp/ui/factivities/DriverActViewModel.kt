@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
+import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
@@ -47,18 +48,37 @@ class DriverActViewModel @ViewModelInject constructor(
                     context,
                     newAct.toActivity(DeviceUtils.getUniqueID(context))
                 )
-                if (result.isSuccess) {
+                if (result.isSuccess) { //todo: implement offline mode.
                     repository.updateActivity(newAct)
                     startNextActivity(newAct)
-
+                    updateParentTask(newAct)
                 } else {
                     error.postValue(result.text)
                 }
 
-
-
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: "Auth error")
+            }
+        }
+    }
+
+    private suspend fun updateParentTask(newAct: ActivityEntity) {
+        repository.getParentTask(newAct)?.let { task ->
+            val newStatus = when (task?.status) {
+                TaskStatus.PENDING -> TaskStatus.RUNNING
+                TaskStatus.RUNNING -> TaskStatus.FINISHED
+                TaskStatus.BREAK -> TaskStatus.FINISHED
+                TaskStatus.CMR -> TaskStatus.FINISHED
+                TaskStatus.FINISHED -> TaskStatus.FINISHED
+            }
+            if (task.status != newStatus) {
+                val result = repository.updateTask(task.copy(status = newStatus))
+                if (result == 0) {
+                    Log.e(TAG, "error while changing task status, task not updated")
+                }else{
+                    Log.d(TAG, "success while changing task status to $newStatus")
+
+                }
             }
         }
     }

@@ -23,6 +23,14 @@ interface DriverTaskDao {
     @Query("SELECT * FROM task_entity")
     suspend fun getTasks(): List<TaskEntity>
 
+
+
+    @Query("SELECT * FROM task_entity WHERE taskId =:taskpid AND mandantId =:mandantId")
+    suspend fun getParentTask(taskpid: Int,  mandantId: Int): TaskEntity
+
+    @Update
+    suspend fun update(taskEntity: TaskEntity): Int
+
     /**
      * Delete all tasks.
      */

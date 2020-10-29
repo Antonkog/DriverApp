@@ -50,6 +50,7 @@ interface AppRepository {
         deviceId: String
     ): ResultWithStatus<List<DocumentEntity>>
 
+    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWithStatus<List<TaskEntity>>
     //that responses not in db - safe place to keep credentials
 
@@ -66,6 +67,7 @@ interface AppRepository {
 
     //that is LiveData from dbxx
     //fcm - one by one
+    suspend fun updateTask(taskEntity: TaskEntity): Int
     suspend fun insertOrReplaceTask(taskEntity: TaskEntity)
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity)
     //local change
