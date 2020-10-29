@@ -15,10 +15,13 @@ import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
+import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateAbonaFormat
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class DriverActViewModel @ViewModelInject constructor(
@@ -88,11 +91,11 @@ class DriverActViewModel @ViewModelInject constructor(
     ) {
         val nextAct = repository.getNextActivityIfExist(entity)
         if (nextAct != null && nextAct.activityStatus == ActivityStatus.PENDING) {
-            val newNextAct = nextAct.copy(activityStatus = ActivityStatus.RUNNING)
+            val newNextAct = nextAct.copy(activityStatus = ActivityStatus.RUNNING, started = context.getCurrentDateAbonaFormat() )
            val result =  repository.updateActivity(newNextAct)
             Log.e(TAG, "update next activity $result")
 
-        }else{
+        } else{
 
             Log.e(TAG, "no next activity")
         }
@@ -101,14 +104,12 @@ class DriverActViewModel @ViewModelInject constructor(
     private fun setChangedData(entity: ActivityEntity): ActivityEntity {
         return when (entity.activityStatus) {
             ActivityStatus.PENDING -> {
-                entity.copy(activityStatus = ActivityStatus.RUNNING, started = Date().toString())
+                entity.copy(activityStatus = ActivityStatus.RUNNING, started = context.getCurrentDateAbonaFormat())
             }
             ActivityStatus.RUNNING -> {
-                entity.copy(activityStatus = ActivityStatus.FINISHED)
+                entity.copy(activityStatus = ActivityStatus.FINISHED, finished = context.getCurrentDateAbonaFormat())
             }
-            ActivityStatus.FINISHED -> {
-                entity
-            }
+            ActivityStatus.FINISHED -> entity
             ActivityStatus.ENUM_ERROR -> entity
         }
     }

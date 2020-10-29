@@ -282,18 +282,21 @@ object UtilModel {
     }
 
 
-    private fun getDeviceProfileItem(context: Context): DeviceProfileItem {
+    fun Context.getCurrentDateAbonaFormat(): String {
         val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaDateFormat, Locale.getDefault())
         dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-        val currentDate = dfUtc.format(Date())
+        return dfUtc.format(Date())
+    }
+
+    private fun getDeviceProfileItem(context: Context): DeviceProfileItem {
         val deviceProfileItem = DeviceProfileItem()
         deviceProfileItem.instanceId = PrivatePreferences.getFCMToken(context)
         deviceProfileItem.deviceId = DeviceUtils.getUniqueID(context)
         deviceProfileItem.model = Build.MODEL
         deviceProfileItem.manufacturer = Build.MANUFACTURER
 
-        deviceProfileItem.createdDate = currentDate
-        deviceProfileItem.updatedDate = currentDate
+        deviceProfileItem.createdDate = context.getCurrentDateAbonaFormat()
+        deviceProfileItem.updatedDate = context.getCurrentDateAbonaFormat()
         deviceProfileItem.languageCode = Locale.getDefault().toString().replace("_", "-")
         deviceProfileItem.versionCode = BuildConfig.VERSION_CODE
         deviceProfileItem.versionName = BuildConfig.VERSION_NAME
