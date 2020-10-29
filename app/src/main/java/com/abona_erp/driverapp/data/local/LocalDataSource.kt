@@ -122,10 +122,10 @@ class LocalDataSource internal constructor(
        return db.driverTaskDao().getParentTask(activityEntity.taskpId, activityEntity.mandantId)
     }
 
-    suspend fun cleanDatabase() {
-        db.driverTaskDao().deleteTasks()
-        db.driverActDao().deleteActivities()
-        db.documentsDao().deleteDocuments()
+    suspend fun cleanDatabase() { //todo: clean data, check what with foreign keys
+//        db.driverTaskDao().deleteTasks()
+//        db.driverActDao().deleteActivities()
+//        db.documentsDao().deleteDocuments()
     }
 
 }

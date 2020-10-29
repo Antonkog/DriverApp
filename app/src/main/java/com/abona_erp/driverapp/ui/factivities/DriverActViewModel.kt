@@ -93,7 +93,7 @@ class DriverActViewModel @ViewModelInject constructor(
         if (nextAct != null && nextAct.activityStatus == ActivityStatus.PENDING) {
             val newNextAct = nextAct.copy(activityStatus = ActivityStatus.RUNNING, started = context.getCurrentDateAbonaFormat() )
            val result =  repository.updateActivity(newNextAct)
-            Log.e(TAG, "update next activity $result")
+            Log.e(TAG, "update next activity to:\n $newNextAct  \n result:  $result")
 
         } else{
 
