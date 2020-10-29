@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.databinding.SettingsFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,7 +34,7 @@ class SettingsFragment : BaseFragment() {
         settingFragmentBinding.viewmodel = settingsViewModel
         settingFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
-
+        settingFragmentBinding.textSettings.text =  "DeviceId: " + DeviceUtils.getUniqueID(context)
         return settingFragmentBinding.root
     }
 }
