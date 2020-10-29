@@ -38,9 +38,7 @@ class MainViewModel @ViewModelInject constructor(
             }
         }
         RxBus.listen(RxBusEvent.AuthError::class.java).subscribe { event ->
-            viewModelScope.launch {
-                navigateToLogin.postValue(true)
-            }
+                doLogOutActions()
         }
     }
 
@@ -88,5 +86,13 @@ class MainViewModel @ViewModelInject constructor(
                 }
             }
         }
+    }
+
+    fun doLogOutActions() {
+        viewModelScope.launch {
+            resetAuthTime()
+            repository.cleanDatabase()
+        }
+        navigateToLogin.postValue(true)
     }
 }

@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         mainViewModel.navigateToLogin.observe(this, Observer {
-            mainViewModel.resetAuthTime()
             navController.navigate(R.id.nav_login)
         })
     }
@@ -100,8 +99,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_log_out -> {
-                mainViewModel.resetAuthTime()
-                navController.navigate(R.id.nav_login)
+                mainViewModel.doLogOutActions()
                 true
             }
             R.id.action_send_doc -> {

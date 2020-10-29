@@ -75,6 +75,7 @@ interface AppRepository {
     //new document
     suspend fun insertDocument(documentEntity: DocumentEntity)
     suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
+    suspend fun cleanDatabase()
 
 
 }

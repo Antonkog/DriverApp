@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.abona_erp.driverapp.data.local.db.ActionType
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.CommResponseItem

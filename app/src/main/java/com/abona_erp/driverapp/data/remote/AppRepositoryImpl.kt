@@ -86,6 +86,10 @@ class AppRepositoryImpl @Inject constructor(
         return localDataSource.getNextActivityIfExist(activityEntity)
     }
 
+    override suspend fun cleanDatabase() {
+        localDataSource.cleanDatabase()
+    }
+
     override suspend fun updateActivity(activityEntity: ActivityEntity) :Int {
        return localDataSource.updateActivity(activityEntity)
     }
