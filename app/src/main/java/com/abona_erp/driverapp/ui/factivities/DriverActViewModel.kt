@@ -15,7 +15,7 @@ import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
-import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateAbonaFormat
+import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateServerFormat
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -25,9 +25,7 @@ class DriverActViewModel @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
     private val repository: AppRepository,
     private val prefs: SharedPreferences
-) : BaseViewModel() {  //taskRepo : ApiRepository,
-
-    private val TAG = "DriverActViewModel"
+) : BaseViewModel() {
 
     val error = MutableLiveData<String>()
     val wrappedActivities = MutableLiveData<List<ActivityWrapper>>()
@@ -57,7 +55,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 }
 
             } catch (e: Exception) {
-                Log.e(TAG, e.message ?: "Auth error")
+                Log.e(Companion.TAG, e.message ?: "Auth error")
             }
         }
     }
@@ -74,9 +72,9 @@ class DriverActViewModel @ViewModelInject constructor(
             if (task.status != newStatus) {
                 val result = repository.updateTask(task.copy(status = newStatus))
                 if (result == 0) {
-                    Log.e(TAG, "error while changing task status, task not updated")
+                    Log.e(Companion.TAG, "error while changing task status, task not updated")
                 } else {
-                    Log.d(TAG, "success while changing task status to $newStatus")
+                    Log.d(Companion.TAG, "success while changing task status to $newStatus")
 
                 }
             }
@@ -90,14 +88,14 @@ class DriverActViewModel @ViewModelInject constructor(
         if (nextAct != null && nextAct.activityStatus == ActivityStatus.PENDING) {
             val newNextAct = nextAct.copy(
                 activityStatus = ActivityStatus.RUNNING,
-                started = context.getCurrentDateAbonaFormat()
+                started = getCurrentDateServerFormat()
             )
             val result = repository.updateActivity(newNextAct)
-            Log.e(TAG, "update next activity to:\n $newNextAct  \n result:  $result")
+            Log.e(Companion.TAG, "update next activity to:\n $newNextAct  \n result:  $result")
 
         } else {
 
-            Log.e(TAG, "no next activity")
+            Log.e(Companion.TAG, "no next activity")
         }
     }
 
@@ -106,14 +104,14 @@ class DriverActViewModel @ViewModelInject constructor(
             ActivityStatus.PENDING -> {
                 entity.copy(
                     activityStatus = ActivityStatus.RUNNING,
-                    started = context.getCurrentDateAbonaFormat()
+                    started = getCurrentDateServerFormat()
                 )
             }
             ActivityStatus.RUNNING -> {
                 entity.copy(
                     activityStatus = ActivityStatus.FINISHED,
-                    started = context.getCurrentDateAbonaFormat(),
-                    finished = context.getCurrentDateAbonaFormat()
+                    started = getCurrentDateServerFormat(),
+                    finished = getCurrentDateServerFormat()
                 )
             }
             ActivityStatus.FINISHED -> entity
@@ -141,5 +139,9 @@ class DriverActViewModel @ViewModelInject constructor(
         }
 
         wrappedActivities.postValue(wrapped)
+    }
+
+    companion object {
+        const val TAG = "DriverActViewModel"
     }
 }

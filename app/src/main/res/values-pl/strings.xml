@@ -1,114 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingQuantity">
-  <string name="action_cancel">Anuluj</string>
-  <string name="action_ok">OK</string>
-  <string name="action_save">Zapisz</string>
-  <string name="action_upload">Przekazać plik</string>
-  <string name="action_delete">Usunąć</string>
-  <string name="action_warning">Ostrzeżenie</string>
-  <string name="action_start">Początek</string>
-  <string name="action_open">Otwórz</string>
-  <string name="action_download">Ściągnij</string>
-  <string name="action_exit">Wyjście</string>
-  <string name="action_quit">Porzucić</string>
-  <string name="action_upload_photos">Załadować zdjęcia?</string>
-  <string name="action_upload_photos_message">Czy chcesz załadować zdjęcia?</string>
-  <string name="action_uploading_photos">Przesyłanie zdjęć&#8230;</string>
-  <string name="action_delete_photo">Usunąć zdjęcie?</string>
-  <string name="action_delete_photo_message">Czy jesteś pewien, że chcesz usunąć to zdjęcie?</string>
-  <string name="action_photo_no_longer_exists">Zdjęcie już nie istnieje!</string>
-  <string name="action_photo_damaged">Zdjęcie jest uszkodzone lub już nie istnieje!</string>
-  <string name="action_start_order">Rozpocząć zadanie</string>
-  <string name="action_start_task_msg">Czy chcesz rozpocząć zadanie?</string>
-  <string name="menu_protocol">Protokół</string>
-  <string name="menu_settings">Ustawienia</string>
-  <string name="menu_about">O programie</string>
-  <string name="action_lets_start">Zaczynajmy</string>
-  <string name="action_security_code">Kod bezpieczeństwa</string>
-  <string name="action_security_code_message">Wpisz kod bezpieczeństwa</string>
-  <string name="dialog_login_error">Komunikat o błędzie</string>
+    <string name="action_warning">Ostrzeżenie</string>
+    <string name="dialog_login_error">Komunikat o błędzie</string>
   <string name="action_warning_notice">Ostrzeżenie</string>
   <string name="client_id_is_not_active">Identyfikator klienta nie jest aktywny!</string>
-  <string name="no_internet">Brak internetu!</string>
-  <string name="action_next">Następny krok</string>
-  <string name="action_finished">Skończone</string>
-  <string name="action_start_activity">Start</string>
-  <string name="action_close">Blisko</string>
-  <string name="action_previous_task_message">Najpierw musisz wykonać poprzednie zadanie!</string>
-  <string name="action_update">Aktualizacja</string>
+    <string name="action_update">Aktualizacja</string>
   <string name="action_update_message">Aktualizacja zakończona!</string>
-  <string name="action_exception_on_rest_api">Błąd w interfejsie API REST!</string>
-  <string name="action_later">Później</string>
 
-  <string name="next">Kolejny</string>
-  <string name="start">Początek</string>
-
-  <string name="document_type">Typ dokumentu</string>
-  <string name="document_type_na">Nie (N/A)</string>
-  <string name="document_type_pod">Dowód dostawy (POD)</string>
-  <string name="document_type_cmr">CMR</string>
-  <string name="document_type_pn">Uwaga na paletach (PN)</string>
-  <string name="document_type_sc">Certyfikat bezpieczeństwa (SC)</string>
-  <string name="document_type_si">Obraz przesyłki (SI)</string>
-  <string name="document_type_dsi">Obraz uszkodzonej przesyłki (DSI)</string>
-  <string name="document_type_dvi">Obraz uszkodzonego pojazdu (DVI)</string>
-
-  <string name="editing_camera">Kamera</string>
-  <string name="editing_category">Kategoria</string>
-  <string name="editing_tools">Przybory</string>
-  <string name="editing_brush">Szczotka</string>
-  <string name="editing_text">Tekst</string>
-  <string name="editing_eraser">Wymazać</string>
-  <string name="editing_undo">Cofnij</string>
-  <string name="editing_redo">Przerobić</string>
-
-  <string name="yes">Tak</string>
-  <string name="no">Nie</string>
-  <string name="search">Szukaj</string>
-  <string name="map">Mapa</string>
-  <string name="camera">Kamera</string>
-  <string name="document">Dokument</string>
-  <string name="contact">Kontakt</string>
-  <string name="contacts_available">Dostępne kontakty</string>
-  <string name="notes">Notatki</string>
-  <plurals name="numberOfNotesAvailable">
-    <item quantity="one">%d komentarz dostępny</item>
-    <item quantity="other">%d komentarzy dostępnych</item>
-  </plurals>
-    <string name="number_of_paletts">Liczba palet</string>
-  <string name="client">Klient</string>
-  <string name="geo_data">Geodata</string>
-  <string name="name">Imię</string>
-  <string name="loading_order">Ładowanie zamówienia</string>
-  <string name="contact_type_persecutor">Prześladowca</string>
-  <string name="contact_type_second_persecutor">2. Prześladowca</string>
-  <string name="contact_type_customer">Odbiorca</string>
-  <string name="dangerous_goods">Niebezpieczne towary</string>
-  <string name="palette_exchange">Wymiana palet</string>
-
-  <string name="registration_number">Brak pojazdu</string>
-  <string name="task_status">Status zadania</string>
-  <string name="task_finish">Zakończ zadanie</string>
-  <string name="due_in">Z powodu</string>
-  <string name="order_no">№ zamówienia</string>
-  <string name="task_id">№ zadania</string>
-  <string name="task">Zadanie</string>
-  <string name="activity_status">Status aktywności</string>
-  <string name="task_total_status">Całkowity status zadania</string>
-  <string name="customer">Klient</string>
-  <string name="customer_no">Numer klienta</string>
-  <string name="reference_1">Referencja 1</string>
-  <string name="reference_2">Referencja 2</string>
-  <string name="description">Opis</string>
-  <string name="address">Adresa</string>
-
-  <string name="new_document">Nowy dokument!</string>
-  <string name="new_document_message">Otrzymałeś nowy dokument.</string>
-  <string name="exit_message">Czy chcesz wyjść z aplikacji ABONA Driver?</string>
-  <string name="order_documents">Obrazy do zamówienia</string>
-  <string name="order_documents_message">Najpierw zacznij pracę!</string>
-
-  <string name="action_type_pick_up">Ładowanie stelle</string>
+    <string name="action_type_pick_up">Ładowanie stelle</string>
   <string name="action_type_drop_off">Rozładunek</string>
   <string name="action_type_tractor_swap">Wymiana ciągnika</string>
   <string name="action_type_general">Generał</string>
@@ -116,82 +15,21 @@
   <string name="action_type_unknown">Nieznany</string>
 
   <string name="need_permissions_title">Potrzebujesz uprawnień!</string>
-  <string name="permission_message_settings">Ta aplikacja wymaga pozwolenia na korzystanie z tej funkcji. Możesz przyznać je w ustawieniach aplikacji.</string>
 
-  <string name="current_location">Aktualna lokalizacja</string>
-  <string name="destination_location">Miejsce docelowe</string>
-
-  <string name="more">Więcej</string>
-  <string name="less">Mniej</string>
-
-  <string name="pending">Otwarte</string>
+    <string name="pending">Otwarte</string>
   <string name="running">W toku\u0020</string>
-  <string name="cmr">CMR\u0020</string>
-  <string name="completed">Gotowy\u0020</string>
+    <string name="completed">Gotowy\u0020</string>
 
-  <string name="label_new">Nowy</string>
-  <string name="label_updated">Zaktualizowano</string>
-  <string name="label_deleted">Usunięte</string>
-  <string name="label_changed">Zmieniono</string>
-  <string name="label_done">Gotowy</string>
-
-  <string name="preference_language">Język</string>
-    <string name="order">Zamówienie</string>
-  <string name="action">Akcja</string>
-  <string name="timestamp">Czas</string>
     <string name="airplane_warning">Funkcja aplikacji ABONA Driver jest ograniczona w trybie samolotowym</string>
 
-  <string name = "alarm_title"> Sprawdź zadanie </string>
-  <string name = "alarm_text"> Twój czas zadania dobiega końca </string>
 
-  <string name ="alarm_check_text">Powiadomię Cię przed zakończeniem zadania</string>
-
-  <string name ="alarm_check_failed">"Alarm nie został ustawiony"</string>
-  <string name ="alarm_check_failed_reason">"Powód: zadanie zostało zmienione"</string>
-  <string name="alarm_check_notime_reason">"Powód: upłynął czas zadania"</string>
-    <string name="preference_notification">Powiadomienie</string>
-  <string name="preference_notification_show">Minuty przed zakończeniem zadania</string>
-  <string name="delay_started">"Zaczęła się: "</string>
-  <string name="delay_finished">Skończone:</string>
-  <string name="delay_delay">Opóźnienie:</string>
-    <string name="task_information">Informacje o zadaniu</string>
-
-  <string name="device_id">Identyfikator urzadzenia</string>
-  <string name="model">Model</string>
-  <string name="manufacturer">Producent</string>
-  <string name="created_at">Utworzono w</string>
-  <string name="protocol">Protokół</string>
-  <string name="device_reset">Reset urządzenia</string>
-
-  <string name="menu_history">Historia</string>
-  <string name="log_activity_started">:działalność rozpoczęta</string>
-  <string name="log_activity_finished">:działalność zakończona</string>
-
-  <string name="log_confirm_open">Kierowca przeczytał zadanie</string>
-  <string name="log_confirm_send">Przeczytane zadanie: wysłane na serwer</string>
-  <string name="log_confirm_error">Błąd podczas wysyłania potwierdzenia</string>
-
-  <string name="log_title_activity">Zmiana aktywności</string>
-
-  <string name="log_activity_status_change">Zmiana aktywności: wysłane na serwer</string>
-  <string name="log_activity_sent_error">Błąd podczas wysyłania zmiany aktywności</string>
-
-  <string name="log_task_updated_fcm">Zadanie zostało zaktualizowane przez FCM</string>
-  <string name="log_document_fcm">Dokument od Abony za pośrednictwem FCM</string>
-  <string name="log_vehicle_fcm">Pojazd z Abony przez FCM</string>
-
-  <string name="local_time">(Czas lokalny)</string>
-
-
-
-  <string name="action_log_out">Wyloguj się</string>
+    <string name="action_log_out">Wyloguj się</string>
   <string name="action_send_doc">Wyślij dokument</string>
 
   <string name="txt_due_in">Termin za</string>
   <string name="txt_finish">Zakończ</string>
-  <string name="txt_address">Adres</string>
 
-  <string name="txt_order">Zamów</string>
+    <string name="txt_order">Zamów</string>
   <string name="button_to_activities">Działania</string>
 
 
@@ -200,7 +38,6 @@
   <string name="activity_finish">Zakończ</string>
 
 
-  <string name="need_permissions">Potrzebujesz uprawnień!</string>
-  <string name="error_from_server">Błąd podczas analizowania danych z serwera</string>
+    <string name="error_from_server">Błąd podczas analizowania danych z serwera</string>
 
 </resources>

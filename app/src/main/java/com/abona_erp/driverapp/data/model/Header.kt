@@ -1,11 +1,8 @@
 package com.abona_erp.driverapp.data.model
 
 
-import com.abona_erp.driverapp.data.Constant
+import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.gson.annotations.SerializedName
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 class Header(
     @SerializedName("DataType")
@@ -22,11 +19,6 @@ class Header(
         var dataType: Int,
         var deviceId: String
     ) {
-        fun build() = Header(dataType, getTimeStamp(), deviceId)
-        private fun getTimeStamp(): String {
-            val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaDateFormat, Locale.getDefault())
-            dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-            return dfUtc.format(Date())
-        }
+        fun build() = Header(dataType, UtilModel.getCurrentDateServerFormat(), deviceId)
     }
 }

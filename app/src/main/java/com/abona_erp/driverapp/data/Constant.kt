@@ -12,7 +12,8 @@ object Constant {
     const val testMandantId: Int = 3
     const val defaultApiUrl = "https://213.144.11.162:5000"
     const val baseAuthUrl = "http://endpoint.abona-erp.com"
-    const val abonaDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    const val abonaCommunicationDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    const val abonaUIDateFormat = "yyyy-MM-dd'T'HH:mm"
     const val abonaTimeZone = "UTC"
     const val tokenUpdateHours = 48
 

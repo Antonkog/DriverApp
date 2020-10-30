@@ -1,173 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- MULTILANG -->
-  <string name="action_cancel">Отменить</string>
-  <string name="action_ok">ОК</string>
-  <string name="action_save">Сохранить</string>
-  <string name="action_upload">Загрузить</string>
-  <string name="action_delete">Удалить</string>
-  <string name="action_warning">Предупреждение</string>
-  <string name="action_start">Начать</string>
-  <string name="action_open">Открыть</string>
-  <string name="action_download">Скачать</string>
-  <string name="action_exit">Выход</string>
-  <string name="action_quit">Выйти</string>
-  <string name="action_upload_photos">Загрузить фотографии?</string>
-  <string name="action_upload_photos_message">Хотите загрузить фотографии?</string>
-  <string name="action_uploading_photos">Загрузка фотографий…</string>
-  <string name="action_delete_photo">Удалить фотографию?</string>
-  <string name="action_delete_photo_message">Вы уверены, что хотите удалить это фото?</string>
-  <string name="action_photo_no_longer_exists">Фото больше не существует!</string>
-  <string name="action_photo_damaged">Фото повреждено или больше не существует!</string>
-  <string name="action_start_order">Начать задание</string>
-  <string name="action_start_task_msg">Вы хотите начать задание?</string>
-  <string name="menu_protocol">Протокол</string>
-  <string name="menu_settings">Параметры</string>
-  <string name="menu_about">О программе</string>
-  <string name="action_lets_start">Давайте начнем</string>
-  <string name="action_security_code">Код безопасности</string>
-  <string name="action_security_code_message">Введите код безопасности</string>
-  <string name="action_warning_notice">Предупреждение</string>
+    <string name="action_warning">Предупреждение</string>
+    <string name="action_warning_notice">Предупреждение</string>
   <string name="client_id_is_not_active">Идентификатор клиента не активен!</string>
-  <string name="no_internet">Нет  интернет соединения!</string>
-  <string name="action_next">Следующий шаг</string>
-  <string name="action_finished">Выполнено</string>
-  <string name="action_start_activity">Начать</string>
-  <string name="action_close">Завершить</string>
-  <string name="action_previous_task_message">Сперва Вам следует выполнить предыдущее задание!</string>
-  <string name="action_update">Обновить</string>
+    <string name="action_update">Обновить</string>
   <string name="action_update_message">Обновление завершено!</string>
-  <string name="action_exception_on_rest_api">Ошибка соединения с сервером!</string>
-  <string name="action_later">Позже</string>
-  <string name="next">Далее</string>
-  <string name="start">Начало</string>
-  <string name="document_type">Тип документа</string>
-  <string name="document_type_na">Нет (N/A)</string>
-  <string name="document_type_pod">Доказательство доставки (POD)</string>
-  <string name="document_type_cmr">CMR</string>
-  <string name="document_type_pn">Поддоны Примечание (PN)</string>
-  <string name="document_type_sc">Сертификат безопасности (SC)</string>
-  <string name="document_type_si">Изображение отгрузки (SI)</string>
-  <string name="document_type_dsi">Изображение поврежденного груза (DSI)</string>
-  <string name="document_type_dvi">Изображение поврежденного автомобиля (DVI)</string>
-  <string name="editing_camera">Камера</string>
-  <string name="editing_category">Категория</string>
-  <string name="editing_tools">Инструменты</string>
-  <string name="editing_brush">Щетка</string>
-  <string name="editing_text">Текст</string>
-  <string name="editing_eraser">Ластик</string>
-  <string name="editing_undo">Назад</string>
-  <string name="editing_redo">Вперёд</string>
-  <string name="yes">Да</string>
-  <string name="no">Нет</string>
-  <string name="search">Поиск</string>
-  <string name="map">Карта</string>
-  <string name="camera">Камера</string>
-  <string name="document">Документ</string>
-  <string name="contact">Контакт</string>
-  <string name="contacts_available">Контакты доступны</string>
-  <string name="notes">Примечания</string>
-  <plurals name="numberOfNotesAvailable" tools:ignore="MissingQuantity">
-    <item quantity="one">%d комментарий доступен</item>
-    <item quantity="other">%d комментариев доступно</item>
-  </plurals>
-  <string name="number_of_paletts">Количество паллет</string>
-  <string name="client">Организация</string>
-  <string name="geo_data">Геоданные</string>
-  <string name="name">Имя</string>
-  <string name="loading_order">Порядок загрузки </string>
-  <string name="contact_type_persecutor">Диспетчер</string>
-  <string name="contact_type_second_persecutor">2. Диспетчер</string>
-  <string name="contact_type_customer">Покупатель</string>
-  <string name="dangerous_goods">Опасные грузы</string>
-  <string name="palette_exchange">Обмен паллет</string>
-  <string name="registration_number">НЕТ МАШИНЫ</string>
-  <string name="task_status">Статус задания</string>
-  <string name="task_finish">Завершить задание</string>
-  <string name="due_in">Осталось</string>
-  <string name="order_no">№ Заказа</string>
-  <string name="task_id">№ Задачи</string>
-  <string name="task">Задача</string>
-  <string name="activity_status">Статус активности</string>
-  <string name="task_total_status">Общий статус задания</string>
-  <string name="customer">Клиент</string>
-  <string name="customer_no">№ клиента</string>
-  <string name="reference_1">№ заказа  1</string>
-  <string name="reference_2">№ заказа 2</string>
-  <string name="description">Описание</string>
-  <string name="address">Адрес</string>
-  <string name="new_document">Новый документ!</string>
-  <string name="new_document_message">Вы получили новый документ.</string>
-  <string name="exit_message">Вы хотите выйти из приложения Driver app?</string>
-  <string name="order_documents">Изображение для заказа</string>
-  <string name="order_documents_message">Сначала начните работу!</string>
-  <string name="action_type_pick_up">Загрузка</string>
+    <string name="action_type_pick_up">Загрузка</string>
   <string name="action_type_drop_off">Разгрузка</string>
   <string name="action_type_tractor_swap">Перецепка</string>
   <string name="action_type_general">Общий</string>
   <string name="action_type_delay">Задержка</string>
   <string name="action_type_unknown">Неизвестно</string>
   <string name="need_permissions_title">Нужны разрешения!</string>
-  <string name="permission_message_settings">Это приложение требует разрешения для использования этой функции. Вы можете предоставить их в настройках приложения.</string>
-  <string name="current_location">Текущее местоположение</string>
-  <string name="destination_location">Место назначения</string>
-  <string name="pending">В ожидании</string>
+    <string name="pending">В ожидании</string>
   <string name="running">В работе</string>
-  <string name="cmr">CMR Документ</string>
-  <string name="completed">Завершено</string>
-  <string name="label_new">Новый</string>
-  <string name="label_updated">Обновлен</string>
-  <string name="label_deleted">Исключен</string>
-  <string name="label_changed">Изменен</string>
-  <string name="label_done">Выполнено</string>
-  <string name="preference_language">Язык</string>
-    <string name="more">Больше</string>
-  <string name="less">Меньше</string>
-  <!-- MULTILANG -->
+    <string name="completed">Завершено</string>
+    <!-- MULTILANG -->
 
 
-  <string name="order">"Заказ"</string>
-  <string name="action">Действие</string>
-  <string name="timestamp">Время</string>
-  <string name="airplane_warning">Функция приложения ABONA Driver ограничена в режиме полета</string>
-  <string name="alarm_title">Пожалуйста, проверьте задание</string>
-  <string name="alarm_text">Время задания на исходе</string>
-  <string name="alarm_check_text">Я уведомлю вас перед окончанием времени на задание</string>
-  <string name="alarm_check_failed">Будильник не был установлен</string>
-  <string name="alarm_check_failed_reason">Причина: задание изменилось</string>
-  <string name="alarm_check_notime_reason">Причина: время задания окончено</string>
-  <string name="preference_notification">Уведомление</string>
-  <string name="preference_notification_show">Минут перед окончанием задания</string>
-  <string name="delay_started">Начало:</string>
-  <string name="delay_finished">Окончание:</string>
-  <string name="delay_delay">Задержка:</string>
-  <string name="task_information">Информация о задании</string>
+    <string name="airplane_warning">Функция приложения ABONA Driver ограничена в режиме полета</string>
 
-  <string name="device_id">Идентификатор устройства</string>
-  <string name="model">Модель</string>
-  <string name="manufacturer">Производитель</string>
-  <string name="created_at">Создано на</string>
-  <string name="protocol">Протокол</string>
-  <string name="device_reset">Сброс устройства</string>
-  <string name="local_time">(Местное время)</string>
-
-  <string name="menu_history">История</string>
-  <string name="log_activity_started">:задание начато</string>
-  <string name="log_activity_finished">:задание окончено</string>
-
-  <string name="log_confirm_open">Водитель прочитал задание</string>
-  <string name="log_confirm_send">Задание прочитано: отправлено на сервер</string>
-  <string name="log_confirm_error">Ошибка при отправке подтверждения</string>
-
-  <string name="log_title_activity">Изменение активности</string>
-
-  <string name="log_activity_status_change">Изменение активности: отправлено на сервер</string>
-  <string name="log_activity_sent_error">Ошибка при отправке изменения активности</string>
-
-  <string name="log_task_updated_fcm">Задача обновлена через FCM</string>
-  <string name="log_document_fcm">Документ от Абоны через FCM</string>
-  <string name="log_vehicle_fcm">Автомобиль от Абоны через FCM</string>
-  <string name="dialog_login_error">Ошибка во время авторизации</string>
+    <string name="dialog_login_error">Ошибка во время авторизации</string>
 
 
 
@@ -177,9 +31,8 @@
 
   <string name="txt_due_in">Активно</string>
   <string name="txt_finish">Окончание</string>
-  <string name="txt_address">Адрес</string>
 
-  <string name="txt_order">Заказ</string>
+    <string name="txt_order">Заказ</string>
   <string name="txt_order_placeholder" translatable = "false">2020/138/45 *</string>
   <string name="button_to_activities">Задания</string>
 
@@ -189,7 +42,6 @@
   <string name="activity_finish">Готово</string>
 
 
-  <string name="need_permissions">Требуются разрешения!</string>
-  <string name="error_from_server">Ошибка при анализе данных с сервера</string>
+    <string name="error_from_server">Ошибка при анализе данных с сервера</string>
 
 </resources>

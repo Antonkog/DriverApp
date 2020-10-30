@@ -1,10 +1,10 @@
 package com.abona_erp.driverapp.ui.utils
 
 import android.content.Context
-import android.content.Entity
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.Log
 import androidx.core.content.res.ResourcesCompat
 import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.R
@@ -16,11 +16,14 @@ import com.abona_erp.driverapp.data.local.db.DelayReasonEntity
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.model.*
 import java.text.DateFormat
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 
 object UtilModel {
 
+    private const val TAG = "UtilModel"
 
 //    fun mapActivityToSend(activity: ActivityEntity): Activity {
 //        return Activity(activity.activityId, activity.activityId, null, activity.)
@@ -151,11 +154,11 @@ object UtilModel {
         )
     }
 
-    fun Int.toDangerousGoodsClass(): DangerousGoodsClass{
+    fun Int.toDangerousGoodsClass(): DangerousGoodsClass {
         return DangerousGoodsClass.getActionType(this)
     }
 
-    fun DangerousGoodsClass.getImageResource(mResources: Resources) : Drawable? {
+    fun DangerousGoodsClass.getImageResource(mResources: Resources): Drawable? {
         return when (this) {
             DangerousGoodsClass.CLASS_1_EXPLOSIVES -> ResourcesCompat.getDrawable(
                 mResources,
@@ -282,10 +285,89 @@ object UtilModel {
     }
 
 
-    fun Context.getCurrentDateAbonaFormat(): String {
-        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaDateFormat, Locale.getDefault())
+    private fun serverDateFormat(): DateFormat {
+        val dfUtc: DateFormat =
+            SimpleDateFormat(Constant.abonaCommunicationDateFormat, Locale.getDefault())
         dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-        return dfUtc.format(Date())
+        return dfUtc
+    }
+
+    private fun uiDateFormat(): DateFormat {
+        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaUIDateFormat, Locale.getDefault())
+        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+        return dfUtc
+    }
+
+    private fun formatLongDateTime(date: Date): String {
+        return serverDateFormat().format(date)
+    }
+
+    fun serverTimeShortener(date: String): String {
+        return try {
+            uiDateFormat().format(serverDateFormat().parse(date))
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            return date
+        }
+    }
+
+    fun getCurrentDateServerFormat(): String {
+        return formatLongDateTime(Date())
+    }
+
+
+    /**
+     * This method will try to find order num from activity order string
+     * @param someString that string should contain value that is less [java.lang.Integer.MAX_VALUE])
+     * @return 0 or some number 8998ffff7788sfsf will return 89987788
+     * @author Anton Kogan
+     */
+    fun parseInt(someString: String?): Int {
+        var result = 0
+        val partsBuffer = StringBuilder()
+        val p = Pattern.compile("\\d+")
+        val m = p.matcher(someString)
+        while (m.find()) {
+            partsBuffer.append(m.group())
+        }
+        try {
+            result = partsBuffer.toString().toInt()
+        } catch (e: NumberFormatException) {
+            Log.e(
+                TAG,
+                " wrong input in getInt(String someString)"
+            )
+        }
+        return result
+    }
+
+
+    /**
+     *
+     * this is for providing ui with dividers from order number that is date with addition
+     * @param orderNo - Long value
+     * @return "-" if int is zero
+     */
+    fun parseOrderNo(orderNo: Long): String? {
+        return if (orderNo > 0) {
+            try {
+                val numString = orderNo.toString().toCharArray()
+                val parsedNum = java.lang.StringBuilder()
+                for (counter in numString.indices) {
+                    if (counter == 4 || counter == 6) {
+                        parsedNum.append("/")
+                    }
+                    parsedNum.append(numString[counter])
+                }
+                parsedNum.toString()
+            } catch (e: Exception) {
+                Log.e(
+                    TAG,
+                    " parsing exception : string from server based on :$orderNo"
+                )
+                "-"
+            }
+        } else "-"
     }
 
     private fun getDeviceProfileItem(context: Context): DeviceProfileItem {
@@ -295,13 +377,11 @@ object UtilModel {
         deviceProfileItem.model = Build.MODEL
         deviceProfileItem.manufacturer = Build.MANUFACTURER
 
-        deviceProfileItem.createdDate = context.getCurrentDateAbonaFormat()
-        deviceProfileItem.updatedDate = context.getCurrentDateAbonaFormat()
+        deviceProfileItem.createdDate = getCurrentDateServerFormat()
+        deviceProfileItem.updatedDate = getCurrentDateServerFormat()
         deviceProfileItem.languageCode = Locale.getDefault().toString().replace("_", "-")
         deviceProfileItem.versionCode = BuildConfig.VERSION_CODE
         deviceProfileItem.versionName = BuildConfig.VERSION_NAME
         return deviceProfileItem
     }
-
-
 }

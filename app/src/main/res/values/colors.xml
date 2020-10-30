@@ -15,12 +15,4 @@
     <color name="confirm_green">#11B11B</color>
 
 
-
-    <color name="clrPickUp">#2980B9</color>
-    <color name="clrDropOff">#10ac84</color>
-    <color name="clrGeneral">#1F1C2C</color>
-    <color name="clrTractorSwap">#FFBF00</color>
-    <color name="clrDelay">#8e44ad</color>
-    <color name="clrUnknown">#1F1C2C</color>
-
 </resources>
