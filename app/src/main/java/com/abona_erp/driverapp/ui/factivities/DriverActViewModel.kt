@@ -7,6 +7,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
@@ -55,7 +56,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 }
 
             } catch (e: Exception) {
-                Log.e(Companion.TAG, e.message ?: "Auth error")
+                Log.e(TAG, e.message ?: "Auth error")
             }
         }
     }
@@ -72,10 +73,9 @@ class DriverActViewModel @ViewModelInject constructor(
             if (task.status != newStatus) {
                 val result = repository.updateTask(task.copy(status = newStatus))
                 if (result == 0) {
-                    Log.e(Companion.TAG, "error while changing task status, task not updated")
+                    Log.e(TAG, context.getString(R.string.error_task_update))
                 } else {
-                    Log.d(Companion.TAG, "success while changing task status to $newStatus")
-
+                    Log.d(TAG, context.getString(R.string.success_task_update) + newStatus)
                 }
             }
         }

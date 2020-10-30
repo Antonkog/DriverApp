@@ -61,63 +61,52 @@
     <string name="client_id_hint" translatable="false">Client ID</string>
     <string name="set_test_data" translatable="false">Set test data</string>
 
-
-<!--    attributes-->
-    <string name="name_test" translatable="false">manyvehicles@abona-erp.com</string>
-    <string name="password_test" translatable="false">1234qwerQWER,.-</string>
-    <string name="fcmChannelId" translatable="false">FCM Channel</string>
-
-
     <!--new from base app start-->
     <string name="dialog_server_error_title" translatable="false">Error:</string>
 
-    <!-- This String is used in the User Agent -->
 
-    <!-- Error strings -->
-
-    <!-- Transition type strings -->
-
-
-    <!-- MULTILANG -->
+<!--    dialogs-->
     <string name="action_warning">Warning</string>
-
     <string name="action_warning_notice">Warning notice</string>
-        <string name="client_id_is_not_active">Client-ID is not active!</string>
+    <string name="client_id_is_not_active">Client-ID is not active!</string>
     <string name="action_update">Update</string>
-        <string name="action_update_message">Update completed!</string>
-
-
+    <string name="action_update_message">Update completed!</string>
     <string name="need_permissions_title">Need Permissions!</string>
-        <string name="need_permissions_message" translatable="false">Please check phone settings.</string>
-
-    <string name="dialog_not_found_title" translatable="false">Not Found</string>
-        <string name="dialog_not_found_message" translatable="false">Task existiert nicht mehr!</string>
-
-        <string name="dialog_register" translatable="false">Device registration</string>
-
     <string name="dialog_login_error">Login error, while getting response from server</string>
-
-
     <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
 
+
+    <!-- MULTILANG -->
+    <string name="need_permissions_message" translatable="false">Please check phone settings.</string>
+    <string name="dialog_not_found_title" translatable="false">Not Found</string>
+    <string name="dialog_not_found_message" translatable="false">Task existiert nicht mehr!</string>
+    <string name="dialog_register" translatable="false">Device registration</string>
+
     <!-- MULTILANG -->
 
-
+    <!--    content description do not translate-->
     <string name="cd_phone_call" translatable="false">call</string>
-        <string name="cd_map" translatable="false">map</string>
-        <string name="cd_info" translatable="false">info</string>
-        <string name="cd_documents" translatable="false">documents</string>
-        <string name="cd_history" translatable="false">history</string>
-        <string name="cd_danger" translatable="false">danger</string>
-        <string name="cd_message" translatable="false">message</string>
-        <string name="cd_pallets" translatable="false">pallets</string>
+    <string name="cd_map" translatable="false">map</string>
+    <string name="cd_info" translatable="false">info</string>
+    <string name="cd_documents" translatable="false">documents</string>
+    <string name="cd_history" translatable="false">history</string>
+    <string name="cd_danger" translatable="false">danger</string>
+    <string name="cd_message" translatable="false">message</string>
+    <string name="cd_pallets" translatable="false">pallets</string>
 
-<!--    keys, using in app, don`t translate!!!-->
+    <!--    keys, using in app, do not translate!!!-->
     <string name="key_map_data" translatable="false">map_data</string>
     <string name="key_task_entity" translatable="false">task_entity</string>
+    <string name="key_goods_data" translatable="false">goods_data</string>
 
 
-<!--placeholders - dont translate-->
+    <!--    attributes, do not translate -->
+    <string name="name_test" translatable="false">manyvehicles@abona-erp.com</string>
+    <string name="password_test" translatable="false">1234qwerQWER,.-</string>
+    <string name="fcmChannelId" translatable="false">FCM Channel</string>
+    `
+
+    <!--placeholders, do not translate-->
     <string name="task_txt_placeholder" translatable="false">Pick up*</string>
     <string name="task_duein_placeholder" translatable="false">0 d 11h 41m*</string>
     <string name="task_finish_placeholder" translatable="false">15 sep 10*</string>
@@ -126,5 +115,9 @@
     <string name="txt_order_placeholder" translatable="false">2020/138/45*</string>
 
 
-    <!--new from base app end-->
+    <!--logs, do not translate-->
+    <string name="success_task_update" translatable="false">"Success while changing task status to "</string>
+    <string name="error_task_update" translatable="false">Error while changing task status, task not updated</string>
+
+
 </resources>

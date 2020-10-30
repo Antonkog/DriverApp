@@ -29,10 +29,7 @@ class TasksViewModel @ViewModelInject constructor(
     private val repository: AppRepository,
     private val prefs: SharedPreferences,
     @Assisted private val savedStateHandle: SavedStateHandle
-) : BaseViewModel() {  //taskRepo : ApiRepository,
-    private val TAG = "TasksViewModel"
-
-
+) : BaseViewModel() {
     val tasks: LiveData<List<TaskWithActivities>> = repository.observeTaskWithActivities()
     val activities: LiveData<List<ActivityEntity>> = getActivityObservable()
 
@@ -48,7 +45,6 @@ class TasksViewModel @ViewModelInject constructor(
     val error = MutableLiveData<String>()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        //  users.postValue(Resource.error("Something Went Wrong", null))
         Log.e(TAG, exception.message)
         error.postValue(exception.message)
     }
@@ -61,19 +57,19 @@ class TasksViewModel @ViewModelInject constructor(
     fun filterRunning() {
         currentStatus = TaskStatus.RUNNING.intId
         postTasksToFragmentByStatus()
-        Log.d(TAG, "posting Running " + runningTasks.size)
+        Log.d(Companion.TAG, "posting Running " + runningTasks.size)
     }
 
     fun filterPending() {
         currentStatus = TaskStatus.PENDING.intId
         postTasksToFragmentByStatus()
-        Log.d(TAG, "posting Pending " + pendingTasks.size)
+        Log.d(Companion.TAG, "posting Pending " + pendingTasks.size)
     }
 
     fun filterCompleted() {
         currentStatus = TaskStatus.FINISHED.intId
         postTasksToFragmentByStatus()
-        Log.d(TAG, "posting Completed " + completedTasks.size)
+        Log.d(Companion.TAG, "posting Completed " + completedTasks.size)
     }
 
 
@@ -90,9 +86,7 @@ class TasksViewModel @ViewModelInject constructor(
             TaskStatus.RUNNING.intId -> filteredTasks.postValue(runningTasks)
             TaskStatus.FINISHED.intId -> filteredTasks.postValue(completedTasks)
             TaskStatus.CMR.intId -> Log.e(TAG, "error  TaskStatus.CMR.status - not implemented")
-            TaskStatus.BREAK.intId -> Log.e(
-                TAG,
-                "error  TaskStatus.BREAK.status - not implemented"
+            TaskStatus.BREAK.intId -> Log.e(TAG, "error  TaskStatus.BREAK.status - not implemented"
             )
         }
     }
@@ -115,7 +109,7 @@ class TasksViewModel @ViewModelInject constructor(
                         completedTasks.add(it)
                     }
                     TaskStatus.BREAK, TaskStatus.CMR -> {
-                        Log.e(TAG, " TaskStatus.BREAK , TaskStatus.CMR not implemented")
+                        Log.e(Companion.TAG, " TaskStatus.BREAK , TaskStatus.CMR not implemented")
                     }
                 }
             }
@@ -140,7 +134,7 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun setVisibleTaskIDs(TaskWithActivities: TaskWithActivities) {
-        Log.d(TAG, "saving task visible" + TaskWithActivities.taskEntity.taskId)
+        Log.d(Companion.TAG, "saving task visible" + TaskWithActivities.taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, TaskWithActivities.taskEntity.taskId)
         prefs.putAny(
             Constant.currentVisibleOrderId,
@@ -149,4 +143,8 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun getVisibleTaskId() = prefs.getInt(Constant.currentVisibleTaskid, 0)
+
+    companion object {
+        const val TAG = "TasksViewModel"
+    }
 }

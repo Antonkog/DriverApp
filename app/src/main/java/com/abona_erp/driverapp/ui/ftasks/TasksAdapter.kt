@@ -120,7 +120,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
                 }
 
             binding.imageDanger.setOnClickListener {
-                val bundle = bundleOf("goods_data" to data.taskEntity.dangerousGoods)
+                val bundle = bundleOf(binding.root.context.getString(R.string.key_goods_data) to data.taskEntity.dangerousGoods)
                 navController.navigate(R.id.action_nav_home_to_dangerousGoodsFragment, bundle)
             }
 
