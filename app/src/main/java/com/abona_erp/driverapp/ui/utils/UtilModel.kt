@@ -302,7 +302,7 @@ object UtilModel {
         return serverDateFormat().format(date)
     }
 
-    fun serverTimeShortener(date: String): String {
+    fun serverTimeShortener(date: String?): String? {
         return try {
             uiDateFormat().format(serverDateFormat().parse(date))
         } catch (e: ParseException) {

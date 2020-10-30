@@ -28,7 +28,8 @@ import com.abona_erp.driverapp.data.local.db.AppDatabase
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.remote.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
-import com.abona_erp.driverapp.data.remote.utils.ResponseInterceptor
+import com.abona_erp.driverapp.data.remote.utils.MockInterceptor
+import com.abona_erp.driverapp.data.remote.utils.NetworkInterceptor
 import com.abona_erp.driverapp.data.remote.utils.UnsafeOkHttpClient
 import com.abona_erp.driverapp.data.remote.utils.UserAgentInterceptor
 import com.google.gson.Gson
@@ -101,8 +102,7 @@ object AppModule {
         okHttpBuilder.readTimeout(1, TimeUnit.MINUTES)
         okHttpBuilder.writeTimeout(1, TimeUnit.MINUTES)
         okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
-//        okHttpBuilder.addInterceptor(RequestInterceptor())
-        okHttpBuilder.addInterceptor(ResponseInterceptor(context))
+        okHttpBuilder.addInterceptor(NetworkInterceptor(context))
         if (BuildConfig.DEBUG) {
             if (App.isTesting()) {
                 okHttpBuilder.addInterceptor(MockInterceptor())

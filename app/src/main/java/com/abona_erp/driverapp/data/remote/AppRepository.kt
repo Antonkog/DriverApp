@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.abona_erp.driverapp.data.ResultWithStatus
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.DocumentEntity
+import com.abona_erp.driverapp.data.local.db.RequestEntity
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
@@ -41,6 +42,7 @@ interface AppRepository {
     fun observeActivities(taskId: Int): LiveData<List<ActivityEntity>>
     fun observeAllActivities(): LiveData<List<ActivityEntity>>
     fun observeDocuments(taskId: Int): LiveData<List<DocumentEntity>>
+    fun observeRequests(): LiveData<List<RequestEntity>>
     fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>>
 
     suspend fun getDocuments(

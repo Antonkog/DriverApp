@@ -57,7 +57,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home,
                 R.id.nav_activities,
                 R.id.nav_documents,
-                R.id.nav_settings
+                R.id.nav_settings,
+                R.id.nav_protocol
             ), drawerLayout
         )
 

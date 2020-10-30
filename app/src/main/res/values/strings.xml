@@ -51,6 +51,7 @@
     <string name="screen_activities" translatable="false">Activities</string>
     <string name="screen_documents" translatable="false">Documents</string>
     <string name="screen_settings" translatable="false">Settings</string>
+    <string name="screen_protocol" translatable="false">Protocol</string>
 
 
 <!--    login-->
@@ -118,6 +119,7 @@
     <!--logs, do not translate-->
     <string name="success_task_update" translatable="false">"Success while changing task status to "</string>
     <string name="error_task_update" translatable="false">Error while changing task status, task not updated</string>
+    <string name="deviceId" translatable="false">DeviceId:</string>
 
 
 </resources>

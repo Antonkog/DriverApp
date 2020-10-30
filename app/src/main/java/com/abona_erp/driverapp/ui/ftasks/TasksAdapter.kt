@@ -40,8 +40,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         binding.progressTask.progress = data.taskEntity.status.intId
         binding.textTaskName.text = mResources.getString(nameId)
-        binding.textFinishTime.text =
-            data.taskEntity.taskDueDateFinish?.let { UtilModel.serverTimeShortener(it) }
+        binding.textFinishTime.text = UtilModel.serverTimeShortener(data.taskEntity.taskDueDateFinish)
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmstatus == ConfirmationType.RECEIVED }?.name
                 ?: ""

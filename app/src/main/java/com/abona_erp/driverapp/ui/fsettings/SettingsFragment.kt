@@ -34,7 +34,7 @@ class SettingsFragment : BaseFragment() {
         settingFragmentBinding.viewmodel = settingsViewModel
         settingFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
-        settingFragmentBinding.textSettings.text =  "DeviceId: " + DeviceUtils.getUniqueID(context)
+        settingFragmentBinding.textSettings.text =  getString(R.string.deviceId) + DeviceUtils.getUniqueID(context)
         return settingFragmentBinding.root
     }
 }

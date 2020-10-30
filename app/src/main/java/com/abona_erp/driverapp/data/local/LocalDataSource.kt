@@ -17,10 +17,7 @@ package com.abona_erp.driverapp.data.local
 
 import androidx.lifecycle.LiveData
 import com.abona_erp.driverapp.data.ResultWithStatus
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
-import com.abona_erp.driverapp.data.local.db.AppDatabase
-import com.abona_erp.driverapp.data.local.db.DocumentEntity
-import com.abona_erp.driverapp.data.local.db.TaskEntity
+import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.model.CommResponseItem
 import com.abona_erp.driverapp.data.model.DocumentResponse
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
@@ -126,6 +123,10 @@ class LocalDataSource internal constructor(
 //        db.driverTaskDao().deleteTasks()
 //        db.driverActDao().deleteActivities()
 //        db.documentsDao().deleteDocuments()
+    }
+
+    fun observeRequests(): LiveData<List<RequestEntity>> {
+      return  db.requestDao().observeRequests()
     }
 
 }

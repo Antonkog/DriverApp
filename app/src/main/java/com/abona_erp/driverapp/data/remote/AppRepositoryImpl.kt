@@ -7,6 +7,7 @@ import com.abona_erp.driverapp.data.ResultWithStatus
 import com.abona_erp.driverapp.data.local.LocalDataSource
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.DocumentEntity
+import com.abona_erp.driverapp.data.local.db.RequestEntity
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
@@ -57,9 +58,16 @@ class AppRepositoryImpl @Inject constructor(
         return localDataSource.observeDocuments()
     }
 
+    override fun observeRequests(): LiveData<List<RequestEntity>> {
+      return  localDataSource.observeRequests()
+    }
+
     override fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>> {
         return localDataSource.observeTasksWithActivities()
     }
+
+
+
 
     override suspend fun registerDevice(commItem: CommItem): ResultOfAction {
         return api.setDeviceProfile(commItem)
@@ -69,6 +77,9 @@ class AppRepositoryImpl @Inject constructor(
         val commItem: CommItem = UtilModel.getCommActivityChangeItem(context, activity)
         return api.postActivityChange(commItem)
     }
+
+
+
 
     override suspend fun refreshTasks(deviceId: String) {
         getTasks(true, deviceId)

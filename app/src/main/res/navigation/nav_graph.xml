@@ -61,6 +61,13 @@
 
 
     <fragment
+        android:id="@+id/nav_protocol"
+        android:name="com.abona_erp.driverapp.ui.fprotocol.ProtocolFragment"
+        android:label="@string/screen_protocol"
+        tools:layout="@layout/protocol_fragment" />
+
+
+    <fragment
         android:id="@+id/taskInfoFragment"
         android:name="com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragment"
         android:label="@string/screen_task_info"
@@ -89,5 +96,6 @@
             android:name="goods_data"
             app:argType="com.abona_erp.driverapp.data.model.DangerousGoods" />
     </fragment>
+
 
 </navigation>
