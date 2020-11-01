@@ -114,8 +114,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
             Log.e(TAG,"  not logged in ")
             findNavController().navigate(R.id.nav_login)
         }
-        // else homeViewModel.getTasks()
-        tasksViewModel.refreshTasks()
+//        tasksViewModel.refreshTasks()
         return view
     }
 

@@ -2,7 +2,6 @@ package com.abona_erp.driverapp.data.remote
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import com.abona_erp.driverapp.data.ResultWithStatus
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.DocumentEntity
 import com.abona_erp.driverapp.data.local.db.RequestEntity
@@ -11,18 +10,17 @@ import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
-import retrofit2.Response
 import java.io.InputStream
 
 interface AppRepository {
 
-    suspend fun registerDevice(commItem: CommItem): ResultOfAction
-    suspend fun getClientEndpoint(clientId: String): ServerUrlResponse
+    suspend fun registerDevice(commItem: CommItem): ResultWrapper<ResultOfAction>
+    suspend fun getClientEndpoint(clientId: String): ResultWrapper<ServerUrlResponse>
     suspend fun getAuthToken(
         grantType: String,
         userName: String,
         password: String
-    ): Response<TokenResponse>
+    ): ResultWrapper<TokenResponse>
 
     //RabbitMQ
     fun getLatestRabbitOrder(id: String): Observable<LatestOrder>
@@ -50,33 +48,30 @@ interface AppRepository {
         mandantId: Int,
         orderNo: Int,
         deviceId: String
-    ): ResultWithStatus<List<DocumentEntity>>
-
-    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity
-    suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWithStatus<List<TaskEntity>>
-    //that responses not in db - safe place to keep credentials
-
-    //API set activity change
-    suspend fun postActivity(context: Context, activity: Activity): ResultOfAction
-
+    ): ResultWrapper<List<DocumentEntity>>
     //rest API
-    suspend fun refreshTasks(deviceId: String) // call api to set db
+    suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWrapper<List<TaskEntity>>
+    //API set activity change
+    suspend fun postActivity(context: Context, activity: Activity): ResultWrapper<ResultOfAction>
+
+    suspend fun refreshTasks(deviceId: String)
     suspend fun refreshDocuments(
         mandantId: Int,
         orderNo: Int,
         deviceId: String
-    ) // call api to set db
+    )
 
-    //that is LiveData from dbxx
-    //fcm - one by one
-    suspend fun updateTask(taskEntity: TaskEntity): Int
+    //local from db
+    suspend fun updateTask(taskEntity: TaskEntity): Int //from fcm
     suspend fun insertOrReplaceTask(taskEntity: TaskEntity)
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity)
-    //local change
     suspend fun updateActivity(activityEntity: ActivityEntity):Int // call api to set db
     //new document
     suspend fun insertDocument(documentEntity: DocumentEntity)
+
     suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
+    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity
+
     suspend fun cleanDatabase()
 
 

@@ -15,16 +15,10 @@ interface ApiService {
         @Field("grant_type") grantType: String,
         @Field("username") username: String,
         @Field("password") password: String
-    ): Response<TokenResponse>
-
-    @POST("/api/device/deviceprofile")
-    suspend fun setDeviceProfile(@Body commItem: CommItem?): ResultOfAction
+    ): TokenResponse
 
     @GET("api/device/GetAllTask")
     suspend fun getAllTasks(@Query("deviceId") deviceId: String?): CommResponseItem
-
-    @POST("api/activity/activity")
-    suspend fun postActivityChange(@Body commItem: CommItem): ResultOfAction
 
     @GET("api/uploader/documents")
     suspend fun getDocuments(
@@ -32,6 +26,14 @@ interface ApiService {
         @Query("orderNo") orderNo: Int,
         @Query("deviceId") deviceId: String
     ): List<DocumentResponse>
+
+
+    @POST("/api/device/deviceprofile")
+    suspend fun setDeviceProfile(@Body commItem: CommItem?): ResultOfAction
+
+    @POST("api/activity/activity")
+    suspend fun postActivityChange(@Body commItem: CommItem): ResultOfAction
+
 
     @Multipart
     @POST("api/uploader/upload")

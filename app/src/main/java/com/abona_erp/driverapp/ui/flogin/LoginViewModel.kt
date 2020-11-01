@@ -17,6 +17,9 @@ import com.abona_erp.driverapp.data.model.CommItem
 import com.abona_erp.driverapp.data.model.ResultOfAction
 import com.abona_erp.driverapp.data.model.ServerUrlResponse
 import com.abona_erp.driverapp.data.remote.AppRepository
+import com.abona_erp.driverapp.data.remote.ResultWrapper
+import com.abona_erp.driverapp.data.remote.data
+import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.android.gms.tasks.OnCompleteListener
@@ -32,7 +35,7 @@ import kotlin.system.measureTimeMillis
 class LoginViewModel
 @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
-    private val app: AppRepository,
+    private val repository: AppRepository,
     private val prefs: SharedPreferences,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
@@ -72,50 +75,43 @@ class LoginViewModel
 
                 setFcmToken() //not using return val as saved in private preferences
 
-                val endPointResponse = getClientEndpoint(clientId)
+                val endPointResponse: ResultWrapper<ServerUrlResponse> = getClientEndpoint(clientId)
 
-                if (endPointResponse.IsActive) {
-                    setNewClientEndpoint(endPointResponse.WebService)
+                if (endPointResponse.succeeded) {
+                    endPointResponse.data?.WebService?.let {
+                        setNewClientEndpoint(it)
+                    }
                 } else {
-                    Toast.makeText(
-                        context,
-                        "ENDPOINT IS NOT ACTIVE FOR THIS USER",
-                        Toast.LENGTH_LONG
-                    ).show()
                     authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
+                    error.postValue(endPointResponse.toString())
                 }
                 //if we dont get new url, we using standard common url, for now, so i put next`code outside of bracers.
 
 
-                val tokenResult =
-                    app.getAuthToken(Constant.grantTypeToken, username, password)
+                val tokenResult = repository.getAuthToken(Constant.grantTypeToken, username, password)
 
-                if (tokenResult.isSuccessful) {
-                    authenticationState.postValue(AuthenticationState.AUTHENTICATED)
-
+                if (tokenResult.succeeded) {
                     PrivatePreferences.setAccessToken(
                         context,
-                        tokenResult.body()?.accessToken
+                        tokenResult.data?.accessToken
                     )
-
                     prefs.putLong(Constant.token_created, System.currentTimeMillis())
-                } else authenticationState.value =
-                    AuthenticationState.INVALID_AUTHENTICATION
+                } else{
+                    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                    error.postValue(endPointResponse.toString())
+                }
 
 
-                val deviceProfileResponse =
-                    setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
+                val deviceProfileResponse = setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
 
-                if (deviceProfileResponse.isSuccess) {
-                    Log.d(TAG, deviceProfileResponse.toString())
-                    Log.d(TAG, "device set success")
+                if (deviceProfileResponse.succeeded) {
+                    Log.d(TAG, "device set success $deviceProfileResponse")
                     authenticationState.value = AuthenticationState.AUTHENTICATED
-
                     //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
 
                 } else {
-                    Log.e(TAG, "device set error: ${deviceProfileResponse.text}")
                     authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                    error.postValue(endPointResponse.toString())
                 }
 
             }//time debug
@@ -127,8 +123,8 @@ class LoginViewModel
      * this method for getting new Endpoint for each client, and change base url to new one
      * see:   Manifest:      android:usesCleartextTraffic="true" because auth url is not https
      */
-    private suspend fun getClientEndpoint(clientId: Int): ServerUrlResponse {
-        return app.getClientEndpoint("" + clientId)
+    private suspend fun getClientEndpoint(clientId: Int): ResultWrapper<ServerUrlResponse> {
+       return repository.getClientEndpoint(""+clientId)
     }
 
     private fun setNewClientEndpoint(baseUrl: String) {
@@ -153,8 +149,8 @@ class LoginViewModel
             })
     }
 
-    private suspend fun setDeviceProfile(commItem: CommItem): ResultOfAction {
-        return app.registerDevice(commItem)
+    private suspend fun setDeviceProfile(commItem: CommItem): ResultWrapper<ResultOfAction>  {
+        return repository.registerDevice(commItem)
     }
 
 

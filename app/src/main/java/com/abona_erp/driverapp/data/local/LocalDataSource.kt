@@ -16,15 +16,15 @@
 package com.abona_erp.driverapp.data.local
 
 import androidx.lifecycle.LiveData
-import com.abona_erp.driverapp.data.ResultWithStatus
 import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.model.CommResponseItem
 import com.abona_erp.driverapp.data.model.DocumentResponse
+import com.abona_erp.driverapp.data.remote.ResultWrapper
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
+import com.abona_erp.driverapp.data.remote.ResultWrapper.*
 /**
  * Concrete implementation of a data source as a db.
  */
@@ -49,11 +49,11 @@ class LocalDataSource internal constructor(
         return db.driverTaskDao().observeTasks()
     }
 
-    suspend fun getTasks(): ResultWithStatus<List<TaskEntity>> = withContext(ioDispatcher) {
+    suspend fun getTasks(): ResultWrapper<List<TaskEntity>> = withContext(ioDispatcher) {
         return@withContext try {
-            ResultWithStatus.Success(db.driverTaskDao().getTasks())
+            Success(db.driverTaskDao().getTasks())
         } catch (e: Exception) {
-            ResultWithStatus.Error(e)
+            Error(e)
         }
     }
 
@@ -79,11 +79,11 @@ class LocalDataSource internal constructor(
         return db.documentsDao().observeDocuments()
     }
 
-    suspend fun getDocuments(): ResultWithStatus<List<DocumentEntity>> = withContext(ioDispatcher) {
+    suspend fun getDocuments(): ResultWrapper<List<DocumentEntity>> = withContext(ioDispatcher) {
         return@withContext try {
-            ResultWithStatus.Success(db.documentsDao().getDocuments())
+            Success(db.documentsDao().getDocuments())
         } catch (e: Exception) {
-            ResultWithStatus.Error(e)
+            Error(e)
         }
     }
 

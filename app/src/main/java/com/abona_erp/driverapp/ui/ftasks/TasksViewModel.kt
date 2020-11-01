@@ -129,6 +129,7 @@ class TasksViewModel @ViewModelInject constructor(
         repository.refreshTasks(DeviceUtils.getUniqueID(context))
     }
 
+    //to post from task fragment use
     fun postActivityChange(activity: Activity) = viewModelScope.launch(exceptionHandler) {
         repository.postActivity(context, activity)
     }

@@ -14,6 +14,8 @@ import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.remote.AppRepository
+import com.abona_erp.driverapp.data.remote.data
+import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateServerFormat
@@ -47,12 +49,12 @@ class DriverActViewModel @ViewModelInject constructor(
                     context,
                     newAct.toActivity(DeviceUtils.getUniqueID(context))
                 )
-                if (result.isSuccess) { //todo: implement offline mode.
+                if (result.succeeded && result?.data?.isSuccess == true) { //todo: implement offline mode.
                     repository.updateActivity(newAct)
                     startNextActivity(newAct)
                     updateParentTask(newAct)
                 } else {
-                    error.postValue(result.text)
+                    error.postValue(result.toString())
                 }
 
             } catch (e: Exception) {
