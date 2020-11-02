@@ -4,14 +4,17 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
+import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.local.preferences.putLong
 import com.abona_erp.driverapp.data.model.CommItem
 import com.abona_erp.driverapp.data.model.DataType
+import com.abona_erp.driverapp.data.model.VehicleItem
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
@@ -20,6 +23,7 @@ import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class MainViewModel @ViewModelInject constructor(
     private val gson: Gson,
@@ -29,7 +33,17 @@ class MainViewModel @ViewModelInject constructor(
 ) : BaseViewModel() {
     private val TAG = "MainViewModel"
 
+    val vechicle = MutableLiveData<VehicleItem>()
+
     init {
+        prefs.getString(Constant.currentVechicle, null)?.let {
+            try {
+                vechicle.postValue(gson.fromJson<VehicleItem>(it, VehicleItem::class.java))
+            }catch (e : Exception){
+                Log.e(TAG, " exception during parse FCM message: vechicleNumber")
+            }
+        }
+
         RxBus.listen(RxBusEvent.FirebaseMessage::class.java).subscribe { event ->
             viewModelScope.launch(Dispatchers.IO) {
                 handleFirebaseMessage(event.message)
@@ -49,6 +63,8 @@ class MainViewModel @ViewModelInject constructor(
         when (messageStruct.header.dataType) {
             DataType.VEHICLE.dataType -> {
                 Log.d(TAG, " got fcm VEHICLE")
+                vechicle.postValue(messageStruct.vehicleItem)
+                prefs.putAny(Constant.currentVechicle,   gson.toJson(messageStruct.vehicleItem))
             }
             DataType.DOCUMENT.dataType -> {
                 Log.d(TAG, " got fcm DOCUMENT")

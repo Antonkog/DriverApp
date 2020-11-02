@@ -1,25 +1,14 @@
 package com.abona_erp.driverapp.data.model
 
-import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class VehicleItem {
-    // ------------------------------------------------------------------------
-    // GETTER & SETTER
+data class VehicleItem(
     @SerializedName("MandantId")
-    @Expose
-    var mandantId: Int? = null
-
+    var mandantId: Int?,
     @SerializedName("ClientName")
-    @Expose
-    var clientName: String? = null
-
+    var clientName: String?,
     @SerializedName("RegistrationNumber")
-    @Expose
-    var registrationNumber: String? = null
-
+    var registrationNumber: String?,
     @SerializedName("Drivers")
-    @Expose
-    var drivers: List<DriverItem>? = null
-
-}
+    var drivers: List<DriverItem>?
+)

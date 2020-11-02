@@ -14,6 +14,8 @@ class CommItem(
     val taskItem: TaskItem? = null,
     @SerializedName("ActivityItem")
     val activityItem: Activity? = null,
+    @SerializedName("VehicleItem")
+    val vehicleItem: VehicleItem? = null,
     @SerializedName("DeviceProfileItem")
     val deviceProfileItem: DeviceProfileItem? = null
 ) {
@@ -23,6 +25,7 @@ class CommItem(
         var percentItem: PercentItem? = null,
         var taskItem: TaskItem? = null,
         var activityItem: Activity? = null,
+        var vehicleItem: VehicleItem? = null,
         var deviceProfileItem: DeviceProfileItem? = null
     ) {
         fun compressedTasksCount(count: Int?) = apply { this.compressedTasksCount = count }
@@ -30,8 +33,8 @@ class CommItem(
         fun percentItem(percent: PercentItem?) = apply { this.percentItem = percent }
         fun taskItem(task: TaskItem?) = apply { this.taskItem = task }
         fun activityItem(activity: Activity?) = apply { this.activityItem = activity }
-        fun deviceProfileItem(device: DeviceProfileItem?) =
-            apply { this.deviceProfileItem = device }
+        fun vehicleItem(item: VehicleItem?) = apply { this.vehicleItem = item }
+        fun deviceProfileItem(device: DeviceProfileItem?) = apply { this.deviceProfileItem = device }
 
         fun build() = CommItem(
             compressedTasksCount,
@@ -39,6 +42,7 @@ class CommItem(
             percentItem,
             taskItem,
             activityItem,
+            vehicleItem,
             deviceProfileItem
         )
     }

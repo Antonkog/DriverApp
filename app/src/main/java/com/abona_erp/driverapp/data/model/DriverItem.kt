@@ -8,15 +8,11 @@ data class DriverItem(
     val lastnameFirstname: String?,
 
     @SerializedName("DriverNo")
-    @Expose
     var driverNo: Int,
 
     @SerializedName("ImageUrl")
-    @Expose
     var imageUrl: String?,
 
     @SerializedName("Sms")
-    @Expose
     var sms: String?
-
 )

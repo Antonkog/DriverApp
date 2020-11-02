@@ -28,6 +28,7 @@ object Constant {
     const val token = "token"
     const val token_created = "token_created"
     const val tokenFcm = "tokenFcm"
+    const val currentVechicle= "currentVechicle"
     const val currentVisibleTaskid = "current_visible_taskId"
     const val currentVisibleOrderId = "current_visible_OrderId"
     const val mandantId = "mandantId"
