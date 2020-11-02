@@ -34,11 +34,7 @@
         android:id="@+id/nav_login"
         android:name="com.abona_erp.driverapp.ui.flogin.LoginFragment"
         android:label="@string/screen_login"
-        tools:layout="@layout/login_fragment">
-        <action
-            android:id="@+id/action_loginFragment_to_nav_home"
-            app:destination="@id/nav_home" />
-    </fragment>
+        tools:layout="@layout/login_fragment"/>
 
     <fragment
         android:id="@+id/nav_activities"

@@ -43,9 +43,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
-
-        val  firebaseAnalytics = Firebase.analytics
-
         setSupportActionBar(toolbar)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -62,11 +59,6 @@ class MainActivity : AppCompatActivity() {
             ), drawerLayout
         )
 
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN){
-            param("DeviceId", DeviceUtils.getUniqueID(baseContext))
-        }
-
-
         val isTablet = resources.getBoolean(R.bool.isTabletLandscape)
 
         if (!isTablet) {
@@ -78,10 +70,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         navView.setupWithNavController(navController)
-
-        mainViewModel.navigateToLogin.observe(this, Observer {
-            navController.navigate(R.id.nav_login)
-        })
     }
 
 
@@ -101,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_log_out -> {
                 mainViewModel.doLogOutActions()
+                navController.navigate(R.id.nav_login)
                 true
             }
             R.id.action_send_doc -> {

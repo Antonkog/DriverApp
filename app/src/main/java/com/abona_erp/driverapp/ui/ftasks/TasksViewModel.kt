@@ -120,9 +120,13 @@ class TasksViewModel @ViewModelInject constructor(
     fun loggedIn(): Boolean {
         val currentTime = System.currentTimeMillis()
         val difference = currentTime - prefs.getLong(Constant.token_created, 0)
-        Log.d(TAG, "token time difference:  $difference")
-        return ((difference < Constant.tokenUpdateHours * 3600 * 1000) // hours to seconds to mills
-                && PrivatePreferences.getAccessToken(context) != null)
+
+        return if ((difference < Constant.tokenUpdateHours * 3600 * 1000) // hours to seconds to mills
+            && PrivatePreferences.getAccessToken(context) != null) true
+        else {
+            Log.d(TAG, "auth expired, token time difference:  $difference")
+            false
+        }
     }
 
     fun refreshTasks() = viewModelScope.launch(exceptionHandler) {

@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
@@ -29,7 +28,6 @@ class MainViewModel @ViewModelInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
     private val TAG = "MainViewModel"
-    val navigateToLogin = MutableLiveData<Boolean>()
 
     init {
         RxBus.listen(RxBusEvent.FirebaseMessage::class.java).subscribe { event ->
@@ -38,7 +36,7 @@ class MainViewModel @ViewModelInject constructor(
             }
         }
         RxBus.listen(RxBusEvent.AuthError::class.java).subscribe { event ->
-                doLogOutActions()
+                doLogOutActions() //todo: navigate to login
         }
     }
 
@@ -93,6 +91,5 @@ class MainViewModel @ViewModelInject constructor(
             resetAuthTime()
             repository.cleanDatabase()
         }
-        navigateToLogin.postValue(true)
     }
 }

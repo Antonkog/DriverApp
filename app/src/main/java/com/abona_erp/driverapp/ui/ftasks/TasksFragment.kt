@@ -39,13 +39,9 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     ): View? {
         val view = inflater.inflate(R.layout.tasks_fragment, container, false)
 
-//        tasksBinding = TasksFragmentBinding.inflate(layoutInflater, container, false).apply {
-//            viewmodel = homeViewModel
-//        }
         tasksBinding = TasksFragmentBinding.bind(view).apply {
             viewmodel = tasksViewModel
         }
-
 
         tasksBinding.lifecycleOwner = this.viewLifecycleOwner
 
@@ -57,7 +53,6 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         //Some implementation
 //            tab.text = "OBJECT ${(position + 1)}"
 //        }.attach()
-
 
         tasksBinding.tasksRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -112,7 +107,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 
         if (!tasksViewModel.loggedIn()) {
             Log.e(TAG,"  not logged in ")
-            findNavController().navigate(R.id.nav_login)
+            findNavController().navigate(TasksFragmentDirections.actionNavHomeToLoginFragment())
         }
 //        tasksViewModel.refreshTasks()
         return view

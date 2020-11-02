@@ -3,7 +3,6 @@ package com.abona_erp.driverapp.ui.flogin
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import android.widget.Toast
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
@@ -40,7 +39,10 @@ class LoginViewModel
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
 
-    val TAG = "LoginViewMode l"
+    companion object {
+        const val TAG = "LoginViewModel"
+        const val AUTH_STATE_FLAG = "AuthenticationState"
+    }
 
 
     enum class AuthenticationState {
@@ -49,7 +51,7 @@ class LoginViewModel
         INVALID_AUTHENTICATION  // Authentication failed
     }
 
-    val authenticationState = MutableLiveData<AuthenticationState>()
+    val authenticationState : MutableLiveData<AuthenticationState>
     val error = MutableLiveData<String>()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
@@ -58,12 +60,7 @@ class LoginViewModel
     }
 
     init {
-        // In this example, the user is always unauthenticated when LoginViewModel is launched
-        authenticationState.value = AuthenticationState.UNAUTHENTICATED
-    }
-
-    fun refuseAuthentication() {
-        authenticationState.value = AuthenticationState.UNAUTHENTICATED
+        authenticationState = savedStateHandle.getLiveData(AUTH_STATE_FLAG)
     }
 
     fun authenticate(username: String, password: String, clientId: Int) {
@@ -82,7 +79,7 @@ class LoginViewModel
                         setNewClientEndpoint(it)
                     }
                 } else {
-                    authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
+                    changeLoginState(AuthenticationState.INVALID_AUTHENTICATION)
                     error.postValue(endPointResponse.toString())
                 }
                 //if we dont get new url, we using standard common url, for now, so i put next`code outside of bracers.
@@ -97,7 +94,7 @@ class LoginViewModel
                     )
                     prefs.putLong(Constant.token_created, System.currentTimeMillis())
                 } else{
-                    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                    changeLoginState(AuthenticationState.INVALID_AUTHENTICATION)
                     error.postValue(endPointResponse.toString())
                 }
 
@@ -106,17 +103,21 @@ class LoginViewModel
 
                 if (deviceProfileResponse.succeeded) {
                     Log.d(TAG, "device set success $deviceProfileResponse")
-                    authenticationState.value = AuthenticationState.AUTHENTICATED
+                    changeLoginState(AuthenticationState.AUTHENTICATED)
                     //     FirebaseAnalytics.getInstance(context).logEvent("LogIn", null)
 
                 } else {
-                    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+                    changeLoginState(AuthenticationState.INVALID_AUTHENTICATION)
                     error.postValue(endPointResponse.toString())
                 }
 
             }//time debug
             Log.d(TAG, "Device authorization completed in $time ms")
         }//viewmodel scope
+    }
+
+    private fun changeLoginState(authState: AuthenticationState) {
+        savedStateHandle.set(AUTH_STATE_FLAG, authState)
     }
 
     /**

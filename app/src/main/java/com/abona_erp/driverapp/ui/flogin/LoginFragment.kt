@@ -12,6 +12,11 @@ import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.databinding.LoginFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.utils.DeviceUtils
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,7 +46,10 @@ class LoginFragment : BaseFragment() {
             viewLifecycleOwner,
             Observer { authenticationState ->
                 when (authenticationState) {
-                    LoginViewModel.AuthenticationState.AUTHENTICATED -> navigateHome()
+                    LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                        navigateHome()
+                        logFirebaseLogin()
+                    }
                     LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Toast.makeText(
                         requireContext(),
                         R.string.error_log_in,
@@ -81,6 +89,13 @@ class LoginFragment : BaseFragment() {
     }
 
     private fun navigateHome() {
-        findNavController().navigate(R.id.nav_home)
+        findNavController().popBackStack()
+    }
+
+    private fun logFirebaseLogin() {
+        val firebaseAnalytics = Firebase.analytics
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN) {
+            param("DeviceId", DeviceUtils.getUniqueID(context))
+        }
     }
 }
