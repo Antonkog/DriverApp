@@ -15,6 +15,7 @@ import com.abona_erp.driverapp.databinding.TasksFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.google.android.material.tabs.TabLayoutMediator
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,11 +49,6 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         adapter = TasksAdapter(this, findNavController())
 
         tasksBinding.tasksRecycler.adapter = adapter
-
-//        TabLayoutMediator(homeBinding.tabLayout, homeBinding.tasksPager) { _, _ ->
-        //Some implementation
-//            tab.text = "OBJECT ${(position + 1)}"
-//        }.attach()
 
         tasksBinding.tasksRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -129,6 +125,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     private fun onTabSelectedListener(): OnTabSelectedListener {
         return object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
+                tasksViewModel.clearVisibleTaskId()
                 when (tab?.text) {
                     getString(R.string.pending) -> tasksViewModel.filterPending()
                     getString(R.string.running) -> tasksViewModel.filterRunning()

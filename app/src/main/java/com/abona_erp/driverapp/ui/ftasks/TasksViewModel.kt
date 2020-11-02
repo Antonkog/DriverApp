@@ -45,8 +45,10 @@ class TasksViewModel @ViewModelInject constructor(
     val error = MutableLiveData<String>()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        Log.e(TAG, exception.message)
-        error.postValue(exception.message)
+        exception?.message.let {
+            Log.e(TAG, exception.message)
+            error.postValue(exception.message)
+        }
     }
 
     fun getActivityObservable(): LiveData<List<ActivityEntity>> {
@@ -57,19 +59,19 @@ class TasksViewModel @ViewModelInject constructor(
     fun filterRunning() {
         currentStatus = TaskStatus.RUNNING.intId
         postTasksToFragmentByStatus()
-        Log.d(Companion.TAG, "posting Running " + runningTasks.size)
+        Log.d(TAG, "posting Running " + runningTasks.size)
     }
 
     fun filterPending() {
         currentStatus = TaskStatus.PENDING.intId
         postTasksToFragmentByStatus()
-        Log.d(Companion.TAG, "posting Pending " + pendingTasks.size)
+        Log.d(TAG, "posting Pending " + pendingTasks.size)
     }
 
     fun filterCompleted() {
         currentStatus = TaskStatus.FINISHED.intId
         postTasksToFragmentByStatus()
-        Log.d(Companion.TAG, "posting Completed " + completedTasks.size)
+        Log.d(TAG, "posting Completed " + completedTasks.size)
     }
 
 
@@ -109,7 +111,7 @@ class TasksViewModel @ViewModelInject constructor(
                         completedTasks.add(it)
                     }
                     TaskStatus.BREAK, TaskStatus.CMR -> {
-                        Log.e(Companion.TAG, " TaskStatus.BREAK , TaskStatus.CMR not implemented")
+                        Log.e(TAG, " TaskStatus.BREAK , TaskStatus.CMR not implemented")
                     }
                 }
             }
@@ -138,8 +140,13 @@ class TasksViewModel @ViewModelInject constructor(
         repository.postActivity(context, activity)
     }
 
+    fun clearVisibleTaskId() {
+        prefs.putAny(Constant.currentVisibleTaskid, 0)
+        prefs.putAny(  Constant.currentVisibleOrderId,0)
+    }
+
     fun setVisibleTaskIDs(TaskWithActivities: TaskWithActivities) {
-        Log.d(Companion.TAG, "saving task visible" + TaskWithActivities.taskEntity.taskId)
+        Log.d(TAG, "saving task visible" + TaskWithActivities.taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, TaskWithActivities.taskEntity.taskId)
         prefs.putAny(
             Constant.currentVisibleOrderId,
