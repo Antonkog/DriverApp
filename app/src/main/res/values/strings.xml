@@ -29,6 +29,9 @@
     <string name="activity_start">Start</string>
     <string name="activity_finish">Finish</string>
 
+    <string name="started" translatable="false">Started</string>
+    <string name="finished" translatable="false">Finished</string>
+
 <!--used to parse status code and give string-->
     <string name="action_type_pick_up">Pick Up</string>
     <string name="action_type_drop_off">Drop Off</string>
@@ -120,6 +123,8 @@
     <string name="success_task_update" translatable="false">"Success while changing task status to "</string>
     <string name="error_task_update" translatable="false">Error while changing task status, task not updated</string>
     <string name="deviceId" translatable="false">DeviceId:</string>
+    <string name="image_confirmed" translatable="false">image_confirmed</string>
+    <string name="image_delays" translatable="false">image_delays</string>
 
 
 </resources>
