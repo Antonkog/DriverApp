@@ -5,7 +5,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_VIII"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
@@ -83,10 +83,10 @@
             <ImageView
                 android:id="@+id/image_confirmed"
                 style="@style/ActionImageTint"
-                android:contentDescription="@string/image_confirmed"
                 android:layout_width="@dimen/icon_action_size"
                 android:layout_height="@dimen/icon_action_size"
                 android:layout_marginTop="16dp"
+                android:contentDescription="@string/image_confirmed"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/image_delays"
                 app:srcCompat="@drawable/ic_checked" />
@@ -96,9 +96,9 @@
                 style="@style/ActionImageTint"
                 android:layout_width="@dimen/icon_action_size"
                 android:layout_height="@dimen/icon_action_size"
-                android:contentDescription="@string/image_delays"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:contentDescription="@string/image_delays"
                 app:layout_constraintBottom_toBottomOf="@+id/text_started_value"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_act_name"

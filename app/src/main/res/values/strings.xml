@@ -42,7 +42,7 @@
 
 
     <string name="error_from_server">Error while parsing data from server</string>
-
+    <string name="error_notes_not_found" translatable="false">notes data not found</string>
 
 <!--    screen names-->
     <string name="screen_login" translatable="false">Login</string>
@@ -99,6 +99,7 @@
     <string name="cd_pallets" translatable="false">pallets</string>
 
     <!--    keys, using in app, do not translate!!!-->
+    <string name="key_notes_data" translatable="false">notes_data</string>
     <string name="key_map_data" translatable="false">map_data</string>
     <string name="key_task_entity" translatable="false">task_entity</string>
     <string name="key_goods_data" translatable="false">goods_data</string>
@@ -125,6 +126,7 @@
     <string name="deviceId" translatable="false">DeviceId:</string>
     <string name="image_confirmed" translatable="false">image_confirmed</string>
     <string name="image_delays" translatable="false">image_delays</string>
+
 
 
 </resources>

@@ -132,8 +132,8 @@ class TaskInfoFragment : Fragment() {
         map.entries.forEach { entry ->
             run {
                 val row = LayoutInflater.from(taskInfoFragmentBinding.root.context)
-                    .inflate(R.layout.task_row, null, false)
-                row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
+                    .inflate(R.layout.parsed_json_row, null, false)
+                row.findViewById<TextView>(R.id.txt_item_row).text = "${entry.key} ${entry.value}"
                 linearContent.addView(row)
             }
         }

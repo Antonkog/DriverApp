@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_nav_home_to_nav_documents"
             app:destination="@id/nav_documents" />
+        <action
+            android:id="@+id/action_nav_home_to_notesFragment"
+            app:destination="@id/notesFragment" />
     </fragment>
 
     <fragment
@@ -91,6 +94,18 @@
         <argument
             android:name="goods_data"
             app:argType="com.abona_erp.driverapp.data.model.DangerousGoods" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/notesFragment"
+        android:name="com.abona_erp.driverapp.ui.fnotes.NotesFragment"
+        android:label="notes_fragment"
+        tools:layout="@layout/notes_fragment" >
+        <argument
+            android:name="task_notes"
+            app:argType="com.abona_erp.driverapp.data.model.NotesItem"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 
 

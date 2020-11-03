@@ -192,7 +192,7 @@
 
 
                     <ImageView
-                        android:id="@+id/imageMessage"
+                        android:id="@+id/imageNotes"
                         style="@style/ActionImageTint"
                         android:contentDescription="@string/cd_message"
                         app:srcCompat="@drawable/ic_message" />

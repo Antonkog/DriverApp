@@ -9,11 +9,9 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.Address
 import com.abona_erp.driverapp.databinding.MapFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
-import com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragmentArgs
 import com.abona_erp.driverapp.ui.utils.JsonParser
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,8 +59,8 @@ class MapFragment : BaseFragment() {
         map.entries.forEach { entry ->
             run {
                 val row = LayoutInflater.from(mapBinding.root.context)
-                    .inflate(R.layout.task_row, null, false)
-                row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
+                    .inflate(R.layout.parsed_json_row, null, false)
+                row.findViewById<TextView>(R.id.txt_item_row).text = "${entry.key} ${entry.value}"
                 linearContent.addView(row)
             }
         }

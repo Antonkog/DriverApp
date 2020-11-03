@@ -10,10 +10,8 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.model.Address
 import com.abona_erp.driverapp.data.model.DangerousGoods
 import com.abona_erp.driverapp.databinding.DangerousGoodsFragmentBinding
-import com.abona_erp.driverapp.ui.fmap.MapFragmentArgs
 import com.abona_erp.driverapp.ui.utils.JsonParser
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,8 +62,8 @@ class DangerousGoodsFragment : Fragment() {
         map.entries.forEach { entry ->
             run {
                 val row = LayoutInflater.from(dangerFragmentBinding.root.context)
-                    .inflate(R.layout.task_row, null, false)
-                row.findViewById<TextView>(R.id.txt_item_row).text = entry.key + " " + entry.value
+                    .inflate(R.layout.parsed_json_row, null, false)
+                row.findViewById<TextView>(R.id.txt_item_row).text =  "${entry.key} ${entry.value}"
                 linearContent.addView(row)
             }
         }

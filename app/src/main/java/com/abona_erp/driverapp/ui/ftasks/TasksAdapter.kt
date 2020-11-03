@@ -43,7 +43,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.textFinishTime.text = UtilModel.serverTimeShortener(data.taskEntity.taskDueDateFinish)
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmstatus == ConfirmationType.RECEIVED }?.name
-                ?: ""
+                ?: "" //todo: sort by activity id
         binding.textOrderNo.text =
             UtilModel.parseOrderNo(data.taskEntity.orderDetails?.orderNo?.toLong() ?: 0)
 
@@ -51,11 +51,24 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         setAddressButton(data, binding)
         setInfoButton(data, binding)
         setMapButton(data, binding)
+        setNotesButton(data, binding)
         setDangerGoodsButton(data, binding)
         setPalletsButton(data, binding)
 
 
         binding.activityButton.setOnClickListener {navController.navigate(R.id.action_nav_home_to_nav_activities) }
+    }
+
+    private fun setNotesButton(data: TaskWithActivities, binding: TaskItemBinding) {
+        if(data.taskEntity.notesItem==null)binding.imageNotes.visibility = View.GONE
+        else{
+            binding.imageNotes.visibility = View.VISIBLE
+            binding.imageNotes.setOnClickListener {
+                val bundle = bundleOf(binding.root.context.getString(R.string.key_notes_data) to data.taskEntity.notesItem)
+                navController.navigate(R.id.action_nav_home_to_notesFragment, bundle)
+            }
+        }
+
     }
 
     private fun setMapButton(
