@@ -1,5 +1,6 @@
 package com.abona_erp.driverapp.ui.ftasks
 
+import android.app.Activity
 import android.content.res.Resources
 import android.view.View
 import androidx.core.os.bundleOf
@@ -51,6 +52,11 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
             UtilModel.parseOrderNo(data.taskEntity.orderDetails?.orderNo?.toLong() ?: 0)
 
 
+        binding.imageDocuments.setOnClickListener {
+            navController.navigate(R.id.action_nav_home_to_nav_documents)
+        }
+
+        setContactButton(data, binding)
         setAddressButton(data, binding)
         setInfoButton(data, binding)
         setMapButton(data, binding)
@@ -60,6 +66,19 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
 
         binding.activityButton.setOnClickListener {navController.navigate(R.id.action_nav_home_to_nav_activities) }
+    }
+
+    private fun setContactButton(data: TaskWithActivities, binding: TaskItemBinding) {
+        if(!data.taskEntity.constacts.isNullOrEmpty()){
+            binding.imagePhone.visibility = View.VISIBLE
+            binding.imagePhone.setOnClickListener {
+                val contactsArray = data.taskEntity.constacts!!.toTypedArray()//checked for null or empty
+                val bundle = bundleOf(binding.root.context.getString(R.string.key_contacts_data) to contactsArray)
+                navController.navigate(R.id.action_nav_home_to_contactsFragment, bundle)
+            }
+        } else {
+            binding.imagePhone.visibility = View.GONE
+        }
     }
 
     private fun setNotesButton(data: TaskWithActivities, binding: TaskItemBinding) {

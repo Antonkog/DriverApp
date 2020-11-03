@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_nav_home_to_palletsFragment"
             app:destination="@id/palletsFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_contactsFragment"
+            app:destination="@id/contactsFragment" />
     </fragment>
 
     <fragment
@@ -118,6 +121,19 @@
         <argument
             android:name="pallets_data"
             app:argType="com.abona_erp.driverapp.data.model.PalletExchange"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/contactsFragment"
+        android:name="com.abona_erp.driverapp.ui.fcontacts.ContactsFragment"
+        android:label="@string/screen_contacts"
+        tools:layout="@layout/contacts_fragment" >
+        <argument
+            android:name="contacts_data"
+            app:argType="com.abona_erp.driverapp.data.model.Contact[]"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>

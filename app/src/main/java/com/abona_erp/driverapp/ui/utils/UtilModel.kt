@@ -304,8 +304,8 @@ object UtilModel {
 
     fun serverTimeShortener(date: String): String {
         return try {
-            val date = serverDateFormat().parse(date)
-            date.let {uiDateFormat().format(it)}
+            val dateOpt = serverDateFormat().parse(date)
+            dateOpt.let {uiDateFormat().format(it)}
         } catch (e: ParseException) {
             e.printStackTrace()
             date

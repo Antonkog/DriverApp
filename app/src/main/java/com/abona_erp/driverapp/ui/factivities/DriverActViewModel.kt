@@ -49,7 +49,7 @@ class DriverActViewModel @ViewModelInject constructor(
                     context,
                     newAct.toActivity(DeviceUtils.getUniqueID(context))
                 )
-                if (result.succeeded && result?.data?.isSuccess == true) { //todo: implement offline mode.
+                if (result.succeeded && result.data?.isSuccess == true) { //todo: implement offline mode.
                     repository.updateActivity(newAct)
                     startNextActivity(newAct)
                     updateParentTask(newAct)
@@ -64,8 +64,8 @@ class DriverActViewModel @ViewModelInject constructor(
     }
 
     private suspend fun updateParentTask(newAct: ActivityEntity) {
-        repository.getParentTask(newAct)?.let { task ->
-            val newStatus = when (task?.status) {
+        repository.getParentTask(newAct).let { task ->
+            val newStatus = when (task.status) {
                 TaskStatus.PENDING -> TaskStatus.RUNNING
                 TaskStatus.RUNNING -> TaskStatus.FINISHED
                 TaskStatus.BREAK -> TaskStatus.FINISHED

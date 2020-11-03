@@ -156,7 +156,7 @@
                         android:id="@+id/imagePhone"
                         style="@style/ActionImageTint"
                         android:contentDescription="@string/cd_phone_call"
-                        app:srcCompat="@android:drawable/ic_menu_call" />
+                        app:srcCompat="@drawable/ic_call" />
 
 
                     <ImageView
