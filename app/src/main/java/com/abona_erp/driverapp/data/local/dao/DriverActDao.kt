@@ -16,7 +16,7 @@ interface DriverActDao {
     fun getAll(): LiveData<List<ActivityEntity>>
 
     @Query("SELECT * FROM activity_entity WHERE mandantId =:mandantId AND taskpId =:taskId AND activityId =:actId")
-    fun getActivity(actId: Int, taskId: Int, mandantId: Int): ActivityEntity
+    fun getActivity(actId: Int, taskId: Int, mandantId: Int): ActivityEntity?
 
     @Query("SELECT * FROM activity_entity")
     fun getAllAsList(): List<ActivityEntity>
@@ -42,7 +42,7 @@ interface DriverActDao {
     @Transaction
     suspend fun updateFromCommItem(commonItem: CommResponseItem) {
         if (commonItem.allTask.isNotEmpty()) {
-            var strActList = commonItem.allTask.flatMap {
+            val strActList = commonItem.allTask.flatMap {
                 it.activities.map {
                     val reasons = it.delayReasons?.map { item -> item.toDelayReasonEntity() }
                     ActivityEntity(
@@ -63,7 +63,7 @@ interface DriverActDao {
                 }
             }
 
-            var mergedList = arrayListOf<ActivityEntity>()
+            val mergedList = arrayListOf<ActivityEntity>()
                 //update old activity without status, or insert
             strActList.forEach {
                 val oldActivity = getActivity(it.activityId, it.taskpId, it.mandantId)

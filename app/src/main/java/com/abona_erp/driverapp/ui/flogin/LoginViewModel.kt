@@ -56,7 +56,7 @@ class LoginViewModel
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         error.postValue(exception.message)
-        Log.e(TAG, exception.message)
+        Log.e(TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
     }
 
     init {

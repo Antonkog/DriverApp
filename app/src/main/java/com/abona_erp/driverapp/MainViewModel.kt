@@ -49,8 +49,8 @@ class MainViewModel @ViewModelInject constructor(
                 handleFirebaseMessage(event.message)
             }
         }
-        RxBus.listen(RxBusEvent.AuthError::class.java).subscribe { event ->
-                doLogOutActions() //todo: navigate to login
+        RxBus.listen(RxBusEvent.AuthError::class.java).subscribe {
+            doLogOutActions() //todo: navigate to login
         }
     }
 

@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

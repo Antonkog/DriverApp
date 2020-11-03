@@ -43,12 +43,15 @@
 
     <string name="error_from_server">Error while parsing data from server</string>
     <string name="error_notes_not_found" translatable="false">notes data not found</string>
+    <string name="error_pallets_not_found" translatable="false">pallets data not found</string>
 
 <!--    screen names-->
     <string name="screen_login" translatable="false">Login</string>
     <string name="screen_home" translatable="false">Tasks</string>
     <string name="screen_task_info" translatable="false">Task Info</string>
     <string name="screen_danger_goods" translatable="false">Dangerous goods</string>
+    <string name="screen_pallets" translatable="false">Dangerous goods</string>
+    <string name="screen_notes" translatable="false">Dangerous goods</string>
     <string name="screen_map" translatable="false">Map</string>
 
     <string name="screen_activities" translatable="false">Activities</string>
@@ -103,6 +106,7 @@
     <string name="key_map_data" translatable="false">map_data</string>
     <string name="key_task_entity" translatable="false">task_entity</string>
     <string name="key_goods_data" translatable="false">goods_data</string>
+    <string name="key_pallets_data" translatable="false">pallets_data</string>
 
 
     <!--    attributes, do not translate -->

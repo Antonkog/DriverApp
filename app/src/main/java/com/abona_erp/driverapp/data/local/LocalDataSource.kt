@@ -63,7 +63,7 @@ class LocalDataSource internal constructor(
 
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
         val old = db.driverActDao().getActivity(activityEntity.activityId, activityEntity.taskpId, activityEntity.mandantId)
-        if( old!= null){
+        if(old!= null){
             db.driverActDao().update(activityEntity.copy(activityStatus =  old.activityStatus, confirmstatus = old.confirmstatus ))
         }
         else  db.driverActDao().insert(activityEntity)
@@ -111,7 +111,7 @@ class LocalDataSource internal constructor(
         return db.driverTaskDao().update(taskEntity)
     }
 
-    fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity {
+    fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
       return  db.driverActDao().getActivity(activityEntity.activityId+1, activityEntity.taskpId, activityEntity.mandantId)
     }
 

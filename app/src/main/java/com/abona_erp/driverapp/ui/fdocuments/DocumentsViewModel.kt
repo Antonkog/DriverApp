@@ -43,7 +43,7 @@ class DocumentsViewModel @ViewModelInject constructor(
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         //  users.postValue(Resource.error("Something Went Wrong", null))
-        Log.e(TAG, exception.message)
+        Log.e(TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
         error.postValue(exception)
     }
 

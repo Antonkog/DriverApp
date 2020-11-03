@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_nav_home_to_notesFragment"
             app:destination="@id/notesFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_palletsFragment"
+            app:destination="@id/palletsFragment" />
     </fragment>
 
     <fragment
@@ -99,11 +102,22 @@
     <fragment
         android:id="@+id/notesFragment"
         android:name="com.abona_erp.driverapp.ui.fnotes.NotesFragment"
-        android:label="notes_fragment"
+        android:label="@string/screen_notes"
         tools:layout="@layout/notes_fragment" >
         <argument
-            android:name="task_notes"
+            android:name="notes_data"
             app:argType="com.abona_erp.driverapp.data.model.NotesItem"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/palletsFragment"
+        android:name="com.abona_erp.driverapp.ui.fpallets.PalletsFragment"
+        android:label="@string/screen_pallets"
+        tools:layout="@layout/pallets_fragment" >
+        <argument
+            android:name="pallets_data"
+            app:argType="com.abona_erp.driverapp.data.model.PalletExchange"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>

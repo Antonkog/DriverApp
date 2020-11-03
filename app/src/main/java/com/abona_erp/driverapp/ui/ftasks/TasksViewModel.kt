@@ -45,8 +45,8 @@ class TasksViewModel @ViewModelInject constructor(
     val error = MutableLiveData<String>()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        exception?.message.let {
-            Log.e(TAG, exception.message)
+        exception.message.let {
+            Log.e(TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
             error.postValue(exception.message)
         }
     }

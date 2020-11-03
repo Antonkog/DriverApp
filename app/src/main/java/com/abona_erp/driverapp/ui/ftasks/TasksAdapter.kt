@@ -40,7 +40,10 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         binding.progressTask.progress = data.taskEntity.status.intId
         binding.textTaskName.text = mResources.getString(nameId)
-        binding.textFinishTime.text = UtilModel.serverTimeShortener(data.taskEntity.taskDueDateFinish)
+        data.taskEntity.taskDueDateFinish?.let{
+            binding.textFinishTime.text = UtilModel.serverTimeShortener(it)
+        }
+
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmstatus == ConfirmationType.RECEIVED }?.name
                 ?: "" //todo: sort by activity id
@@ -115,8 +118,8 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         else binding.imagePallet.visibility = View.GONE
 
         binding.imagePallet.setOnClickListener {
-
-
+            val bundle = bundleOf(binding.root.context.getString(R.string.key_pallets_data) to data.taskEntity.palletExchange)
+            navController.navigate(R.id.action_nav_home_to_palletsFragment, bundle)
         }
     }
 

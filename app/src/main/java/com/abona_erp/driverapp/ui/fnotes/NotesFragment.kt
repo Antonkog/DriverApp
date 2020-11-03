@@ -23,7 +23,6 @@ import org.json.JSONObject
 class NotesFragment : BaseFragment() {
 
     companion object {
-        fun newInstance() = NotesFragment()
         const val TAG = "NotesFragment"
     }
 
@@ -45,7 +44,7 @@ class NotesFragment : BaseFragment() {
 
         notesBinding.lifecycleOwner = this.viewLifecycleOwner
 
-        val data =  args.taskNotes
+        val data =  args.notesData
         if(data!=null)
         addTestRows(data)
         else{

@@ -92,7 +92,7 @@ object UtilModel {
     }
 
 
-    public fun Activity.toActivityEntity(): ActivityEntity {
+     fun Activity.toActivityEntity(): ActivityEntity {
         val reasons = delayReasons?.map { item -> item.toDelayReasonEntity() }
         return ActivityEntity(
             activityId,
@@ -302,12 +302,13 @@ object UtilModel {
         return serverDateFormat().format(date)
     }
 
-    fun serverTimeShortener(date: String?): String? {
+    fun serverTimeShortener(date: String): String {
         return try {
-            uiDateFormat().format(serverDateFormat().parse(date))
+            val date = serverDateFormat().parse(date)
+            date.let {uiDateFormat().format(it)}
         } catch (e: ParseException) {
             e.printStackTrace()
-            return date
+            date
         }
     }
 
@@ -322,7 +323,7 @@ object UtilModel {
      * @return 0 or some number 8998ffff7788sfsf will return 89987788
      * @author Anton Kogan
      */
-    fun parseInt(someString: String?): Int {
+    fun parseInt(someString: String): Int {
         var result = 0
         val partsBuffer = StringBuilder()
         val p = Pattern.compile("\\d+")

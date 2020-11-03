@@ -97,7 +97,7 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.insertOrUpdateActivity(activityEntity)
     }
 
-    override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity {
+    override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
         return localDataSource.getNextActivityIfExist(activityEntity)
     }
 
