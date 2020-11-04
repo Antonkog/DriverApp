@@ -80,7 +80,6 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         })
 
         tasksBinding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
-
         tasksViewModel.tasks.observe(viewLifecycleOwner, Observer {
             tasksViewModel.setTasks(it)
         })
@@ -97,15 +96,14 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 //            Log.e(TAG, "got tasks ${it}")
         })
 
-        tasksViewModel.error.observe(viewLifecycleOwner, Observer {
-            if (it != null && it.isNotEmpty()) tasksBinding.textHome.text = it.toString()
-        })
 
         if (!tasksViewModel.loggedIn()) {
             Log.e(TAG,"  not logged in ")
             findNavController().navigate(TasksFragmentDirections.actionNavHomeToLoginFragment())
         }
 //        tasksViewModel.refreshTasks()
+
+        tasksViewModel.filterPending() //assume that we on the first tab after fragment recreate
         return view
     }
 

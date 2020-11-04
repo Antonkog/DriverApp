@@ -2,12 +2,13 @@ package com.abona_erp.driverapp
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +16,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -23,8 +24,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.abona_erp.driverapp.data.Constant.OPEN_DOC_REQUEST_CODE
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,7 +43,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-        navController = findNavController(R.id.nav_host_fragment)
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.fragment_container_view) as NavHostFragment
+
+        navController = navHostFragment.navController
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
@@ -72,7 +76,33 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+
+        setupErrorHandling()
         navView.setupWithNavController(navController)
+    }
+
+    private fun setupErrorHandling() {
+        val linContainer = findViewById<LinearLayout>(R.id.status_container)
+        val bottomSheetBehavior =
+            BottomSheetBehavior.from(linContainer)
+        mainViewModel.requestStatus.observe(this, Observer {
+            when (it.type) {
+                MainViewModel.StatusType.LOADING -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.VISIBLE
+                }
+                MainViewModel.StatusType.ERROR -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.GONE
+                    linContainer.findViewById<TextView>(R.id.status_text).text = it.message
+                }
+                MainViewModel.StatusType.COMPLETE -> {
+                    linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.GONE
+                    linContainer.findViewById<TextView>(R.id.status_text).clearComposingText()
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+        })
     }
 
 
@@ -105,7 +135,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun openDocumentPicker() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            type = "application/pdf"
+            type = "*/*"
             addCategory(Intent.CATEGORY_OPENABLE)
         }
         startActivityForResult(intent, OPEN_DOC_REQUEST_CODE)

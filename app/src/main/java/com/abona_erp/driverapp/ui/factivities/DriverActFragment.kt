@@ -54,10 +54,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
             adapter.swapData(it)
         })
 
-        driverActViewModel.error.observe(viewLifecycleOwner, Observer {
-            if (it.isNotEmpty()) driverActFragmentBinding.textHome.text = it.toString()
-        })
-
 
 //        if(args ==null) driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
 //        else driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), args.taskId)

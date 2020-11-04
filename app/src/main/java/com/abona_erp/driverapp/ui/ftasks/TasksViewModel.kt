@@ -42,14 +42,6 @@ class TasksViewModel @ViewModelInject constructor(
     var currentStatus: Int = 0
 
 
-    val error = MutableLiveData<String>()
-
-    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        exception.message.let {
-            Log.e(TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
-            error.postValue(exception.message)
-        }
-    }
 
     fun getActivityObservable(): LiveData<List<ActivityEntity>> {
         val taskId = prefs.getInt(Constant.currentVisibleTaskid, 0)
@@ -131,12 +123,12 @@ class TasksViewModel @ViewModelInject constructor(
         }
     }
 
-    fun refreshTasks() = viewModelScope.launch(exceptionHandler) {
+    fun refreshTasks() = viewModelScope.launch {
         repository.refreshTasks(DeviceUtils.getUniqueID(context))
     }
 
     //to post from task fragment use
-    fun postActivityChange(activity: Activity) = viewModelScope.launch(exceptionHandler) {
+    fun postActivityChange(activity: Activity) = viewModelScope.launch {
         repository.postActivity(context, activity)
     }
 

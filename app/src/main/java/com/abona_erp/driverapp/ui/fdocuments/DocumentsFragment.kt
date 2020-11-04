@@ -36,15 +36,10 @@ class DocumentsFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Docume
 
         docBinding.lifecycleOwner = this.viewLifecycleOwner
 
-        docViewModel.error.observe(viewLifecycleOwner, Observer { error ->
-            docBinding.textDocs.text = error.toString()
-        })
-
         docViewModel.documents.observe(viewLifecycleOwner, Observer {
             if (it != null && it.isNotEmpty()) {
                 adapter.swapData(it)
             } else Log.e(TAG, "got empty or null documents $it")
-//            Log.e(TAG, "got tasks ${it}")
         })
         return view
     }

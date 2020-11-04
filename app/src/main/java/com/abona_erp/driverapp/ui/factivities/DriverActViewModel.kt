@@ -3,6 +3,7 @@ package com.abona_erp.driverapp.ui.factivities
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.Toast
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,10 +18,12 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.ui.base.BaseViewModel
+import com.abona_erp.driverapp.ui.ftasks.TasksViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateServerFormat
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -30,9 +33,7 @@ class DriverActViewModel @ViewModelInject constructor(
     private val prefs: SharedPreferences
 ) : BaseViewModel() {
 
-    val error = MutableLiveData<String>()
     val wrappedActivities = MutableLiveData<List<ActivityWrapper>>()
-
 
     fun getActivityObservable(): LiveData<List<ActivityEntity>> {
         val taskId = prefs.getInt(Constant.currentVisibleTaskid, 0)
@@ -43,8 +44,7 @@ class DriverActViewModel @ViewModelInject constructor(
         val entity = wrapper.activity
 
         val newAct = setChangedData(entity)
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
+        viewModelScope.launch {
                 val result = repository.postActivity(
                     context,
                     newAct.toActivity(DeviceUtils.getUniqueID(context))
@@ -54,12 +54,8 @@ class DriverActViewModel @ViewModelInject constructor(
                     startNextActivity(newAct)
                     updateParentTask(newAct)
                 } else {
-                    error.postValue(result.toString())
+                    Log.e(TAG, result.toString())
                 }
-
-            } catch (e: Exception) {
-                Log.e(TAG, e.message ?: "Auth error")
-            }
         }
     }
 
@@ -93,11 +89,11 @@ class DriverActViewModel @ViewModelInject constructor(
                 started = getCurrentDateServerFormat()
             )
             val result = repository.updateActivity(newNextAct)
-            Log.e(Companion.TAG, "update next activity to:\n $newNextAct  \n result:  $result")
+            Log.e(TAG, "update next activity to:\n $newNextAct  \n result:  $result")
 
         } else {
 
-            Log.e(Companion.TAG, "no next activity")
+            Log.e(TAG, "no next activity")
         }
     }
 

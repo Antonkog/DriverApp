@@ -25,7 +25,7 @@ interface ApiService {
         @Query("mandantId") mandantId: Int,
         @Query("orderNo") orderNo: Int,
         @Query("deviceId") deviceId: String
-    ): List<DocumentResponse>
+    ): List<DocumentResponse>?
 
 
     @POST("/api/device/deviceprofile")

@@ -19,9 +19,10 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.ftasks.TasksViewModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -34,8 +35,25 @@ class MainViewModel @ViewModelInject constructor(
     private val TAG = "MainViewModel"
 
     val vechicle = MutableLiveData<VehicleItem>()
+    val error = MutableLiveData<String>()
+    val requestStatus = MutableLiveData<Status>()
+
+    data class Status(val message: String?, val type: StatusType)
+    enum class StatusType {
+        COMPLETE,
+        LOADING,
+        ERROR
+    }
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+        exception.message.let {
+            Log.e(TasksViewModel.TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
+            error.postValue(exception.message)
+        }
+    }
 
     init {
+
         prefs.getString(Constant.currentVechicle, null)?.let {
             try {
                 vechicle.postValue(gson.fromJson<VehicleItem>(it, VehicleItem::class.java))
@@ -45,12 +63,16 @@ class MainViewModel @ViewModelInject constructor(
         }
 
         RxBus.listen(RxBusEvent.FirebaseMessage::class.java).subscribe { event ->
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(exceptionHandler) {
                 handleFirebaseMessage(event.message)
             }
         }
+        RxBus.listen(RxBusEvent.RequestStatus::class.java).subscribe { event ->
+               requestStatus.postValue(event.status)
+        }
+
         RxBus.listen(RxBusEvent.AuthError::class.java).subscribe {
-            doLogOutActions() //todo: navigate to login
+            doLogOutActions() //todo: navigate to login check if called from NetworkInterceptor
         }
     }
 
@@ -103,7 +125,7 @@ class MainViewModel @ViewModelInject constructor(
     }
 
     fun doLogOutActions() {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler){
             resetAuthTime()
             repository.cleanDatabase()
         }
