@@ -53,7 +53,7 @@ interface DriverTaskDao {
     @Transaction
     suspend fun updateFromCommItem(commonItem: CommResponseItem) {
         if (commonItem.allTask.isNotEmpty()) {
-            var strCustList = commonItem.allTask.map { it ->
+            val strCustList = commonItem.allTask.map { it ->
                 TaskEntity(
                     it.taskId,
                     ActionType.getActionType(it.actionType),
@@ -71,7 +71,8 @@ interface DriverTaskDao {
                     it.mandantId,
                     it.kundenName,
                     it.notes,
-                    getStatus(it.taskId)
+                    getStatus(it.taskId),
+                    false
                 )//todo: check if make sense not to override confirmation type from server.
             }
             Log.d("DriverTaskDao", "insert taskEntity  size: " + strCustList.size)

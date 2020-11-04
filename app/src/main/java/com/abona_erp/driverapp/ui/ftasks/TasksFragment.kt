@@ -153,6 +153,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
+        tasksViewModel.updateTask(data)
         Log.e(TAG, "got click taskid " + data.taskEntity.taskId)
     }
 }

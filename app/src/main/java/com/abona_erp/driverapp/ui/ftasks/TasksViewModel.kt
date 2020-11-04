@@ -138,6 +138,12 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun getVisibleTaskId() = prefs.getInt(Constant.currentVisibleTaskid, 0)
+    fun updateTask(data: TaskWithActivities) {
+        viewModelScope.launch {
+            val oldCondition = data.taskEntity.openCondition
+            repository.updateTask(data.taskEntity.copy(openCondition = !oldCondition))
+        }
+    }
 
     companion object {
         const val TAG = "TasksViewModel"

@@ -114,7 +114,8 @@ class MainViewModel @ViewModelInject constructor(
                             it.mandantId,
                             it.kundenName,
                             it.notes,
-                            ConfirmationType.RECEIVED
+                            ConfirmationType.RECEIVED,
+                            false
                         )
                     )
                     it.activities.forEach {

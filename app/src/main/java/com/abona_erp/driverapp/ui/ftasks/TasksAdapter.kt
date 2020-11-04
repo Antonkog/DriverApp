@@ -29,6 +29,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         val context = binding.root.context
         dialogBuilder = DialogBuilder(context)
 
+        binding.cardView?.setOnClickListener{itemClickListener?.onLazyItemClick(data)}
 
         val nameId = when (data.taskEntity.actionType) {
             ActionType.PICK_UP -> R.string.action_type_pick_up
@@ -39,6 +40,8 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
             ActionType.UNKNOWN -> R.string.action_type_unknown
             ActionType.ENUM_ERROR -> R.string.action_type_unknown
         }
+
+        binding.hiddenSection?.visibility = if(data.taskEntity.openCondition) View.VISIBLE else View.GONE
 
         binding.progressTask.progress = data.taskEntity.status.intId
         binding.textTaskName.text = mResources.getString(nameId)
