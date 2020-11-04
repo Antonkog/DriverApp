@@ -11,6 +11,7 @@
     <string name="action_send_doc">Send document</string>
 
     <string name="txt_due_in">Due in</string>
+    <string name="task_overdue">Task overdue</string>
     <string name="txt_finish">Finish</string>
 
     <string name="txt_order">Order</string>

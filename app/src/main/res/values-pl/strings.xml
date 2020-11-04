@@ -39,5 +39,6 @@
 
 
     <string name="error_from_server">Błąd podczas analizowania danych z serwera</string>
+  <string name="task_overdue">Zadanie zaległe</string>
 
 </resources>

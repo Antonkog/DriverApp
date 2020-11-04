@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
   <!-- MULTILANG -->
     <string name="action_warning">Предупреждение</string>
     <string name="action_warning_notice">Предупреждение</string>
@@ -33,8 +33,7 @@
   <string name="txt_finish">Окончание</string>
 
     <string name="txt_order">Заказ</string>
-  <string name="txt_order_placeholder" translatable = "false">2020/138/45 *</string>
-  <string name="button_to_activities">Задания</string>
+    <string name="button_to_activities">Задания</string>
 
 
   <string name="activity_next">Следующая</string>
@@ -43,5 +42,6 @@
 
 
     <string name="error_from_server">Ошибка при анализе данных с сервера</string>
+  <string name="task_overdue">Задание просрочено</string>
 
 </resources>

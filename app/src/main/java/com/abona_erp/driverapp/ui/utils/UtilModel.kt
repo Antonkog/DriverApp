@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
+import android.util.StatsLog.logEvent
 import androidx.core.content.res.ResourcesCompat
 import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.R
@@ -20,6 +21,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
+
 
 object UtilModel {
 
@@ -300,6 +302,27 @@ object UtilModel {
 
     private fun formatLongDateTime(date: Date): String {
         return serverDateFormat().format(date)
+    }
+
+    private fun serverStringToDate(date: String): Date? {
+        return try {
+            serverDateFormat().parse(date)
+        }catch (e: java.lang.Exception){
+            null
+        }
+    }
+
+
+     fun getTimeDifference(it: String, context: Context) : String {
+            serverStringToDate(it)?.let { oldDate ->
+                val difference =  oldDate.time - Date().time
+                if(difference<0)
+                    return context.resources.getString(R.string.task_overdue)
+                val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaUIDateFormat, Locale.getDefault())
+                dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+                return dfUtc.format(difference)
+            }
+         return it
     }
 
     fun serverTimeShortener(date: String): String {

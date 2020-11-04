@@ -1,6 +1,5 @@
 package com.abona_erp.driverapp.ui.ftasks
 
-import android.app.Activity
 import android.content.res.Resources
 import android.view.View
 import androidx.core.os.bundleOf
@@ -11,8 +10,10 @@ import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.databinding.TaskItemBinding
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.getImageResource
+import com.abona_erp.driverapp.ui.utils.UtilModel.getTimeDifference
 import com.abona_erp.driverapp.ui.utils.UtilModel.toDangerousGoodsClass
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
+import java.util.*
 
 
 class TasksAdapter(itemClickListener: TasksFragment, val navController: NavController) :
@@ -43,6 +44,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.textTaskName.text = mResources.getString(nameId)
         data.taskEntity.taskDueDateFinish?.let{
             binding.textFinishTime.text = UtilModel.serverTimeShortener(it)
+            binding.textDueInTime.text = getTimeDifference(it, context)
         }
 
         binding.textActName.text =
@@ -67,6 +69,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         binding.activityButton.setOnClickListener {navController.navigate(R.id.action_nav_home_to_nav_activities) }
     }
+
 
     private fun setContactButton(data: TaskWithActivities, binding: TaskItemBinding) {
         if(!data.taskEntity.constacts.isNullOrEmpty()){
