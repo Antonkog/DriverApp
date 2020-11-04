@@ -14,5 +14,7 @@
     <color name="confirm_orange">#FB8C00</color>
     <color name="confirm_green">#11B11B</color>
 
+    <color name="color_error">@color/colorAccent</color>
+
 
 </resources>

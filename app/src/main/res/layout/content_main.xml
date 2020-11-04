@@ -17,11 +17,12 @@
 
     <LinearLayout
         android:id="@+id/status_container"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:behavior_hideable="true"
         android:background="@color/white"
+        android:orientation="vertical"
+        app:behavior_hideable="true"
+        app:behavior_fitToContents="true"
         app:behavior_peekHeight="0dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
@@ -36,8 +37,12 @@
         <TextView
             android:id="@+id/status_text"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_XVI"
+            android:drawablePadding="@dimen/margin_XVI"
+            app:drawableTint="@color/color_error"
+            android:textColor="@color/color_error"
+            app:drawableLeftCompat="@drawable/ic_error"/>
 
 
     </LinearLayout>
