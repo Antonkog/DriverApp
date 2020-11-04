@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithActivities> {
 
-    val TAG: String = "HomeFragment"
+    val TAG: String = "TasksFragment"
     private val tasksViewModel by viewModels<TasksViewModel>()
 
     //    val homeViewModel: HomeViewModel by navGraphViewModels(R.id.nav_home)
@@ -85,10 +85,11 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         })
 
         tasksViewModel.filteredTasks.observe(viewLifecycleOwner, Observer {
-            if (it != null && it.isNotEmpty()) {
+            if (!it.isNullOrEmpty()) {
 //                Log.e(TAG, "got tasks $it")
                 adapter.swapData(it)
                 setAdapterPosition(it) //got new tasks, change position. NoSuchElementException: Collection contains no element matching the predicate.
+                Log.e(TAG, "got tasks $it")
             } else {
                 adapter.swapData(listOf())
                 Log.e(TAG, "got empty or null tasks $it")

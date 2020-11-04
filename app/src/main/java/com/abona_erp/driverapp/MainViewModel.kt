@@ -23,6 +23,7 @@ import com.abona_erp.driverapp.ui.ftasks.TasksViewModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -63,7 +64,7 @@ class MainViewModel @ViewModelInject constructor(
         }
 
         RxBus.listen(RxBusEvent.FirebaseMessage::class.java).subscribe { event ->
-            viewModelScope.launch(exceptionHandler) {
+            viewModelScope.launch(IO) {
                 handleFirebaseMessage(event.message)
             }
         }
@@ -94,7 +95,7 @@ class MainViewModel @ViewModelInject constructor(
             DataType.TASK.dataType -> {
                 Log.d(TAG, " got fcm task")
                 messageStruct.taskItem?.let {
-                    Log.d(TAG, " saving fcm task")
+                    Log.d(TAG, " saving fcm task $it")
                     repository.insertOrReplaceTask(
                         TaskEntity(
                             it.taskId,

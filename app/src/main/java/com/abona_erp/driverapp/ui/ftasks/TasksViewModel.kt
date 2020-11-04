@@ -10,7 +10,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.local.preferences.putAny
@@ -19,7 +18,6 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -31,7 +29,6 @@ class TasksViewModel @ViewModelInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
     val tasks: LiveData<List<TaskWithActivities>> = repository.observeTaskWithActivities()
-    val activities: LiveData<List<ActivityEntity>> = getActivityObservable()
 
     val filteredTasks: MutableLiveData<List<TaskWithActivities>> = MutableLiveData()
 
@@ -41,12 +38,6 @@ class TasksViewModel @ViewModelInject constructor(
 
     var currentStatus: Int = 0
 
-
-
-    fun getActivityObservable(): LiveData<List<ActivityEntity>> {
-        val taskId = prefs.getInt(Constant.currentVisibleTaskid, 0)
-        return repository.observeActivities(taskId)
-    }
 
     fun filterRunning() {
         currentStatus = TaskStatus.RUNNING.intId
