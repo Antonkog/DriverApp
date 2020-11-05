@@ -1,5 +1,6 @@
 package com.abona_erp.driverapp.ui.ftasks
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.databinding.TasksFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
@@ -99,7 +101,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 
 
         if (!tasksViewModel.loggedIn()) {
-            Log.e(TAG,"  not logged in ")
+            Log.e(TAG, "  not logged in ")
             findNavController().navigate(TasksFragmentDirections.actionNavHomeToLoginFragment())
         }
 //        tasksViewModel.refreshTasks()
@@ -153,10 +155,20 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
-        tasksViewModel.updateTask(data.taskEntity)// that part to update UI only (internal use)
         // and here is server update
-        if(!data.taskEntity.openCondition && data.taskEntity.confirmationType < ConfirmationType.TASK_CONFIRMED_BY_USER){// old starte - not opened and not confirmed
-           tasksViewModel.confirmTask(taskEntity = data.taskEntity)
+        if (data.taskEntity.confirmationType < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old starte - not opened and not confirmed
+            context?.let {
+                val name =
+                    it.resources.getString(UtilModel.getResIdByTaskActionType(data.taskEntity))
+                DialogBuilder.getStartTaskDialog(
+                    name,
+                    DialogInterface.OnClickListener { dialog, which ->
+                        tasksViewModel.confirmTask(taskEntity = data.taskEntity)
+                    }, it
+                ).show()
+            }
+        } else { //here is ui update if server confirmed - can open task.
+            tasksViewModel.updateTask(data.taskEntity.copy(openCondition = !data.taskEntity.openCondition))
         }
         Log.e(TAG, "got click taskid " + data.taskEntity.taskId)
     }

@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- MULTILANG -->
+    <!-- MULTILANG -->
     <string name="action_warning">Warnung</string>
     <string name="dialog_login_error">Fehlermeldung</string>
-  <string name="action_warning_notice">Warnhinweis</string>
-  <string name="client_id_is_not_active">Client-ID ist nicht aktive!</string>
+    <string name="action_warning_notice">Warnhinweis</string>
+    <string name="client_id_is_not_active">Client-ID ist nicht aktive!</string>
     <string name="action_update">Aktualisieren</string>
-  <string name="action_update_message">Aktualisierung abgeschlossen!</string>
+    <string name="action_update_message">Aktualisierung abgeschlossen!</string>
 
     <string name="action_type_pick_up">Ladestelle</string>
-  <string name="action_type_drop_off">Abladestelle</string>
-  <string name="action_type_tractor_swap">Zugmaschine Wechsel</string>
-  <string name="action_type_general">Allgemein</string>
-  <string name="action_type_delay">Verzögerung</string>
-  <string name="action_type_unknown">Unbekannt</string>
+    <string name="action_type_drop_off">Abladestelle</string>
+    <string name="action_type_tractor_swap">Zugmaschine Wechsel</string>
+    <string name="action_type_general">Allgemein</string>
+    <string name="action_type_delay">Verzögerung</string>
+    <string name="action_type_unknown">Unbekannt</string>
 
-  <string name="need_permissions_title">Berechtigungen!</string>
+    <string name="need_permissions_title">Berechtigungen!</string>
 
     <!-- MULTILANG -->
 
 
-
-
-  <string name="pending">Offen</string>
-  <string name="running">In Arbeit\u0020</string>
+    <string name="pending">Offen</string>
+    <string name="running">In Arbeit\u0020</string>
     <string name="completed">Erledigt\u0020</string>
 
     <string name="airplane_warning">Bei Flugzeugmodus ist die Funktion der ABONA Driver App eingeschränkt</string>
 
 
     <string name="action_log_out">Abmelden</string>
-  <string name="action_send_doc">Dokument senden</string>
+    <string name="action_send_doc">Dokument senden</string>
 
-  <string name="txt_due_in">Fällig in</string>
-  <string name="txt_finish">Beenden Sie</string>
+    <string name="txt_due_in">Fällig in</string>
+    <string name="txt_finish">Beenden Sie</string>
 
     <string name="txt_order">Reihenfolge</string>
-  <string name="button_to_activities">Aktivitäten</string>
+    <string name="button_to_activities">Aktivitäten</string>
 
 
-  <string name="activity_next">Weiter</string>
-  <string name="activity_start">Start</string>
-  <string name="activity_finish">Beenden Sie</string>
+    <string name="activity_next">Weiter</string>
+    <string name="activity_start">Start</string>
+    <string name="activity_finish">Beenden Sie</string>
 
 
     <string name="error_from_server">Fehler beim Parsen der Daten vom Server</string>
     <string name="task_overdue">Aufgabe überfällig</string>
+    <string name="dialog_start_task_title">Aufgabenbestätigung</string>
+    <string name="dialog_start_task">Möchten Sie die Aufgabe starten: -% s?</string>
 
 </resources>

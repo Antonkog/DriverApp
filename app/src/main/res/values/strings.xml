@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Driver App</string>
 
-<!--    main(home) android activity-->
+    <!--    main(home) android activity-->
     <string name="nav_header_title" translatable="false">@string/app_name</string>
     <string name="nav_header_subtitle" translatable="false">ABONA Deutschland GmbH</string>
     <string name="nav_header_desc" translatable="false">Navigation header</string>
@@ -33,7 +33,7 @@
     <string name="started" translatable="false">Started</string>
     <string name="finished" translatable="false">Finished</string>
 
-<!--used to parse status code and give string-->
+    <!--used to parse status code and give string-->
     <string name="action_type_pick_up">Pick Up</string>
     <string name="action_type_drop_off">Drop Off</string>
     <string name="action_type_tractor_swap">Tractor Swap</string>
@@ -47,7 +47,7 @@
     <string name="error_pallets_not_found" translatable="false">pallets data not found</string>
     <string name="error_no_contacts" translatable="false">no contacts data</string>
 
-<!--    screen names-->
+    <!--    screen names-->
     <string name="screen_login" translatable="false">Login</string>
     <string name="screen_home" translatable="false">Tasks</string>
     <string name="screen_task_info" translatable="false">Task Info</string>
@@ -63,11 +63,11 @@
     <string name="screen_protocol" translatable="false">Protocol</string>
 
 
-<!--    login-->
+    <!--    login-->
     <string name="need_log_in" translatable="false">First log in</string>
     <string name="error_log_in" translatable="false">Error while log in</string>
     <string name="name_hint" translatable="false">Login</string>
-    <string name="password_hint" translatable="false" >Password</string>
+    <string name="password_hint" translatable="false">Password</string>
     <string name="client_id_hint" translatable="false">Client ID</string>
     <string name="set_test_data" translatable="false">Set test data</string>
 
@@ -75,7 +75,7 @@
     <string name="dialog_server_error_title" translatable="false">Error:</string>
 
 
-<!--    dialogs-->
+    <!--    dialogs-->
     <string name="action_warning">Warning</string>
     <string name="action_warning_notice">Warning notice</string>
     <string name="client_id_is_not_active">Client-ID is not active!</string>
@@ -85,8 +85,9 @@
     <string name="dialog_login_error">Login error, while getting response from server</string>
     <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
 
-
-    <!-- MULTILANG -->
+    <!--     need translation-->
+    <string name="dialog_start_task_title">Task confirmation</string>
+    <string name="dialog_start_task">Do you want to start the task: \n- %s?</string>
     <string name="need_permissions_message" translatable="false">Please check phone settings.</string>
     <string name="dialog_not_found_title" translatable="false">Not Found</string>
     <string name="dialog_not_found_message" translatable="false">Task existiert nicht mehr!</string>
