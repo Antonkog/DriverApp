@@ -3,13 +3,11 @@ package com.abona_erp.driverapp.ui.factivities
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import android.widget.Toast
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.data.local.db.TaskStatus
@@ -18,13 +16,11 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.ui.base.BaseViewModel
-import com.abona_erp.driverapp.ui.ftasks.TasksViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateServerFormat
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
 class DriverActViewModel @ViewModelInject constructor(
@@ -35,26 +31,25 @@ class DriverActViewModel @ViewModelInject constructor(
 
     val wrappedActivities = MutableLiveData<List<ActivityWrapper>>()
 
-    fun getActivityObservable(taskId : Int): LiveData<List<ActivityEntity>> {
+    fun getActivityObservable(taskId: Int): LiveData<List<ActivityEntity>> {
         return repository.observeActivities(taskId)
     }
 
     fun postActivityChange(wrapper: ActivityWrapper) {
         val entity = wrapper.activity
-
         val newAct = setChangedData(entity)
-        viewModelScope.launch {
-                val result = repository.postActivity(
-                    context,
-                    newAct.toActivity(DeviceUtils.getUniqueID(context))
-                )
-                if (result.succeeded && result.data?.isSuccess == true) { //todo: implement offline mode.
-                    repository.updateActivity(newAct)
-                    startNextActivity(newAct)
-                    updateParentTask(newAct)
-                } else {
-                    Log.e(TAG, result.toString())
-                }
+        viewModelScope.launch(IO) {
+            val result = repository.postActivity(
+                context,
+                newAct.toActivity(DeviceUtils.getUniqueID(context))
+            )
+            if (result.succeeded && result.data?.isSuccess == true) { //todo: implement offline mode.
+                repository.updateActivity(newAct)
+                startNextActivity(newAct)
+                updateParentTask(newAct)
+            } else {
+                Log.e(TAG, result.toString())
+            }
         }
     }
 
@@ -91,7 +86,6 @@ class DriverActViewModel @ViewModelInject constructor(
             Log.e(TAG, "update next activity to:\n $newNextAct  \n result:  $result")
 
         } else {
-
             Log.e(TAG, "no next activity")
         }
     }

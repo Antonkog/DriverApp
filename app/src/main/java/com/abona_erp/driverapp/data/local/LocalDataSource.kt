@@ -111,7 +111,7 @@ class LocalDataSource internal constructor(
         return db.driverTaskDao().update(taskEntity)
     }
 
-    fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
+    suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
       return  db.driverActDao().getActivity(activityEntity.activityId+1, activityEntity.taskpId, activityEntity.mandantId)
     }
 
@@ -119,7 +119,7 @@ class LocalDataSource internal constructor(
        return db.driverTaskDao().getParentTask(activityEntity.taskpId, activityEntity.mandantId)
     }
 
-    suspend fun cleanDatabase() { //todo: clean data, check what with foreign keys
+    fun cleanDatabase() { //todo: clean data, check what with foreign keys
 //        db.driverTaskDao().deleteTasks()
 //        db.driverActDao().deleteActivities()
 //        db.documentsDao().deleteDocuments()
