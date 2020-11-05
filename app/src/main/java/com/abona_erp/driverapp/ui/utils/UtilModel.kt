@@ -74,6 +74,15 @@ object UtilModel {
     }
 
 
+//    fun getTaskConfirmation(context: Context): CommItem { todo
+//        val header =
+//            Header.Builder(DataType.CONFIRMATION.dataType, DeviceUtils.getUniqueID(context))
+//                .build()
+//        return CommItem.Builder(header = header).confirmationItem(getTaskConfirmationItem(context))
+//    }
+
+
+
     fun ActivityEntity.toActivity(deviceId: String): Activity {
         val reasons = delayReasons?.map { item -> item.toDelayReason() }
         return Activity(
@@ -393,6 +402,14 @@ object UtilModel {
             }
         } else "-"
     }
+
+//    private fun getTaskConfirmationItem(context: Context): ConfirmationItem {
+//        val confirmationItem = ConfirmationItem().apply {
+//
+//        }
+//
+// return confirmationItem
+//    }
 
     private fun getDeviceProfileItem(context: Context): DeviceProfileItem {
         val deviceProfileItem = DeviceProfileItem()

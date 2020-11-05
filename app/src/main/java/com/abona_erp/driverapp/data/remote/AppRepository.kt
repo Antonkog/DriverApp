@@ -53,6 +53,7 @@ interface AppRepository {
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWrapper<List<TaskEntity>>
     //API set activity change
     suspend fun postActivity(context: Context, activity: Activity): ResultWrapper<ResultOfAction>
+    suspend fun confirmTask(context: Context, commItem: CommItem): ResultWrapper<ResultOfAction>
 
     suspend fun refreshTasks(deviceId: String)
     suspend fun refreshDocuments(

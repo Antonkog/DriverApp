@@ -35,6 +35,9 @@ interface ApiService {
     suspend fun postActivityChange(@Body commItem: CommItem): ResultOfAction
 
 
+    @POST("api/confirmation/confirm")
+    suspend fun confirmTask(@Body commItem: CommItem): ResultOfAction
+
     @Multipart
     @POST("api/uploader/upload")
     fun uploadDocument(
@@ -46,10 +49,7 @@ interface ApiService {
         @Part file: MultipartBody.Part?
     ): Single<UploadResult>
 
-//    @Headers("Content-Type:application/json; charset=UTF-8")
-//    @POST("api/confirmation/confirm")
-//    Call<ResultOfAction> confirm(@Body CommItem commItem);
-//
+
 ////
 //
 //    @Streaming
