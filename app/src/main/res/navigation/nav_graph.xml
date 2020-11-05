@@ -49,13 +49,25 @@
         android:id="@+id/nav_activities"
         android:name="com.abona_erp.driverapp.ui.factivities.DriverActFragment"
         android:label="@string/screen_activities"
-        tools:layout="@layout/driver_act_fragment" />
+        tools:layout="@layout/driver_act_fragment">
+        <argument
+            android:name="task_entity"
+            app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_documents"
         android:name="com.abona_erp.driverapp.ui.fdocuments.DocumentsFragment"
         android:label="@string/screen_documents"
-        tools:layout="@layout/documents_fragment" />
+        tools:layout="@layout/documents_fragment" >
+        <argument
+            android:name="task_entity"
+            app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
 
     <fragment

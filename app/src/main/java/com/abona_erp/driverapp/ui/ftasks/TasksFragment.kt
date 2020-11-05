@@ -107,6 +107,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
 //        tasksViewModel.refreshTasks()
 
         tasksViewModel.filterPending() //assume that we on the first tab after fragment recreate
+
         return view
     }
 
@@ -126,7 +127,6 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     private fun onTabSelectedListener(): OnTabSelectedListener {
         return object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                tasksViewModel.clearVisibleTaskId()
                 when (tab?.text) {
                     getString(R.string.pending) -> tasksViewModel.filterPending()
                     getString(R.string.running) -> tasksViewModel.filterRunning()
@@ -145,8 +145,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     private fun setAdapterPosition(it: List<TaskWithActivities>) {
         if (tasksViewModel.getVisibleTaskId() != 0) {
             try {
-                val task =
-                    it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == tasksViewModel.getVisibleTaskId() }
+                val task = it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == tasksViewModel.getVisibleTaskId() }
                 tasksBinding.tasksRecycler.scrollToPosition(it.indexOf(task)) //setting position of current task, if it exist
             } catch (e: NoSuchElementException) {
                 tasksBinding.tasksRecycler.scrollToPosition(0) //setting position of first task, if current not exist

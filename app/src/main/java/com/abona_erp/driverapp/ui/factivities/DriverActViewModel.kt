@@ -35,8 +35,7 @@ class DriverActViewModel @ViewModelInject constructor(
 
     val wrappedActivities = MutableLiveData<List<ActivityWrapper>>()
 
-    fun getActivityObservable(): LiveData<List<ActivityEntity>> {
-        val taskId = prefs.getInt(Constant.currentVisibleTaskid, 0)
+    fun getActivityObservable(taskId : Int): LiveData<List<ActivityEntity>> {
         return repository.observeActivities(taskId)
     }
 

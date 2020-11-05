@@ -48,14 +48,11 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmationType == ActivityConfirmationType.RECEIVED }?.name
                 ?: "" //todo: sort by activity id
-        binding.textOrderNo.text =
-            UtilModel.parseOrderNo(data.taskEntity.orderDetails?.orderNo?.toLong() ?: 0)
 
+        binding.textOrderNo.text = UtilModel.parseOrderNo(data.taskEntity.orderDetails?.orderNo?.toLong() ?: 0)
 
-        binding.imageDocuments.setOnClickListener {
-            navController.navigate(R.id.action_nav_home_to_nav_documents)
-        }
-
+        setActivitiesButton(data, binding)
+        setDocumentsButton(data, binding)
         setContactButton(data, binding)
         setAddressButton(data, binding)
         setInfoButton(data, binding)
@@ -65,7 +62,18 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         setPalletsButton(data, binding)
 
 
-        binding.activityButton.setOnClickListener { navController.navigate(R.id.action_nav_home_to_nav_activities) }
+    }
+
+    private fun setDocumentsButton(data: TaskWithActivities, binding: TaskItemBinding) {
+        binding.imageDocuments.setOnClickListener {
+            val bundle = bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
+            navController.navigate(R.id.action_nav_home_to_nav_documents, bundle)
+        }
+    }
+
+    private fun setActivitiesButton(data: TaskWithActivities, binding: TaskItemBinding) {
+        val bundle = bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
+        binding.activityButton.setOnClickListener { navController.navigate(R.id.action_nav_home_to_nav_activities, bundle)}
     }
 
 

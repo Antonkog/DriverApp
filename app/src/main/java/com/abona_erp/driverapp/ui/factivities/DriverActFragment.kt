@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
@@ -27,7 +28,7 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     private var adapter = ActivityAdapter(this)
 
-//    val args: DriverActFragmentArgs by navArgs()
+    val args: DriverActFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,12 +44,13 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
         driverActFragmentBinding.viewmodel = driverActViewModel
         driverActFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
-
-        driverActViewModel.getActivityObservable().observe(viewLifecycleOwner, Observer {
-            if (it!= null&& it.isNotEmpty()) {
-                driverActViewModel.wrapActivities(it)
-            }
-        })
+        args.taskEntity?.taskId?.let { it ->
+            driverActViewModel.getActivityObservable(it).observe(viewLifecycleOwner, Observer { activities->
+                if (activities!= null&& activities.isNotEmpty()) {
+                    driverActViewModel.wrapActivities(activities)
+                }
+            })
+        }
 
         driverActViewModel.wrappedActivities.observe(viewLifecycleOwner, Observer {
             adapter.swapData(it)

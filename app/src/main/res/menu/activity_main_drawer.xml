@@ -8,15 +8,6 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_work"
             android:title="@string/screen_home" />
-        <item
-            android:id="@+id/nav_activities"
-            android:icon="@drawable/ic_activities"
-            android:title="@string/screen_activities"/>
-
-        <item
-            android:id="@+id/nav_documents"
-            android:icon="@drawable/ic_document"
-            android:title="@string/screen_documents"/>
 
         <item
             android:id="@+id/nav_settings"
