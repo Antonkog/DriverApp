@@ -19,6 +19,7 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragmentArgs
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -35,23 +36,22 @@ class DocumentsViewModel @ViewModelInject constructor(
 ) : BaseViewModel() {
 
     val TAG = DocumentsViewModel::class.simpleName
-    val documents: LiveData<List<DocumentEntity>> =
-        repository.observeDocuments(prefs.getInt(Constant.currentVisibleTaskid, 0))
+
+
 
     //    val filteredDocuments : LiveData<List<DocumentEntity>> = repository.observeDocuments(prefs.getInt(Constant.currentVisibleTaskid,0))
 
     init {
-        refreshDocuments(
-            prefs.getInt(Constant.mandantId, 0),
-            prefs.getInt(Constant.currentVisibleOrderId, 0),
-            DeviceUtils.getUniqueID(context)
-        )
         RxBus.listen(RxBusEvent.DocumentMessage::class.java).subscribe { event ->
             viewModelScope.launch {
                 Log.d(TAG, "Got document uri: ${event.uri} ")
                 uploadDocuments(DMSDocumentType.POD_CMR, event.uri)
             }
         }
+    }
+
+    fun observeDocuments(taskId : Int): LiveData<List<DocumentEntity>>{
+      return  repository.observeDocuments(taskId)
     }
 
 
