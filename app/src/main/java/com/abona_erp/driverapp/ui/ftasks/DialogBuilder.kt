@@ -2,6 +2,7 @@ package com.abona_erp.driverapp.ui.ftasks
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import com.abona_erp.driverapp.R
@@ -15,60 +16,90 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class DialogBuilder(val context: Context) {
 
-    public fun getBaseDialogBuilder(): MaterialAlertDialogBuilder {
+    companion object {
+        const val TAG = "DialogBuilder"
+
+        fun getBaseDialogBuilder(context: Context): MaterialAlertDialogBuilder {
+            return MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_App_MaterialAlertDialog)
+        }
+
+        fun getStartTaskDialog(
+            taskName: String?,
+            positiveListener: DialogInterface.OnClickListener,
+            context: Context
+        ): Dialog {
+            return getBaseDialogBuilder(context)
+                .setTitle(context.resources.getString(R.string.dialog_start_task_title))
+                .setMessage(
+                    String.format(
+                        context.resources.getString(R.string.dialog_start_task),
+                        taskName
+                    )
+                )
+                .setNegativeButton(android.R.string.cancel) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(android.R.string.ok) { dialog, which ->
+                    positiveListener.onClick(
+                        dialog,
+                        which
+                    )
+                }
+                .create()
+        }
+    }
+
+    fun getBaseDialogBuilder(): MaterialAlertDialogBuilder {
         return MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_App_MaterialAlertDialog)
     }
 
-
-    public fun getTaskInfoDialog(task: TaskEntity): Dialog {
+    fun getTaskInfoDialog(task: TaskEntity): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.dialog_server_error_title)
             .setMessage(task.orderDetails?.customerName).create()
     }
 
 
-    public fun getTaskUpdateDialog(): Dialog {
+    fun getTaskUpdateDialog(): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.action_update)
             .setMessage(R.string.action_update_message).create()
     }
 
-    public fun getErrorDialog(message: String): Dialog {
+    fun getErrorDialog(message: String): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.dialog_server_error_title)
             .setMessage(message).create()
     }
 
-    public fun getPermissionErrorDialog(): Dialog {
+    fun getPermissionErrorDialog(): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.need_permissions_title)
             .setMessage(R.string.need_permissions_message).create()
     }
 
-    public fun getTaskNotFoundDialog(): Dialog {
+    fun getTaskNotFoundDialog(): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.dialog_not_found_title)
             .setMessage(R.string.dialog_not_found_message).create()
     }
 
-    public fun getRegistationSuccessDialog(message: String): Dialog {
+    fun getRegistationSuccessDialog(message: String): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.dialog_register).setMessage(message)
             .create()
     }
 
-    public fun getLoginErrorDialog(message: String): Dialog {
+    fun getLoginErrorDialog(message: String): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.action_warning_notice)
             .setMessage(context.resources.getString(R.string.dialog_login_error) + " " + message)
             .create()
     }
 
-    public fun getLoginNotActiveDialog(): Dialog {
+    fun getLoginNotActiveDialog(): Dialog {
         return getBaseDialogBuilder()
             .setTitle(context.resources.getString(R.string.action_warning_notice))
             .setMessage(context.resources.getString(R.string.client_id_is_not_active)).create()
     }
 
-    public fun getAirplaneDialog(): AlertDialog {
+    fun getAirplaneDialog(): AlertDialog {
         return getBaseDialogBuilder().setTitle(R.string.action_warning)
             .setMessage(R.string.airplane_warning).create()
     }
 //
-//    public fun getExitDialog(): Dialog {
+//     fun getExitDialog(): Dialog {
 //        return getBaseDialogBuilder().setTitle(context.resources.getString(R.string.action_exit))
 //            .setMessage(context.resources.getString(R.string.exit_message))
 //            .setPositiveButton(R.string.action_quit) { dialog, which ->
@@ -79,12 +110,12 @@ class DialogBuilder(val context: Context) {
 //            .create()
 //    }
 //
-//    public fun getNoConnectionDialog(): Dialog {
+//     fun getNoConnectionDialog(): Dialog {
 //        return getBaseDialogBuilder().setTitle(context.resources.getString(R.string.action_warning_notice))
 //            .setMessage(context.resources.getString(R.string.no_internet)).create()
 //    }
 //
-//    public fun getSettingsDialog(): Dialog {
+//     fun getSettingsDialog(): Dialog {
 //        return getBaseDialogBuilder()
 //            .setTitle(context.resources.getString(R.string.need_permissions_title))
 //            .setMessage(context.resources.getString(R.string.permission_message_settings))
@@ -96,7 +127,7 @@ class DialogBuilder(val context: Context) {
 //            .create()
 //    }
 //
-//    public fun getDocumentDialog(): Dialog {
+//     fun getDocumentDialog(): Dialog {
 //        return getBaseDialogBuilder().setTitle(context.resources.getString(R.string.new_document))
 //            .setMessage(
 //                """
@@ -109,7 +140,7 @@ class DialogBuilder(val context: Context) {
 //    }
 //
 //
-//    public fun getPasswordDialog(): Dialog {
+//     fun getPasswordDialog(): Dialog {
 //        val builder = getBaseDialogBuilder().setTitle(context.resources.getString(R.string.action_security_code))
 //            .setMessage(context.resources.getString(R.string.action_security_code_message))
 //        val input = EditText(context)
@@ -155,4 +186,5 @@ class DialogBuilder(val context: Context) {
             }
         } else "-"
     }
+
 }

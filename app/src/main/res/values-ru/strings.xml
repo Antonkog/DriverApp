@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- MULTILANG -->
+    <!-- MULTILANG -->
     <string name="action_warning">Предупреждение</string>
     <string name="action_warning_notice">Предупреждение</string>
-  <string name="client_id_is_not_active">Идентификатор клиента не активен!</string>
+    <string name="client_id_is_not_active">Идентификатор клиента не активен!</string>
     <string name="action_update">Обновить</string>
-  <string name="action_update_message">Обновление завершено!</string>
+    <string name="action_update_message">Обновление завершено!</string>
     <string name="action_type_pick_up">Загрузка</string>
-  <string name="action_type_drop_off">Разгрузка</string>
-  <string name="action_type_tractor_swap">Перецепка</string>
-  <string name="action_type_general">Общий</string>
-  <string name="action_type_delay">Задержка</string>
-  <string name="action_type_unknown">Неизвестно</string>
-  <string name="need_permissions_title">Нужны разрешения!</string>
+    <string name="action_type_drop_off">Разгрузка</string>
+    <string name="action_type_tractor_swap">Перецепка</string>
+    <string name="action_type_general">Общий</string>
+    <string name="action_type_delay">Задержка</string>
+    <string name="action_type_unknown">Неизвестно</string>
+    <string name="need_permissions_title">Нужны разрешения!</string>
     <string name="pending">В ожидании</string>
-  <string name="running">В работе</string>
+    <string name="running">В работе</string>
     <string name="completed">Завершено</string>
     <!-- MULTILANG -->
 
@@ -24,24 +24,24 @@
     <string name="dialog_login_error">Ошибка во время авторизации</string>
 
 
+    <string name="action_log_out">Выйти</string>
+    <string name="action_send_doc">Отправить документ</string>
 
-
-  <string name="action_log_out">Выйти</string>
-  <string name="action_send_doc">Отправить документ</string>
-
-  <string name="txt_due_in">Активно</string>
-  <string name="txt_finish">Окончание</string>
+    <string name="txt_due_in">Активно</string>
+    <string name="txt_finish">Окончание</string>
 
     <string name="txt_order">Заказ</string>
     <string name="button_to_activities">Задания</string>
 
 
-  <string name="activity_next">Следующая</string>
-  <string name="activity_start">Старт</string>
-  <string name="activity_finish">Готово</string>
+    <string name="activity_next">Следующая</string>
+    <string name="activity_start">Старт</string>
+    <string name="activity_finish">Готово</string>
 
 
     <string name="error_from_server">Ошибка при анализе данных с сервера</string>
-  <string name="task_overdue">Задание просрочено</string>
+    <string name="task_overdue">Задание просрочено</string>
+    <string name="dialog_start_task_title">Подтверждение задания</string>
+    <string name="dialog_start_task">Вы хотите запустить задачу: -% s?</string>
 
 </resources>

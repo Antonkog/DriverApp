@@ -138,6 +138,17 @@ class AppRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun confirmTask(
+        context: Context,
+        commItem: CommItem
+    ): ResultWrapper<ResultOfAction> {
+        return try{
+            ResultWrapper.Success(api.confirmTask(commItem))
+        } catch (ex: java.lang.Exception){
+            ResultWrapper.Error(ex)
+        }
+    }
+
 
     override suspend fun getDocuments(
         forceUpdate: Boolean,

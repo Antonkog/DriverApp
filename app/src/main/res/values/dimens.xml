@@ -10,6 +10,11 @@
     <dimen name="elevation_IV">4dp</dimen>
 
 
+    <dimen name="dialogTextTitle">24sp</dimen>
+    <dimen name="dialogTextBody">16sp</dimen>
+    <dimen name="dialogTextButton">16sp</dimen>
+
+
     <!--genaral spacing-->
 
     <!--    using sw for icons, as they are squere-->

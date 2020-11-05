@@ -34,5 +34,5 @@ data class ActivityEntity(
     @ColumnInfo val taskpId: Int,
     @ColumnInfo val started: String?,
     @ColumnInfo val activityStatus: ActivityStatus,
-    @ColumnInfo val confirmstatus: ConfirmationType
+    @ColumnInfo val confirmationType: ActivityConfirmationType
 )

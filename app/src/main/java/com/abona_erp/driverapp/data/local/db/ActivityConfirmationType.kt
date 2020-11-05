@@ -4,21 +4,25 @@ import android.content.Context
 import androidx.core.content.res.ResourcesCompat
 import com.abona_erp.driverapp.R
 
-enum class ConfirmationType(// we sync task with server by this model.
+
+/**
+ * that class is for internal usage only, as we don't use it in Activity.kt
+ */
+enum class ActivityConfirmationType(
     val code: Int
 ) {
-    RECEIVED(0),  //gray default value
-    TASK_CONFIRMED_BY_DEVICE(1),  //orange, //when firebase receive it, task app to server flow doesn't has read in UI.
-    TASK_CONFIRMED_BY_USER(2); //green, when user opens task and it is synced with Abona
+    RECEIVED(0), // initial value
+    CHANGED_BY_USER(1),
+    SYNCED_WITH_ABONA(2);
 
     companion object {
         private val values = values()
         fun getByCode(code: Int) = values.firstOrNull { it.code == code } ?: RECEIVED
-        fun getColor(context: Context, confirm: ConfirmationType): Int {
+        fun getColor(context: Context, confirm: ActivityConfirmationType): Int {
             return when (confirm) {
                 RECEIVED -> ResourcesCompat.getColor(context.resources, R.color.confirm_gray, null)
-                TASK_CONFIRMED_BY_DEVICE -> ResourcesCompat.getColor(context.resources, R.color.confirm_orange, null)
-                TASK_CONFIRMED_BY_USER -> ResourcesCompat.getColor(
+                CHANGED_BY_USER -> ResourcesCompat.getColor(context.resources, R.color.confirm_gray, null) //offline mode ,we dont show it to user
+                SYNCED_WITH_ABONA -> ResourcesCompat.getColor(
                     context.resources,
                     R.color.confirm_green,
                     null

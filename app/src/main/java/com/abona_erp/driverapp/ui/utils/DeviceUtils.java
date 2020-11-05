@@ -6,25 +6,25 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.abona_erp.driverapp.BuildConfig;
-
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
 public class DeviceUtils {
+    private final static String TAG = "DeviceUtils";
 
     /**
      * see:
      * https://developer.android.com/training/articles/user-data-ids#instance-ids-guids
      * https://developer.android.com/training/safetynet/verify-apps
      *
-     * @param context
+     * @param context App context
      * @return ANDROID_ID if READ_PRIVILEGED_PHONE_STATE  permission exist, or serial if api is <9 or 12 digits pseudo-unique id - why changed:
      * Between Android 6.0 (API level 23) and Android 9 (API level 28), local device MAC addresses, such as Wi-Fi and Bluetooth, aren't available via third-party APIs. The WifiInfo.getMacAddress() method and the BluetoothAdapter.getDefaultAdapter().getAddress() method both return 02:00:00:00:00:00
      * author A.KOGAN
      */
     public static String getUniqueID(Context context) {
+       // if(BuildConfig.DEBUG)return "bd92a5a47f4883c5";
         StringBuilder idBuilder = new StringBuilder();
         try {
             idBuilder.append(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
@@ -40,14 +40,13 @@ public class DeviceUtils {
             }
             if (!idBuilder.toString().isEmpty()) return idBuilder.toString();
             else {
-
-                idBuilder.append(Build.BOARD.length() % 10 + Build.BRAND.length() % 10 +
-                        Build.DEVICE.length() % 10 + Build.DISPLAY.length() % 10 + Build.HOST.length() % 10 +
-                        Build.ID.length() % 10 + Build.MANUFACTURER.length() % 10 + Build.MODEL.length() % 10 +
-                        Build.PRODUCT.length() % 10 + Build.TAGS.length() % 10 + Build.TYPE + Build.USER.length() % 10);
+                idBuilder.append(Build.BOARD.length() % 10).append(Build.BRAND.length()).append(
+                        Build.DEVICE.length() % 10).append(Build.DISPLAY.length() % 10).append(Build.HOST.length() % 10)
+                        .append(Build.ID.length() % 10).append(Build.MANUFACTURER.length() % 10).append(Build.MODEL.length() % 10)
+                        .append(Build.PRODUCT.length() % 10).append(Build.TAGS.length() % 10).append(Build.TYPE + Build.USER.length() % 10);
             }
         } catch (Exception e) {
-            Log.w(DeviceUtils.class.getClass().getCanonicalName(), "getUniqueID Exception: " + e.getMessage());
+            Log.w(TAG, "getUniqueID Exception: " + e.getMessage());
         }
         return idBuilder.toString();
     }
@@ -61,7 +60,7 @@ public class DeviceUtils {
      * so i made small change when was returning null  now returns Settings.Secure.ANDROID_ID
      * see https://source.android.com/devices/tech/config/device-identifiers
      *
-     * @param context
+     * @param context app context
      * @return mac or serial
      * comments by A.KOGAN
      */

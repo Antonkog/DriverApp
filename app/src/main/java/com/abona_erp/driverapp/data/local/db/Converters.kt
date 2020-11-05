@@ -60,6 +60,20 @@ class Converters {
     fun getConfirmTypeInt(type: ConfirmationType?): Int? {
         return type?.code
     }
+ @TypeConverter
+    fun getActConfirmType(numeral: Int): ActivityConfirmationType? {
+        for (lt in ActivityConfirmationType.values()) {
+            if (lt.code == numeral) {
+                return lt
+            }
+        }
+        return null
+    }
+
+    @TypeConverter
+    fun getActConfirmTypeInt(type: ActivityConfirmationType?): Int? {
+        return type?.code
+    }
 
     @TypeConverter
     fun stringToDelayReasons(json: String?): List<DelayReasonEntity>? {

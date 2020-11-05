@@ -9,14 +9,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.data.Constant
+import com.abona_erp.driverapp.data.local.db.ConfirmationType
+import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.model.Activity
 import com.abona_erp.driverapp.data.remote.AppRepository
+import com.abona_erp.driverapp.data.remote.data
+import com.abona_erp.driverapp.data.remote.succeeded
+import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
+import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
+import com.abona_erp.driverapp.ui.utils.UtilModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import java.util.*
@@ -71,7 +79,8 @@ class TasksViewModel @ViewModelInject constructor(
             TaskStatus.RUNNING.intId -> filteredTasks.postValue(runningTasks)
             TaskStatus.FINISHED.intId -> filteredTasks.postValue(completedTasks)
             TaskStatus.CMR.intId -> Log.e(TAG, "error  TaskStatus.CMR.status - not implemented")
-            TaskStatus.BREAK.intId -> Log.e(TAG, "error  TaskStatus.BREAK.status - not implemented"
+            TaskStatus.BREAK.intId -> Log.e(
+                TAG, "error  TaskStatus.BREAK.status - not implemented"
             )
         }
     }
@@ -107,7 +116,8 @@ class TasksViewModel @ViewModelInject constructor(
         val difference = currentTime - prefs.getLong(Constant.token_created, 0)
 
         return if ((difference < Constant.tokenUpdateHours * 3600 * 1000) // hours to seconds to mills
-            && PrivatePreferences.getAccessToken(context) != null) true
+            && PrivatePreferences.getAccessToken(context) != null
+        ) true
         else {
             Log.d(TAG, "auth expired, token time difference:  $difference")
             false
@@ -123,9 +133,10 @@ class TasksViewModel @ViewModelInject constructor(
         repository.postActivity(context, activity)
     }
 
+
     fun clearVisibleTaskId() {
         prefs.putAny(Constant.currentVisibleTaskid, 0)
-        prefs.putAny(  Constant.currentVisibleOrderId,0)
+        prefs.putAny(Constant.currentVisibleOrderId, 0)
     }
 
     fun setVisibleTaskIDs(TaskWithActivities: TaskWithActivities) {
@@ -138,6 +149,41 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun getVisibleTaskId() = prefs.getInt(Constant.currentVisibleTaskid, 0)
+
+    fun updateTask(data: TaskEntity) {
+        viewModelScope.launch {
+            repository.updateTask(data)
+        }
+    }
+
+    fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
+        val result =
+            repository.confirmTask(context, UtilModel.getTaskConfirmation(context, taskEntity))
+        if (result.succeeded) {
+            if (result.data?.isSuccess == true) {
+                updateTask(
+                    taskEntity.copy(
+                        confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER,
+                        openCondition = !taskEntity.openCondition
+                    )
+                )//green checkers
+            } else {
+                RxBus.publish(
+                    RxBusEvent.RequestStatus(
+                        MainViewModel.Status(
+                            result.data?.text,
+                            MainViewModel.StatusType.ERROR
+                        )
+                    )
+                )
+            }
+        } else {
+            Log.e(TAG, "can't update task status on server $result")
+
+            //todo: put in offline confirmations table here
+            // or when requesting and delete on error
+        }
+    }
 
     companion object {
         const val TAG = "TasksViewModel"

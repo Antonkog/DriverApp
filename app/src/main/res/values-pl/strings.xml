@@ -2,43 +2,45 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingQuantity">
     <string name="action_warning">Ostrzeżenie</string>
     <string name="dialog_login_error">Komunikat o błędzie</string>
-  <string name="action_warning_notice">Ostrzeżenie</string>
-  <string name="client_id_is_not_active">Identyfikator klienta nie jest aktywny!</string>
+    <string name="action_warning_notice">Ostrzeżenie</string>
+    <string name="client_id_is_not_active">Identyfikator klienta nie jest aktywny!</string>
     <string name="action_update">Aktualizacja</string>
-  <string name="action_update_message">Aktualizacja zakończona!</string>
+    <string name="action_update_message">Aktualizacja zakończona!</string>
 
     <string name="action_type_pick_up">Ładowanie stelle</string>
-  <string name="action_type_drop_off">Rozładunek</string>
-  <string name="action_type_tractor_swap">Wymiana ciągnika</string>
-  <string name="action_type_general">Generał</string>
-  <string name="action_type_delay">Opóźnienie</string>
-  <string name="action_type_unknown">Nieznany</string>
+    <string name="action_type_drop_off">Rozładunek</string>
+    <string name="action_type_tractor_swap">Wymiana ciągnika</string>
+    <string name="action_type_general">Generał</string>
+    <string name="action_type_delay">Opóźnienie</string>
+    <string name="action_type_unknown">Nieznany</string>
 
-  <string name="need_permissions_title">Potrzebujesz uprawnień!</string>
+    <string name="need_permissions_title">Potrzebujesz uprawnień!</string>
 
     <string name="pending">Otwarte</string>
-  <string name="running">W toku\u0020</string>
+    <string name="running">W toku\u0020</string>
     <string name="completed">Gotowy\u0020</string>
 
     <string name="airplane_warning">Funkcja aplikacji ABONA Driver jest ograniczona w trybie samolotowym</string>
 
 
     <string name="action_log_out">Wyloguj się</string>
-  <string name="action_send_doc">Wyślij dokument</string>
+    <string name="action_send_doc">Wyślij dokument</string>
 
-  <string name="txt_due_in">Termin za</string>
-  <string name="txt_finish">Zakończ</string>
+    <string name="txt_due_in">Termin za</string>
+    <string name="txt_finish">Zakończ</string>
 
     <string name="txt_order">Zamów</string>
-  <string name="button_to_activities">Działania</string>
+    <string name="button_to_activities">Działania</string>
 
 
-  <string name="activity_next">Dalej</string>
-  <string name="activity_start">Start</string>
-  <string name="activity_finish">Zakończ</string>
+    <string name="activity_next">Dalej</string>
+    <string name="activity_start">Start</string>
+    <string name="activity_finish">Zakończ</string>
 
 
     <string name="error_from_server">Błąd podczas analizowania danych z serwera</string>
-  <string name="task_overdue">Zadanie zaległe</string>
+    <string name="task_overdue">Zadanie zaległe</string>
+    <string name="dialog_start_task_title">Potwierdzenie zadania</string>
+    <string name="dialog_start_task">Czy chcesz rozpocząć zadanie: -% s?</string>
 
 </resources>

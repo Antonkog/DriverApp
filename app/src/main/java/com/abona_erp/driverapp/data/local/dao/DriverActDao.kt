@@ -3,6 +3,7 @@ package com.abona_erp.driverapp.data.local.dao
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.model.ActivityStatus
@@ -58,7 +59,7 @@ interface DriverActDao {
                         it.taskId,
                         it.started,
                         ActivityStatus.getActivityStatus(it.status),
-                        ConfirmationType.RECEIVED
+                                ActivityConfirmationType.RECEIVED
                     )
                 }
             }
@@ -68,8 +69,7 @@ interface DriverActDao {
             strActList.forEach {
                 val oldActivity = getActivity(it.activityId, it.taskpId, it.mandantId)
                 if(oldActivity!=null){
-                    mergedList.add(it.copy(confirmstatus = oldActivity.confirmstatus, activityStatus = it.activityStatus))
-
+                    mergedList.add(it.copy(confirmationType = oldActivity.confirmationType, activityStatus = it.activityStatus))
                 }
                 else mergedList.add(it)
             }
