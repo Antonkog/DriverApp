@@ -10,13 +10,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
+import com.abona_erp.driverapp.data.local.db.ConfirmationType
+import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.model.Activity
 import com.abona_erp.driverapp.data.remote.AppRepository
+import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
+import com.abona_erp.driverapp.ui.utils.UtilModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import java.util.*
@@ -123,6 +127,7 @@ class TasksViewModel @ViewModelInject constructor(
         repository.postActivity(context, activity)
     }
 
+
     fun clearVisibleTaskId() {
         prefs.putAny(Constant.currentVisibleTaskid, 0)
         prefs.putAny(  Constant.currentVisibleOrderId,0)
@@ -138,10 +143,22 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun getVisibleTaskId() = prefs.getInt(Constant.currentVisibleTaskid, 0)
-    fun updateTask(data: TaskWithActivities) {
+    fun updateTask(data: TaskEntity) {
         viewModelScope.launch {
-            val oldCondition = data.taskEntity.openCondition
-            repository.updateTask(data.taskEntity.copy(openCondition = !oldCondition))
+            val oldCondition = data.openCondition
+            repository.updateTask(data.copy(openCondition = !oldCondition))
+        }
+
+    }
+
+    fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
+       val result =  repository.confirmTask(context, UtilModel.getTaskConfirmation(context,taskEntity))
+        if(result.succeeded){
+            updateTask(taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER))//green checkers
+        } else {
+            Log.e(TAG, "can't update task status on server $result")
+            //todo: put in offline confirmations table here
+            // or when requesting and delete on error
         }
     }
 

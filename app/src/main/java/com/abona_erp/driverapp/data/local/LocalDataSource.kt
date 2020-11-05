@@ -64,7 +64,7 @@ class LocalDataSource internal constructor(
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
         val old = db.driverActDao().getActivity(activityEntity.activityId, activityEntity.taskpId, activityEntity.mandantId)
         if(old!= null){
-            db.driverActDao().update(activityEntity.copy(activityStatus =  old.activityStatus, confirmstatus = old.confirmstatus ))
+            db.driverActDao().update(activityEntity.copy(activityStatus =  old.activityStatus)) //, confirmationType = old.confirmationType we expecting that server save confirmation status, or change it if task was changed
         }
         else  db.driverActDao().insert(activityEntity)
     }

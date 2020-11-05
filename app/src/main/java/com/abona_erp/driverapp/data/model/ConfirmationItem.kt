@@ -20,15 +20,6 @@ data class ConfirmationItem(
     @SerializedName("TaskChangeId")
     val taskChangeId: Int? = null,
 
-    @SerializedName("ActivityId")
-    val activityId: Int? = null,
-
-    @SerializedName("Task")
-    val taskItem: TaskItem? = null,
-
-    @SerializedName("Activity")
-    val activityItem: Activity? = null,
-
     @SerializedName("Text")
     val text: String?
 ) {
@@ -43,25 +34,13 @@ data class ConfirmationItem(
 
         var taskChangeId: Int? = null,
 
-        var activityId: Int? = null,
-
-        var taskItem: TaskItem? = null,
-
-        var activityItem: Activity? = null,
         var text: String?
     ) {
-        fun confirmationType(confirmType: ConfirmationType?) =
-            apply { this.confirmationType = confirmType }
-
-        fun timeStampConfirmationUTC(confirmType: Date?) =
-            apply { this.timeStampConfirmationUTC = confirmType }
-
+        fun confirmationType(confirmType: ConfirmationType?) = apply { this.confirmationType = confirmType }
+        fun timeStampConfirmationUTC(confirmType: Date?) = apply { this.timeStampConfirmationUTC = confirmType }
         fun mandantId(mandantId: Int?) = apply { this.mandantId = mandantId }
         fun taskId(taskId: Int?) = apply { this.taskId = taskId }
         fun taskChangeId(taskChangeId: Int?) = apply { this.taskChangeId = taskChangeId }
-        fun activityId(activityId: Int?) = apply { this.activityId = activityId }
-        fun taskItem(taskItem: TaskItem?) = apply { this.taskItem = taskItem }
-        fun activityItem(activityItem: Activity?) = apply { this.activityItem = activityItem }
         fun text(text: String?) = apply { this.text = text }
 
         fun build() = ConfirmationItem(
@@ -70,9 +49,6 @@ data class ConfirmationItem(
             mandantId,
             taskId,
             taskChangeId,
-            activityId,
-            taskItem,
-            activityItem,
             text
         )
     }

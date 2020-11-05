@@ -134,6 +134,7 @@
     <string name="deviceId" translatable="false">DeviceId:</string>
     <string name="image_confirmed" translatable="false">image_confirmed</string>
     <string name="image_delays" translatable="false">image_delays</string>
+    <string name="task_note" translatable="false">task confirmation, auto confirmed</string>
 
 
 </resources>

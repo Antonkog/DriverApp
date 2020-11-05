@@ -5,15 +5,11 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
-import android.util.StatsLog.logEvent
 import androidx.core.content.res.ResourcesCompat
 import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
-import com.abona_erp.driverapp.data.local.db.ConfirmationType
-import com.abona_erp.driverapp.data.local.db.DangerousGoodsClass
-import com.abona_erp.driverapp.data.local.db.DelayReasonEntity
+import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.model.*
 import java.text.DateFormat
@@ -74,14 +70,13 @@ object UtilModel {
     }
 
 
-//    fun getTaskConfirmation(context: Context): CommItem { todo
-//        val header =
-//            Header.Builder(DataType.CONFIRMATION.dataType, DeviceUtils.getUniqueID(context))
-//                .build()
-//        return CommItem.Builder(header = header).confirmationItem(getTaskConfirmationItem(context))
-//    }
+    fun getTaskConfirmation(context: Context, task: TaskEntity): CommItem {
 
-
+        val header =
+            Header.Builder(DataType.TASK_CONFIRMATION.dataType, DeviceUtils.getUniqueID(context))
+                .build()
+        return CommItem.Builder(header = header).confirmationItem(getInnerTaskConfirmation(context, task)).build()
+    }
 
     fun ActivityEntity.toActivity(deviceId: String): Activity {
         val reasons = delayReasons?.map { item -> item.toDelayReason() }
@@ -118,7 +113,7 @@ object UtilModel {
             taskId,
             started,
             ActivityStatus.getActivityStatus(status),
-            ConfirmationType.RECEIVED
+            ActivityConfirmationType.RECEIVED
         )
     }
 
@@ -327,7 +322,10 @@ object UtilModel {
                 val difference =  oldDate.time - Date().time
                 if(difference<0)
                     return context.resources.getString(R.string.task_overdue)
-                val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaUIDateFormat, Locale.getDefault())
+                val dfUtc: DateFormat = SimpleDateFormat(
+                    Constant.abonaUIDateFormat,
+                    Locale.getDefault()
+                )
                 dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
                 return dfUtc.format(difference)
             }
@@ -403,13 +401,17 @@ object UtilModel {
         } else "-"
     }
 
-//    private fun getTaskConfirmationItem(context: Context): ConfirmationItem {
-//        val confirmationItem = ConfirmationItem().apply {
-//
-//        }
-//
-// return confirmationItem
-//    }
+    private fun getInnerTaskConfirmation(context: Context, taskItem: TaskEntity): ConfirmationItem {
+        val confirmationItem = ConfirmationItem.Builder(
+            confirmationType = taskItem.confirmationType,
+            timeStampConfirmationUTC = Date(),
+            mandantId = taskItem.mandantId,
+            taskId = taskItem.taskId,
+            taskChangeId = taskItem.taskId, //todo: ask Tilman what is taskChangeId and why we use it
+            text =context.getString(R.string.task_note) //todo: ask Tilman what is taskChangeId and where we use text, why we send it user dont put text enywhere
+            )
+         return confirmationItem.build()
+    }
 
     private fun getDeviceProfileItem(context: Context): DeviceProfileItem {
         val deviceProfileItem = DeviceProfileItem()

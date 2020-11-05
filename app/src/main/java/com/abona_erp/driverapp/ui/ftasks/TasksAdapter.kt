@@ -6,6 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActionType
+import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.databinding.TaskItemBinding
 import com.abona_erp.driverapp.ui.utils.UtilModel
@@ -31,6 +32,9 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         binding.cardView?.setOnClickListener{itemClickListener?.onLazyItemClick(data)}
 
+        val color = ConfirmationType.getColor(context, data.taskEntity.confirmationType)
+        binding.imageSync?.setColorFilter(color)
+
         val nameId = when (data.taskEntity.actionType) {
             ActionType.PICK_UP -> R.string.action_type_pick_up
             ActionType.DROP_OFF -> R.string.action_type_drop_off
@@ -50,8 +54,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
             binding.textDueInTime.text = getTimeDifference(it, context)
         }
 
-        binding.textActName.text =
-            data.activities.firstOrNull { it.confirmstatus == ConfirmationType.RECEIVED }?.name
+        binding.textActName.text = data.activities.firstOrNull { it.confirmationType == ActivityConfirmationType.RECEIVED}?.name
                 ?: "" //todo: sort by activity id
         binding.textOrderNo.text =
             UtilModel.parseOrderNo(data.taskEntity.orderDetails?.orderNo?.toLong() ?: 0)

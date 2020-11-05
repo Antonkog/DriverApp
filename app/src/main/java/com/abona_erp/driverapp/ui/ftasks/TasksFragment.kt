@@ -11,11 +11,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.abona_erp.driverapp.R
+import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.databinding.TasksFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import com.google.android.material.tabs.TabLayoutMediator
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
@@ -153,7 +153,11 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
-        tasksViewModel.updateTask(data)
+        tasksViewModel.updateTask(data.taskEntity)// that part to update UI only (internal use)
+        // and here is server update
+        if(!data.taskEntity.openCondition && data.taskEntity.confirmationType < ConfirmationType.TASK_CONFIRMED_BY_USER){// old starte - not opened and not confirmed
+           tasksViewModel.confirmTask(taskEntity = data.taskEntity)
+        }
         Log.e(TAG, "got click taskid " + data.taskEntity.taskId)
     }
 }
