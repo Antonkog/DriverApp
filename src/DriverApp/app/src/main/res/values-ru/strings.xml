@@ -180,4 +180,5 @@
     <string name="new_message_fcm">Новое сообщение от Firebase</string>
   <string name="new_message_fcm_sync">Добавление новой информации в базу данных</string>
 
+  <string name="no_geodata">Нет геоданных</string>
 </resources>
