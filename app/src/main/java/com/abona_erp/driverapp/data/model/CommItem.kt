@@ -4,7 +4,7 @@ package com.abona_erp.driverapp.data.model
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class CommItem(
+data class CommItem(
     @SerializedName("CompressedTasksCount")
     val compressedTasksCount: Int? = null,
     @SerializedName("Header")

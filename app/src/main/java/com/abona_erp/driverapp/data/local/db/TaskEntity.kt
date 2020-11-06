@@ -29,6 +29,6 @@ data class TaskEntity(
     @ColumnInfo val mandantId: Int,
     @ColumnInfo val kundenName: String?,
     @ColumnInfo val notesItem: List<NotesItem>?,
-    @ColumnInfo val confirmationType: ConfirmationType, //used for saving ui state - based on user actions
+    @ColumnInfo val confirmationType: ConfirmationType?, //used for saving ui state - based on user actions
     @ColumnInfo val openCondition: Boolean
 ) : Parcelable

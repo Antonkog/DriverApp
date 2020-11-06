@@ -150,7 +150,7 @@ class TasksViewModel @ViewModelInject constructor(
 
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
         val result =
-            repository.confirmTask(context, UtilModel.getTaskConfirmation(context, taskEntity))
+            repository.confirmTask(context, UtilModel.getTaskConfirmation(context, taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)))
         if (result.succeeded) {
             if (result.data?.isSuccess == true) {
                 updateTask(

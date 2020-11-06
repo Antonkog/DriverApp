@@ -30,7 +30,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         binding.cardView.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
 
-        val color = ConfirmationType.getColor(context, data.taskEntity.confirmationType)
+        val color = ConfirmationType.getColor(context, data.taskEntity.confirmationType?: ConfirmationType.RECEIVED)
         binding.imageSync?.setColorFilter(color)
 
         val nameId = UtilModel.getResIdByTaskActionType(data.taskEntity)

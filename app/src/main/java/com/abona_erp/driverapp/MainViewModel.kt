@@ -83,6 +83,7 @@ class MainViewModel @ViewModelInject constructor(
 
     suspend fun handleFirebaseMessage(message: String) {
         val messageStruct: CommItem = gson.fromJson(message, CommItem::class.java)
+        Log.d(TAG, "handleFirebaseMessage: \n $messageStruct")
         when (messageStruct.header.dataType) {
             DataType.VEHICLE.dataType -> {
                 Log.d(TAG, " got fcm VEHICLE")

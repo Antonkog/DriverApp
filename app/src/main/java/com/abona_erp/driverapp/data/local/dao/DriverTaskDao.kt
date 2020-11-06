@@ -81,7 +81,7 @@ interface DriverTaskDao {
         }
     }
 
-    private suspend fun getStatus(taskid: Int): ConfirmationType {
+    private suspend fun getStatus(taskid: Int): ConfirmationType? {
         getTasks().forEach { 
             if(it.taskId == taskid){
                 return it.confirmationType

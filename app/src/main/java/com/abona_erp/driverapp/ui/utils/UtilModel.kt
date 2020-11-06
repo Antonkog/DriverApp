@@ -76,7 +76,7 @@ object UtilModel {
             Header.Builder(DataType.TASK_CONFIRMATION.dataType, DeviceUtils.getUniqueID(context))
                 .build()
         return CommItem.Builder(header = header)
-            .confirmationItem(getInnerTaskConfirmation(context, task)).build()
+            .confirmationItem(getInnerTaskConfirmation(task)).build()
     }
 
     fun ActivityEntity.toActivity(deviceId: String): Activity {
@@ -305,11 +305,11 @@ object UtilModel {
         return dfUtc
     }
 
-    private fun formatLongDateTime(date: Date): String {
+    fun formatLongDateTime(date: Date): String {
         return serverDateFormat().format(date)
     }
 
-    private fun serverStringToDate(date: String): Date? {
+     fun serverStringToDate(date: String): Date? {
         return try {
             serverDateFormat().parse(date)
         } catch (e: java.lang.Exception) {
@@ -402,14 +402,14 @@ object UtilModel {
         } else "-"
     }
 
-    private fun getInnerTaskConfirmation(context: Context, taskItem: TaskEntity): ConfirmationItem {
+    private fun getInnerTaskConfirmation(taskItem: TaskEntity): ConfirmationItem {
         val confirmationItem = ConfirmationItem.Builder(
             confirmationType = taskItem.confirmationType,
             timeStampConfirmationUTC = Date(),
             mandantId = taskItem.mandantId,
             taskId = taskItem.taskId,
             taskChangeId = taskItem.taskId, //todo: ask Tilman what is taskChangeId and why we use it
-            text = context.getString(R.string.task_note) //todo: ask Tilman what is taskChangeId and where we use text, why we send it user dont put text enywhere
+            text = null//todo: ask Tilman what is taskChangeId and where we use text, why we send it user dont put text enywhere
         )
         return confirmationItem.build()
     }
