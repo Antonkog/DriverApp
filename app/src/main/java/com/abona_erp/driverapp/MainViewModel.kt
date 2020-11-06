@@ -12,6 +12,7 @@ import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.local.preferences.putLong
+import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.model.CommItem
 import com.abona_erp.driverapp.data.model.DataType
 import com.abona_erp.driverapp.data.model.VehicleItem
@@ -90,6 +91,13 @@ class MainViewModel @ViewModelInject constructor(
                 Log.d(TAG, " got fcm task")
                 messageStruct.taskItem?.let {
                     Log.d(TAG, " saving fcm task $it")
+                    var status = ConfirmationType.RECEIVED
+                    if(status == ConfirmationType.RECEIVED){// we dont set confirm type on server and loose it when log-out
+                        val activeTasks = it.activities.filter{it.status < ActivityStatus.FINISHED.status}
+                        if(activeTasks.isEmpty())
+                            status = ConfirmationType.TASK_CONFIRMED_BY_USER // we change task as confirmed if all activity set
+                    }
+
                     repository.insertOrUpdateTask(
                         TaskEntity(
                             it.taskId,
@@ -108,7 +116,7 @@ class MainViewModel @ViewModelInject constructor(
                             it.mandantId,
                             it.kundenName,
                             it.notes,
-                            ConfirmationType.RECEIVED,
+                            status,
                             false
                         )
                     )

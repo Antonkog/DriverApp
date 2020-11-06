@@ -71,6 +71,7 @@ interface AppRepository {
     suspend fun insertDocument(documentEntity: DocumentEntity)
 
     suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
+    suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity?
     suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity?
     suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity?
 

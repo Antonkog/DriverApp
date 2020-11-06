@@ -188,6 +188,10 @@ class AppRepositoryImpl @Inject constructor(
         return localDataSource.getNextActivityIfExist(activityEntity)
     }
 
+    override suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
+        return localDataSource.getFirstTaskActivity(taskEntity)
+    }
+
     override suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity? {
         return localDataSource.getNextTaskIfExist(taskEntity)
     }
