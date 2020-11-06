@@ -25,7 +25,10 @@ interface DriverTaskDao {
 
 
     @Query("SELECT * FROM task_entity WHERE taskId =:taskpid AND mandantId =:mandantId")
-    suspend fun getParentTask(taskpid: Int,  mandantId: Int): TaskEntity
+    suspend fun getTaskByIds(taskpid: Int, mandantId: Int): TaskEntity?
+
+    @Query("SELECT * FROM task_entity WHERE orderNo =:orderNo AND taskId =:taskpid AND mandantId =:mandantId")
+    suspend fun getTaskByOrder(orderNo: Int, taskpid: Int, mandantId: Int): TaskEntity?
 
     @Update
     suspend fun update(taskEntity: TaskEntity): Int

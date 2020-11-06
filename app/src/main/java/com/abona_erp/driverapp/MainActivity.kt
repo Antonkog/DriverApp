@@ -83,6 +83,12 @@ class MainActivity : AppCompatActivity() {
         val linContainer = findViewById<LinearLayout>(R.id.status_container)
         val bottomSheetBehavior =
             BottomSheetBehavior.from(linContainer)
+
+        mainViewModel.authReset.observe(this, Observer {
+            mainViewModel.resetAuthTime()
+            navController.navigate(R.id.nav_login)
+        })
+
         mainViewModel.requestStatus.observe(this, Observer {
             when (it.type) {
                 MainViewModel.StatusType.LOADING -> {
@@ -119,7 +125,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_log_out -> {
-                mainViewModel.doLogOutActions()
+                mainViewModel.resetAuthTime()
+                mainViewModel.clearDatabase()
                 navController.navigate(R.id.nav_login)
                 true
             }

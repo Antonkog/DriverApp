@@ -36,21 +36,14 @@ class MainViewModel @ViewModelInject constructor(
     private val TAG = "MainViewModel"
 
     val vechicle = MutableLiveData<VehicleItem>()
-    val error = MutableLiveData<String>()
     val requestStatus = MutableLiveData<Status>()
+    val authReset = MutableLiveData<Boolean>()
 
     data class Status(val message: String?, val type: StatusType)
     enum class StatusType {
         COMPLETE,
         LOADING,
         ERROR
-    }
-
-    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        exception.message.let {
-            Log.e(TasksViewModel.TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
-            error.postValue(exception.message)
-        }
     }
 
     init {
@@ -73,7 +66,7 @@ class MainViewModel @ViewModelInject constructor(
         }
 
         RxBus.listen(RxBusEvent.AuthError::class.java).subscribe {
-            doLogOutActions() //todo: navigate to login check if called from NetworkInterceptor
+            authReset.postValue(true)
         }
     }
 
@@ -97,7 +90,7 @@ class MainViewModel @ViewModelInject constructor(
                 Log.d(TAG, " got fcm task")
                 messageStruct.taskItem?.let {
                     Log.d(TAG, " saving fcm task $it")
-                    repository.insertOrReplaceTask(
+                    repository.insertOrUpdateTask(
                         TaskEntity(
                             it.taskId,
                             it.actionType,
@@ -119,17 +112,16 @@ class MainViewModel @ViewModelInject constructor(
                             false
                         )
                     )
-                    it.activities.forEach {
-                            fcmActivity -> repository.insertOrUpdateActivity(fcmActivity.toActivityEntity())
+                    it.activities.forEach { fcmActivity -> repository.insertOrUpdateActivity(fcmActivity.toActivityEntity())
                     }
                 }
             }
         }
     }
 
-    fun doLogOutActions() {
-        viewModelScope.launch(exceptionHandler){
-            resetAuthTime()
+
+    fun clearDatabase() {
+        viewModelScope.launch(IO) {
             repository.cleanDatabase()
         }
     }

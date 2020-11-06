@@ -13,16 +13,16 @@ import java.util.*
 
 @Dao
 interface DriverActDao {
-    @Query("SELECT * FROM activity_entity")
+    @Query("SELECT * FROM activity_entity ORDER BY sequence DESC")
     fun getAll(): LiveData<List<ActivityEntity>>
 
     @Query("SELECT * FROM activity_entity WHERE mandantId =:mandantId AND taskpId =:taskId AND activityId =:actId")
     fun getActivity(actId: Int, taskId: Int, mandantId: Int): ActivityEntity?
 
-    @Query("SELECT * FROM activity_entity")
+    @Query("SELECT * FROM activity_entity  ORDER BY sequence DESC")
     fun getAllAsList(): List<ActivityEntity>
 
-    @Query("SELECT * FROM activity_entity WHERE taskpId =:taskId")
+    @Query("SELECT * FROM activity_entity WHERE taskpId =:taskId  ORDER BY sequence DESC")
     fun getAllByTask(taskId: Int): LiveData<List<ActivityEntity>>
 
     /**
