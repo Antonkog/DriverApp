@@ -193,4 +193,5 @@
     <string name="new_message_fcm">Nowa wiadomość od Firebase</string>
   <string name="new_message_fcm_sync">Dodawanie nowych informacji do bazy danych</string>
 
+  <string name="no_geodata">Brak danych geograficznych</string>
 </resources>

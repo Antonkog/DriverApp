@@ -93,6 +93,17 @@
               tools:text="29.10.2019 10:33:33"
               />
 
+          <com.abona_erp.driver.app.ui.widget.AsapTextView
+            android:id="@+id/tv_no_geodata"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/clrAbona"
+            android:visibility="gone"
+            android:text="@string/no_geodata"
+            tools:visibility="visible"
+            />
+
         </LinearLayout>
 
         <View

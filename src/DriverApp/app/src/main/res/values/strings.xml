@@ -336,4 +336,6 @@
   <string name="delay_minutes">Delay: %d minutes</string>
   <string name="sync_activity">Activity to synchronize</string>
   <string name="sync_task">Task to synchronize</string>
+
+  <string name="no_geodata">No Geodata</string>
 </resources>

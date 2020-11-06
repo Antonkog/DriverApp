@@ -274,8 +274,10 @@ public class CommItemAdapterExt extends
           String localTime = getLocalTimeFromGivenTimeZone(sdf.format(taskItem.getTaskDueDateFinish()), startTimeZoneRegion);
           holder.tv_local_time_task_finish.setText(localTime + " " + mContext.getString(R.string.your_timeZone));
           holder.tv_local_time_task_finish.setVisibility(View.VISIBLE);
+          holder.tv_no_geodata.setVisibility(View.GONE);
         } else {
           holder.tv_local_time_task_finish.setVisibility(View.GONE);
+          holder.tv_no_geodata.setVisibility(View.VISIBLE);
         }
 
         if (taskItem.getTaskStatus() != null) {
@@ -460,6 +462,7 @@ public class CommItemAdapterExt extends
     final AsapTextView tv_activity_step_status_message;
     final RecyclerView rv_sub_list;
     final AsapTextView tv_document_badge;
+    final AsapTextView tv_no_geodata;
   
     final AsapTextView tv_header_notes;
     final AsapTextView tv_header_notes_minus;
@@ -525,6 +528,8 @@ public class CommItemAdapterExt extends
       btn_camera = (AppCompatImageButton)itemView.findViewById(R.id.btn_camera);
       btn_map = (AppCompatImageButton)itemView.findViewById(R.id.btn_map);
       ll_due_in = (LinearLayout)itemView.findViewById(R.id.due_in_layout);
+      
+      tv_no_geodata = (AsapTextView)itemView.findViewById(R.id.tv_no_geodata);
     }
   }
   
