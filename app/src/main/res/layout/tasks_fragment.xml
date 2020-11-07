@@ -37,23 +37,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tabGravity="center">
+                app:tabMaxWidth="0dp"
+                app:tabGravity="fill"
+                app:tabMode="fixed">
 
                 <com.google.android.material.tabs.TabItem
-                    android:id="@+id/tab_pending"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tab_to_do"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/pending" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:id="@+id/tab_running"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/running" />
+                    android:text="@string/to_do" />
 
                 <com.google.android.material.tabs.TabItem
                     android:id="@+id/tab_completed"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/completed" />
 

@@ -21,6 +21,8 @@
     <string name="running">Running</string>
     <string name="completed">Completed</string>
 
+    <string name="to_do" translatable="false">TO DO</string>
+
 
     <!--used to parse status code and give string-->
 
@@ -123,6 +125,7 @@
     <!--placeholders, do not translate-->
     <string name="task_txt_placeholder" translatable="false">Pick up*</string>
     <string name="task_duein_placeholder" translatable="false">0 d 11h 41m*</string>
+    <string name="task_duein_format" translatable="false">%02d:d %02d:h %02d:m</string>
     <string name="task_finish_placeholder" translatable="false">15 sep 10*</string>
     <string name="task_address_one_placeholder" translatable="false">UA, Kyiv, (lon, lat)*</string>
     <string name="task_address_two_placeholder" translatable="false">Some str. 121/3*</string>

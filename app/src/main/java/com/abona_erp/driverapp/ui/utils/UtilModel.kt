@@ -16,42 +16,13 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 
 object UtilModel {
 
     private const val TAG = "UtilModel"
-
-//    fun mapActivityToSend(activity: ActivityEntity): Activity {
-//        return Activity(activity.activityId, activity.activityId, null, activity.)
-//    }
-//    @SerializedName("ActivityId")
-//    val activityId: Int,
-//    @SerializedName("CustomActivityId")
-//    val customActivityId: Int,
-//    @SerializedName("DelayReasons")
-//    val delayReasons: Any,
-//    @SerializedName("Description")
-//    val description: String?,
-//    @SerializedName("DeviceId")
-//    val deviceId: String?,
-//    @SerializedName("Finished")
-//    val finished: String?,
-//    @SerializedName("MandantId")
-//    val mandantId: Int,
-//    @SerializedName("Name")
-//    val name: String?,
-//    @SerializedName("RadiusGeoFence")
-//    val radiusGeoFence: Int,
-//    @SerializedName("Sequence")
-//    val sequence: Int,
-//    @SerializedName("Started")
-//    val started: String?,
-//    @SerializedName("Status")
-//    val status: Int,
-//    @SerializedName("TaskId")
-//    val taskId: Int
 
     fun getCommActivityChangeItem(context: Context, activity: Activity): CommItem {
         val header =
@@ -315,7 +286,7 @@ object UtilModel {
         return serverDateFormat().format(date)
     }
 
-     fun serverStringToDate(date: String): Date? {
+    fun serverStringToDate(date: String): Date? {
         return try {
             serverDateFormat().parse(date)
         } catch (e: java.lang.Exception) {
@@ -329,12 +300,14 @@ object UtilModel {
             val difference = oldDate.time - Date().time
             if (difference < 0)
                 return context.resources.getString(R.string.task_overdue)
-            val dfUtc: DateFormat = SimpleDateFormat(
-                Constant.abonaUIDateFormat,
-                Locale.getDefault()
+
+            return String.format(
+                context.resources.getString(R.string.task_duein_format),
+                TimeUnit.MILLISECONDS.toDays(difference),
+                TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
+                TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
             )
-            dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-            return dfUtc.format(difference)
         }
         return it
     }

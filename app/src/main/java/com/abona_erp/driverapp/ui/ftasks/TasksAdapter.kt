@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
+import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.databinding.TaskItemBinding
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.getImageResource
@@ -30,9 +31,28 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         binding.cardView.setOnClickListener { itemClickListener?.onLazyItemClick(data) }
 
-        val color = ConfirmationType.getColor(context, data.taskEntity.confirmationType?: ConfirmationType.RECEIVED)
+        val color = ConfirmationType.getColor(
+            context,
+            data.taskEntity.confirmationType ?: ConfirmationType.RECEIVED
+        )
         binding.imageSync?.setColorFilter(color)
 
+
+        when (data.taskEntity.status) {
+            TaskStatus.FINISHED -> {
+                binding.cardView.elevation = 0F
+                binding.cardView.translationZ = 0F
+                binding.cardView.alpha = 0.5F
+            }
+            TaskStatus.PENDING -> {
+                binding.cardView.elevation = context.resources.getDimension(R.dimen.elevation_IV)
+                binding.cardView.alpha = 1F
+            }
+            TaskStatus.RUNNING -> {
+                binding.cardView.elevation = context.resources.getDimension(R.dimen.elevation_VIII)
+                binding.cardView.alpha = 1F
+            }
+        }
         val nameId = UtilModel.getResIdByTaskActionType(data.taskEntity)
 
         binding.hiddenSection.visibility =
@@ -50,7 +70,8 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
             data.activities.firstOrNull { it.confirmationType == ActivityConfirmationType.RECEIVED }?.name
                 ?: "" //todo: sort by activity id
 
-        binding.textOrderNo.text = UtilModel.parseOrderNo(data.taskEntity.orderDetails?.orderNo?.toLong() ?: 0)
+        binding.textOrderNo.text =
+            UtilModel.parseOrderNo(data.taskEntity.orderDetails?.orderNo?.toLong() ?: 0)
 
         setActivitiesButton(data, binding)
         setDocumentsButton(data, binding)
@@ -67,14 +88,21 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
     private fun setDocumentsButton(data: TaskWithActivities, binding: TaskItemBinding) {
         binding.imageDocuments.setOnClickListener {
-            val bundle = bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
+            val bundle =
+                bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
             navController.navigate(R.id.action_nav_home_to_nav_documents, bundle)
         }
     }
 
     private fun setActivitiesButton(data: TaskWithActivities, binding: TaskItemBinding) {
-        val bundle = bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
-        binding.activityButton.setOnClickListener { navController.navigate(R.id.action_nav_home_to_nav_activities, bundle)}
+        val bundle =
+            bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
+        binding.activityButton.setOnClickListener {
+            navController.navigate(
+                R.id.action_nav_home_to_nav_activities,
+                bundle
+            )
+        }
     }
 
 

@@ -20,7 +20,6 @@ object Constant {
     const val abonaUIDateFormat = "yyyy-MM-dd"
     const val abonaUITimeFormat = "yyyy-MM-dd HH:mm"
     const val abonaTimeZone = "UTC"
-    const val abonaUITimeDueIn = "'d':dd 'h':hh 'm':mm"
     const val tokenUpdateHours = 48
 
 
@@ -34,7 +33,7 @@ object Constant {
     const val token = "token"
     const val token_created = "token_created"
     const val tokenFcm = "tokenFcm"
-    const val currentVechicle= "currentVechicle"
+    const val currentVechicle = "currentVechicle"
     const val currentVisibleTaskid = "current_visible_taskId"
     const val currentVisibleOrderId = "current_visible_OrderId"
     const val mandantId = "mandantId"
