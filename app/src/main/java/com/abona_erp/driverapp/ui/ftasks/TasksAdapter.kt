@@ -40,8 +40,9 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         binding.progressTask.progress = data.taskEntity.status.intId
         binding.textTaskName.text = mResources.getString(nameId)
-        data.taskEntity.taskDueDateFinish?.let {
-            binding.textFinishTime.text = UtilModel.serverTimeShortener(it)
+
+        data.taskEntity.taskDueDateFinish?.let { //as we don't have taskDueDateFinish from server - here counting
+            binding.textFinishTime.text = UtilModel.serverDateShortener(it)
             binding.textDueInTime.text = getTimeDifference(it, context)
         }
 

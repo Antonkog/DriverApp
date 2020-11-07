@@ -18,6 +18,7 @@ object Constant {
 
 
     const val abonaUIDateFormat = "yyyy-MM-dd"
+    const val abonaUITimeFormat = "yyyy-MM-dd HH:mm"
     const val abonaTimeZone = "UTC"
     const val abonaUITimeDueIn = "'d':dd 'h':hh 'm':mm"
     const val tokenUpdateHours = 48

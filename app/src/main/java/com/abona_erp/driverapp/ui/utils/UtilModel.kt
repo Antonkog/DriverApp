@@ -305,6 +305,12 @@ object UtilModel {
         return dfUtc
     }
 
+    private fun uiTimeFormat(): DateFormat {
+        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaUITimeFormat, Locale.getDefault())
+        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+        return dfUtc
+    }
+
     fun formatLongDateTime(date: Date): String {
         return serverDateFormat().format(date)
     }
@@ -333,10 +339,20 @@ object UtilModel {
         return it
     }
 
-    fun serverTimeShortener(date: String): String {
+    fun serverDateShortener(date: String): String {
         return try {
             val dateOpt = serverDateFormat().parse(date)
             dateOpt?.let { uiDateFormat().format(it) } ?: date
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            date
+        }
+    }
+
+    fun serverTimeShortener(date: String): String {
+        return try {
+            val dateOpt = serverDateFormat().parse(date)
+            dateOpt?.let { uiTimeFormat().format(it) } ?: date
         } catch (e: ParseException) {
             e.printStackTrace()
             date
