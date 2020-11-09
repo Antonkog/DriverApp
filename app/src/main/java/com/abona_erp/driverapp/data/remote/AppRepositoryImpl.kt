@@ -33,7 +33,7 @@ class AppRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
     val localDataSource: LocalDataSource,
     val rabbit: RabbitService,
-    val api: ApiService,
+    val api: ApiServiceWrapper,
     val authService: AuthService
 ) : AppRepository {
     val TAG = "ApiRepositoryImpl"
@@ -82,29 +82,11 @@ class AppRepositoryImpl @Inject constructor(
         userName: String,
         password: String
     ): ResultWrapper<TokenResponse> {
-        RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-        return try{
-            val result =   ResultWrapper.Success(api.authentication(grantType, userName, password))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(result.toString(), MainViewModel.StatusType.COMPLETE)))
-            result
-        }catch (ex: Exception){
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
-            ResultWrapper.Error(ex)
-        }
-
+       return api.authentication(grantType,userName,password)
     }
 
     override suspend fun registerDevice(commItem: CommItem): ResultWrapper<ResultOfAction>  {
-        RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-        return try {
-            val result =
-            ResultWrapper.Success(api.setDeviceProfile(commItem))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(result.toString(), MainViewModel.StatusType.COMPLETE)))
-            result
-        } catch (ex: Exception){
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
-            return ResultWrapper.Error(ex)
-        }
+       return api.setDeviceProfile(commItem)
     }
 
     override suspend fun getTasks(
@@ -112,12 +94,9 @@ class AppRepositoryImpl @Inject constructor(
         deviceId: String
     ): ResultWrapper<List<TaskEntity>> {
         if (forceUpdate) {
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
             try {
                 updateTasksFromRemoteDataSource(deviceId)
-                RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.COMPLETE)))
             } catch (ex: Exception) {
-                RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
                 return ResultWrapper.Error(ex)
             }
         }
@@ -126,28 +105,77 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun postActivity(context: Context, activity: Activity): ResultWrapper<ResultOfAction>{
         val commItem: CommItem = UtilModel.getCommActivityChangeItem(context, activity)
-        RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-        return try {
-            val result = ResultWrapper.Success(api.postActivityChange(commItem))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(result.toString(), MainViewModel.StatusType.COMPLETE)))
-            result
-        } catch (ex: Exception){
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
-            ResultWrapper.Error(ex)
-        }
+       return api.postActivityChange(commItem)
     }
 
     override suspend fun confirmTask(
         context: Context,
         commItem: CommItem
     ): ResultWrapper<ResultOfAction> {
-        return try{
-            ResultWrapper.Success(api.confirmTask(commItem))
-        } catch (ex: java.lang.Exception){
-            ResultWrapper.Error(ex)
-        }
+       return api.confirmTask(commItem)
     }
 
+
+    private suspend fun updateDocumentsFromRemoteDataSource(
+        mandantId: Int,
+        orderNo: Int,
+        deviceId: String
+    ) {
+        api.updateDocumentsFromServer(mandantId, orderNo, deviceId)
+    }
+
+    private suspend fun updateTasksFromRemoteDataSource(deviceId: String) {
+        api.updateTasksFromServer(deviceId)
+    }
+
+
+    override fun upladDocument(
+        mandantId: Int,
+        orderNo: Int,
+        taskID: Int,
+        driverNo: Int,
+        documentType: Int,
+        inputStream: InputStream
+    ): Single<UploadResult> {
+        val mandantBody = mandantId.toMultipartBody()
+        val orderBody = orderNo.toMultipartBody()
+        val taskBody = taskID.toMultipartBody()
+        val driverBody = driverNo.toMultipartBody()
+        val docTypeBody = documentType.toMultipartBody()
+        // val ims : InputStream =  file.inputStream()
+
+
+        val newFIle = File.createTempFile(
+            "abona",
+            ".pdf",
+            context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
+        )
+
+        try {
+            FileUtils.copyToFile(inputStream, newFIle)
+        } catch (e: IOException) {
+            Log.e(TAG, "can't send document")
+        }
+
+
+        val fileBody = newFIle.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//        val out =  IOUtils.toByteArray(ims).toRequestBody()
+//        val name = ""+ System.currentTimeMillis() + ".dpf"
+
+        val multiparFileBody = MultipartBody.Part.createFormData(
+            name = "files[]",
+            filename = newFIle.name,
+            body = fileBody
+        )
+        return api.uploadDocument(
+            mandantBody,
+            orderBody,
+            taskBody,
+            driverBody,
+            docTypeBody,
+            multiparFileBody
+        )
+    }
 
     override suspend fun getDocuments(
         forceUpdate: Boolean,
@@ -156,12 +184,9 @@ class AppRepositoryImpl @Inject constructor(
         deviceId: String
     ): ResultWrapper<List<DocumentEntity>> {
         if (forceUpdate) {
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
             try {
                 updateDocumentsFromRemoteDataSource(mandantId, orderNo, deviceId)
-                RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.COMPLETE)))
             } catch (ex: Exception) {
-                RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
                 return ResultWrapper.Error(ex)
             }
         }
@@ -216,79 +241,6 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
        return localDataSource.getParentTask(activityEntity)
-    }
-
-    suspend fun updateDocumentsFromRemoteDataSource(
-        mandantId: Int,
-        orderNo: Int,
-        deviceId: String
-    ) {
-        val remoteDocuments = api.getDocuments(mandantId, orderNo, deviceId)
-        if (!remoteDocuments.isNullOrEmpty()) {
-            localDataSource.deleteDocuments()
-            localDataSource.insertDocumentResponse(remoteDocuments)
-        } else {
-            throw java.lang.Exception("no documents for this task ")
-        }
-    }
-
-    suspend fun updateTasksFromRemoteDataSource(deviceId: String) {
-        val remoteTasks = api.getAllTasks(deviceId)
-
-        if (remoteTasks.isSuccess && !remoteTasks.isException) {
-            localDataSource.updateFromCommItem(remoteTasks)
-        } else {
-            throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text} ")
-        }
-    }
-
-
-    override fun upladDocument(
-        mandantId: Int,
-        orderNo: Int,
-        taskID: Int,
-        driverNo: Int,
-        documentType: Int,
-        inputStream: InputStream
-    ): Single<UploadResult> {
-        val mandantBody = mandantId.toMultipartBody()
-        val orderBody = orderNo.toMultipartBody()
-        val taskBody = taskID.toMultipartBody()
-        val driverBody = driverNo.toMultipartBody()
-        val docTypeBody = documentType.toMultipartBody()
-        // val ims : InputStream =  file.inputStream()
-
-
-        val newFIle = File.createTempFile(
-            "abona",
-            ".pdf",
-            context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
-        )
-
-        try {
-            FileUtils.copyToFile(inputStream, newFIle)
-        } catch (e: IOException) {
-            Log.e(TAG, "can't send document")
-        }
-
-
-        val fileBody = newFIle.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-//        val out =  IOUtils.toByteArray(ims).toRequestBody()
-//        val name = ""+ System.currentTimeMillis() + ".dpf"
-
-        val multiparFileBody = MultipartBody.Part.createFormData(
-            name = "files[]",
-            filename = newFIle.name,
-            body = fileBody
-        )
-        return api.uploadDocument(
-            mandantBody,
-            orderBody,
-            taskBody,
-            driverBody,
-            docTypeBody,
-            multiparFileBody
-        )
     }
 
     private fun String.toPlainTextBody() = toRequestBody("text/plain".toMediaType())

@@ -27,10 +27,7 @@ import com.abona_erp.driverapp.data.local.LocalDataSource
 import com.abona_erp.driverapp.data.local.db.AppDatabase
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.model.ConfirmationItem
-import com.abona_erp.driverapp.data.remote.ApiService
-import com.abona_erp.driverapp.data.remote.AppRepository
-import com.abona_erp.driverapp.data.remote.AppRepositoryImpl
-import com.abona_erp.driverapp.data.remote.AuthService
+import com.abona_erp.driverapp.data.remote.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.abona_erp.driverapp.data.remote.utils.MockInterceptor
 import com.abona_erp.driverapp.data.remote.utils.NetworkInterceptor
@@ -141,16 +138,17 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApiService(
+    fun provideApiServiceWrapper(
         @ApplicationContext context: Context,
         okHttpClient: OkHttpClient,
-        gson: Gson
-    ): ApiService {
-        return Retrofit.Builder()
+        gson: Gson, localDataSource: LocalDataSource
+    ): ApiServiceWrapper {
+        val api =  Retrofit.Builder()
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .baseUrl(PrivatePreferences.getEndpoint(context)).build().create(ApiService::class.java)
+        return ApiServiceWrapper(api, localDataSource)
     }
 
     @Singleton

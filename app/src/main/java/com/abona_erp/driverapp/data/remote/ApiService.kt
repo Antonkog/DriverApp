@@ -48,22 +48,4 @@ interface ApiService {
         @Part("DMSDocumentType") documentType: RequestBody?,
         @Part file: MultipartBody.Part?
     ): Single<UploadResult>
-
-
-////
-//
-//    @Streaming
-//    @GET("api/uploader/download")
-//    Call<ResponseBody> downloadFile(@Query("id") String id);
-//
-//    @Multipart
-//    @POST("api/uploader/upload")
-//    Call<UploadResult> upload(
-//            @Part("MandantId") RequestBody mandantId,
-//            @Part("OrderNo") RequestBody orderNo,
-//            @Part("TaskId") RequestBody taskId,
-//            @Part("DriverNo") RequestBody driverNo,
-//            @Part("DMSDocumentType") RequestBody documentType,
-//            @Part MultipartBody.Part file
-//    );
 }

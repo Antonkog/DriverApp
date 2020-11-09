@@ -71,6 +71,7 @@ class DriverActViewModel @ViewModelInject constructor(
 
 
             } else {
+                postConfirmationErrorToUI(result.toString())
                 Log.e(TAG, result.toString())
             }
         }
@@ -91,7 +92,7 @@ class DriverActViewModel @ViewModelInject constructor(
                     updateTaskConfirmedInDb(newNextTask)
                     postNextTaskActivity(next)
                 } else {
-                    postConfirmationErrorToUI(resultWrapper?.data?.text ?: "cant update next task status" )
+                    postConfirmationErrorToUI(resultWrapper.data?.text ?: "cant update next task status" )
                 }
             } else {
                 postConfirmationErrorToUI("cant update next task status $resultWrapper" )
