@@ -24,7 +24,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.FileUtils
-import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -177,8 +176,8 @@ class AppRepositoryImpl @Inject constructor(
         getDocuments(true, mandantId, orderNo, deviceId)
     }
 
-    override suspend fun insertOrReplaceTask(taskEntity: TaskEntity) {
-        localDataSource.insertOrReplaceTask(taskEntity)
+    override suspend fun insertOrUpdateTask(taskEntity: TaskEntity) {
+        localDataSource.insertOrUpdateTask(taskEntity)
     }
 
     override suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
@@ -187,6 +186,14 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
         return localDataSource.getNextActivityIfExist(activityEntity)
+    }
+
+    override suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
+        return localDataSource.getFirstTaskActivity(taskEntity)
+    }
+
+    override suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity? {
+        return localDataSource.getNextTaskIfExist(taskEntity)
     }
 
     override suspend fun cleanDatabase() {
@@ -207,7 +214,7 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity {
+    override suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
        return localDataSource.getParentTask(activityEntity)
     }
 

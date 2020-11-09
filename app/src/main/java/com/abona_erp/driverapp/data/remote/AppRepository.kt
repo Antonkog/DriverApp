@@ -64,14 +64,16 @@ interface AppRepository {
 
     //local from db
     suspend fun updateTask(taskEntity: TaskEntity): Int //from fcm
-    suspend fun insertOrReplaceTask(taskEntity: TaskEntity)
+    suspend fun insertOrUpdateTask(taskEntity: TaskEntity)
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity)
     suspend fun updateActivity(activityEntity: ActivityEntity):Int // call api to set db
     //new document
     suspend fun insertDocument(documentEntity: DocumentEntity)
 
     suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
-    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity
+    suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity?
+    suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity?
+    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity?
 
     suspend fun cleanDatabase()
 

@@ -16,42 +16,13 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 
 object UtilModel {
 
     private const val TAG = "UtilModel"
-
-//    fun mapActivityToSend(activity: ActivityEntity): Activity {
-//        return Activity(activity.activityId, activity.activityId, null, activity.)
-//    }
-//    @SerializedName("ActivityId")
-//    val activityId: Int,
-//    @SerializedName("CustomActivityId")
-//    val customActivityId: Int,
-//    @SerializedName("DelayReasons")
-//    val delayReasons: Any,
-//    @SerializedName("Description")
-//    val description: String?,
-//    @SerializedName("DeviceId")
-//    val deviceId: String?,
-//    @SerializedName("Finished")
-//    val finished: String?,
-//    @SerializedName("MandantId")
-//    val mandantId: Int,
-//    @SerializedName("Name")
-//    val name: String?,
-//    @SerializedName("RadiusGeoFence")
-//    val radiusGeoFence: Int,
-//    @SerializedName("Sequence")
-//    val sequence: Int,
-//    @SerializedName("Started")
-//    val started: String?,
-//    @SerializedName("Status")
-//    val status: Int,
-//    @SerializedName("TaskId")
-//    val taskId: Int
 
     fun getCommActivityChangeItem(context: Context, activity: Activity): CommItem {
         val header =
@@ -76,7 +47,7 @@ object UtilModel {
             Header.Builder(DataType.TASK_CONFIRMATION.dataType, DeviceUtils.getUniqueID(context))
                 .build()
         return CommItem.Builder(header = header)
-            .confirmationItem(getInnerTaskConfirmation(context, task)).build()
+            .confirmationItem(getInnerTaskConfirmation(task)).build()
     }
 
     fun ActivityEntity.toActivity(deviceId: String): Activity {
@@ -305,11 +276,17 @@ object UtilModel {
         return dfUtc
     }
 
-    private fun formatLongDateTime(date: Date): String {
+    private fun uiTimeFormat(): DateFormat {
+        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaUITimeFormat, Locale.getDefault())
+        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+        return dfUtc
+    }
+
+    fun formatLongDateTime(date: Date): String {
         return serverDateFormat().format(date)
     }
 
-    private fun serverStringToDate(date: String): Date? {
+    fun serverStringToDate(date: String): Date? {
         return try {
             serverDateFormat().parse(date)
         } catch (e: java.lang.Exception) {
@@ -323,20 +300,32 @@ object UtilModel {
             val difference = oldDate.time - Date().time
             if (difference < 0)
                 return context.resources.getString(R.string.task_overdue)
-            val dfUtc: DateFormat = SimpleDateFormat(
-                Constant.abonaUIDateFormat,
-                Locale.getDefault()
+
+            return String.format(
+                context.resources.getString(R.string.task_duein_format),
+                TimeUnit.MILLISECONDS.toDays(difference),
+                TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
+                TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
             )
-            dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-            return dfUtc.format(difference)
         }
         return it
+    }
+
+    fun serverDateShortener(date: String): String {
+        return try {
+            val dateOpt = serverDateFormat().parse(date)
+            dateOpt?.let { uiDateFormat().format(it) } ?: date
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            date
+        }
     }
 
     fun serverTimeShortener(date: String): String {
         return try {
             val dateOpt = serverDateFormat().parse(date)
-            dateOpt?.let { uiDateFormat().format(it) } ?: date
+            dateOpt?.let { uiTimeFormat().format(it) } ?: date
         } catch (e: ParseException) {
             e.printStackTrace()
             date
@@ -402,14 +391,14 @@ object UtilModel {
         } else "-"
     }
 
-    private fun getInnerTaskConfirmation(context: Context, taskItem: TaskEntity): ConfirmationItem {
+    private fun getInnerTaskConfirmation(taskItem: TaskEntity): ConfirmationItem {
         val confirmationItem = ConfirmationItem.Builder(
             confirmationType = taskItem.confirmationType,
             timeStampConfirmationUTC = Date(),
             mandantId = taskItem.mandantId,
             taskId = taskItem.taskId,
             taskChangeId = taskItem.taskId, //todo: ask Tilman what is taskChangeId and why we use it
-            text = context.getString(R.string.task_note) //todo: ask Tilman what is taskChangeId and where we use text, why we send it user dont put text enywhere
+            text = null//todo: ask Tilman what is taskChangeId and where we use text, why we send it user dont put text enywhere
         )
         return confirmationItem.build()
     }

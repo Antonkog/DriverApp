@@ -1,18 +1,14 @@
 package com.abona_erp.driverapp.ui.factivities
 
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
+import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.databinding.ActivityItemBinding
-import com.abona_erp.driverapp.ui.utils.JsonParser
-import com.google.gson.Gson
+import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import org.json.JSONObject
 
 
 class ActivityAdapter(itemClickListener: DriverActFragment) :
@@ -20,30 +16,45 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
 
     override fun bindData(data: ActivityWrapper, binding: ActivityItemBinding) {
 
-        binding.textActName.text = data.activity.name
+        val context = binding.root.context
 
+        binding.textActName.text = data.activity.name
 
         if(data.buttonVisible) binding.buttonActConfirm.visibility = View.VISIBLE
         else binding.buttonActConfirm.visibility = View.GONE
 
+        binding.imageConfirmed.setColorFilter(ActivityConfirmationType.getColor(context, data.activity.confirmationType))
+
         when (data.activity.activityStatus) {
             ActivityStatus.PENDING -> {
                 binding.textFinished.visibility = View.INVISIBLE
+                binding.textFinishedValue.clearComposingText()
                 binding.buttonActConfirm.text =
                     binding.root.resources.getString(R.string.activity_start)
+
             }
             ActivityStatus.RUNNING -> {
                 binding.textFinished.visibility = View.INVISIBLE
+                binding.textFinishedValue.clearComposingText()
                 binding.buttonActConfirm.text =
                     binding.root.resources.getString(R.string.activity_next)
             }
             ActivityStatus.FINISHED -> {
+                binding.textFinished.visibility = View.VISIBLE
                 binding.buttonActConfirm.visibility = View.GONE
-                binding.textFinishedValue.text = data.activity.finished
+                data.activity.finished?.let {
+                    binding.textFinishedValue.text = UtilModel.serverTimeShortener(it)
+                }
+                binding.imageConfirmed.setColorFilter( // if activity finished setting green, even if confirmation status not saved in database (was removed when exit)
+                    ResourcesCompat.getColor(
+                    context.resources,
+                    R.color.confirm_green,
+                    null
+                ))
             }
             ActivityStatus.ENUM_ERROR -> {
                 binding.textFinished.visibility = View.INVISIBLE
-                binding.buttonActConfirm.visibility = View.GONE
+                binding.buttonActConfirm.visibility = View.VISIBLE
             }
         }
 
@@ -51,9 +62,9 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
             binding.buttonActConfirm.text =
                 binding.root.resources.getString(R.string.activity_finish)
         }
-
-
-        binding.textStartedValue.text = data.activity.started
+        data.activity.started?.let {
+            binding.textStartedValue.text =  UtilModel.serverTimeShortener(it)
+        }
 
         binding.buttonActConfirm.setOnClickListener {
             itemClickListener?.onLazyItemClick(data)

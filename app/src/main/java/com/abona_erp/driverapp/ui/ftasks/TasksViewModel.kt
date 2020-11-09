@@ -40,27 +40,24 @@ class TasksViewModel @ViewModelInject constructor(
 
     val filteredTasks: MutableLiveData<List<TaskWithActivities>> = MutableLiveData()
 
-    var runningTasks: LinkedList<TaskWithActivities> = LinkedList()
-    var pendingTasks: LinkedList<TaskWithActivities> = LinkedList()
+    var todoTasks: LinkedList<TaskWithActivities> = LinkedList()
     var completedTasks: LinkedList<TaskWithActivities> = LinkedList()
 
-    var currentStatus: Int = 0
+    var tabStatus: TabStatus = TabStatus.TO_DO
 
-
-    fun filterRunning() {
-        currentStatus = TaskStatus.RUNNING.intId
-        postTasksToFragmentByStatus()
-        Log.d(TAG, "posting Running " + runningTasks.size)
+    enum class TabStatus {
+        TO_DO,
+        COMPLETED
     }
 
-    fun filterPending() {
-        currentStatus = TaskStatus.PENDING.intId
+    fun filterTodo() {
+        tabStatus = TabStatus.TO_DO
         postTasksToFragmentByStatus()
-        Log.d(TAG, "posting Pending " + pendingTasks.size)
+        Log.d(TAG, "posting TO do " + todoTasks.size)
     }
 
     fun filterCompleted() {
-        currentStatus = TaskStatus.FINISHED.intId
+        tabStatus = TabStatus.COMPLETED
         postTasksToFragmentByStatus()
         Log.d(TAG, "posting Completed " + completedTasks.size)
     }
@@ -74,30 +71,24 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     private fun postTasksToFragmentByStatus() {
-        when (currentStatus) {
-            TaskStatus.PENDING.intId -> filteredTasks.postValue(pendingTasks)
-            TaskStatus.RUNNING.intId -> filteredTasks.postValue(runningTasks)
-            TaskStatus.FINISHED.intId -> filteredTasks.postValue(completedTasks)
-            TaskStatus.CMR.intId -> Log.e(TAG, "error  TaskStatus.CMR.status - not implemented")
-            TaskStatus.BREAK.intId -> Log.e(
-                TAG, "error  TaskStatus.BREAK.status - not implemented"
-            )
+        when (tabStatus) {
+            TabStatus.TO_DO -> filteredTasks.postValue(todoTasks)
+            TabStatus.COMPLETED -> filteredTasks.postValue(completedTasks)
         }
     }
 
 
     private fun divideTasksAndActivityByStatus(tasks: List<TaskWithActivities>) {
         if (!tasks.isNullOrEmpty()) {
-            pendingTasks.clear()
-            runningTasks.clear()
+            todoTasks.clear()
             completedTasks.clear()
             tasks.forEach {
                 when (it.taskEntity.status) {
                     TaskStatus.PENDING -> {
-                        pendingTasks.add(it)
+                        todoTasks.add(it)
                     }
                     TaskStatus.RUNNING -> {
-                        runningTasks.add(it)
+                        todoTasks.add(it)
                     }
                     TaskStatus.FINISHED -> {
                         completedTasks.add(it)
@@ -134,7 +125,6 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
 
-
     fun setVisibleTaskIDs(TaskWithActivities: TaskWithActivities) {
         Log.d(TAG, "saving task visible" + TaskWithActivities.taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, TaskWithActivities.taskEntity.taskId)
@@ -150,7 +140,13 @@ class TasksViewModel @ViewModelInject constructor(
 
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
         val result =
-            repository.confirmTask(context, UtilModel.getTaskConfirmation(context, taskEntity))
+            repository.confirmTask(
+                context,
+                UtilModel.getTaskConfirmation(
+                    context,
+                    taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
+                )
+            )
         if (result.succeeded) {
             if (result.data?.isSuccess == true) {
                 updateTask(

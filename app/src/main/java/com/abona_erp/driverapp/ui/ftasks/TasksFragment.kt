@@ -104,10 +104,15 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
             Log.e(TAG, "  not logged in ")
             findNavController().navigate(TasksFragmentDirections.actionNavHomeToLoginFragment())
         }
-//        tasksViewModel.refreshTasks()
-
-        tasksViewModel.filterPending() //assume that we on the first tab after fragment recreate
-
+        when (tasksViewModel.tabStatus) {
+            TasksViewModel.TabStatus.TO_DO -> {
+                tasksBinding.tabLayout.getTabAt(TasksViewModel.TabStatus.TO_DO.ordinal)?.select()
+            }
+            TasksViewModel.TabStatus.COMPLETED -> {
+                tasksBinding.tabLayout.getTabAt(TasksViewModel.TabStatus.COMPLETED.ordinal)
+                    ?.select()
+            }
+        }
         return view
     }
 
@@ -128,8 +133,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         return object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.text) {
-                    getString(R.string.pending) -> tasksViewModel.filterPending()
-                    getString(R.string.running) -> tasksViewModel.filterRunning()
+                    getString(R.string.to_do) -> tasksViewModel.filterTodo()
                     getString(R.string.completed) -> tasksViewModel.filterCompleted()
                 }
             }
@@ -145,7 +149,8 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     private fun setAdapterPosition(it: List<TaskWithActivities>) {
         if (tasksViewModel.getVisibleTaskId() != 0) {
             try {
-                val task = it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == tasksViewModel.getVisibleTaskId() }
+                val task =
+                    it.first { taskWithActivities -> taskWithActivities.taskEntity.taskId == tasksViewModel.getVisibleTaskId() }
                 tasksBinding.tasksRecycler.scrollToPosition(it.indexOf(task)) //setting position of current task, if it exist
             } catch (e: NoSuchElementException) {
                 tasksBinding.tasksRecycler.scrollToPosition(0) //setting position of first task, if current not exist
@@ -154,8 +159,8 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
-        // and here is server update
-        if (data.taskEntity.confirmationType < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old starte - not opened and not confirmed
+        val confirmationState = data.taskEntity.confirmationType ?: ConfirmationType.RECEIVED
+        if (confirmationState < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old starte - not opened and not confirmed
             context?.let {
                 val name =
                     it.resources.getString(UtilModel.getResIdByTaskActionType(data.taskEntity))

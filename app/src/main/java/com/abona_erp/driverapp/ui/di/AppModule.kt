@@ -26,13 +26,20 @@ import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.LocalDataSource
 import com.abona_erp.driverapp.data.local.db.AppDatabase
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
-import com.abona_erp.driverapp.data.remote.*
+import com.abona_erp.driverapp.data.model.ConfirmationItem
+import com.abona_erp.driverapp.data.remote.ApiService
+import com.abona_erp.driverapp.data.remote.AppRepository
+import com.abona_erp.driverapp.data.remote.AppRepositoryImpl
+import com.abona_erp.driverapp.data.remote.AuthService
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.abona_erp.driverapp.data.remote.utils.MockInterceptor
 import com.abona_erp.driverapp.data.remote.utils.NetworkInterceptor
 import com.abona_erp.driverapp.data.remote.utils.UnsafeOkHttpClient
 import com.abona_erp.driverapp.data.remote.utils.UserAgentInterceptor
+import com.abona_erp.driverapp.data.remote.utils.gson.ConfirmationAdapterJson
+import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor
 import dagger.Binds
 import dagger.Module
@@ -63,13 +70,18 @@ object AppModule {
     @Singleton
     @Provides
     fun provideGson(): Gson {
-//        val gson = GsonBuilder()
-//            .registerTypeAdapter(Shape::class.java, TaskDesirializer())
-//            .create()
-        return Gson()
-
+        return getGsonBuilder().create()
     }
 
+    private fun getGsonBuilder(): GsonBuilder {
+        val gsonBuilder = GsonBuilder()
+        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+            .setDateFormat(Constant.abonaCommunicationDateFormat)
+            .setDateFormat(Constant.abonaCommunicationDateVarTwo)
+            .setDateFormat(Constant.abonaCommunicationDateVarThree)
+        gsonBuilder.registerTypeAdapter(ConfirmationItem::class.java, ConfirmationAdapterJson())
+        return gsonBuilder
+    }
     @Singleton
     @Provides
     fun provideDataBase(@ApplicationContext context: Context): AppDatabase {
@@ -118,10 +130,10 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRabbitService(okHttpClient: OkHttpClient): RabbitService {
+    fun provideRabbitService(okHttpClient: OkHttpClient, gson: Gson): RabbitService {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .baseUrl(Constant.baseRabbitUrl).build().create(RabbitService::class.java)
     }
@@ -129,20 +141,24 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApiService(@ApplicationContext context: Context, okHttpClient: OkHttpClient): ApiService {
+    fun provideApiService(
+        @ApplicationContext context: Context,
+        okHttpClient: OkHttpClient,
+        gson: Gson
+    ): ApiService {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .baseUrl(PrivatePreferences.getEndpoint(context)).build().create(ApiService::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideAuthService(okHttpClient: OkHttpClient): AuthService { //here is only place where we use base url to get new url.
+    fun provideAuthService(okHttpClient: OkHttpClient, gson: Gson): AuthService { //here is only place where we use base url to get new url.
         return Retrofit.Builder()
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .baseUrl(Constant.baseAuthUrl).build().create(AuthService::class.java)
     }

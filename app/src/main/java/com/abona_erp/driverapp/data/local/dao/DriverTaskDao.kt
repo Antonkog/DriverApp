@@ -1,11 +1,14 @@
 package com.abona_erp.driverapp.data.local.dao
 
+import android.os.AsyncTask
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.abona_erp.driverapp.data.local.db.ActionType
+import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
+import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.model.CommResponseItem
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 
@@ -25,7 +28,10 @@ interface DriverTaskDao {
 
 
     @Query("SELECT * FROM task_entity WHERE taskId =:taskpid AND mandantId =:mandantId")
-    suspend fun getParentTask(taskpid: Int,  mandantId: Int): TaskEntity
+    suspend fun getTaskByIds(taskpid: Int, mandantId: Int): TaskEntity?
+
+    @Query("SELECT * FROM task_entity WHERE orderNo =:orderNo AND taskId =:taskpid AND mandantId =:mandantId")
+    suspend fun getTaskByOrder(orderNo: Int, taskpid: Int, mandantId: Int): TaskEntity?
 
     @Update
     suspend fun update(taskEntity: TaskEntity): Int
@@ -54,6 +60,14 @@ interface DriverTaskDao {
     suspend fun updateFromCommItem(commonItem: CommResponseItem) {
         if (commonItem.allTask.isNotEmpty()) {
             val strCustList = commonItem.allTask.map { it ->
+
+                var status = getStatus(it.taskId)
+                if(status == ConfirmationType.RECEIVED){// we dont set confirm type on server and loose it when log-out
+                    val activeTasks = it.activities.filter{it.status < ActivityStatus.FINISHED.status}
+                    if(activeTasks.isEmpty())
+                        status = ConfirmationType.TASK_CONFIRMED_BY_USER // we change task as confirmed if all activity set
+                }
+
                 TaskEntity(
                     it.taskId,
                     ActionType.getActionType(it.actionType),
@@ -71,17 +85,17 @@ interface DriverTaskDao {
                     it.mandantId,
                     it.kundenName,
                     it.notes,
-                    getStatus(it.taskId),
+                    status,
                     false
                 )//todo: check if make sense not to override confirmation type from server.
             }
-            Log.d("DriverTaskDao", "insert taskEntity  size: " + strCustList.size)
+            Log.d("DriverTaskDao", "insert taskEntity $strCustList  \nsize: " + strCustList.size)
             deleteTasks()
             insertTasks(strCustList)
         }
     }
 
-    private suspend fun getStatus(taskid: Int): ConfirmationType {
+    private suspend fun getStatus(taskid: Int): ConfirmationType? {
         getTasks().forEach { 
             if(it.taskId == taskid){
                 return it.confirmationType

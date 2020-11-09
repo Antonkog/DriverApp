@@ -12,6 +12,7 @@ import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.local.preferences.putLong
+import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.model.CommItem
 import com.abona_erp.driverapp.data.model.DataType
 import com.abona_erp.driverapp.data.model.VehicleItem
@@ -36,21 +37,14 @@ class MainViewModel @ViewModelInject constructor(
     private val TAG = "MainViewModel"
 
     val vechicle = MutableLiveData<VehicleItem>()
-    val error = MutableLiveData<String>()
     val requestStatus = MutableLiveData<Status>()
+    val authReset = MutableLiveData<Boolean>()
 
     data class Status(val message: String?, val type: StatusType)
     enum class StatusType {
         COMPLETE,
         LOADING,
         ERROR
-    }
-
-    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        exception.message.let {
-            Log.e(TasksViewModel.TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
-            error.postValue(exception.message)
-        }
     }
 
     init {
@@ -73,7 +67,7 @@ class MainViewModel @ViewModelInject constructor(
         }
 
         RxBus.listen(RxBusEvent.AuthError::class.java).subscribe {
-            doLogOutActions() //todo: navigate to login check if called from NetworkInterceptor
+            authReset.postValue(true)
         }
     }
 
@@ -83,6 +77,7 @@ class MainViewModel @ViewModelInject constructor(
 
     suspend fun handleFirebaseMessage(message: String) {
         val messageStruct: CommItem = gson.fromJson(message, CommItem::class.java)
+        Log.d(TAG, "handleFirebaseMessage: \n $messageStruct")
         when (messageStruct.header.dataType) {
             DataType.VEHICLE.dataType -> {
                 Log.d(TAG, " got fcm VEHICLE")
@@ -96,7 +91,14 @@ class MainViewModel @ViewModelInject constructor(
                 Log.d(TAG, " got fcm task")
                 messageStruct.taskItem?.let {
                     Log.d(TAG, " saving fcm task $it")
-                    repository.insertOrReplaceTask(
+                    var status = ConfirmationType.RECEIVED
+                    if(status == ConfirmationType.RECEIVED){// we dont set confirm type on server and loose it when log-out
+                        val activeTasks = it.activities.filter{it.status < ActivityStatus.FINISHED.status}
+                        if(activeTasks.isEmpty())
+                            status = ConfirmationType.TASK_CONFIRMED_BY_USER // we change task as confirmed if all activity set
+                    }
+
+                    repository.insertOrUpdateTask(
                         TaskEntity(
                             it.taskId,
                             it.actionType,
@@ -114,21 +116,20 @@ class MainViewModel @ViewModelInject constructor(
                             it.mandantId,
                             it.kundenName,
                             it.notes,
-                            ConfirmationType.RECEIVED,
+                            status,
                             false
                         )
                     )
-                    it.activities.forEach {
-                            fcmActivity -> repository.insertOrUpdateActivity(fcmActivity.toActivityEntity())
+                    it.activities.forEach { fcmActivity -> repository.insertOrUpdateActivity(fcmActivity.toActivityEntity())
                     }
                 }
             }
         }
     }
 
-    fun doLogOutActions() {
-        viewModelScope.launch(exceptionHandler){
-            resetAuthTime()
+
+    fun clearDatabase() {
+        viewModelScope.launch(IO) {
             repository.cleanDatabase()
         }
     }

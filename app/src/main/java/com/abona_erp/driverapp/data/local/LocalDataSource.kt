@@ -57,14 +57,18 @@ class LocalDataSource internal constructor(
         }
     }
 
-    suspend fun insertOrReplaceTask(taskEntity: TaskEntity) {
-        db.driverTaskDao().insertOrReplace(taskEntity)
+    suspend fun insertOrUpdateTask(taskEntity: TaskEntity) {
+        val old = db.driverTaskDao().getTaskByIds(taskpid = taskEntity.taskId, mandantId = taskEntity.mandantId)
+        if(old!= null){
+            db.driverTaskDao().update(taskEntity.copy(confirmationType =  old.confirmationType, openCondition =  old.openCondition))
+        }
+        else  db.driverTaskDao().insertOrReplace(taskEntity)
     }
 
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
         val old = db.driverActDao().getActivity(activityEntity.activityId, activityEntity.taskpId, activityEntity.mandantId)
         if(old!= null){
-            db.driverActDao().update(activityEntity.copy(activityStatus =  old.activityStatus)) //, confirmationType = old.confirmationType we expecting that server save confirmation status, or change it if task was changed
+            db.driverActDao().update(activityEntity.copy(confirmationType =  old.confirmationType)) //, confirmationType = old.confirmationType we expecting that server save confirmation status, or change it if task was changed
         }
         else  db.driverActDao().insert(activityEntity)
     }
@@ -111,18 +115,26 @@ class LocalDataSource internal constructor(
         return db.driverTaskDao().update(taskEntity)
     }
 
-    suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
+    fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
       return  db.driverActDao().getActivity(activityEntity.activityId+1, activityEntity.taskpId, activityEntity.mandantId)
     }
 
-    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity {
-       return db.driverTaskDao().getParentTask(activityEntity.taskpId, activityEntity.mandantId)
+    fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
+        return  db.driverActDao().getActByTask(taskId = taskEntity.taskId)
     }
 
-    fun cleanDatabase() { //todo: clean data, check what with foreign keys
-//        db.driverTaskDao().deleteTasks()
-//        db.driverActDao().deleteActivities()
-//        db.documentsDao().deleteDocuments()
+    suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity? {
+        return  db.driverTaskDao().getTaskByOrder(taskEntity.orderDetails?.orderNo ?: 0, taskEntity.taskId +1, taskEntity.mandantId)
+    }
+
+    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
+       return db.driverTaskDao().getTaskByIds(activityEntity.taskpId, activityEntity.mandantId)
+    }
+
+    suspend fun cleanDatabase() {
+        db.driverActDao().deleteActivities()//delete first - as we have foreign key in activity
+        db.driverTaskDao().deleteTasks()
+        db.documentsDao().deleteDocuments()
     }
 
     fun observeRequests(): LiveData<List<RequestEntity>> {
