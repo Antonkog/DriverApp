@@ -36,7 +36,7 @@ class DialogBuilder(val context: Context) {
                         taskName
                     )
                 )
-                .setNegativeButton(android.R.string.cancel) { dialog, which -> dialog.dismiss() }
+                .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton(android.R.string.ok) { dialog, which ->
                     positiveListener.onClick(
                         dialog,

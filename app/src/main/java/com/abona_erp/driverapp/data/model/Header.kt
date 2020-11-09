@@ -4,7 +4,7 @@ package com.abona_erp.driverapp.data.model
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.gson.annotations.SerializedName
 
-class Header(
+data class Header(
     @SerializedName("DataType")
     val dataType: Int,
     @SerializedName("TimestampSenderUTC")

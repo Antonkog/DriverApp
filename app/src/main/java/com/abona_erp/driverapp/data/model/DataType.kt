@@ -4,7 +4,7 @@ enum class DataType(var dataType: Int) {
     TASK(0),//from FCM
     ALL_TASKS(1),
     COMPRESSED_TASK(2),
-    ACTIVITY(20),  //for activity steps sync
+    ACTIVITY(20),  //for activity steps sync to RestAPI
     UNDO_ACTIVITY(21),
     ALL_DELAY_REASONS(30),
     DELAY_REASONS(31),

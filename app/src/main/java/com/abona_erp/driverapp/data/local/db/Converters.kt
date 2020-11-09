@@ -26,6 +26,51 @@ class Converters {
         return type?.ordinal
     }
 
+
+    @TypeConverter
+    fun getLogType(ordinal: Int): LogType? {
+        for (lt in LogType.values()) {
+            if (lt.ordinal == ordinal) {
+                return lt
+            }
+        }
+        return null
+    }
+
+    @TypeConverter
+    fun getLogTypeInt(type: LogType?): Int? {
+        return type?.ordinal
+    }
+
+    @TypeConverter
+    fun getRequestStatus(ordinal: Int): Status? {
+        for (lt in Status.values()) {
+            if (lt.ordinal == ordinal) {
+                return lt
+            }
+        }
+        return null
+    }
+
+    @TypeConverter
+    fun getRequestStatusInt(type: Status?): Int? {
+        return type?.ordinal
+    }
+    @TypeConverter
+    fun getHistoryType(ordinal: Int): HistoryDataType? {
+        for (lt in HistoryDataType.values()) {
+            if (lt.ordinal == ordinal) {
+                return lt
+            }
+        }
+        return null
+    }
+
+    @TypeConverter
+    fun getHistoryTypeInt(type: HistoryDataType?): Int? {
+        return type?.ordinal
+    }
+
     @TypeConverter
     fun getTimeStampDate(string: String): Date? {
         return UtilModel.serverStringToDate(string)

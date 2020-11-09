@@ -128,6 +128,9 @@ class TasksViewModel @ViewModelInject constructor(
     fun setVisibleTaskIDs(TaskWithActivities: TaskWithActivities) {
         Log.d(TAG, "saving task visible" + TaskWithActivities.taskEntity.taskId)
         prefs.putAny(Constant.currentVisibleTaskid, TaskWithActivities.taskEntity.taskId)
+        TaskWithActivities.taskEntity.orderDetails?.orderNo?.let {
+            prefs.putAny(Constant.currentVisibleOrderId, it)
+        }
     }
 
     fun getVisibleTaskId() = prefs.getInt(Constant.currentVisibleTaskid, 0)

@@ -166,7 +166,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
                     it.resources.getString(UtilModel.getResIdByTaskActionType(data.taskEntity))
                 DialogBuilder.getStartTaskDialog(
                     name,
-                    DialogInterface.OnClickListener { dialog, which ->
+                    DialogInterface.OnClickListener { _, _ ->
                         tasksViewModel.confirmTask(taskEntity = data.taskEntity)
                     }, it
                 ).show()

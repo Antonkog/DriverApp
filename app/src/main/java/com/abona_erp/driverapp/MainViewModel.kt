@@ -89,39 +89,35 @@ class MainViewModel @ViewModelInject constructor(
             }
             DataType.TASK.dataType -> {
                 Log.d(TAG, " got fcm task")
-                messageStruct.taskItem?.let {
-                    Log.d(TAG, " saving fcm task $it")
-                    var status = ConfirmationType.RECEIVED
-                    if(status == ConfirmationType.RECEIVED){// we dont set confirm type on server and loose it when log-out
-                        val activeTasks = it.activities.filter{it.status < ActivityStatus.FINISHED.status}
-                        if(activeTasks.isEmpty())
-                            status = ConfirmationType.TASK_CONFIRMED_BY_USER // we change task as confirmed if all activity set
-                    }
+                messageStruct.taskItem?.let {taskItem ->
+                    Log.d(TAG, " saving fcm task $taskItem")
+                        var status = ConfirmationType.RECEIVED // we dont set confirm type on server and loose it when log-out
+                        val activeTasks = taskItem.activities.filter{it.status < ActivityStatus.FINISHED.status}// so we looking for all activitys, and if all finished
+                        if(activeTasks.isEmpty()) status = ConfirmationType.TASK_CONFIRMED_BY_USER // we change task as confirmed if all activity FINISHED and checkers will be green.
 
                     repository.insertOrUpdateTask(
                         TaskEntity(
-                            it.taskId,
-                            it.actionType,
-                            it.status,
-                            it.activities.map { it.activityId },
-                            it.changeReason,
-                            it.address,
-                            it.contacts,
-                            it.dangerousGoods,
-                            it.orderDetails,
-                            it.taskDetails,
-                            it.palletExchange,
-                            it.taskDueDateStart,
-                            it.taskDueDateFinish,
-                            it.mandantId,
-                            it.kundenName,
-                            it.notes,
+                            taskItem.taskId,
+                            taskItem.actionType,
+                            taskItem.status,
+                            taskItem.activities.map { it.activityId },
+                            taskItem.changeReason,
+                            taskItem.address,
+                            taskItem.contacts,
+                            taskItem.dangerousGoods,
+                            taskItem.orderDetails,
+                            taskItem.taskDetails,
+                            taskItem.palletExchange,
+                            taskItem.taskDueDateStart,
+                            taskItem.taskDueDateFinish,
+                            taskItem.mandantId,
+                            taskItem.kundenName,
+                            taskItem.notes,
                             status,
                             false
                         )
                     )
-                    it.activities.forEach { fcmActivity -> repository.insertOrUpdateActivity(fcmActivity.toActivityEntity())
-                    }
+                    taskItem.activities.forEach { fcmActivity -> repository.insertOrUpdateActivity(fcmActivity.toActivityEntity()) }
                 }
             }
         }

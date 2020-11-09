@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
             when (it.type) {
                 MainViewModel.StatusType.LOADING -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    linContainer.findViewById<TextView>(R.id.status_text).text =""
                     linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.VISIBLE
                 }
                 MainViewModel.StatusType.ERROR -> {
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 MainViewModel.StatusType.COMPLETE -> {
                     linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.GONE
-                    linContainer.findViewById<TextView>(R.id.status_text).clearComposingText()
+                    linContainer.findViewById<TextView>(R.id.status_text).text =""
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
             }

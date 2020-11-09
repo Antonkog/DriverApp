@@ -10,16 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.local.db.RequestEntity
+import com.abona_erp.driverapp.data.local.db.ChangeHistory
 import com.abona_erp.driverapp.databinding.ProtocolFragmentBinding
-import com.abona_erp.driverapp.databinding.SettingsFragmentBinding
-import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProtocolFragment : Fragment(), LazyAdapter.OnItemClickListener<RequestEntity> {
+class ProtocolFragment : Fragment(), LazyAdapter.OnItemClickListener<ChangeHistory> {
 
     private val protocolViewModel by viewModels<ProtocolViewModel>()
 
@@ -61,7 +59,7 @@ class ProtocolFragment : Fragment(), LazyAdapter.OnItemClickListener<RequestEnti
         )
     }
 
-    override fun onLazyItemClick(data: RequestEntity) {
+    override fun onLazyItemClick(data: ChangeHistory) {
 
     }
 
