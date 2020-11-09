@@ -1,13 +1,12 @@
 package com.abona_erp.driverapp.data.remote
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.data.local.LocalDataSource
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
+import com.abona_erp.driverapp.data.local.db.ChangeHistory
 import com.abona_erp.driverapp.data.local.db.DocumentEntity
-import com.abona_erp.driverapp.data.local.db.RequestEntity
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
@@ -18,14 +17,6 @@ import com.abona_erp.driverapp.ui.utils.UtilModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.apache.commons.io.FileUtils
-import java.io.File
-import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
 
@@ -58,8 +49,8 @@ class AppRepositoryImpl @Inject constructor(
         return localDataSource.observeDocuments()
     }
 
-    override fun observeRequests(): LiveData<List<RequestEntity>> {
-      return  localDataSource.observeRequests()
+    override fun observeChangeHistory(): LiveData<List<ChangeHistory>> {
+      return  localDataSource.observeCommunication()
     }
 
     override fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>> {
@@ -137,44 +128,7 @@ class AppRepositoryImpl @Inject constructor(
         documentType: Int,
         inputStream: InputStream
     ): Single<UploadResult> {
-        val mandantBody = mandantId.toMultipartBody()
-        val orderBody = orderNo.toMultipartBody()
-        val taskBody = taskID.toMultipartBody()
-        val driverBody = driverNo.toMultipartBody()
-        val docTypeBody = documentType.toMultipartBody()
-        // val ims : InputStream =  file.inputStream()
-
-
-        val newFIle = File.createTempFile(
-            "abona",
-            ".pdf",
-            context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
-        )
-
-        try {
-            FileUtils.copyToFile(inputStream, newFIle)
-        } catch (e: IOException) {
-            Log.e(TAG, "can't send document")
-        }
-
-
-        val fileBody = newFIle.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-//        val out =  IOUtils.toByteArray(ims).toRequestBody()
-//        val name = ""+ System.currentTimeMillis() + ".dpf"
-
-        val multiparFileBody = MultipartBody.Part.createFormData(
-            name = "files[]",
-            filename = newFIle.name,
-            body = fileBody
-        )
-        return api.uploadDocument(
-            mandantBody,
-            orderBody,
-            taskBody,
-            driverBody,
-            docTypeBody,
-            multiparFileBody
-        )
+        return api.uploadDocument(mandantId, orderNo, taskID, driverNo, documentType, inputStream)
     }
 
     override suspend fun getDocuments(
@@ -242,12 +196,6 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
        return localDataSource.getParentTask(activityEntity)
     }
-
-    private fun String.toPlainTextBody() = toRequestBody("text/plain".toMediaType())
-    private fun String.toMultipartBody() = toRequestBody("multipart/form-data".toMediaType())
-
-    private fun Int.toMultipartBody() =
-        this.toString().toRequestBody("multipart/form-data".toMediaType())
 
 
     /* if using observables

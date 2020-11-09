@@ -135,10 +135,24 @@ class LocalDataSource internal constructor(
         db.driverActDao().deleteActivities()//delete first - as we have foreign key in activity
         db.driverTaskDao().deleteTasks()
         db.documentsDao().deleteDocuments()
+        db.changeHistoryDao().deleteChangeHistory()
     }
 
-    fun observeRequests(): LiveData<List<RequestEntity>> {
-      return  db.requestDao().observeRequests()
+    suspend fun insertHistoryChange(changeHistory: ChangeHistory) : Long {
+        return db.changeHistoryDao().insert(changeHistory)
+    }
+
+    suspend fun updateHistoryChange(changeHistory: ChangeHistory): Int {
+        return db.changeHistoryDao().update(changeHistory)
+    }
+
+
+    suspend fun getChangeHistoryLogs(activityEntity: ActivityEntity): TaskEntity? {
+        return db.driverTaskDao().getTaskByIds(activityEntity.taskpId, activityEntity.mandantId)
+    }
+
+    fun observeCommunication(): LiveData<List<ChangeHistory>> {
+      return  db.changeHistoryDao().observeCommunication()
     }
 
 }
