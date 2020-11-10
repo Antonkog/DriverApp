@@ -151,5 +151,6 @@
     <string name="protocol_response" translatable="false">Response:</string>
     <string name="image_retry" translatable="false">Image retry</string>
     <string name="arrow_open" translatable="false">arrow_open</string>
+    <string name="document_image" translatable="false">document image</string>
 
 </resources>

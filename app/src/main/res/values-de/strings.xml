@@ -45,6 +45,6 @@
     <string name="error_from_server">Fehler beim Parsen der Daten vom Server</string>
     <string name="task_overdue">Aufgabe überfällig</string>
     <string name="dialog_start_task_title">Aufgabenbestätigung</string>
-    <string name="dialog_start_task">Möchten Sie die Aufgabe starten: -% s?</string>
+    <string name="dialog_start_task">Möchten Sie die Aufgabe starten: -%s?</string>
 
 </resources>

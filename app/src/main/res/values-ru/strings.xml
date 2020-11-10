@@ -42,6 +42,6 @@
     <string name="error_from_server">Ошибка при анализе данных с сервера</string>
     <string name="task_overdue">Задание просрочено</string>
     <string name="dialog_start_task_title">Подтверждение задания</string>
-    <string name="dialog_start_task">Вы хотите запустить задачу: -% s?</string>
+    <string name="dialog_start_task">Вы хотите запустить задачу: -%s?</string>
 
 </resources>
