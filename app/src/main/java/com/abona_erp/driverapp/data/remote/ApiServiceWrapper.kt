@@ -4,8 +4,14 @@ import android.content.Context
 import android.util.Log
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.data.local.LocalDataSource
-import com.abona_erp.driverapp.data.local.db.*
-import com.abona_erp.driverapp.data.model.*
+import com.abona_erp.driverapp.data.local.db.ChangeHistory
+import com.abona_erp.driverapp.data.local.db.HistoryDataType.*
+import com.abona_erp.driverapp.data.local.db.LogType
+import com.abona_erp.driverapp.data.local.db.Status
+import com.abona_erp.driverapp.data.model.CommItem
+import com.abona_erp.driverapp.data.model.ResultOfAction
+import com.abona_erp.driverapp.data.model.TokenResponse
+import com.abona_erp.driverapp.data.model.UploadResult
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.google.gson.Gson
@@ -23,37 +29,91 @@ import java.io.InputStream
 /**
  * Created by Anton Kogan email: Akogan777@gmail.com on 11/9/2020
  */
-class ApiServiceWrapper(private val api: ApiService, private val localDataSource: LocalDataSource, private val context: Context , val gson : Gson) {
+class ApiServiceWrapper(
+    private val api: ApiService,
+    private val localDataSource: LocalDataSource,
+    private val context: Context,
+    val gson: Gson
+) {
 
-    suspend  fun authentication(
+    suspend fun authentication(
         grantType: String,
         userName: String,
         password: String
-    ): ResultWrapper<TokenResponse>{
-         RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-         return try{
-             val result =   ResultWrapper.Success(api.authentication(grantType, userName, password))
-             RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(result.toString(), MainViewModel.StatusType.COMPLETE)))
-             result
-         }catch (ex: Exception){
-             RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
-             ResultWrapper.Error(ex)
-         }
-     }
+    ): ResultWrapper<TokenResponse> {
+        RxBus.publish(
+            RxBusEvent.RequestStatus(
+                MainViewModel.Status(
+                    null,
+                    MainViewModel.StatusType.LOADING
+                )
+            )
+        )
+        return try {
+            val result = ResultWrapper.Success(api.authentication(grantType, userName, password))
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        result.toString(),
+                        MainViewModel.StatusType.COMPLETE
+                    )
+                )
+            )
+            result
+        } catch (ex: Exception) {
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        ex.message,
+                        MainViewModel.StatusType.ERROR
+                    )
+                )
+            )
+            ResultWrapper.Error(ex)
+        }
+    }
 
-    suspend fun updateTasksFromServer(deviceId: String){
-        val time =  System.currentTimeMillis()
-        val change = ChangeHistory(Status.SENT, LogType.APP_TO_SERVER, HistoryDataType.GET_TASKS, deviceId, null, time,time)
-        RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-
+    suspend fun updateTasksFromServer(deviceId: String) {
+        val time = System.currentTimeMillis()
+        val change =
+            ChangeHistory(Status.SENT, LogType.APP_TO_SERVER, GET_TASKS, deviceId, null, time, time)
+        val autoGenId = localDataSource.insertHistoryChange(change)
+        RxBus.publish(
+            RxBusEvent.RequestStatus(
+                MainViewModel.Status(
+                    null,
+                    MainViewModel.StatusType.LOADING
+                )
+            )
+        )
         val remoteTasks = api.getAllTasks(deviceId)
         if (remoteTasks.isSuccess && !remoteTasks.isException) {
             localDataSource.updateFromCommItem(remoteTasks)
-            localDataSource.updateHistoryChange(change.copy(status = Status.SUCCESS, response = gson.toJson(remoteTasks)))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.COMPLETE)))
+            localDataSource.updateHistoryChange(
+                change.copy(
+                    status = Status.SUCCESS,
+                    id = autoGenId,
+                    response = gson.toJson(remoteTasks)
+                )
+            )
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        null,
+                        MainViewModel.StatusType.COMPLETE
+                    )
+                )
+            )
         } else {
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status("updateTasks exception:  ${remoteTasks.text}", MainViewModel.StatusType.ERROR)))
-            localDataSource.updateHistoryChange(change.copy(status = Status.ERROR))
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        "updateTasks exception:  ${remoteTasks.text}",
+                        MainViewModel.StatusType.ERROR
+                    )
+                )
+            )
+            localDataSource.updateHistoryChange(change.copy(status = Status.ERROR, id = autoGenId))
             throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text} ")
         }
     }
@@ -62,74 +122,178 @@ class ApiServiceWrapper(private val api: ApiService, private val localDataSource
         mandantId: Int,
         orderNo: Int,
         deviceId: String
-    ){
-         try {
-             RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
+    ) {
+        try {
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        null,
+                        MainViewModel.StatusType.LOADING
+                    )
+                )
+            )
 
-             val resp = api.getDocuments(mandantId, orderNo, deviceId)
+            val resp = api.getDocuments(mandantId, orderNo, deviceId)
 
-             RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.COMPLETE)))
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        null,
+                        MainViewModel.StatusType.COMPLETE
+                    )
+                )
+            )
 
-             resp?.let {
-                 if (it.isNotEmpty()) {
+            resp?.let {
+                if (it.isNotEmpty()) {
                     localDataSource.deleteDocuments()
                     localDataSource.insertDocumentResponse(it)
                 }
             }
 
         } catch (ex: java.lang.Exception) {
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
-             throw java.lang.Exception("update Documents exception:  ${ex.message} ")
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        ex.message,
+                        MainViewModel.StatusType.ERROR
+                    )
+                )
+            )
+            throw java.lang.Exception("update Documents exception:  ${ex.message} ")
         }
     }
 
 
-    suspend fun setDeviceProfile(commItem: CommItem?): ResultWrapper<ResultOfAction>{
-        RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-        val time =  System.currentTimeMillis()
-        val change = ChangeHistory(Status.SENT, LogType.APP_TO_SERVER, HistoryDataType.SET_DEVICE_PROFILE, gson.toJson(commItem),null,  time, time)
-        val autoGenId =  localDataSource.insertHistoryChange(change)
+    suspend fun setDeviceProfile(commItem: CommItem?): ResultWrapper<ResultOfAction> {
+        RxBus.publish(
+            RxBusEvent.RequestStatus(
+                MainViewModel.Status(
+                    null,
+                    MainViewModel.StatusType.LOADING
+                )
+            )
+        )
+        val time = System.currentTimeMillis()
+        val change = ChangeHistory(
+            Status.SENT,
+            LogType.APP_TO_SERVER,
+            SET_DEVICE_PROFILE,
+            gson.toJson(commItem),
+            null,
+            time,
+            time
+        )
+        val autoGenId = localDataSource.insertHistoryChange(change)
         return try {
             val result =
                 ResultWrapper.Success(api.setDeviceProfile(commItem))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(result.toString(), MainViewModel.StatusType.COMPLETE)))
-            localDataSource.updateHistoryChange(change.copy(status = Status.SUCCESS, response = gson.toJson(result), id = autoGenId))
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        result.toString(),
+                        MainViewModel.StatusType.COMPLETE
+                    )
+                )
+            )
+            localDataSource.updateHistoryChange(
+                change.copy(
+                    status = Status.SUCCESS,
+                    response = gson.toJson(result),
+                    id = autoGenId
+                )
+            )
             result
-        } catch (ex: Exception){
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
+        } catch (ex: Exception) {
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        ex.message,
+                        MainViewModel.StatusType.ERROR
+                    )
+                )
+            )
             localDataSource.updateHistoryChange(change.copy(status = Status.ERROR, id = autoGenId))
             return ResultWrapper.Error(ex)
         }
     }
 
     suspend fun postActivityChange(commItem: CommItem): ResultWrapper<ResultOfAction> {
-        RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-        val time =  System.currentTimeMillis()
-        val change = ChangeHistory(Status.SENT, LogType.APP_TO_SERVER, HistoryDataType.POST_ACTIVITY, gson.toJson(commItem),null,  time, time)
+        RxBus.publish(
+            RxBusEvent.RequestStatus(
+                MainViewModel.Status(
+                    null,
+                    MainViewModel.StatusType.LOADING
+                )
+            )
+        )
+        val time = System.currentTimeMillis()
+        val change = ChangeHistory(
+            Status.SENT,
+            LogType.APP_TO_SERVER,
+            POST_ACTIVITY,
+            gson.toJson(commItem),
+            null,
+            time,
+            time
+        )
         val autoGenId = localDataSource.insertHistoryChange(change)
         return try {
             val result = ResultWrapper.Success(api.postActivityChange(commItem))
-            localDataSource.updateHistoryChange(change.copy(status = Status.SUCCESS, response = gson.toJson(result), id = autoGenId))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(result.toString(), MainViewModel.StatusType.COMPLETE)))
+            localDataSource.updateHistoryChange(
+                change.copy(
+                    status = Status.SUCCESS,
+                    response = gson.toJson(result),
+                    id = autoGenId
+                )
+            )
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        result.toString(),
+                        MainViewModel.StatusType.COMPLETE
+                    )
+                )
+            )
             result
-        } catch (ex: Exception){
+        } catch (ex: Exception) {
             localDataSource.updateHistoryChange(change.copy(status = Status.ERROR, id = autoGenId))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        ex.message,
+                        MainViewModel.StatusType.ERROR
+                    )
+                )
+            )
             ResultWrapper.Error(ex)
         }
     }
 
 
-
-    suspend fun confirmTask(commItem: CommItem): ResultWrapper<ResultOfAction>{
-        val time =  System.currentTimeMillis()
-        val change = ChangeHistory(Status.SENT, LogType.APP_TO_SERVER, HistoryDataType.CONFIRM_TASK, gson.toJson(commItem),null,  time, time)
-        val autoGenId =  localDataSource.insertHistoryChange(change)
-        return try{
+    suspend fun confirmTask(commItem: CommItem): ResultWrapper<ResultOfAction> {
+        val time = System.currentTimeMillis()
+        val change = ChangeHistory(
+            Status.SENT,
+            LogType.APP_TO_SERVER,
+            CONFIRM_TASK,
+            gson.toJson(commItem),
+            null,
+            time,
+            time
+        )
+        val autoGenId = localDataSource.insertHistoryChange(change)
+        return try {
             val result = api.confirmTask(commItem)
-            localDataSource.updateHistoryChange(change.copy(status = Status.SUCCESS , response = gson.toJson(result), id = autoGenId))
+            localDataSource.updateHistoryChange(
+                change.copy(
+                    status = Status.SUCCESS,
+                    response = gson.toJson(result),
+                    id = autoGenId
+                )
+            )
             ResultWrapper.Success(result)
-        } catch (ex: java.lang.Exception){
+        } catch (ex: java.lang.Exception) {
             localDataSource.updateHistoryChange(change.copy(status = Status.ERROR, id = autoGenId))
             ResultWrapper.Error(ex)
         }
@@ -143,7 +307,7 @@ class ApiServiceWrapper(private val api: ApiService, private val localDataSource
         driverNo: Int,
         documentType: Int,
         inputStream: InputStream
-    ):  Single<UploadResult>{
+    ): Single<UploadResult> {
         val mandantBody = mandantId.toMultipartBody()
         val orderBody = orderNo.toMultipartBody()
         val taskBody = taskID.toMultipartBody()
@@ -183,7 +347,6 @@ class ApiServiceWrapper(private val api: ApiService, private val localDataSource
             multiparFileBody
         )
     }
-
 
 
     private fun String.toPlainTextBody() = toRequestBody("text/plain".toMediaType())

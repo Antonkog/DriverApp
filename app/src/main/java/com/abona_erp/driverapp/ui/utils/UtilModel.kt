@@ -276,11 +276,23 @@ object UtilModel {
         return dfUtc
     }
 
+    private fun uiDateFormatLong(): DateFormat {
+        val dfUtc: DateFormat =
+            SimpleDateFormat(Constant.abonaUiDateLongFormat, Locale.getDefault())
+        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+        return dfUtc
+    }
+
     private fun uiTimeFormat(): DateFormat {
         val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaUITimeFormat, Locale.getDefault())
         dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
         return dfUtc
     }
+
+    fun formatLongTime(dateMills: Long): String {
+        return uiDateFormatLong().format(Date(dateMills))
+    }
+
 
     fun formatLongDateTime(date: Date): String {
         return serverDateFormat().format(date)
@@ -398,7 +410,7 @@ object UtilModel {
             mandantId = taskItem.mandantId,
             taskId = taskItem.taskId,
             taskChangeId = taskItem.taskId, //todo: ask Tilman what is taskChangeId and why we use it
-            text = null//todo: ask Tilman what is taskChangeId and where we use text, why we send it user dont put text enywhere
+            text = null//todo: ask Tilman what is text and where we use text, why we send it user don`t put text anywhere
         )
         return confirmationItem.build()
     }

@@ -130,6 +130,7 @@
     <string name="task_address_one_placeholder" translatable="false">UA, Kyiv, (lon, lat)*</string>
     <string name="task_address_two_placeholder" translatable="false">Some str. 121/3*</string>
     <string name="txt_order_placeholder" translatable="false">2020/138/45*</string>
+    <string name="protocol_text_placeholder" translatable="false">protocol text placeholder</string>
 
 
     <!--logs, do not translate-->
@@ -140,5 +141,15 @@
     <string name="image_delays" translatable="false">image_delays</string>
     <string name="task_note" translatable="false">task confirmation, auto confirmed</string>
 
+
+    <!--    protocol is for internal use, so I am not sure if we need to translate it-->
+    <string name="protocol_status" translatable="false">status</string>
+    <string name="protocol_request_parameters" translatable="false">Request parameters:</string>
+    <string name="protocol_text_status_val" translatable="false">text_status_val</string>
+    <string name="protocol_time_modify" translatable="false">Time modify:</string>
+    <string name="protocol_time_created" translatable="false">Time created:</string>
+    <string name="protocol_response" translatable="false">Response:</string>
+    <string name="image_retry" translatable="false">Image retry</string>
+    <string name="arrow_open" translatable="false">arrow_open</string>
 
 </resources>
