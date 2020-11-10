@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -24,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.TimeZoneMapper;
+import com.abona_erp.driver.app.data.DriverDatabase;
+import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.ActivityStatus;
@@ -135,22 +138,40 @@ public class CommItemAdapterExt extends
   
     TaskItem taskItem = mCommItem.getTaskItem();
     if (taskItem == null) return;
-  
-    if (notify.isCurrentlySelected() && holder.root_content.getVisibility() != View.VISIBLE) {
+    
+    if (notify.isCurrentlySelected()) {
       holder.root_content.setVisibility(View.VISIBLE);
-    } else if (!notify.isCurrentlySelected()) {
+    } else {
       holder.root_content.setVisibility(View.GONE);
     }
+    
     holder.root_header.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        if (holder.root_content.getVisibility() == View.VISIBLE) {
+        notify.setCurrentlySelected(true);
+        updateNotify(mDataList.get(position));
+        
+        for (int i = 0; i < mDataList.size(); i++) {
+          if (i != position) {
+            mDataList.get(i).setCurrentlySelected(false);
+            updateNotify(mDataList.get(i));
+          }
+        }
+        
+        /*
+        if (notify.isCurrentlySelected() && holder.root_content.getVisibility() == View.VISIBLE) {
           holder.root_content.setVisibility(View.GONE);
           getListener().onClick(view, position, notify, false);
-        } else if (holder.root_content.getVisibility() == View.GONE) {
+          mDataList.get(position).setCurrentlySelected(false);
+          updateNotify(mDataList.get(position));
+        } else if (notify.isCurrentlySelected() && holder.root_content.getVisibility() == View.GONE) {
           holder.root_content.setVisibility(View.VISIBLE);
           getListener().onClick(view, position, notify, true);
+          mDataList.get(position).setCurrentlySelected(true);
+          updateNotify(mDataList.get(position));
         }
+        */
+        
       }
     });
     
@@ -747,6 +768,20 @@ public class CommItemAdapterExt extends
       e.printStackTrace();
     }
     return "";
+  }
+  
+  
+  private void updateNotify(Notify notify) {
+  
+    DriverDatabase db = DriverDatabase.getDatabase();
+    NotifyDao dao = db.notifyDao();
+  
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        dao.updateNotify(notify);
+      }
+    });
   }
 
 }
