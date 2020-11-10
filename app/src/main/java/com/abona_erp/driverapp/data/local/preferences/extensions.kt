@@ -1,6 +1,8 @@
 package com.abona_erp.driverapp.data.local.preferences
 
 import android.content.SharedPreferences
+import android.graphics.drawable.Drawable
+import android.widget.TextView
 
 fun SharedPreferences.putAny(name: String, any: Any) {
     when (any) {
@@ -20,4 +22,8 @@ fun SharedPreferences.putLong(name: String, long: Long) {
 // remove entry from shared preference
 fun SharedPreferences.remove(name: String) {
     edit().remove(name).apply()
+}
+
+fun TextView.setDrawableLeft(leftDrawable: Drawable?) {
+    return this.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null)
 }

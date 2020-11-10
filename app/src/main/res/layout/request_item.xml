@@ -1,14 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-      <TextView
-          android:id="@+id/request_text"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:layout_margin="@dimen/margin_XVI" />
+        <TextView
+            android:id="@+id/textStatus"
+            style="@style/TextProtocolDescription"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/protocol_status"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/textParams"
+            style="@style/TextProtocolDescription"
+            android:layout_marginTop="24dp"
+            android:text="@string/protocol_request_parameters"
+            app:layout_constraintStart_toStartOf="@+id/textStatus"
+            app:layout_constraintTop_toBottomOf="@+id/textStatus" />
 
+        <TextView
+            android:id="@+id/textStatusVal"
+            style="@style/TextProtocolSmall"
+            android:textSize="@dimen/protocolTextTitle"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textStatus"
+            app:layout_constraintStart_toEndOf="@+id/textStatus" />
+
+        <TextView
+            android:id="@+id/textParamsVal"
+            style="@style/TextProtocolSmall"
+            android:layout_width="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="start"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textParams" />
+
+        <TextView
+            android:id="@+id/textTimeModif"
+            style="@style/TextProtocolDescription"
+            android:layout_marginTop="24dp"
+            android:text="@string/protocol_time_modify"
+            app:layout_constraintStart_toStartOf="@+id/textParams"
+            app:layout_constraintTop_toBottomOf="@+id/textParamsVal" />
+
+        <TextView
+            android:id="@+id/textTimeCreated"
+            style="@style/TextProtocolDescription"
+            android:layout_marginTop="16dp"
+            android:text="@string/protocol_time_created"
+            app:layout_constraintStart_toStartOf="@+id/textTimeModif"
+            app:layout_constraintTop_toBottomOf="@+id/textTimeModif" />
+
+        <TextView
+            android:id="@+id/textTimeModifVal"
+            style="@style/TextProtocolSmall"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textTimeModif"
+            app:layout_constraintStart_toEndOf="@+id/textTimeModif" />
+
+        <TextView
+            android:id="@+id/textTimeCreatedVal"
+            style="@style/TextProtocolSmall"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textTimeCreated"
+            app:layout_constraintStart_toEndOf="@+id/textTimeCreated" />
+
+        <TextView
+            android:id="@+id/textResponse"
+            style="@style/TextProtocolDescription"
+            android:layout_marginTop="16dp"
+            android:text="@string/protocol_response"
+            app:layout_constraintStart_toStartOf="@+id/textTimeCreated"
+            app:layout_constraintTop_toBottomOf="@+id/textTimeCreated" />
+
+        <TextView
+            android:id="@+id/textResponseVal"
+            style="@style/TextProtocolSmall"
+            android:layout_width="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="start"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textResponse" />
+
+        <ImageView
+            android:id="@+id/imageRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:contentDescription="@string/image_retry"
+            app:tint="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_popup_sync" />
+
+        <ImageView
+            android:id="@+id/imageRequestArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:contentDescription="@string/arrow_open"
+            app:layout_constraintBottom_toBottomOf="@+id/textParams"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textParams"
+            app:srcCompat="@drawable/ic_arrow_down" />
+
+        <ImageView
+            android:id="@+id/imageResponseArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:contentDescription="@string/arrow_open"
+            app:layout_constraintBottom_toBottomOf="@+id/textResponse"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textResponse"
+            app:srcCompat="@drawable/ic_arrow_down" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

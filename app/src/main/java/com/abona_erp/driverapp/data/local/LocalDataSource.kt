@@ -20,11 +20,13 @@ import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.model.CommResponseItem
 import com.abona_erp.driverapp.data.model.DocumentResponse
 import com.abona_erp.driverapp.data.remote.ResultWrapper
+import com.abona_erp.driverapp.data.remote.ResultWrapper.Error
+import com.abona_erp.driverapp.data.remote.ResultWrapper.Success
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.abona_erp.driverapp.data.remote.ResultWrapper.*
+
 /**
  * Concrete implementation of a data source as a db.
  */
@@ -58,19 +60,28 @@ class LocalDataSource internal constructor(
     }
 
     suspend fun insertOrUpdateTask(taskEntity: TaskEntity) {
-        val old = db.driverTaskDao().getTaskByIds(taskpid = taskEntity.taskId, mandantId = taskEntity.mandantId)
-        if(old!= null){
-            db.driverTaskDao().update(taskEntity.copy(confirmationType =  old.confirmationType, openCondition =  old.openCondition))
-        }
-        else  db.driverTaskDao().insertOrReplace(taskEntity)
+        val old = db.driverTaskDao()
+            .getTaskByIds(taskpid = taskEntity.taskId, mandantId = taskEntity.mandantId)
+        if (old != null) {
+            db.driverTaskDao().update(
+                taskEntity.copy(
+                    confirmationType = old.confirmationType,
+                    openCondition = old.openCondition
+                )
+            )
+        } else db.driverTaskDao().insertOrReplace(taskEntity)
     }
 
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
-        val old = db.driverActDao().getActivity(activityEntity.activityId, activityEntity.taskpId, activityEntity.mandantId)
-        if(old!= null){
-            db.driverActDao().update(activityEntity.copy(confirmationType =  old.confirmationType)) //, confirmationType = old.confirmationType we expecting that server save confirmation status, or change it if task was changed
-        }
-        else  db.driverActDao().insert(activityEntity)
+        val old = db.driverActDao().getActivity(
+            activityEntity.activityId,
+            activityEntity.taskpId,
+            activityEntity.mandantId
+        )
+        if (old != null) {
+            db.driverActDao()
+                .update(activityEntity.copy(confirmationType = old.confirmationType)) //, confirmationType = old.confirmationType we expecting that server save confirmation status, or change it if task was changed
+        } else db.driverActDao().insert(activityEntity)
     }
 
 
@@ -116,19 +127,27 @@ class LocalDataSource internal constructor(
     }
 
     fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
-      return  db.driverActDao().getActivity(activityEntity.activityId+1, activityEntity.taskpId, activityEntity.mandantId)
+        return db.driverActDao().getActivity(
+            activityEntity.activityId + 1,
+            activityEntity.taskpId,
+            activityEntity.mandantId
+        )
     }
 
     fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
-        return  db.driverActDao().getActByTask(taskId = taskEntity.taskId)
+        return db.driverActDao().getActByTask(taskId = taskEntity.taskId)
     }
 
     suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity? {
-        return  db.driverTaskDao().getTaskByOrder(taskEntity.orderDetails?.orderNo ?: 0, taskEntity.taskId +1, taskEntity.mandantId)
+        return db.driverTaskDao().getTaskByOrder(
+            taskEntity.orderDetails?.orderNo ?: 0,
+            taskEntity.taskId + 1,
+            taskEntity.mandantId
+        )
     }
 
     suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
-       return db.driverTaskDao().getTaskByIds(activityEntity.taskpId, activityEntity.mandantId)
+        return db.driverTaskDao().getTaskByIds(activityEntity.taskpId, activityEntity.mandantId)
     }
 
     suspend fun cleanDatabase() {
@@ -138,12 +157,13 @@ class LocalDataSource internal constructor(
         db.changeHistoryDao().deleteChangeHistory()
     }
 
-    suspend fun insertHistoryChange(changeHistory: ChangeHistory) : Long {
+    suspend fun insertHistoryChange(changeHistory: ChangeHistory): Long {
         return db.changeHistoryDao().insert(changeHistory)
     }
 
     suspend fun updateHistoryChange(changeHistory: ChangeHistory): Int {
-        return db.changeHistoryDao().update(changeHistory)
+        return db.changeHistoryDao()
+            .update(changeHistory.copy(modified = System.currentTimeMillis()))
     }
 
 
@@ -152,7 +172,7 @@ class LocalDataSource internal constructor(
     }
 
     fun observeCommunication(): LiveData<List<ChangeHistory>> {
-      return  db.changeHistoryDao().observeCommunication()
+        return db.changeHistoryDao().observeCommunication()
     }
 
 }

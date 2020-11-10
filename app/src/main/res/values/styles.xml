@@ -38,6 +38,23 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+
+    <style name="TextProtocolSmall" parent="TextMain">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">@string/protocol_text_placeholder</item>
+        <item name="android:textSize">@dimen/protocolTextBody</item>
+
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="TextProtocolDescription" parent="TextMain">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/protocolTextTitle</item>
+        <item name="android:textColor">@color/black_80</item>
+    </style>
+
     <style name="TextDescription" parent="TextTaskSmall">
         <item name="android:textColor">@color/black_80</item>
     </style>
