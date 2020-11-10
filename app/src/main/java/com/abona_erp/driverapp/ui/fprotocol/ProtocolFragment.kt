@@ -13,6 +13,7 @@ import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ChangeHistory
 import com.abona_erp.driverapp.databinding.ProtocolFragmentBinding
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
+import com.kivi.remote.presentation.base.recycler.addItemDivider
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,11 +53,13 @@ class ProtocolFragment : Fragment(), LazyAdapter.OnItemClickListener<ChangeHisto
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // recyclerview init
+        protocolFragmentBinding.recyclerView.addItemDivider()
         protocolFragmentBinding.recyclerView.initWithLinLay(
             LinearLayoutManager.VERTICAL,
             adapter,
             listOf()
         )
+        protocolFragmentBinding.recyclerView.setHasFixedSize(false)
     }
 
     override fun onLazyItemClick(data: ChangeHistory) {

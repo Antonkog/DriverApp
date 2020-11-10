@@ -53,6 +53,7 @@ class ProtocolAdapter(listener: OnItemClickListener<ChangeHistory>) :
             }
         }
 
+        binding.textRequestType.text = data.dataType.name
         binding.textResponseVal.text = data.params
 
         binding.textTimeCreatedVal.text = UtilModel.formatLongTime(data.created)

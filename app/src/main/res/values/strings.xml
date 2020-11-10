@@ -130,7 +130,7 @@
     <string name="task_address_one_placeholder" translatable="false">UA, Kyiv, (lon, lat)*</string>
     <string name="task_address_two_placeholder" translatable="false">Some str. 121/3*</string>
     <string name="txt_order_placeholder" translatable="false">2020/138/45*</string>
-    <string name="protocol_text_placeholder" translatable="false">protocol text placeholder</string>
+    <string name="protocol_text_placeholder" translatable="false">Text placeholder</string>
 
 
     <!--logs, do not translate-->
