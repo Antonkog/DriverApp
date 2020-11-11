@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.databinding.LoginFragmentBinding
@@ -28,6 +29,8 @@ class LoginFragment : BaseFragment() {
 //    val loginViewModel: LoginViewModel by navGraphViewModels(R.id.nav_login) for scoped in graph check if need
 
     private lateinit var loginBinding: LoginFragmentBinding
+
+    val args: LoginFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,6 +87,10 @@ class LoginFragment : BaseFragment() {
                 loginBinding.editPassword.text.toString(),
                 Integer.parseInt(loginBinding.editClientId.text.toString())
             )
+        }
+
+        if(args.autoLogin){
+            loginViewModel.resetAuthToken(resources.getString(R.string.password_test),resources.getString(R.string.name_test))
         }
         return view
     }

@@ -63,11 +63,9 @@ class AppRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAuthToken(
-        grantType: String,
-        userName: String,
-        password: String
+        authModel: UtilModel.AuthModel
     ): ResultWrapper<TokenResponse> {
-        return api.authentication(grantType, userName, password)
+        return api.authentication(authModel)
     }
 
 
@@ -77,11 +75,6 @@ class AppRepositoryImpl @Inject constructor(
         return api.setDeviceProfile(commItem)
     }
 
-    override suspend fun registerDevice(
-        changeHistory: ChangeHistory
-    ): ResultWrapper<ResultOfAction> {
-        return api.setDeviceProfile(changeHistory)
-    }
 
 
     /**
