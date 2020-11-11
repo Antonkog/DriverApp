@@ -175,4 +175,8 @@ class LocalDataSource internal constructor(
         return db.changeHistoryDao().observeCommunication()
     }
 
+    suspend fun getAllOfflineRequests(): List<ChangeHistory> {
+        return db.changeHistoryDao().getOfflineHistoryList()
+    }
+
 }

@@ -21,6 +21,16 @@ class ProtocolAdapter(listener: OnItemClickListener<ChangeHistory>) :
         binding.textStatusVal.text = data.status.name
 
         when (data.status) {
+            Status.SENT_OFFLINE -> {
+                binding.textStatusVal.setTextColor(
+                    ResourcesCompat.getColor(
+                        binding.root.resources,
+                        R.color.color_offline,
+                        null
+                    )
+                )
+                binding.imageRetry.visibility = View.GONE
+            }
             Status.SENT -> {
                 binding.textStatusVal.setTextColor(
                     ResourcesCompat.getColor(
@@ -59,12 +69,15 @@ class ProtocolAdapter(listener: OnItemClickListener<ChangeHistory>) :
         binding.textTimeCreatedVal.text = UtilModel.formatLongTime(data.created)
         binding.textTimeModifVal.text = UtilModel.formatLongTime(data.modified)
 
+        binding.textParamsVal.text = data.params
+
         if (data.response != null) {
-            binding.textParams.visibility = View.VISIBLE
-            binding.textParamsVal.text = data.params
+            binding.textResponse.visibility = View.VISIBLE
+            binding.textResponseVal.text = data.params
             binding.imageResponseArrow.visibility = View.VISIBLE
         } else {
-            binding.textParams.visibility = View.GONE
+            binding.textResponse.visibility = View.GONE
+            binding.textResponseVal.clearComposingText()
             binding.imageResponseArrow.visibility = View.GONE
         }
 

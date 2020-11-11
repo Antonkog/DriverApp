@@ -121,7 +121,7 @@ class TasksViewModel @ViewModelInject constructor(
 
     //to post from task fragment use
     fun postActivityChange(activity: Activity) = viewModelScope.launch {
-        repository.postActivity(context, activity)
+        repository.postActivity(activity)
     }
 
 
@@ -144,7 +144,6 @@ class TasksViewModel @ViewModelInject constructor(
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
         val result =
             repository.confirmTask(
-                context,
                 UtilModel.getTaskConfirmation(
                     context,
                     taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)

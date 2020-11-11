@@ -56,7 +56,9 @@
             android:id="@+id/textTimeCreated"
             style="@style/TextProtocolDescription"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/protocol_time_created"
+            app:layout_constraintBottom_toTopOf="@+id/textResponse"
             app:layout_constraintStart_toStartOf="@+id/textTimeModif"
             app:layout_constraintTop_toBottomOf="@+id/textTimeModif" />
 
@@ -77,7 +79,6 @@
         <TextView
             android:id="@+id/textResponse"
             style="@style/TextProtocolDescription"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:text="@string/protocol_response"
             app:layout_constraintBottom_toTopOf="@+id/textResponseVal"
@@ -92,6 +93,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:gravity="start"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
