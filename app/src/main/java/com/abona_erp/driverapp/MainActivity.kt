@@ -22,6 +22,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.abona_erp.driverapp.data.Constant.OPEN_DOC_REQUEST_CODE
+import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -29,11 +30,31 @@ import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ConnectivityProvider.ConnectivityStateListener {
     val TAG = MainActivity::class.simpleName
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val provider: ConnectivityProvider by lazy { ConnectivityProvider.createProvider(this) }
+
+    override fun onStart() {
+        super.onStart()
+        provider.addListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        provider.removeListener(this)
+    }
+
+    override fun onStateChange(state: ConnectivityProvider.NetworkState) {
+        val hasInternet = state.hasInternet()
+        mainViewModel.doOnConnectionChange(hasInternet)
+    }
+
+    private fun ConnectivityProvider.NetworkState.hasInternet(): Boolean {
+        return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainViewModel.vechicle.observe(this, Observer {
-            navView.getHeaderView(0).let {v->
+            navView.getHeaderView(0).let { v ->
                 v.findViewById<TextView>(R.id.vehicle_num).text = it.registrationNumber
                 v.findViewById<TextView>(R.id.client_name).text = it.clientName
             }
@@ -93,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             when (it.type) {
                 MainViewModel.StatusType.LOADING -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                    linContainer.findViewById<TextView>(R.id.status_text).text =""
+                    linContainer.findViewById<TextView>(R.id.status_text).text = ""
                     linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.VISIBLE
                 }
                 MainViewModel.StatusType.ERROR -> {
@@ -103,13 +124,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 MainViewModel.StatusType.COMPLETE -> {
                     linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.GONE
-                    linContainer.findViewById<TextView>(R.id.status_text).text =""
+                    linContainer.findViewById<TextView>(R.id.status_text).text = ""
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
             }
         })
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)

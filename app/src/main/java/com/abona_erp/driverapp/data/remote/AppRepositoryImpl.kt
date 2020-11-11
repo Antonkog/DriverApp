@@ -14,6 +14,7 @@ import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 import com.abona_erp.driverapp.ui.utils.UtilModel
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -25,6 +26,7 @@ class AppRepositoryImpl @Inject constructor(
     val localDataSource: LocalDataSource,
     val rabbit: RabbitService,
     val api: ApiServiceWrapper,
+    val gson: Gson,
     val authService: AuthService
 ) : AppRepository {
     val TAG = "ApiRepositoryImpl"
@@ -32,6 +34,9 @@ class AppRepositoryImpl @Inject constructor(
         return rabbit.getLastOrder(id)
     }
 
+    override suspend fun getAllOfflineRequests(): List<ChangeHistory> {
+        return localDataSource.getAllOfflineRequests()
+    }
 
     override fun observeTasks(deviceId: String): LiveData<List<TaskEntity>> {
         return localDataSource.observeTasks()
@@ -50,22 +55,11 @@ class AppRepositoryImpl @Inject constructor(
     }
 
     override fun observeChangeHistory(): LiveData<List<ChangeHistory>> {
-      return  localDataSource.observeCommunication()
+        return localDataSource.observeCommunication()
     }
 
     override fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>> {
         return localDataSource.observeTasksWithActivities()
-    }
-    override suspend fun getClientEndpoint(clientId: String): ResultWrapper<ServerUrlResponse> {
-        RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
-        return try {
-            val result =  ResultWrapper.Success(authService.getClientEndpoint(clientId))
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(result.toString(), MainViewModel.StatusType.COMPLETE)))
-            result
-        } catch (ex: Exception){
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(ex.message, MainViewModel.StatusType.ERROR)))
-            ResultWrapper.Error(ex)
-        }
     }
 
     override suspend fun getAuthToken(
@@ -73,11 +67,37 @@ class AppRepositoryImpl @Inject constructor(
         userName: String,
         password: String
     ): ResultWrapper<TokenResponse> {
-       return api.authentication(grantType,userName,password)
+        return api.authentication(grantType, userName, password)
     }
 
-    override suspend fun registerDevice(commItem: CommItem): ResultWrapper<ResultOfAction>  {
-       return api.setDeviceProfile(commItem)
+
+    override suspend fun registerDevice(
+        commItem: CommItem
+    ): ResultWrapper<ResultOfAction> {
+        return api.setDeviceProfile(commItem)
+    }
+
+    override suspend fun registerDevice(
+        changeHistory: ChangeHistory
+    ): ResultWrapper<ResultOfAction> {
+        return api.setDeviceProfile(changeHistory)
+    }
+
+
+    /**
+     * calling auth api, that is not showing any credentials,
+     * no need to add credentials to database and error handle is here
+     */
+    override suspend fun getClientEndpoint(clientId: String): ResultWrapper<ServerUrlResponse> {
+        postToUi(null, MainViewModel.StatusType.LOADING)
+        return try {
+            val result = ResultWrapper.Success(authService.getClientEndpoint(clientId))
+            postToUi(result.toString(), MainViewModel.StatusType.COMPLETE)
+            result
+        } catch (ex: Exception) {
+            postToUi(ex.message, MainViewModel.StatusType.ERROR)
+            ResultWrapper.Error(ex)
+        }
     }
 
     override suspend fun getTasks(
@@ -85,25 +105,67 @@ class AppRepositoryImpl @Inject constructor(
         deviceId: String
     ): ResultWrapper<List<TaskEntity>> {
         if (forceUpdate) {
+            postToUi(null, MainViewModel.StatusType.LOADING)
             try {
                 updateTasksFromRemoteDataSource(deviceId)
+                postToUi("success task update", MainViewModel.StatusType.COMPLETE)
             } catch (ex: Exception) {
+                postToUi("error task update", MainViewModel.StatusType.ERROR)
                 return ResultWrapper.Error(ex)
             }
         }
         return localDataSource.getTasks()
     }
 
-    override suspend fun postActivity(context: Context, activity: Activity): ResultWrapper<ResultOfAction>{
-        val commItem: CommItem = UtilModel.getCommActivityChangeItem(context, activity)
-       return api.postActivityChange(commItem)
+    override suspend fun getDocuments(
+        forceUpdate: Boolean,
+        mandantId: Int,
+        orderNo: Int,
+        deviceId: String
+    ): ResultWrapper<List<DocumentEntity>> {
+        if (forceUpdate) {
+            postToUi(null, MainViewModel.StatusType.LOADING)
+            try {
+                updateDocumentsFromRemoteDataSource(mandantId, orderNo, deviceId)
+                postToUi("success documents update", MainViewModel.StatusType.COMPLETE)
+            } catch (ex: Exception) {
+                postToUi("error documents update", MainViewModel.StatusType.ERROR)
+                return ResultWrapper.Error(ex)
+            }
+        }
+        return localDataSource.getDocuments()
+    }
+
+    private fun postToUi(message: String?, status: MainViewModel.StatusType) {
+        RxBus.publish(
+            RxBusEvent.RequestStatus(
+                MainViewModel.Status(
+                    message,
+                    status
+                )
+            )
+        )
+    }
+
+    override suspend fun postActivity(activity: Activity): ResultWrapper<ResultOfAction> {
+        return api.postActivityChange(UtilModel.getCommActivityChangeItem(context, activity))
+    }
+
+    override suspend fun postActivity(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
+        return api.postActivityChange(changeHistory)
+    }
+
+
+    override suspend fun confirmTask(
+        commItem: CommItem
+    ): ResultWrapper<ResultOfAction> {
+        return api.confirmTask(commItem)
     }
 
     override suspend fun confirmTask(
-        context: Context,
-        commItem: CommItem
+        changeHistory: ChangeHistory
     ): ResultWrapper<ResultOfAction> {
-       return api.confirmTask(commItem)
+        return api.confirmTask(changeHistory)
     }
 
 
@@ -131,21 +193,6 @@ class AppRepositoryImpl @Inject constructor(
         return api.uploadDocument(mandantId, orderNo, taskID, driverNo, documentType, inputStream)
     }
 
-    override suspend fun getDocuments(
-        forceUpdate: Boolean,
-        mandantId: Int,
-        orderNo: Int,
-        deviceId: String
-    ): ResultWrapper<List<DocumentEntity>> {
-        if (forceUpdate) {
-            try {
-                updateDocumentsFromRemoteDataSource(mandantId, orderNo, deviceId)
-            } catch (ex: Exception) {
-                return ResultWrapper.Error(ex)
-            }
-        }
-        return localDataSource.getDocuments()
-    }
 
     override suspend fun refreshTasks(deviceId: String) {
         getTasks(true, deviceId)
@@ -179,8 +226,8 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.cleanDatabase()
     }
 
-    override suspend fun updateActivity(activityEntity: ActivityEntity) :Int {
-       return localDataSource.updateActivity(activityEntity)
+    override suspend fun updateActivity(activityEntity: ActivityEntity): Int {
+        return localDataSource.updateActivity(activityEntity)
     }
 
     override suspend fun insertDocument(documentEntity: DocumentEntity) {
@@ -188,13 +235,13 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun updateTask(taskEntity: TaskEntity) : Int{
+    override suspend fun updateTask(taskEntity: TaskEntity): Int {
         return localDataSource.updateTask(taskEntity)
     }
 
 
     override suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
-       return localDataSource.getParentTask(activityEntity)
+        return localDataSource.getParentTask(activityEntity)
     }
 
 

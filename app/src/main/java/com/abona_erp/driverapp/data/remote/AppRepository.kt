@@ -1,6 +1,5 @@
 package com.abona_erp.driverapp.data.remote
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import com.abona_erp.driverapp.data.local.db.ActivityEntity
 import com.abona_erp.driverapp.data.local.db.ChangeHistory
@@ -15,6 +14,7 @@ import java.io.InputStream
 interface AppRepository {
 
     suspend fun registerDevice(commItem: CommItem): ResultWrapper<ResultOfAction>
+    suspend fun registerDevice(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction>
     suspend fun getClientEndpoint(clientId: String): ResultWrapper<ServerUrlResponse>
     suspend fun getAuthToken(
         grantType: String,
@@ -51,9 +51,31 @@ interface AppRepository {
     ): ResultWrapper<List<DocumentEntity>>
     //rest API
     suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWrapper<List<TaskEntity>>
-    //API set activity change
-    suspend fun postActivity(context: Context, activity: Activity): ResultWrapper<ResultOfAction>
-    suspend fun confirmTask(context: Context, commItem: CommItem): ResultWrapper<ResultOfAction>
+
+    suspend fun postActivity(
+        activity: Activity
+    ): ResultWrapper<ResultOfAction>
+
+    suspend fun confirmTask(
+        commItem: CommItem
+    ): ResultWrapper<ResultOfAction>
+
+
+    /**
+     * offline mode
+     * @param changeHistory - object to recreate request
+     */
+    suspend fun postActivity(
+        changeHistory: ChangeHistory
+    ): ResultWrapper<ResultOfAction>
+
+    /**
+     * offline mode
+     */
+    suspend fun confirmTask(
+        changeHistory: ChangeHistory
+    ): ResultWrapper<ResultOfAction>
+
 
     suspend fun refreshTasks(deviceId: String)
     suspend fun refreshDocuments(
@@ -66,7 +88,8 @@ interface AppRepository {
     suspend fun updateTask(taskEntity: TaskEntity): Int //from fcm
     suspend fun insertOrUpdateTask(taskEntity: TaskEntity)
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity)
-    suspend fun updateActivity(activityEntity: ActivityEntity):Int // call api to set db
+    suspend fun updateActivity(activityEntity: ActivityEntity): Int // call api to set db
+
     //new document
     suspend fun insertDocument(documentEntity: DocumentEntity)
 
@@ -76,6 +99,6 @@ interface AppRepository {
     suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity?
 
     suspend fun cleanDatabase()
-
+    suspend fun getAllOfflineRequests(): List<ChangeHistory>
 
 }

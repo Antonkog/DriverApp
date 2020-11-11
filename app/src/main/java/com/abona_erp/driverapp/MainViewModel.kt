@@ -1,5 +1,6 @@
 package com.abona_erp.driverapp
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.hilt.Assisted
@@ -8,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.data.Constant
+import com.abona_erp.driverapp.data.local.db.ChangeHistory
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.HistoryDataType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
@@ -21,15 +23,20 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
 import com.google.gson.Gson
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainViewModel @ViewModelInject constructor(
     private val gson: Gson,
     private val repository: AppRepository,
     private val prefs: SharedPreferences,
+    @ApplicationContext private val context: Context,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
     private val TAG = "MainViewModel"
@@ -48,7 +55,7 @@ class MainViewModel @ViewModelInject constructor(
 
     init {
         RxBus.listen(RxBusEvent.RetryRequest::class.java).subscribe { event ->
-            retryRequest(event)
+            retryRequest(event.changeHistory)
         }
         prefs.getString(Constant.currentVechicle, null)?.let {
             try {
@@ -73,42 +80,55 @@ class MainViewModel @ViewModelInject constructor(
     }
 
 
-    private fun retryRequest(event: RxBusEvent.RetryRequest) {
+    fun doOnConnectionChange(hasInternet: Boolean) {
+        if (hasInternet)
+            viewModelScope.launch {
+                val offline = LinkedList<ChangeHistory>()
+                offline.addAll(repository.getAllOfflineRequests())
+                //here is basic implementation of sending offline requests.
+                if (offline.isNotEmpty()) {
+
+                    val disposable = io.reactivex.Observable.interval(5, TimeUnit.SECONDS)
+                        .take(offline.size.toLong())
+                        .doOnNext {
+                            retryRequest(offline.first())
+                            Log.d(TAG, "sending ${offline.first.dataType}")
+                            offline.pop()
+                        }
+
+                        .subscribe {
+                            Log.d(TAG, "offline resend")
+                        }
+
+                    disposables.add(disposable)
+                }
+            }
+    }
+
+    private fun retryRequest(changeHistory: ChangeHistory) {
         viewModelScope.launch {
-            when (event.changeHistory.dataType) {
+            when (changeHistory.dataType) {
                 HistoryDataType.CONFIRM_TASK -> {
-                    reConfirmTask(event.changeHistory.params)
+                    repository.confirmTask(changeHistory)
                 }
                 HistoryDataType.POST_ACTIVITY -> {
-                    rePostActivity(event.changeHistory.params)
+                    repository.postActivity(changeHistory)
                 }
                 HistoryDataType.GET_TASKS -> {
-                    repository.refreshTasks(event.changeHistory.params)
+                    repository.refreshTasks(DeviceUtils.getUniqueID(context))
                 }
                 HistoryDataType.SET_DEVICE_PROFILE -> {
-                    reSetDeviceProfile(event.changeHistory.params)
+                    repository.registerDevice(changeHistory)
                 }
-                HistoryDataType.FCM_TASK -> TODO()
-                HistoryDataType.FCM_DOCUMENT -> TODO()
-                HistoryDataType.FCM_VEHICLE -> TODO()
-                HistoryDataType.AUTH -> TODO()
-                HistoryDataType.GET_DOCUMENTS -> TODO()
-                HistoryDataType.UPLOAD_DOCUMENT -> TODO()
+                else -> {
+                    Log.e(TAG, "$changeHistory.dataType - not implemented")
+                }
+//                HistoryDataType.GET_DOCUMENTS -> TODO()
+//                HistoryDataType.UPLOAD_DOCUMENT -> TODO()
             }
         }
     }
 
-    private fun reSetDeviceProfile(params: String) {
-        TODO("Not yet implemented")
-    }
-
-    private fun reConfirmTask(params: String) {
-        TODO("Not yet implemented")
-    }
-
-    private fun rePostActivity(changeHistoryParams: String) {
-        TODO("Not yet implemented")
-    }
 
     fun resetAuthTime() {
         prefs.putLong(Constant.token_created, 0)

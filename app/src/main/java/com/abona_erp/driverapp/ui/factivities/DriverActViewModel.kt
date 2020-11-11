@@ -54,7 +54,6 @@ class DriverActViewModel @ViewModelInject constructor(
         val newAct = setNewActivityStatus(entity)
         viewModelScope.launch(IO) {
             val result = repository.postActivity(
-                context,
                 newAct.toActivity(DeviceUtils.getUniqueID(context))
             )
 
@@ -66,7 +65,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 val taskUpdated = updateParentTask(newAct, nextActStarted)
 
                 taskUpdated?.let {
-                    if(!nextActStarted)startActivityInNewTask(it)
+                    if (!nextActStarted) startActivityInNewTask(it)
                 }
 
 
@@ -83,7 +82,8 @@ class DriverActViewModel @ViewModelInject constructor(
         val taskEntity = repository.getNextTaskIfExist(task)
 
         taskEntity?.let { next ->
-            val newNextTask: TaskEntity = incrementTaskStatus(next, true) // true, next task not started has activity
+            val newNextTask: TaskEntity =
+                incrementTaskStatus(next, true) // true, next task not started has activity
 
             val resultWrapper: ResultWrapper<ResultOfAction> = confirmTask(newNextTask)
 
@@ -92,21 +92,21 @@ class DriverActViewModel @ViewModelInject constructor(
                     updateTaskConfirmedInDb(newNextTask)
                     postNextTaskActivity(next)
                 } else {
-                    postConfirmationErrorToUI(resultWrapper.data?.text ?: "cant update next task status" )
+                    postConfirmationErrorToUI(
+                        resultWrapper.data?.text ?: "cant update next task status"
+                    )
                 }
             } else {
-                postConfirmationErrorToUI("cant update next task status $resultWrapper" )
+                postConfirmationErrorToUI("cant update next task status $resultWrapper")
                 Log.e(TasksViewModel.TAG, "can't update task status on server $resultWrapper")
-                //todo: put in offline confirmations table here
-                // or when requesting and delete on error
             }
         }
 
     }
 
-    private suspend fun updateParentTask(newAct: ActivityEntity, nextExist: Boolean) :TaskEntity? {
-      return repository.getParentTask(newAct)?.let { task ->
-            val newTask =  incrementTaskStatus(task, nextExist) //finish task in no next activity
+    private suspend fun updateParentTask(newAct: ActivityEntity, nextExist: Boolean): TaskEntity? {
+        return repository.getParentTask(newAct)?.let { task ->
+            val newTask = incrementTaskStatus(task, nextExist) //finish task in no next activity
             val updateResult = repository.updateTask(newTask)
             if (updateResult == 0) {
                 Log.e(TAG, context.getString(R.string.error_task_update))
@@ -140,7 +140,7 @@ class DriverActViewModel @ViewModelInject constructor(
     private suspend fun postNextTaskActivity(next: TaskEntity) {
         repository.getFirstTaskActivity(next)?.let { firstAct ->
             val result = repository.postActivity(
-                context, firstAct.toActivity(DeviceUtils.getUniqueID(context))
+                firstAct.toActivity(DeviceUtils.getUniqueID(context))
             )
             if (result.succeeded && result.data?.isSuccess == true) { //todo: implement offline mode.
                 Log.e(TAG, "started next task activity (first) : $firstAct")
@@ -153,7 +153,6 @@ class DriverActViewModel @ViewModelInject constructor(
 
     private suspend fun confirmTask(nextTask: TaskEntity) =
         repository.confirmTask(
-            context,
             UtilModel.getTaskConfirmation(
                 context,
                 nextTask.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
@@ -164,7 +163,7 @@ class DriverActViewModel @ViewModelInject constructor(
     private fun incrementTaskStatus(
         task: TaskEntity,
         nextExist: Boolean
-    ) :TaskEntity {
+    ): TaskEntity {
         val newStatus = when (task.status) {
             TaskStatus.PENDING -> TaskStatus.RUNNING
             TaskStatus.RUNNING -> {
@@ -183,7 +182,7 @@ class DriverActViewModel @ViewModelInject constructor(
 
     private suspend fun startNextActivityCurrentTask(
         entity: ActivityEntity
-    ) : Boolean {
+    ): Boolean {
         val nextAct = repository.getNextActivityIfExist(entity)
         if (nextAct != null && nextAct.activityStatus == ActivityStatus.PENDING) {
             val newNextAct = nextAct.copy(

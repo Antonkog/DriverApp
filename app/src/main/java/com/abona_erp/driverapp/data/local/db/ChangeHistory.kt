@@ -3,28 +3,34 @@ package com.abona_erp.driverapp.data.local.db
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.android.parcel.Parcelize
 
 /**
+ * Object to create request on Connectivity change - when go online
+ * based on
+ * dataType and
+ * params
  * Created by Anton Kogan email: Akogan777@gmail.com on 11/9/2020
  */
-
 
 @Entity(tableName = "change_history")
 data class ChangeHistory(
     @ColumnInfo val status: Status,
     @ColumnInfo val logType: LogType,
-    @ColumnInfo val dataType :HistoryDataType,
-    @ColumnInfo val params : String,
-    @ColumnInfo val response : String?,
+    @ColumnInfo val dataType: HistoryDataType,
+    @ColumnInfo val params: String,
+    @ColumnInfo val response: String?,
     @ColumnInfo val created: Long,
     @ColumnInfo val modified: Long,
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L
 )
-enum class Status{SENT, SUCCESS, ERROR} //that is for restApi FCM is always SUCCESS, as we got it.
-data class RequestParamsHolder(val taskId: Int?, val actId: Int?, val orderNum : Int?, val mandantId: Int?, val filePath: String?) //used to hold params as string, if CommItem Used, we write it to params
-enum class HistoryDataType{
+
+enum class Status { SENT_OFFLINE, SENT, SUCCESS, ERROR } //that is for restApi FCM is always SUCCESS, as we got it.
+
+/**
+ * that is app internal param to make parsing separation
+ */
+enum class HistoryDataType {
     FCM_TASK,
     FCM_DOCUMENT,
     FCM_VEHICLE,
