@@ -148,15 +148,25 @@ public class CommItemAdapterExt extends
     holder.root_header.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        notify.setCurrentlySelected(true);
-        updateNotify(mDataList.get(position));
         
         for (int i = 0; i < mDataList.size(); i++) {
           if (i != position) {
             mDataList.get(i).setCurrentlySelected(false);
             updateNotify(mDataList.get(i));
+          } else if (i == position) {
+            if (notify.isCurrentlySelected()) {
+              mDataList.get(i).setCurrentlySelected(false);
+              updateNotify(mDataList.get(i));
+              getListener().onClick(view, position, notify, false);
+            } else {
+              notify.setCurrentlySelected(true);
+              updateNotify(mDataList.get(position));
+              getListener().onClick(view, position, notify, true);
+            }
           }
         }
+  
+        
         
         /*
         if (notify.isCurrentlySelected() && holder.root_content.getVisibility() == View.VISIBLE) {
@@ -570,29 +580,34 @@ public class CommItemAdapterExt extends
   
   private void updateLabelView(ViewHolder holder, Notify item, CommItem commItem) {
     
-    if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.CREATED)) {
-      if (item.getRead()) {
-        holder.status_label_view.setVisibility(View.GONE);
-      } else {
-        holder.status_label_view.setVisibility(View.VISIBLE);
-        holder.status_label_view.setLabelText(mResources.getString(R.string.label_new));
-        holder.status_label_view.setLabelBackgroundColor(ContextCompat.getColor(mContext, R.color.clrLabelNew));
-      }
-    } else if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.UPDATED_ABONA)) {
-      if (item.getRead()) {
-        holder.status_label_view.setVisibility(View.GONE);
-      } else {
-        holder.status_label_view.setVisibility(View.VISIBLE);
-        holder.status_label_view.setLabelText(mResources.getString(R.string.label_updated));
-        holder.status_label_view.setLabelBackgroundColor(ContextCompat.getColor(mContext, R.color.clrLabelUpdated));
-      }
-    } else if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
-      if (item.getRead()) {
-        holder.status_label_view.setVisibility(View.GONE);
-      } else {
-        holder.status_label_view.setVisibility(View.VISIBLE);
-        holder.status_label_view.setLabelText(mResources.getString(R.string.label_deleted));
-        holder.status_label_view.setLabelBackgroundColor(ContextCompat.getColor(mContext, R.color.clrLabelDeleted));
+    if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+      holder.status_label_view.setVisibility(View.GONE);
+    } else {
+  
+      if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.CREATED)) {
+        if (item.getRead()) {
+          holder.status_label_view.setVisibility(View.GONE);
+        } else {
+          holder.status_label_view.setVisibility(View.VISIBLE);
+          holder.status_label_view.setLabelText(mResources.getString(R.string.label_new));
+          holder.status_label_view.setLabelBackgroundColor(ContextCompat.getColor(mContext, R.color.clrLabelNew));
+        }
+      } else if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.UPDATED_ABONA)) {
+        if (item.getRead()) {
+          holder.status_label_view.setVisibility(View.GONE);
+        } else {
+          holder.status_label_view.setVisibility(View.VISIBLE);
+          holder.status_label_view.setLabelText(mResources.getString(R.string.label_updated));
+          holder.status_label_view.setLabelBackgroundColor(ContextCompat.getColor(mContext, R.color.clrLabelUpdated));
+        }
+      } else if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
+        if (item.getRead()) {
+          holder.status_label_view.setVisibility(View.GONE);
+        } else {
+          holder.status_label_view.setVisibility(View.VISIBLE);
+          holder.status_label_view.setLabelText(mResources.getString(R.string.label_deleted));
+          holder.status_label_view.setLabelBackgroundColor(ContextCompat.getColor(mContext, R.color.clrLabelDeleted));
+        }
       }
     }
   }

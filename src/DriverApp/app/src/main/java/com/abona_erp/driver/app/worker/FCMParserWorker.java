@@ -299,13 +299,13 @@ public class FCMParserWorker extends Worker implements FCMParser {
     @Override
     public void insertNewTask(CommItem commItem, Notify notify) {
         Log.i(TAG, "******* TASK NICHT VORHANDEN - HINZUFÜGEN *******");
-        notify = Notify.addFromCommonItem(commItem, notify);
+        notify = Notify.addFromCommonItem(commItem, notify, false);
         mRepository.insert(notify);
     }
 
     @Override
     public void updateFoundDbTask(Notify notify, CommItem commItem) {
-        notify = Notify.addFromCommonItem(commItem, notify);
+        notify = Notify.addFromCommonItem(commItem, notify, true);
         mRepository.update(notify);
     }
 

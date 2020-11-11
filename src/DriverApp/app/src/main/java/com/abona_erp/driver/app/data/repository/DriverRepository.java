@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.abona_erp.driver.app.data.entity.ChangeHistoryState.CONFIRMED;
@@ -402,7 +404,25 @@ public class DriverRepository {
 
     @Override
     protected Void doInBackground(final Notify... params) {
-      mAsyncTaskDao.updateNotify(params[0]);
+      
+      mAsyncTaskDao.loadNotifyById(params[0].getId())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeOn(Schedulers.io())
+        .subscribe(new DisposableSingleObserver<Notify>() {
+          @Override
+          public void onSuccess(Notify notify) {
+            
+            if (notify.getRead()) {
+              params[0].setRead(true);
+            }
+            mAsyncTaskDao.updateNotify(params[0]);
+          }
+  
+          @Override
+          public void onError(Throwable e) {
+          }
+        });
+      
       return null;
     }
   }

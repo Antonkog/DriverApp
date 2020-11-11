@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -58,12 +59,14 @@
         android:id="@+id/badge_notification_image"
         style="@style/MenuImage"
         android:clickable="false"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/badge_process_image"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/refresh_image"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ring_selector" />
+        app:srcCompat="@drawable/ring_selector"
+      />
 
     <com.abona_erp.driver.app.ui.widget.AsapTextView
         android:id="@+id/badge_notification"
@@ -73,6 +76,7 @@
         android:textColor="@color/clrWhite"
         android:textSize="14sp"
         android:textStyle="bold"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@+id/badge_notification_image"
         app:layout_constraintTop_toTopOf="@+id/badge_notification_image" />
 
