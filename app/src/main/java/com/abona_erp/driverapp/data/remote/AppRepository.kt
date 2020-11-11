@@ -7,25 +7,21 @@ import com.abona_erp.driverapp.data.local.db.DocumentEntity
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
+import com.abona_erp.driverapp.ui.utils.UtilModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import java.io.InputStream
 
 interface AppRepository {
 
-    suspend fun registerDevice(commItem: CommItem): ResultWrapper<ResultOfAction>
-    suspend fun registerDevice(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction>
     suspend fun getClientEndpoint(clientId: String): ResultWrapper<ServerUrlResponse>
-    suspend fun getAuthToken(
-        grantType: String,
-        userName: String,
-        password: String
-    ): ResultWrapper<TokenResponse>
 
     //RabbitMQ
     fun getLatestRabbitOrder(id: String): Observable<LatestOrder>
-//    fun getDocuments(mandantId: Int,  orderNo: Int, deviceId: String ): LiveData<List<AppFileInterchangeItem>>
 
+    suspend fun getAuthToken(authModel: UtilModel.AuthModel): ResultWrapper<TokenResponse>
+
+    suspend fun registerDevice(commItem: CommItem): ResultWrapper<ResultOfAction>
 
     fun upladDocument(
         mandantId: Int,

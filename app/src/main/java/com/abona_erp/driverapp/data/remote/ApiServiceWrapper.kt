@@ -12,6 +12,7 @@ import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.gson.Gson
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MediaType.Companion.toMediaType
@@ -35,19 +36,41 @@ class ApiServiceWrapper(
 ) {
 
     suspend fun authentication(
-        grantType: String,
-        userName: String,
-        password: String
+        authModel: UtilModel.AuthModel
     ): ResultWrapper<TokenResponse> {
+        return authentication(authModel, null)
+    }
+
+    private suspend fun authentication(
+        authModel: UtilModel.AuthModel, changeHistory: ChangeHistory?
+    ): ResultWrapper<TokenResponse> {
+        val time = System.currentTimeMillis()
+        val change = ChangeHistory(
+            Status.SENT, //as i don't want to recreate request  - set it as sent. (user can't login when offline)
+            LogType.APP_TO_SERVER,
+            AUTH,
+            gson.toJson(authModel),
+            null,
+            time,
+            time
+        )
+        val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
+
         sentLoadingToUI()
         return try {
-            val result = ResultWrapper.Success(api.authentication(grantType, userName, password))
-
+            val result = ResultWrapper.Success(
+                api.authentication(
+                    authModel.grantType,
+                    authModel.userName,
+                    authModel.password
+                )
+            )
             sendSuccessToUI(result.toString())
-
+            updateHistoryOnSuccess(change, gson.toJson(result), autoGenId)
             result
         } catch (ex: Exception) {
             sendErrorToUI(ex)
+            updateHistoryOnError(change, autoGenId)
             ResultWrapper.Error(ex)
         }
     }
@@ -56,7 +79,7 @@ class ApiServiceWrapper(
      * that method exception is handled in AppRepositoryImpl
      * so no need to send exception to UI here and no try/catch block
      */
-    suspend fun updateTasksFromServer (deviceId: String) {
+    suspend fun updateTasksFromServer(deviceId: String) {
         val time = System.currentTimeMillis()
         val connected = NetworkUtil.isConnectedWithWifi(context)
         val change = ChangeHistory(
@@ -99,14 +122,14 @@ class ApiServiceWrapper(
         orderNo: Int,
         deviceId: String
     ) {
-            val resp = api.getDocuments(mandantId, orderNo, deviceId)
+        val resp = api.getDocuments(mandantId, orderNo, deviceId)
 
-            resp?.let {
-                if (it.isNotEmpty()) {
-                    localDataSource.deleteDocuments()
-                    localDataSource.insertDocumentResponse(it)
-                }
+        resp?.let {
+            if (it.isNotEmpty()) {
+                localDataSource.deleteDocuments()
+                localDataSource.insertDocumentResponse(it)
             }
+        }
 
     }
 
@@ -115,21 +138,13 @@ class ApiServiceWrapper(
         return setDeviceProfile(commItem, null)
     }
 
-    suspend fun setDeviceProfile(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
-        return try {
-            val item = gson.fromJson(changeHistory.params, CommItem::class.java)
-            setDeviceProfile(item, changeHistory)
-        } catch (ex: java.lang.Exception) {
-            ResultWrapper.Error(ex)
-        }
-    }
 
     private suspend fun setDeviceProfile(
         commItem: CommItem,
         changeHistory: ChangeHistory?
     ): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
-        val change = changeHistory(changeHistory, commItem)
+        val change = changeHistory(changeHistory, commItem).copy(status = Status.SENT) //as i don't want to recreate request  - set it as sent. (user can't login when offline)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result = ResultWrapper.Success(api.setDeviceProfile(commItem))
@@ -149,12 +164,8 @@ class ApiServiceWrapper(
     }
 
     suspend fun postActivityChange(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
-        return try {
-            val item = gson.fromJson(changeHistory.params, CommItem::class.java)
-            postActivityChange(item, changeHistory)
-        } catch (ex: java.lang.Exception) {
-            ResultWrapper.Error(ex)
-        }
+        val item = gson.fromJson(changeHistory.params, CommItem::class.java)
+        return postActivityChange(item, changeHistory)
     }
 
     /**
@@ -183,12 +194,8 @@ class ApiServiceWrapper(
 
 
     suspend fun confirmTask(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
-        return try {
-            val item = gson.fromJson(changeHistory.params, CommItem::class.java)
-            confirmTask(item, changeHistory)
-        } catch (ex: java.lang.Exception) {
-            ResultWrapper.Error(ex)
-        }
+        val item = gson.fromJson(changeHistory.params, CommItem::class.java)
+        return confirmTask(item, changeHistory)
     }
 
     suspend fun confirmTask(commItem: CommItem): ResultWrapper<ResultOfAction> {

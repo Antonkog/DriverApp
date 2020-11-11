@@ -24,6 +24,12 @@ object UtilModel {
 
     private const val TAG = "UtilModel"
 
+    data class AuthModel(
+        val grantType: String,
+        val userName: String,
+        val password: String
+    )
+
     fun getCommActivityChangeItem(context: Context, activity: Activity): CommItem {
         val header =
             Header.Builder(DataType.ACTIVITY.dataType, DeviceUtils.getUniqueID(context)).build()

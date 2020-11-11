@@ -52,6 +52,10 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
                 binding.cardView.elevation = context.resources.getDimension(R.dimen.elevation_VIII)
                 binding.cardView.alpha = 1F
             }
+            else ->{
+                binding.cardView.elevation = context.resources.getDimension(R.dimen.elevation_VIII)
+                binding.cardView.alpha = 1F
+            }
         }
         val nameId = UtilModel.getResIdByTaskActionType(data.taskEntity)
 
@@ -151,8 +155,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding: TaskItemBinding
     ) {
         binding.imageInfo.setOnClickListener {
-            val bundle =
-                bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
+            val bundle = bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
             navController.navigate(R.id.action_nav_home_to_taskInfoFragment, bundle)
         }
     }

@@ -5,6 +5,13 @@ object Constant {
     const val ERROR_NULL_CODE: Int = 408
     const val ERROR_COMMON: Int = 410
 
+    const val CONNECTION_VELOCITY_SEC = 10L
+
+    /**
+     * that pause asked from Jaimon since we can't update Abona tables fast
+     */
+    const val PAUSE_SERVER_REQUEST_MIN = 1L
+
     const val OPEN_DOC_REQUEST_CODE = 122
     const val userAgentAppName = "ABONA DriverApp"
     const val baseRabbitUrl: String = "http://yms-test.abona-erp.com:50517/"

@@ -51,16 +51,21 @@ class LoginViewModel
         INVALID_AUTHENTICATION  // Authentication failed
     }
 
-    val authenticationState : MutableLiveData<AuthenticationState>
+    val authenticationState: MutableLiveData<AuthenticationState>
     val error = MutableLiveData<String>()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         error.postValue(exception.message)
-        Log.e(TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception"  )
+        Log.e(TAG, exception.message ?: " error catch in CoroutineExceptionHandler $exception")
     }
 
     init {
         authenticationState = savedStateHandle.getLiveData(AUTH_STATE_FLAG)
+    }
+
+    fun resetAuthToken(password: String, username: String){
+        val clientId = prefs.getInt(Constant.mandantId, Constant.testMandantId)
+        authenticate(username, password, clientId)
     }
 
     fun authenticate(username: String, password: String, clientId: Int) {
@@ -85,7 +90,13 @@ class LoginViewModel
                 //if we dont get new url, we using standard common url, for now, so i put next`code outside of bracers.
 
 
-                val tokenResult = repository.getAuthToken(Constant.grantTypeToken, username, password)
+                val tokenResult = repository.getAuthToken(
+                    UtilModel.AuthModel(
+                        Constant.grantTypeToken,
+                        username,
+                        password
+                    )
+                )
 
                 if (tokenResult.succeeded) {
                     PrivatePreferences.setAccessToken(
@@ -93,13 +104,14 @@ class LoginViewModel
                         tokenResult.data?.accessToken
                     )
                     prefs.putLong(Constant.token_created, System.currentTimeMillis())
-                } else{
+                } else {
                     changeLoginState(AuthenticationState.INVALID_AUTHENTICATION)
-                    error.postValue(endPointResponse.toString())
+                    error.postValue(tokenResult.toString())
                 }
 
 
-                val deviceProfileResponse = setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
+                val deviceProfileResponse =
+                    setDeviceProfile(UtilModel.getCommDeviceProfileItem(context))
 
                 if (deviceProfileResponse.succeeded) {
                     Log.d(TAG, "device set success $deviceProfileResponse")
@@ -108,7 +120,7 @@ class LoginViewModel
 
                 } else {
                     changeLoginState(AuthenticationState.INVALID_AUTHENTICATION)
-                    error.postValue(endPointResponse.toString())
+                    error.postValue(deviceProfileResponse.toString())
                 }
 
             }//time debug
@@ -125,7 +137,7 @@ class LoginViewModel
      * see:   Manifest:      android:usesCleartextTraffic="true" because auth url is not https
      */
     private suspend fun getClientEndpoint(clientId: Int): ResultWrapper<ServerUrlResponse> {
-       return repository.getClientEndpoint(""+clientId)
+        return repository.getClientEndpoint("" + clientId)
     }
 
     private fun setNewClientEndpoint(baseUrl: String) {
@@ -150,7 +162,7 @@ class LoginViewModel
             })
     }
 
-    private suspend fun setDeviceProfile(commItem: CommItem): ResultWrapper<ResultOfAction>  {
+    private suspend fun setDeviceProfile(commItem: CommItem): ResultWrapper<ResultOfAction> {
         return repository.registerDevice(commItem)
     }
 

@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -107,7 +108,8 @@ class MainActivity : AppCompatActivity(), ConnectivityProvider.ConnectivityState
 
         mainViewModel.authReset.observe(this, Observer {
             mainViewModel.resetAuthTime()
-            navController.navigate(R.id.nav_login)
+            val bundle = bundleOf(resources.getString(R.string.key_auto_login) to true)
+            navController.navigate(R.id.action_nav_home_to_loginFragment, bundle)
         })
 
         mainViewModel.requestStatus.observe(this, Observer {

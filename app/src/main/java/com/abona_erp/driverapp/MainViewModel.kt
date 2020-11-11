@@ -15,10 +15,7 @@ import com.abona_erp.driverapp.data.local.db.HistoryDataType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.local.preferences.putLong
-import com.abona_erp.driverapp.data.model.ActivityStatus
-import com.abona_erp.driverapp.data.model.CommItem
-import com.abona_erp.driverapp.data.model.DataType
-import com.abona_erp.driverapp.data.model.VehicleItem
+import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
@@ -40,6 +37,8 @@ class MainViewModel @ViewModelInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
     private val TAG = "MainViewModel"
+
+    private var connectionHistory: Pair<Boolean, Long>? = null
 
     val vechicle = MutableLiveData<VehicleItem>()
     val requestStatus = MutableLiveData<Status>()
@@ -81,23 +80,32 @@ class MainViewModel @ViewModelInject constructor(
 
 
     fun doOnConnectionChange(hasInternet: Boolean) {
-        if (hasInternet)
+        val justChanged =
+            if (connectionHistory == null) {
+                connectionHistory = Pair(hasInternet, System.currentTimeMillis())
+                false
+            } else {
+                System.currentTimeMillis() - connectionHistory!!.second < TimeUnit.SECONDS.toMillis(Constant.CONNECTION_VELOCITY_SEC)
+            }
+
+        if (hasInternet && !justChanged)
             viewModelScope.launch {
                 val offline = LinkedList<ChangeHistory>()
                 offline.addAll(repository.getAllOfflineRequests())
                 //here is basic implementation of sending offline requests.
                 if (offline.isNotEmpty()) {
-
-                    val disposable = io.reactivex.Observable.interval(5, TimeUnit.SECONDS)
+                    val disposable = io.reactivex.Observable.interval(
+                        Constant.PAUSE_SERVER_REQUEST_MIN,
+                        TimeUnit.MINUTES
+                    )
                         .take(offline.size.toLong())
                         .doOnNext {
                             retryRequest(offline.first())
                             Log.d(TAG, "sending ${offline.first.dataType}")
                             offline.pop()
                         }
-
                         .subscribe {
-                            Log.d(TAG, "offline resend")
+                            Log.d(TAG, "all offline items was resend")
                         }
 
                     disposables.add(disposable)
@@ -106,6 +114,7 @@ class MainViewModel @ViewModelInject constructor(
     }
 
     private fun retryRequest(changeHistory: ChangeHistory) {
+        Log.e(TAG, "retry \n ${changeHistory.dataType}")
         viewModelScope.launch {
             when (changeHistory.dataType) {
                 HistoryDataType.CONFIRM_TASK -> {
@@ -116,9 +125,6 @@ class MainViewModel @ViewModelInject constructor(
                 }
                 HistoryDataType.GET_TASKS -> {
                     repository.refreshTasks(DeviceUtils.getUniqueID(context))
-                }
-                HistoryDataType.SET_DEVICE_PROFILE -> {
-                    repository.registerDevice(changeHistory)
                 }
                 else -> {
                     Log.e(TAG, "$changeHistory.dataType - not implemented")

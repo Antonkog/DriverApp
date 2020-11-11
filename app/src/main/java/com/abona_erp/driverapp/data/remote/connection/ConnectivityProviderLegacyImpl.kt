@@ -8,6 +8,7 @@ import android.net.ConnectivityManager
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.net.ConnectivityManager.EXTRA_NETWORK_INFO
 import android.net.NetworkInfo
+import android.util.Log
 import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProviderBaseImpl
 
@@ -20,7 +21,11 @@ class ConnectivityProviderLegacyImpl(
     private val receiver = ConnectivityReceiver()
 
     override fun subscribe() {
-        context.registerReceiver(receiver, IntentFilter(CONNECTIVITY_ACTION))
+        try {
+            context.registerReceiver(receiver, IntentFilter(CONNECTIVITY_ACTION))
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "already registered")
+        }
     }
 
     override fun unsubscribe() {
@@ -60,5 +65,9 @@ class ConnectivityProviderLegacyImpl(
                 }
             dispatchChange(state)
         }
+    }
+
+    companion object {
+        const val TAG = "ConnectivityProvider"
     }
 }

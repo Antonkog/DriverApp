@@ -114,6 +114,7 @@
     <string name="key_task_entity" translatable="false">task_entity</string>
     <string name="key_goods_data" translatable="false">goods_data</string>
     <string name="key_pallets_data" translatable="false">pallets_data</string>
+    <string name="key_auto_login" translatable="false">auto_login</string>
 
 
     <!--    attributes, do not translate -->
