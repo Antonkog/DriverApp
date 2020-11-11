@@ -209,7 +209,7 @@ public class Notify {
     }
 
 
-    public static Notify addFromCommonItem(CommItem commItem, Notify notify) {
+    public static Notify addFromCommonItem(CommItem commItem, Notify notify, boolean updated) {
         notify.setMandantId(commItem.getTaskItem().getMandantId());
         notify.setTaskId(commItem.getTaskItem().getTaskId());
         if (commItem.getPercentItem() != null) {
