@@ -31,7 +31,8 @@ public interface NotifyDao {
   @Query("SELECT * FROM taskItem WHERE status = 90 ORDER BY task_due_finish ASC")
   LiveData<List<Notify>> getAllCMRNotifications();
   
-  @Query("SELECT * FROM taskItem WHERE status = 100 ORDER BY task_due_finish ASC")
+  //@Query("SELECT * FROM taskItem WHERE status = 100 ORDER BY task_due_finish ASC")
+  @Query("SELECT * FROM taskItem WHERE status = 100 ORDER BY modified_at AND order_no DESC")
   LiveData<List<Notify>> getAllCompletedNotifications();
   
   @Query("SELECT * FROM taskItem WHERE mandant_id = :mandant_id AND order_no = :order_no")

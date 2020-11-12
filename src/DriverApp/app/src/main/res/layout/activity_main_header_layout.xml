@@ -59,7 +59,7 @@
         android:id="@+id/badge_notification_image"
         style="@style/MenuImage"
         android:clickable="false"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/badge_process_image"
         app:layout_constraintHorizontal_bias="0.5"
@@ -76,7 +76,7 @@
         android:textColor="@color/clrWhite"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/badge_notification_image"
         app:layout_constraintTop_toTopOf="@+id/badge_notification_image" />
 
