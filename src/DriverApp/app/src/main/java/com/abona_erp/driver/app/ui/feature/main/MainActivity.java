@@ -363,6 +363,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     mMainViewModel.getNotReadNotificationCount().observe(this, new Observer<Integer>() {
       @Override
       public void onChanged(Integer integer) {
+        /*
         if (integer == null)
           return;
         int value = integer;
@@ -380,6 +381,8 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
             ((TextView) findViewById(R.id.badge_notification)).setText("99+");
           }
         }
+        
+         */
       }
     });
   }
