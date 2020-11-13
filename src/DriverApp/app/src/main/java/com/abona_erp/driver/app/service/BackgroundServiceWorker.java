@@ -131,6 +131,7 @@ public class BackgroundServiceWorker extends Service {
   
   private volatile static int delay = 3000;
   public volatile static boolean allowRequest = true;
+  public volatile static boolean registrationRequest = false;
   public class Runner implements Runnable {
     @Override
     public void run() {
@@ -1184,6 +1185,11 @@ public class BackgroundServiceWorker extends Service {
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
+          
+          if (registrationRequest) {
+            Log.i(TAG, ">>>>>>>>>> WAITING OF RESPONSE...");
+            return;
+          }
           List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
   
           if (deviceProfiles.size() > 0) {
@@ -1209,11 +1215,15 @@ public class BackgroundServiceWorker extends Service {
             deviceProfileItem.setVersionName(deviceProfiles.get(0).getVersionName());
             commItem.setDeviceProfileItem(deviceProfileItem);
             
+            registrationRequest = true;
+            Log.i(TAG, ">>>>>>>>>> REGISTRATION STARTED...");
+            
             Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
               public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
                 allowRequest = true;
+                registrationRequest = false;
                 if (response.isSuccessful()) {
                   if (response.body() != null && response.body().getIsSuccess() && !response.body().getIsException()) {
                     Log.d(TAG, ">>>>>>> DEVICE REGISTRATION WAS SUCCESSFULLY!!!");
@@ -1240,6 +1250,7 @@ public class BackgroundServiceWorker extends Service {
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
                 Log.d(TAG, ">>>>>>> ERROR ON DEVICE REGISTRATION!!!");
                 allowRequest = true;
+                registrationRequest = false;
               }
             });
           } else {
