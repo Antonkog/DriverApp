@@ -45,6 +45,14 @@ class DialogBuilder(val context: Context) {
                 }
                 .create()
         }
+
+        fun getPermissionErrorDialog(context: Context,   positiveListener: DialogInterface.OnClickListener,): Dialog {
+            return getBaseDialogBuilder(context).setTitle(R.string.need_permissions_title)
+                .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton(android.R.string.ok, positiveListener)
+                .setMessage(R.string.need_location_permission).create()
+
+        }
     }
 
     fun getBaseDialogBuilder(): MaterialAlertDialogBuilder {
@@ -67,10 +75,7 @@ class DialogBuilder(val context: Context) {
             .setMessage(message).create()
     }
 
-    fun getPermissionErrorDialog(): Dialog {
-        return getBaseDialogBuilder().setTitle(R.string.need_permissions_title)
-            .setMessage(R.string.need_permissions_message).create()
-    }
+
 
     fun getTaskNotFoundDialog(): Dialog {
         return getBaseDialogBuilder().setTitle(R.string.dialog_not_found_title)

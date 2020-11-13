@@ -84,13 +84,13 @@
     <string name="action_update">Update</string>
     <string name="action_update_message">Update completed!</string>
     <string name="need_permissions_title">Need Permissions!</string>
+    <string name="need_location_permission">Need location Permission to show current position</string>
     <string name="dialog_login_error">Login error, while getting response from server</string>
     <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
 
     <!--     need translation-->
     <string name="dialog_start_task_title">Task confirmation</string>
     <string name="dialog_start_task">Do you want to start the task: \n- %s?</string>
-    <string name="need_permissions_message" translatable="false">Please check phone settings.</string>
     <string name="dialog_not_found_title" translatable="false">Not Found</string>
     <string name="dialog_not_found_message" translatable="false">Task existiert nicht mehr!</string>
     <string name="dialog_register" translatable="false">Device registration</string>

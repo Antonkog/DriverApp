@@ -42,5 +42,6 @@
     <string name="task_overdue">Zadanie zaległe</string>
     <string name="dialog_start_task_title">Potwierdzenie zadania</string>
     <string name="dialog_start_task">Czy chcesz rozpocząć zadanie: -%s?</string>
+    <string name="need_location_permission">Potrzebujesz pozwolenia na lokalizację, aby pokazać aktualną pozycję</string>
 
 </resources>

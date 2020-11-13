@@ -13,16 +13,16 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.abona_erp.driverapp.data.Constant.OPEN_DOC_REQUEST_CODE
+import com.abona_erp.driverapp.data.Constant.REQUEST_OPEN_DOC
 import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
@@ -31,7 +31,8 @@ import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ConnectivityProvider.ConnectivityStateListener {
+class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback,
+    ConnectivityProvider.ConnectivityStateListener {
     val TAG = MainActivity::class.simpleName
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var navController: NavController
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity(), ConnectivityProvider.ConnectivityState
             }
         }
 
-        mainViewModel.vechicle.observe(this, Observer {
+        mainViewModel.vechicle.observe(this, {
             navView.getHeaderView(0).let { v ->
                 v.findViewById<TextView>(R.id.vehicle_num).text = it.registrationNumber
                 v.findViewById<TextView>(R.id.client_name).text = it.clientName
@@ -106,27 +107,28 @@ class MainActivity : AppCompatActivity(), ConnectivityProvider.ConnectivityState
         val bottomSheetBehavior =
             BottomSheetBehavior.from(linContainer)
 
-        mainViewModel.authReset.observe(this, Observer {
+        mainViewModel.authReset.observe(this, {
             mainViewModel.resetAuthTime()
             val bundle = bundleOf(resources.getString(R.string.key_auto_login) to true)
             navController.navigate(R.id.action_nav_home_to_loginFragment, bundle)
         })
 
-        mainViewModel.requestStatus.observe(this, Observer {
+        mainViewModel.requestStatus.observe(this, {
             when (it.type) {
                 MainViewModel.StatusType.LOADING -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                    linContainer.findViewById<TextView>(R.id.status_text).text = ""
+                    linContainer.findViewById<TextView>(R.id.status_text).visibility = View.GONE
                     linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.VISIBLE
                 }
                 MainViewModel.StatusType.ERROR -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                     linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.GONE
+                    linContainer.findViewById<TextView>(R.id.status_text).visibility = View.VISIBLE
                     linContainer.findViewById<TextView>(R.id.status_text).text = it.message
                 }
                 MainViewModel.StatusType.COMPLETE -> {
                     linContainer.findViewById<ProgressBar>(R.id.progress).visibility = View.GONE
-                    linContainer.findViewById<TextView>(R.id.status_text).text = ""
+                    linContainer.findViewById<TextView>(R.id.status_text).visibility = View.GONE
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
             }
@@ -166,14 +168,12 @@ class MainActivity : AppCompatActivity(), ConnectivityProvider.ConnectivityState
             type = "*/*"
             addCategory(Intent.CATEGORY_OPENABLE)
         }
-        startActivityForResult(intent, OPEN_DOC_REQUEST_CODE)
+        startActivityForResult(intent, REQUEST_OPEN_DOC)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)
-        if (requestCode == OPEN_DOC_REQUEST_CODE
-            && resultCode == Activity.RESULT_OK
-        ) {
+        if (requestCode == REQUEST_OPEN_DOC && resultCode == Activity.RESULT_OK) {
             Log.e(TAG, " got result: $resultData ")
             // The result data contains a URI for the document or directory that
             // the user selected.
