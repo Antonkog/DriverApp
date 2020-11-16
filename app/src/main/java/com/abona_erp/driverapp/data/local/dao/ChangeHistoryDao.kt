@@ -12,7 +12,7 @@ import com.abona_erp.driverapp.data.local.db.ChangeHistory
  */
 @Dao
 interface ChangeHistoryDao {
-    @Query("SELECT * FROM change_history")
+    @Query("SELECT * FROM change_history ORDER BY modified DESC")
     fun observeCommunication(): LiveData<List<ChangeHistory>>
 
     /**
