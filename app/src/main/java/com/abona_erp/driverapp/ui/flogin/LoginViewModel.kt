@@ -21,14 +21,9 @@ import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.utils.UtilModel
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.system.measureTimeMillis
 
 class LoginViewModel
@@ -74,8 +69,6 @@ class LoginViewModel
         viewModelScope.launch(exceptionHandler) {
 
             val time = measureTimeMillis {
-
-                setFcmToken() //not using return val as saved in private preferences
 
                 val endPointResponse: ResultWrapper<ServerUrlResponse> = getClientEndpoint(clientId)
 
@@ -144,23 +137,6 @@ class LoginViewModel
         PrivatePreferences.setEndpoint(context, baseUrl)
     }
 
-    private suspend fun setFcmToken() = suspendCancellableCoroutine<String> { continuation ->
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.w(TAG, "getInstanceId failed", task.exception)
-                    continuation.resumeWithException(Throwable("getInstanceId failed" + task.exception))
-                    return@OnCompleteListener
-                }
-                // Get new Instance ID token
-
-                task.result?.token?.let {
-                    // Log and toast
-                    PrivatePreferences.setFCMToken(context, it)
-                    continuation.resume(it)
-                }
-            })
-    }
 
     private suspend fun setDeviceProfile(commItem: CommItem): ResultWrapper<ResultOfAction> {
         return repository.registerDevice(commItem)

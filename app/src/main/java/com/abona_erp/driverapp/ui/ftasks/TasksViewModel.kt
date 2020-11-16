@@ -116,7 +116,7 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun refreshTasks() = viewModelScope.launch {
-        repository.refreshTasks(DeviceUtils.getUniqueID(context))
+        repository.refreshTasks()
     }
 
     //to post from task fragment use

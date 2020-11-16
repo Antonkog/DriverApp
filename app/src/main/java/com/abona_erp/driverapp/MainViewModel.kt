@@ -17,10 +17,10 @@ import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.local.preferences.putLong
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.AppRepository
+import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
-import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -34,8 +34,9 @@ class MainViewModel @ViewModelInject constructor(
     private val repository: AppRepository,
     private val prefs: SharedPreferences,
     @ApplicationContext private val context: Context,
+    private val connectivityProvider: ConnectivityProvider,
     @Assisted private val savedStateHandle: SavedStateHandle
-) : BaseViewModel() {
+) : BaseViewModel(), ConnectivityProvider.ConnectivityStateListener {
     private val TAG = "MainViewModel"
 
     private var connectionHistory: Pair<Boolean, Long>? = null
@@ -53,6 +54,8 @@ class MainViewModel @ViewModelInject constructor(
 
 
     init {
+        connectivityProvider.addListener(this)
+
         RxBus.listen(RxBusEvent.RetryRequest::class.java).subscribe { event ->
             retryRequest(event.changeHistory)
         }
@@ -124,7 +127,7 @@ class MainViewModel @ViewModelInject constructor(
                     repository.postActivity(changeHistory)
                 }
                 HistoryDataType.GET_TASKS -> {
-                    repository.refreshTasks(DeviceUtils.getUniqueID(context))
+                    repository.getTasks(true, changeHistory)
                 }
                 else -> {
                     Log.e(TAG, "$changeHistory.dataType - not implemented")
@@ -200,5 +203,18 @@ class MainViewModel @ViewModelInject constructor(
         viewModelScope.launch(IO) {
             repository.cleanDatabase()
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        connectivityProvider.removeListener(this)
+    }
+
+    override fun onStateChange(state: ConnectivityProvider.NetworkState) {
+        doOnConnectionChange(state.hasInternet())
+    }
+
+    private fun ConnectivityProvider.NetworkState.hasInternet(): Boolean {
+        return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true
     }
 }

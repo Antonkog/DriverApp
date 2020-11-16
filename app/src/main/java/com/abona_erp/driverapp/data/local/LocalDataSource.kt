@@ -86,6 +86,8 @@ class LocalDataSource internal constructor(
 
 
     suspend fun updateFromCommItem(data: CommResponseItem) {
+        db.driverActDao().deleteActivities()
+        db.driverTaskDao().deleteTasks() // order metter - remove activity first
         db.driverTaskDao().updateFromCommItem(data)
         db.driverActDao().updateFromCommItem(data)
     }

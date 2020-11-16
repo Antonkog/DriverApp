@@ -3,11 +3,8 @@ package com.abona_erp.driverapp.ui.ftasks
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +32,27 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     private lateinit var tasksBinding: TasksFragmentBinding
 
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.findItem(R.id.action_refresh).let {
+            it?.setVisible(true)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_refresh -> {
+                tasksViewModel.refreshTasks()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,16 +100,15 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         })
 
         tasksBinding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
-        tasksViewModel.tasks.observe(viewLifecycleOwner, Observer {
+        tasksViewModel.tasks.observe(viewLifecycleOwner, {
             tasksViewModel.setTasks(it)
         })
 
-        tasksViewModel.filteredTasks.observe(viewLifecycleOwner, Observer {
+        tasksViewModel.filteredTasks.observe(viewLifecycleOwner, {
             if (!it.isNullOrEmpty()) {
-//                Log.e(TAG, "got tasks $it")
                 adapter.swapData(it)
                 setAdapterPosition(it) //got new tasks, change position. NoSuchElementException: Collection contains no element matching the predicate.
-                Log.e(TAG, "got tasks $it")
+                Log.d(TAG, "got tasks ${it.size}")
             } else {
                 adapter.swapData(listOf())
                 Log.e(TAG, "got empty or null tasks $it")
@@ -166,7 +183,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
                     it.resources.getString(UtilModel.getResIdByTaskActionType(data.taskEntity))
                 DialogBuilder.getStartTaskDialog(
                     name,
-                    DialogInterface.OnClickListener { _, _ ->
+                    { _, _ ->
                         tasksViewModel.confirmTask(taskEntity = data.taskEntity)
                     }, it
                 ).show()

@@ -12,6 +12,7 @@ import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.gson.Gson
 import io.reactivex.rxjava3.core.Single
@@ -45,7 +46,7 @@ class ApiServiceWrapper(
         authModel: UtilModel.AuthModel, changeHistory: ChangeHistory?
     ): ResultWrapper<TokenResponse> {
         val time = System.currentTimeMillis()
-        val change = ChangeHistory(
+        val change = changeHistory?: ChangeHistory(
             Status.SENT, //as i don't want to recreate request  - set it as sent. (user can't login when offline)
             LogType.APP_TO_SERVER,
             AUTH,
@@ -79,10 +80,12 @@ class ApiServiceWrapper(
      * that method exception is handled in AppRepositoryImpl
      * so no need to send exception to UI here and no try/catch block
      */
-    suspend fun updateTasksFromServer(deviceId: String) {
+    suspend fun updateTasksFromServer(changeHistory: ChangeHistory?) {
         val time = System.currentTimeMillis()
         val connected = NetworkUtil.isConnectedWithWifi(context)
-        val change = ChangeHistory(
+
+        val deviceId = DeviceUtils.getUniqueID(context)
+        val change = changeHistory ?: ChangeHistory(
             if (connected) Status.SENT else Status.SENT_OFFLINE,
             LogType.APP_TO_SERVER,
             GET_TASKS,
@@ -91,24 +94,15 @@ class ApiServiceWrapper(
             time,
             time
         )
-        val autoGenId = localDataSource.insertHistoryChange(change)
+
+        val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
+
         val remoteTasks = api.getAllTasks(deviceId)
         if (remoteTasks.isSuccess && !remoteTasks.isException) {
             localDataSource.updateFromCommItem(remoteTasks)
-            localDataSource.updateHistoryChange(
-                change.copy(
-                    status = Status.SUCCESS,
-                    id = autoGenId,
-                    response = gson.toJson(remoteTasks)
-                )
-            )
+            updateHistoryOnSuccess(change, gson.toJson(remoteTasks), autoGenId)
         } else {
-            localDataSource.updateHistoryChange(
-                change.copy(
-                    status = if (connected) Status.ERROR else Status.SENT_OFFLINE,
-                    id = autoGenId
-                )
-            )
+            updateHistoryOnError(change, autoGenId)
             throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text} ")
         }
     }

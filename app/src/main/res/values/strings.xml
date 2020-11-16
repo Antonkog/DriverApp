@@ -8,6 +8,7 @@
     <!--    task Card-->
 
     <string name="action_log_out">Log out</string>
+    <string name="action_refresh" translatable="false">Refresh</string>
     <string name="action_send_doc">Send document</string>
 
     <string name="txt_due_in">Due in</string>

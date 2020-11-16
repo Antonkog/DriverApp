@@ -46,7 +46,7 @@ interface AppRepository {
         deviceId: String
     ): ResultWrapper<List<DocumentEntity>>
     //rest API
-    suspend fun getTasks(forceUpdate: Boolean, deviceId: String): ResultWrapper<List<TaskEntity>>
+    suspend fun getTasks(forceUpdate: Boolean, changeHistory: ChangeHistory?): ResultWrapper<List<TaskEntity>>
 
     suspend fun postActivity(
         activity: Activity
@@ -73,7 +73,7 @@ interface AppRepository {
     ): ResultWrapper<ResultOfAction>
 
 
-    suspend fun refreshTasks(deviceId: String)
+    suspend fun refreshTasks()
     suspend fun refreshDocuments(
         mandantId: Int,
         orderNo: Int,

@@ -28,6 +28,7 @@ import com.abona_erp.driverapp.data.local.db.AppDatabase
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.model.ConfirmationItem
 import com.abona_erp.driverapp.data.remote.*
+import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.abona_erp.driverapp.data.remote.utils.MockInterceptor
 import com.abona_erp.driverapp.data.remote.utils.NetworkInterceptor
@@ -89,6 +90,12 @@ object AppModule {
         ).build()
     }
 
+
+    @Singleton
+    @Provides
+    fun provideConnectivityProvider(@ApplicationContext context: Context): ConnectivityProvider {
+        return ConnectivityProvider.createProvider(context)
+    }
 
     @Singleton
     @Provides

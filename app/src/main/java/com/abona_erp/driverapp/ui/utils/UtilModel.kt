@@ -269,9 +269,13 @@ object UtilModel {
     }
 
 
-    private fun serverDateFormat(): DateFormat {
-        val dfUtc: DateFormat =
-            SimpleDateFormat(Constant.abonaCommunicationDateFormat, Locale.getDefault())
+    private fun dateFormat(parsedString: String): DateFormat {
+        val dfUtc: DateFormat =  when(parsedString.length){
+            21->  SimpleDateFormat(Constant.abonaCommunicationDateFormat, Locale.getDefault())
+            20->  SimpleDateFormat(Constant.abonaCommunicationDateVarTwo, Locale.getDefault())
+            19->  SimpleDateFormat(Constant.abonaCommunicationDateVarThree, Locale.getDefault())
+            else -> SimpleDateFormat(Constant.abonaCommunicationDateFormat, Locale.getDefault())
+        }
         dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
         return dfUtc
     }
@@ -301,13 +305,14 @@ object UtilModel {
 
 
     fun formatLongDateTime(date: Date): String {
-        return serverDateFormat().format(date)
+        return SimpleDateFormat(Constant.abonaUITimeFormat, Locale.getDefault()).format(date)
     }
 
     fun serverStringToDate(date: String): Date? {
         return try {
-            serverDateFormat().parse(date)
+            dateFormat(date).parse(date)
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             null
         }
     }
@@ -332,7 +337,7 @@ object UtilModel {
 
     fun serverDateShortener(date: String): String {
         return try {
-            val dateOpt = serverDateFormat().parse(date)
+            val dateOpt = dateFormat(date).parse(date)
             dateOpt?.let { uiDateFormat().format(it) } ?: date
         } catch (e: ParseException) {
             e.printStackTrace()
@@ -342,8 +347,8 @@ object UtilModel {
 
     fun serverTimeShortener(date: String): String {
         return try {
-            val dateOpt = serverDateFormat().parse(date)
-            dateOpt?.let { uiTimeFormat().format(it) } ?: date
+            val dateOpt = dateFormat(date).parse(date)
+            dateOpt?.let {uiTimeFormat().format(it) } ?: date
         } catch (e: ParseException) {
             e.printStackTrace()
             date

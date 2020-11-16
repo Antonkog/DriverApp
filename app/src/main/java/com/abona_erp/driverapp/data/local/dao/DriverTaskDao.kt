@@ -90,7 +90,6 @@ interface DriverTaskDao {
                 )//todo: check if make sense not to override confirmation type from server.
             }
             Log.d("DriverTaskDao", "insert taskEntity $strCustList  \nsize: " + strCustList.size)
-            deleteTasks()
             insertTasks(strCustList)
         }
     }

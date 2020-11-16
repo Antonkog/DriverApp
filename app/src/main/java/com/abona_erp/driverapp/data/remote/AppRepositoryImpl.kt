@@ -95,15 +95,15 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun getTasks(
         forceUpdate: Boolean,
-        deviceId: String
+        changeHistory: ChangeHistory?
     ): ResultWrapper<List<TaskEntity>> {
         if (forceUpdate) {
             postToUi(null, MainViewModel.StatusType.LOADING)
             try {
-                updateTasksFromRemoteDataSource(deviceId)
+                updateTasksFromRemoteDataSource(changeHistory)
                 postToUi("success task update", MainViewModel.StatusType.COMPLETE)
             } catch (ex: Exception) {
-                postToUi("error task update", MainViewModel.StatusType.ERROR)
+                postToUi("error task update: ${ex.message}", MainViewModel.StatusType.ERROR)
                 return ResultWrapper.Error(ex)
             }
         }
@@ -170,8 +170,9 @@ class AppRepositoryImpl @Inject constructor(
         api.updateDocumentsFromServer(mandantId, orderNo, deviceId)
     }
 
-    private suspend fun updateTasksFromRemoteDataSource(deviceId: String) {
-        api.updateTasksFromServer(deviceId)
+
+    private suspend fun updateTasksFromRemoteDataSource(changeHistory: ChangeHistory?) {
+        api.updateTasksFromServer(changeHistory)
     }
 
 
@@ -187,8 +188,8 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun refreshTasks(deviceId: String) {
-        getTasks(true, deviceId)
+    override suspend fun refreshTasks() {
+        getTasks(true, null)
     }
 
     override suspend fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) {
