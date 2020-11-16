@@ -233,7 +233,7 @@ public class ApiManager implements Manager {
     
       }
     });
-    httpClient.addInterceptor(new AccessTokenInterceptor());
+    //httpClient.addInterceptor(new AccessTokenInterceptor());
     //httpClient.addInterceptor(new HostSelectionInterceptor());
   
     if (BuildConfig.DEBUG) {
