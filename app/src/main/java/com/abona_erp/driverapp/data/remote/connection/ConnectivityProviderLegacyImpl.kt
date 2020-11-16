@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.abona_erp.driverapp.data.remote.connection
 
 import android.content.BroadcastReceiver

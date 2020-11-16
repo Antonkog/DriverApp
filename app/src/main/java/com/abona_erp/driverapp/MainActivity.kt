@@ -31,32 +31,12 @@ import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback,
-    ConnectivityProvider.ConnectivityStateListener {
+class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback{
     val TAG = MainActivity::class.simpleName
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private val provider: ConnectivityProvider by lazy { ConnectivityProvider.createProvider(this) }
 
-    override fun onStart() {
-        super.onStart()
-        provider.addListener(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        provider.removeListener(this)
-    }
-
-    override fun onStateChange(state: ConnectivityProvider.NetworkState) {
-        val hasInternet = state.hasInternet()
-        mainViewModel.doOnConnectionChange(hasInternet)
-    }
-
-    private fun ConnectivityProvider.NetworkState.hasInternet(): Boolean {
-        return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,9 +117,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        menu.findItem(R.id.action_send_doc).let {
-            it?.setVisible(false)
-        }
         return true
     }
 

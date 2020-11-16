@@ -58,8 +58,6 @@ interface DriverActDao {
                     )
                 } else mergedList.add(it)
             }
-
-            deleteActivities()
             insert(mergedList)
         }
     }
