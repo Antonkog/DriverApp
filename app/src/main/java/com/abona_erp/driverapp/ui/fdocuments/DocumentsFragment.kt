@@ -8,11 +8,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
-import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.DocumentEntity
 import com.abona_erp.driverapp.databinding.DocumentsFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
-import com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragmentArgs
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.addItemDivider
@@ -43,19 +41,18 @@ class DocumentsFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Docume
         docBinding.lifecycleOwner = this.viewLifecycleOwner
 
 
-
-        val taskId : Int? = args.taskEntity?.taskId
-        val mandant : Int? =args.taskEntity?.mandantId
+        val taskId: Int? = args.taskEntity?.taskId
+        val mandant: Int? = args.taskEntity?.mandantId
 
         taskId?.let {
-            docViewModel.observeDocuments(it).observe(viewLifecycleOwner, Observer {documents->
+            docViewModel.observeDocuments(it).observe(viewLifecycleOwner, { documents ->
                 if (documents != null && documents.isNotEmpty()) {
                     adapter.swapData(documents)
                 } else Log.e(TAG, "got empty or null documents $it")
             })
         }
 
-        if(taskId!=null  && mandant!=null){
+        if (taskId != null && mandant != null) {
             docViewModel.refreshDocuments(mandant, taskId, DeviceUtils.getUniqueID(context))
         }
 

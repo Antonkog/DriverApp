@@ -14,29 +14,29 @@
             android:id="@+id/action_nav_home_to_loginFragment"
             app:destination="@id/nav_login" />
         <action
-            android:id="@+id/action_nav_home_to_taskInfoFragment"
-            app:destination="@id/taskInfoFragment" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_activities"
+            android:id="@+id/action_nav_home_to_actFragment"
             app:destination="@id/nav_activities" />
         <action
             android:id="@+id/action_nav_home_to_mapFragment"
             app:destination="@id/mapFragment" />
         <action
-            android:id="@+id/action_nav_home_to_dangerousGoodsFragment"
-            app:destination="@id/dangerousGoodsFragment" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_documents"
+            android:id="@+id/action_nav_home_to_docFragment"
             app:destination="@id/nav_documents" />
         <action
-            android:id="@+id/action_nav_home_to_notesFragment"
-            app:destination="@id/notesFragment" />
+            android:id="@+id/action_nav_home_to_goodsDialog"
+            app:destination="@id/dangerousGoodsDialog" />
         <action
-            android:id="@+id/action_nav_home_to_palletsFragment"
-            app:destination="@id/palletsFragment" />
+            android:id="@+id/action_nav_home_to_taskInfoDialog"
+            app:destination="@id/taskInfoDialog" />
         <action
-            android:id="@+id/action_nav_home_to_contactsFragment"
-            app:destination="@id/contactsFragment" />
+            android:id="@+id/action_nav_home_to_notesDialog"
+            app:destination="@id/notesDialog" />
+        <action
+            android:id="@+id/action_nav_home_to_palletsDialog"
+            app:destination="@id/palletsDialog" />
+        <action
+            android:id="@+id/action_nav_home_to_contactsDialog"
+            app:destination="@id/contactsDialog" />
     </fragment>
 
     <fragment
@@ -69,7 +69,7 @@
         android:id="@+id/nav_documents"
         android:name="com.abona_erp.driverapp.ui.fdocuments.DocumentsFragment"
         android:label="@string/screen_documents"
-        tools:layout="@layout/documents_fragment" >
+        tools:layout="@layout/documents_fragment">
         <argument
             android:name="task_entity"
             app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity"
@@ -93,16 +93,6 @@
 
 
     <fragment
-        android:id="@+id/taskInfoFragment"
-        android:name="com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragment"
-        android:label="@string/screen_task_info"
-        tools:layout="@layout/task_info_fragment">
-        <argument
-            android:name="task_entity"
-            app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity" />
-    </fragment>
-
-    <fragment
         android:id="@+id/mapFragment"
         android:name="com.abona_erp.driverapp.ui.fmap.MapFragment"
         android:label="@string/screen_map"
@@ -112,56 +102,65 @@
             app:argType="com.abona_erp.driverapp.data.model.Address" />
     </fragment>
 
-    <fragment
-        android:id="@+id/dangerousGoodsFragment"
-        android:name="com.abona_erp.driverapp.ui.fdanger.DangerousGoodsFragment"
+    <dialog
+        android:id="@+id/taskInfoDialog"
+        android:name="com.abona_erp.driverapp.ui.dialogs.TaskInfoDialog"
+        android:label="@string/screen_task_info"
+        tools:layout="@layout/task_info_fragment">
+        <argument
+            android:name="task_entity"
+            app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/dangerousGoodsDialog"
+        android:name="com.abona_erp.driverapp.ui.dialogs.DangerousGoodsDialog"
         android:label="@string/screen_danger_goods"
         tools:layout="@layout/dangerous_goods_fragment">
         <argument
             android:name="goods_data"
             app:argType="com.abona_erp.driverapp.data.model.DangerousGoods" />
-    </fragment>
+    </dialog>
 
-    <fragment
-        android:id="@+id/notesFragment"
-        android:name="com.abona_erp.driverapp.ui.fnotes.NotesFragment"
+    <dialog
+        android:id="@+id/notesDialog"
+        android:name="com.abona_erp.driverapp.ui.dialogs.NotesDialog"
         android:label="@string/screen_notes"
-        tools:layout="@layout/notes_fragment" >
+        tools:layout="@layout/notes_fragment">
         <argument
             android:name="notes_data"
             app:argType="com.abona_erp.driverapp.data.model.NotesItem"
             app:nullable="true"
             android:defaultValue="@null" />
-    </fragment>
-    <fragment
-        android:id="@+id/palletsFragment"
-        android:name="com.abona_erp.driverapp.ui.fpallets.PalletsFragment"
+    </dialog>
+    <dialog
+        android:id="@+id/palletsDialog"
+        android:name="com.abona_erp.driverapp.ui.dialogs.PalletsDialog"
         android:label="@string/screen_pallets"
-        tools:layout="@layout/pallets_fragment" >
+        tools:layout="@layout/pallets_fragment">
         <argument
             android:name="pallets_data"
             app:argType="com.abona_erp.driverapp.data.model.PalletExchange"
             app:nullable="true"
             android:defaultValue="@null" />
-    </fragment>
+    </dialog>
 
 
-    <fragment
-        android:id="@+id/contactsFragment"
-        android:name="com.abona_erp.driverapp.ui.fcontacts.ContactsFragment"
+    <dialog
+        android:id="@+id/contactsDialog"
+        android:name="com.abona_erp.driverapp.ui.dialogs.ContactsDialog"
         android:label="@string/screen_contacts"
-        tools:layout="@layout/contacts_fragment" >
+        tools:layout="@layout/contacts_fragment">
         <argument
             android:name="contacts_data"
             app:argType="com.abona_erp.driverapp.data.model.Contact[]"
             app:nullable="true"
             android:defaultValue="@null" />
-    </fragment>
+    </dialog>
     <dialog
         android:id="@+id/delayReasonDialog"
         android:name="com.abona_erp.driverapp.ui.dialogs.DelayReasonDialog"
         android:label="DelayReasonDialog">
-
 
         <argument
             android:name="activity_entity"
@@ -169,6 +168,5 @@
             android:defaultValue="@null"
             app:argType="com.abona_erp.driverapp.data.local.db.ActivityEntity" />
     </dialog>
-
 
 </navigation>

@@ -9,7 +9,6 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.data.Constant
@@ -19,12 +18,10 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
-import com.abona_erp.driverapp.ui.ftaskInfo.TaskInfoFragmentArgs
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.io.*
 
@@ -38,7 +35,6 @@ class DocumentsViewModel @ViewModelInject constructor(
     val TAG = DocumentsViewModel::class.simpleName
 
 
-
     //    val filteredDocuments : LiveData<List<DocumentEntity>> = repository.observeDocuments(prefs.getInt(Constant.currentVisibleTaskid,0))
 
     init {
@@ -50,21 +46,28 @@ class DocumentsViewModel @ViewModelInject constructor(
         }
     }
 
-    fun observeDocuments(taskId : Int): LiveData<List<DocumentEntity>>{
-      return  repository.observeDocuments(taskId)
+    fun observeDocuments(taskId: Int): LiveData<List<DocumentEntity>> {
+        return repository.observeDocuments(taskId)
     }
 
 
     fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) =
         viewModelScope.launch {
-                repository.refreshDocuments(mandantId, orderNo, deviceId)
+            repository.refreshDocuments(mandantId, orderNo, deviceId)
         }
 
     fun uploadDocuments(documentType: DMSDocumentType, uri: Uri) {
         val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
         if (inputStream == null) Log.e(TAG, "can't open document")
         (inputStream)?.use {
-            RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(null, MainViewModel.StatusType.LOADING)))
+            RxBus.publish(
+                RxBusEvent.RequestStatus(
+                    MainViewModel.Status(
+                        null,
+                        MainViewModel.StatusType.LOADING
+                    )
+                )
+            )
             repository.upladDocument(
                 prefs.getInt(Constant.mandantId, 0),
                 prefs.getInt(Constant.currentVisibleOrderId, 0),
@@ -77,14 +80,28 @@ class DocumentsViewModel @ViewModelInject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     Log.e(TAG, "upload result : $it")
-                    RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(it.toString(), MainViewModel.StatusType.COMPLETE)))
+                    RxBus.publish(
+                        RxBusEvent.RequestStatus(
+                            MainViewModel.Status(
+                                it.toString(),
+                                MainViewModel.StatusType.COMPLETE
+                            )
+                        )
+                    )
                     refreshDocuments(
                         prefs.getInt(Constant.mandantId, 0),
                         prefs.getInt(Constant.currentVisibleOrderId, 0),
                         DeviceUtils.getUniqueID(context)
                     ) //to get vehicle number etc.
                 }, {
-                    RxBus.publish(RxBusEvent.RequestStatus(MainViewModel.Status(it.message, MainViewModel.StatusType.ERROR)))
+                    RxBus.publish(
+                        RxBusEvent.RequestStatus(
+                            MainViewModel.Status(
+                                it.message,
+                                MainViewModel.StatusType.ERROR
+                            )
+                        )
+                    )
                 })
         }
     }

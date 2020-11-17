@@ -1,4 +1,4 @@
-package com.abona_erp.driverapp.ui.ftaskInfo
+package com.abona_erp.driverapp.ui.dialogs
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.TaskEntity
@@ -17,15 +16,13 @@ import com.abona_erp.driverapp.ui.utils.JsonParser
 import com.google.gson.Gson
 import org.json.JSONObject
 
-class TaskInfoFragment : Fragment() {
+class TaskInfoDialog : DialogFragment() {
 
     val TAG = "TaskInfoFragment"
 
-    private val taskInfoViewModel by viewModels<TaskInfoViewModel>()
-
     private lateinit var taskInfoFragmentBinding: TaskInfoFragmentBinding
 
-    val args: TaskInfoFragmentArgs by navArgs()
+    val args: TaskInfoDialogArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +35,6 @@ class TaskInfoFragment : Fragment() {
             false
         )
 
-        taskInfoFragmentBinding.viewmodel = taskInfoViewModel
         taskInfoFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
         val task = args.taskEntity
