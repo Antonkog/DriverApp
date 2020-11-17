@@ -144,6 +144,20 @@ class AppRepositoryImpl @Inject constructor(
         return api.postActivityChange(UtilModel.getCommActivityChangeItem(context, activity))
     }
 
+
+    override suspend fun postDelayReasons(commItem: CommItem): ResultWrapper<ResultOfAction> {
+        return api.postDelayItems(commItem)
+    }
+
+    override suspend fun postDelayReasons(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDelayReasons(mandantId: Int, langCode : String): ResultWrapper<ResultOfAction> {
+        return api.getDelayItems(mandantId, langCode)
+    }
+
+
     override suspend fun postActivity(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
         return api.postActivityChange(changeHistory)
     }

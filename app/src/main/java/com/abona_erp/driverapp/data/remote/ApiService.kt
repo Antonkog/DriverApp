@@ -1,11 +1,10 @@
 package com.abona_erp.driverapp.data.remote
 
 import com.abona_erp.driverapp.data.model.*
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Response
+import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiService {
@@ -33,6 +32,15 @@ interface ApiService {
 
     @POST("api/activity/activity")
     suspend fun postActivityChange(@Body commItem: CommItem): ResultOfAction
+
+    @GET("api/activity/GetDelayReasons")
+    suspend fun getDelayReasons(
+        @Query("mandantId") mandantId: Int,
+        @Query("languageCode") languageCode: String?
+    ): ResultOfAction
+
+    @POST("api/activity/DelayReasons")
+    suspend fun postDelayItems(@Body commItem: CommItem?): ResultOfAction
 
 
     @POST("api/confirmation/confirm")

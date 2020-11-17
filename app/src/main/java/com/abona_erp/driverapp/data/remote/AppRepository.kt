@@ -56,6 +56,12 @@ interface AppRepository {
         commItem: CommItem
     ): ResultWrapper<ResultOfAction>
 
+    suspend fun postDelayReasons(commItem: CommItem): ResultWrapper<ResultOfAction>
+
+    /**
+     * used to refresh delay reasons when task come from Firebase.
+     */
+    suspend fun getDelayReasons(mandantId: Int, langCode: String): ResultWrapper<ResultOfAction>
 
     /**
      * offline mode
@@ -72,6 +78,12 @@ interface AppRepository {
         changeHistory: ChangeHistory
     ): ResultWrapper<ResultOfAction>
 
+    /**
+     * offline mode
+     */
+    suspend fun postDelayReasons(
+        changeHistory: ChangeHistory
+    ): ResultWrapper<ResultOfAction>
 
     suspend fun refreshTasks()
     suspend fun refreshDocuments(

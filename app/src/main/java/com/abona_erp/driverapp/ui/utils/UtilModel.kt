@@ -6,6 +6,8 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import androidx.core.content.res.ResourcesCompat
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
 import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
@@ -36,6 +38,13 @@ object UtilModel {
         return CommItem.Builder(header = header)
             .deviceProfileItem(getDeviceProfileItem(context))
             .activityItem(activity).build()
+    }
+
+    fun getCommDelayChangeItem(context: Context, delayReasonItems: List<DelayReasonItem>): CommItem {
+        val header = Header.Builder(DataType.DELAY_REASONS.dataType, DeviceUtils.getUniqueID(context)).build()
+        return CommItem.Builder(header = header)
+            .delayReasonItems(delayReasonItems)
+            .build()
     }
 
     fun getCommDeviceProfileItem(context: Context): CommItem {
