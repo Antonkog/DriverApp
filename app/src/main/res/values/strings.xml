@@ -113,6 +113,7 @@
     <string name="key_notes_data" translatable="false">notes_data</string>
     <string name="key_map_data" translatable="false">map_data</string>
     <string name="key_task_entity" translatable="false">task_entity</string>
+    <string name="key_activity_entity" translatable="false">activity_entity</string>
     <string name="key_goods_data" translatable="false">goods_data</string>
     <string name="key_pallets_data" translatable="false">pallets_data</string>
     <string name="key_auto_login" translatable="false">auto_login</string>

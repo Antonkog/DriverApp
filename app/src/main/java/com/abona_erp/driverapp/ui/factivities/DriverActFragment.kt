@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.databinding.DriverActFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.ftasks.TasksAdapter
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,8 +27,8 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
     private val driverActViewModel by viewModels<DriverActViewModel>()
 
     private lateinit var driverActFragmentBinding: DriverActFragmentBinding
+    private lateinit var adapter: ActivityAdapter
 
-    private var adapter = ActivityAdapter(this)
 
     val args: DriverActFragmentArgs by navArgs()
 
@@ -40,19 +42,20 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
             inflater, R.layout.driver_act_fragment, container,
             false
         )
+        adapter = ActivityAdapter(this, findNavController())
 
         driverActFragmentBinding.viewmodel = driverActViewModel
         driverActFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
 
         args.taskEntity?.taskId?.let { it ->
-            driverActViewModel.getActivityObservable(it).observe(viewLifecycleOwner, Observer { activities->
+            driverActViewModel.getActivityObservable(it).observe(viewLifecycleOwner, { activities->
                 if (activities!= null&& activities.isNotEmpty()) {
                     driverActViewModel.wrapActivities(activities)
                 }
             })
         }
 
-        driverActViewModel.wrappedActivities.observe(viewLifecycleOwner, Observer {
+        driverActViewModel.wrappedActivities.observe(viewLifecycleOwner, {
             adapter.swapData(it)
         })
 

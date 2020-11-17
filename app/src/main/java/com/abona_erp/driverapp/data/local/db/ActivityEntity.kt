@@ -1,5 +1,6 @@
 package com.abona_erp.driverapp.data.local.db
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -7,6 +8,7 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.ForeignKey.NO_ACTION
 import androidx.room.Index
 import com.abona_erp.driverapp.data.model.ActivityStatus
+import kotlinx.android.parcel.Parcelize
 
 @Entity(
     tableName = "activity_entity", indices = arrayOf(Index(value = ["taskpId", "mandantId"])),
@@ -21,6 +23,7 @@ import com.abona_erp.driverapp.data.model.ActivityStatus
 )
 //            onDelete = CASCADE not using as we have custom update logic
 
+@Parcelize
 data class ActivityEntity(
     @ColumnInfo val activityId: Int,
     @ColumnInfo val customActivityId: Int,
@@ -35,4 +38,4 @@ data class ActivityEntity(
     @ColumnInfo val started: String?,
     @ColumnInfo val activityStatus: ActivityStatus,
     @ColumnInfo val confirmationType: ActivityConfirmationType
-)
+) :Parcelable

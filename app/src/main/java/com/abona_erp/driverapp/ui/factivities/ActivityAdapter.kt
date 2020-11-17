@@ -2,6 +2,8 @@ package com.abona_erp.driverapp.ui.factivities
 
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.os.bundleOf
+import androidx.navigation.NavController
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
@@ -11,7 +13,7 @@ import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 
 
-class ActivityAdapter(itemClickListener: DriverActFragment) :
+class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: NavController) :
     LazyAdapter<ActivityWrapper, ActivityItemBinding>(itemClickListener) {
 
     override fun bindData(data: ActivityWrapper, binding: ActivityItemBinding) {
@@ -68,6 +70,19 @@ class ActivityAdapter(itemClickListener: DriverActFragment) :
 
         binding.buttonActConfirm.setOnClickListener {
             itemClickListener?.onLazyItemClick(data)
+        }
+
+        setDelayReasonButton(data, binding)
+    }
+
+
+    fun setDelayReasonButton(data: ActivityWrapper, binding: ActivityItemBinding){
+        val bundle = bundleOf(binding.root.context.getString(R.string.key_activity_entity) to data.activity)
+        binding.imageDelays.setOnClickListener {
+            navController.navigate(
+                R.id.action_nav_activities_to_delayReasonDialog,
+                bundle
+            )
         }
     }
 

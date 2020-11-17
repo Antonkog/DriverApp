@@ -60,6 +60,9 @@
             app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_nav_activities_to_delayReasonDialog"
+            app:destination="@id/delayReasonDialog" />
     </fragment>
 
     <fragment
@@ -154,6 +157,18 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+    <dialog
+        android:id="@+id/delayReasonDialog"
+        android:name="com.abona_erp.driverapp.ui.dialogs.DelayReasonDialog"
+        android:label="DelayReasonDialog">
+
+
+        <argument
+            android:name="activity_entity"
+            app:nullable="true"
+            android:defaultValue="@null"
+            app:argType="com.abona_erp.driverapp.data.local.db.ActivityEntity" />
+    </dialog>
 
 
 </navigation>
