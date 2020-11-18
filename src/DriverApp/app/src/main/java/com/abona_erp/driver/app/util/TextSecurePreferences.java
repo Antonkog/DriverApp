@@ -66,6 +66,8 @@ public class TextSecurePreferences {
   public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
   public static final String PREF_APP_VERSION_NAME = "pref_app_version_name";
   
+  public static final String PREF_ONE_TIME_CHECK_ENDPOINT = "pref_one_time_check_endpoint";
+  
   public static String getRestApiVersion() {
     return getStringPreference(ContextUtils.getApplicationContext(),
       PREF_REST_API_VERSION, "");
@@ -351,6 +353,14 @@ public class TextSecurePreferences {
   
   public static void setAppVersionName(String versionName) {
     setStringPreference(ContextUtils.getApplicationContext(), PREF_APP_VERSION_NAME, versionName);
+  }
+  
+  public static Boolean getOneTimeCheckEndpoint() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(), PREF_ONE_TIME_CHECK_ENDPOINT, true);
+  }
+  
+  public static void setOneTimeCheckEndpoint(Boolean enable) {
+    setBooleanPreference(ContextUtils.getApplicationContext(), PREF_ONE_TIME_CHECK_ENDPOINT, enable);
   }
   
   public static void setBooleanPreference(Context context, String key, boolean value) {

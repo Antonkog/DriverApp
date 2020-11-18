@@ -129,9 +129,11 @@ public class BackgroundServiceWorker extends Service {
     }
   }
   
-  private volatile static int delay = 3000;
+  private volatile static int delay = 5000;
   public volatile static boolean allowRequest = true;
   public volatile static boolean registrationRequest = false;
+  public volatile static boolean requestIsRunning = false;
+  public volatile static int requestCounter = 0;
   public class Runner implements Runnable {
     @Override
     public void run() {
@@ -384,6 +386,23 @@ public class BackgroundServiceWorker extends Service {
           if (offlineConfirmations.get(0).getUploadFlag() == 1)
             return;
   
+          if (requestCounter > 20) {
+    
+            AsyncTask.execute(new Runnable() {
+              @Override
+              public void run() {
+                mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                requestIsRunning = false;
+                requestCounter = 0;
+              }
+            });
+          }
+  
+          if (requestIsRunning) {
+            Log.i(TAG, ">>>>>>>>>> WAITING FOR RESPONSE...");
+            return;
+          }
+  
           mNotifyDAO.loadNotifyById(offlineConfirmations.get(0).getNotifyId())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
@@ -391,6 +410,9 @@ public class BackgroundServiceWorker extends Service {
               @Override
               public void onSuccess(Notify notify) {
                 Log.i(TAG, ">>>>>>> NOTIFY OID......: " + notify.getId());
+  
+                requestIsRunning = true;
+                requestCounter++;
   
                 CommItem commItemDB = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                 CommItem commItemReq = new CommItem();
@@ -439,6 +461,8 @@ public class BackgroundServiceWorker extends Service {
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
 
                       allowRequest = true;
+                      requestIsRunning = false;
+                      requestCounter = 0;
                       if (response.isSuccessful()) {
                         if (!response.body().getIsSuccess() && !response.body().getIsException()) {
                           showErrorMessage(response.body().getText());
@@ -540,7 +564,7 @@ public class BackgroundServiceWorker extends Service {
                           }
                         }
   
-                        DelayReasonUtil.getDelayReasonsFromService(notify.getMandantId());
+                        //DelayReasonUtil.getDelayReasonsFromService(notify.getMandantId());
                       } else if (response.code() == 401) {
 
                             //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
@@ -557,6 +581,8 @@ public class BackgroundServiceWorker extends Service {
 //                              LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
 //                              activityItem.getTaskId()));
                       allowRequest = true;
+                      requestIsRunning = false;
+                      requestCounter = 0;
                       Log.e(TAG, t.getMessage());
                     }
                   });
@@ -587,6 +613,8 @@ public class BackgroundServiceWorker extends Service {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
                       allowRequest = true;
+                      requestIsRunning = false;
+                      requestCounter = 0;
                       if (response.isSuccessful()) {
           
                         if (response.body().getIsException())
@@ -730,6 +758,8 @@ public class BackgroundServiceWorker extends Service {
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
                       allowRequest = true;
+                      requestIsRunning = false;
+                      requestCounter = 0;
                     }
                   });
                 }
@@ -742,6 +772,8 @@ public class BackgroundServiceWorker extends Service {
                   public void run() {
                     mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
                     allowRequest = true;
+                    requestIsRunning = false;
+                    requestCounter = 0;
                   }
                 });
               }

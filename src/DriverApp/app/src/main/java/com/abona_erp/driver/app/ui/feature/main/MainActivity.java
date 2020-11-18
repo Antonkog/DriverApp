@@ -37,6 +37,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.BuildConfig;
@@ -58,6 +64,7 @@ import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.remote.ApiService;
+import com.abona_erp.driver.app.data.remote.NetworkUtil;
 import com.abona_erp.driver.app.receiver.LocaleChangeReceiver;
 import com.abona_erp.driver.app.receiver.NetworkChangeReceiver;
 import com.abona_erp.driver.app.service.BackgroundServiceWorker;
@@ -93,7 +100,14 @@ import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.RingtoneUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.Util;
+import com.abona_erp.driver.app.worker.DelayReasonWorker;
+import com.abona_erp.driver.app.worker.EndpointWorker;
 import com.abona_erp.driver.core.base.ContextUtils;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.devexpress.logify.alert.android.LogifyAlert;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -107,6 +121,7 @@ import com.microsoft.appcenter.crashes.Crashes;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -117,6 +132,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -166,8 +182,9 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
   private AppCompatImageView getAllTaskImage;
-
-
+  
+  private PeriodicWorkRequest workEndpointRequest;
+  
   private NetworkChangeReceiver networkChangeReceiver;
   private LocaleChangeReceiver localeChangeReceiver;
 
@@ -337,6 +354,75 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     
     
     updateDeviceIsNeeded();
+  
+    // Create Network constraint.
+    Constraints constraints = new Constraints.Builder()
+      .setRequiredNetworkType(NetworkType.CONNECTED)
+      .build();
+    
+    PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest
+      .Builder(EndpointWorker.class, 30, TimeUnit.MINUTES)
+      .addTag("TAG_ENDPOINT_DATA")
+      .setConstraints(constraints)
+      .setBackoffCriteria(BackoffPolicy.LINEAR, PeriodicWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+      .build();
+    
+    PeriodicWorkRequest periodicDelayReasonWorkRequest = new PeriodicWorkRequest
+      .Builder(DelayReasonWorker.class, 45, TimeUnit.MINUTES)
+      .addTag("TAG_DELAY_DATA")
+      .setConstraints(constraints)
+      .setBackoffCriteria(BackoffPolicy.LINEAR, PeriodicWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+      .build();
+    
+    final WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
+    mWorkManager.enqueueUniquePeriodicWork("DATA_WORK_NAME",
+      ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
+    mWorkManager.enqueueUniquePeriodicWork("DATA_DELAY_NAME",
+      ExistingPeriodicWorkPolicy.KEEP, periodicDelayReasonWorkRequest);
+    
+    
+    if (TextSecurePreferences.getOneTimeCheckEndpoint()) {
+      if (NetworkUtil.isConnected(getApplicationContext())) {
+        com.abona_erp.driver.app.logging.Log.i(TAG, "Checking endpoint... ----------------------------------------------MAIN");
+  
+        String url = "http://endpoint.abona-erp.com/Api/AbonaClients/GetServerURLByClientId/"
+          +
+          TextSecurePreferences.getClientID()
+          + "/2";
+  
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new com.android.volley.Response.Listener<JSONObject>() {
+          @Override
+          public void onResponse(JSONObject response) {
+            
+            TextSecurePreferences.setOneTimeCheckEndpoint(false);
+      
+            try {
+              boolean active = response.getBoolean("IsActive");
+              if (active) {
+          
+                String webService = response.getString("WebService");
+                if (TextUtils.isEmpty(webService) || webService.equals("null")) {
+                  return;
+                }
+          
+                TextSecurePreferences.setEndpoint(webService);
+              } else {
+          
+              }
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+          }
+        }, new com.android.volley.Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+          }
+        });
+  
+        requestQueue.add(request);
+      }
+    }
   }
 
   private void observeConfirmations() {
