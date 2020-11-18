@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -302,9 +303,7 @@ public class BackgroundServiceWorker extends Service {
         
                   ResultOfAction resultOfAction = response.body();
                   if (resultOfAction == null) return;
-                  //if (resultOfAction.getCommItem() == null) return;
-        
-                  //int activityId = offlineDelayReasonEntities.get(0).getActivityId();
+                  
                   mNotifyDAO.loadNotifyById(offlineDelayReasonEntities.get(0).getNotifyId())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
@@ -342,12 +341,14 @@ public class BackgroundServiceWorker extends Service {
                     });
                 } else {
                   // Zurücksetzen.
+                  
                   OfflineDelayReasonEntity entity = offlineDelayReasonEntities.get(0);
                   entity.setInProgress(0);
                   AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
-                      mOfflineDelayReasonDAO.update(entity);
+                      //mOfflineDelayReasonDAO.update(entity);
+                      mOfflineDelayReasonDAO.delete(entity);
                     }
                   });
                 }
@@ -464,17 +465,11 @@ public class BackgroundServiceWorker extends Service {
                       requestIsRunning = false;
                       requestCounter = 0;
                       if (response.isSuccessful()) {
-                        if (!response.body().getIsSuccess() && !response.body().getIsException()) {
-                          showErrorMessage(response.body().getText());
-                        }
+                        //if (!response.body().getIsSuccess() && !response.body().getIsException()) {
+                        //  showErrorMessage(response.body().getText());
+                        //}
                         if (response.body() != null && response.body().getIsSuccess()) {
-                          /*
-                          if (response.body().getCommItem().getPercentItem() != null) {
-                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
-                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
-                            }
-                          }
-                          */
+                          
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
@@ -502,6 +497,7 @@ public class BackgroundServiceWorker extends Service {
                         } else {
             
                           if (response.body().getIsException()) {
+                            mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
                             showErrorMessage(response.body().getText());
                             return;
                           }
@@ -534,7 +530,6 @@ public class BackgroundServiceWorker extends Service {
                               public void run() {
                                 mNotifyDAO.updateNotify(notify);
                                 mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                                //AppUtils.playNotificationTone();
                               }
                             });
               
@@ -572,6 +567,13 @@ public class BackgroundServiceWorker extends Service {
 //                                    activityItem.getTaskId()));
 
                             handleAccessToken();
+                      } else {
+                        AsyncTask.execute(new Runnable() {
+                          @Override
+                          public void run() {
+                            mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
+                          }
+                        });
                       }
                     }
       
@@ -623,14 +625,15 @@ public class BackgroundServiceWorker extends Service {
 //                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
 //                                  confirmationItem.getTaskId()));
   
+                          mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
                           showErrorMessage(response.body().getText());
                           return;
                         }
                         
                         if (!response.body().getIsSuccess() && !response.body().getIsException()) {
+                          mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
                           showErrorMessage(response.body().getText());
                         }
-
 
                         if (response.body().getIsSuccess()) {
                           if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
@@ -974,6 +977,7 @@ public class BackgroundServiceWorker extends Service {
                 handleAccessToken();
                 break;
               default:
+                
                 break;
             }
           }
@@ -1280,7 +1284,8 @@ public class BackgroundServiceWorker extends Service {
     
               @Override
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
-                Log.d(TAG, ">>>>>>> ERROR ON DEVICE REGISTRATION!!!");
+                Log.d(TAG, ">>>>>>> ERROR ON DEVICE REGISTRATION!!! - " + t.getMessage());
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                 allowRequest = true;
                 registrationRequest = false;
               }
