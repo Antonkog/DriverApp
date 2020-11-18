@@ -44,5 +44,11 @@
     <string name="dialog_start_task_title">Подтверждение задания</string>
     <string name="dialog_start_task">Вы хотите запустить задачу: -%s?</string>
     <string name="need_location_permission">Требуется разрешение на отображение текущего местоположения</string>
+    <string name="delay_dispatcher">Диспетчер</string>
+    <string name="delay_customer">Покупатель</string>
+    <string name="delay_driver">Водитель</string>
+    <string name="source">Источник</string>
+    <string name="reasons">Причина</string>
+    <string name="send">Отправить</string>
 
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RangedTimePicker">
+        <attr name="velocity" format="integer" />
+        <attr name="minTitle" format="string" />
+        <attr name="hoursTitle" format="string" />
+    </declare-styleable>
+
+</resources>

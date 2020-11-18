@@ -43,5 +43,11 @@
     <string name="dialog_start_task_title">Potwierdzenie zadania</string>
     <string name="dialog_start_task">Czy chcesz rozpocząć zadanie: -%s?</string>
     <string name="need_location_permission">Potrzebujesz pozwolenia na lokalizację, aby pokazać aktualną pozycję</string>
+    <string name="delay_dispatcher">Dyspozytor</string>
+    <string name="delay_customer">Klient</string>
+    <string name="delay_driver">Kierowca</string>
+    <string name="reasons">Powód</string>
+    <string name="source">Źródło</string>
+    <string name="send">Wysłać</string>
 
 </resources>
