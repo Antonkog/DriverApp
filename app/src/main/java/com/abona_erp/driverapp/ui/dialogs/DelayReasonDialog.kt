@@ -16,7 +16,7 @@ import com.abona_erp.driverapp.databinding.DriverActFragmentBinding
 import com.abona_erp.driverapp.ui.factivities.DriverActFragmentArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class DelayReasonDialog(val listener: View.OnClickListener) : DialogFragment() {
+class DelayReasonDialog : DialogFragment() {
 
     val args: DelayReasonDialogArgs by navArgs()
 
@@ -32,8 +32,34 @@ class DelayReasonDialog(val listener: View.OnClickListener) : DialogFragment() {
             R.layout.dialog_delay_reason,
             container, false)
             dialogDelayReasonBinding = DialogDelayReasonBinding.bind(root)
+          //  dialogDelayReasonBinding.button.setOnClickListener {it}
 
-            dialogDelayReasonBinding.button.setOnClickListener { listener }
+
+        val sources = arrayOf(
+            resources.getString(R.string.delay_na),
+            resources.getString(R.string.delay_customer),
+            resources.getString(R.string.delay_dispatcher),
+            resources.getString(R.string.delay_driver)
+        )
+
+        dialogDelayReasonBinding.sourcePicker.maxValue = sources.size -1
+        dialogDelayReasonBinding.sourcePicker.displayedValues = sources
+
+
+        val data = args.activityEntity
+
+        val reasons = arrayListOf<String>()
+        data?.delayReasons?.forEach {
+            if(it.translatedReasonText!= null)
+            reasons.add(it.translatedReasonText)
+            else if(it.reasonText != null) reasons.add(it.reasonText)
+        }
+        if(reasons.isNotEmpty()){
+            dialogDelayReasonBinding.reasonPicker.displayedValues = reasons.toTypedArray()
+        } else{
+            dialogDelayReasonBinding.button.visibility = View.GONE
+            dialogDelayReasonBinding.reasonPicker.displayedValues = arrayOf(getString(R.string.no_delay_reasons))
+        }
         return root
     }
 }

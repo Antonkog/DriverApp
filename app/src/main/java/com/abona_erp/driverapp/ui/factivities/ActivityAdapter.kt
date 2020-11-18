@@ -77,12 +77,17 @@ class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: 
 
 
     fun setDelayReasonButton(data: ActivityWrapper, binding: ActivityItemBinding){
-        val bundle = bundleOf(binding.root.context.getString(R.string.key_activity_entity) to data.activity)
-        binding.imageDelays.setOnClickListener {
-            navController.navigate(
-                R.id.action_nav_activities_to_delayReasonDialog,
-                bundle
-            )
+        if(data.activity.delayReasons?.isNotEmpty() == true){
+            val bundle = bundleOf(binding.root.context.getString(R.string.key_activity_entity) to data.activity)
+            binding.imageDelays.visibility = View.VISIBLE
+            binding.imageDelays.setOnClickListener {
+                navController.navigate(
+                    R.id.action_nav_activities_to_delayReasonDialog,
+                    bundle
+                )
+            }
+        } else {
+            binding.imageDelays.visibility = View.GONE
         }
     }
 

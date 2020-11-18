@@ -38,6 +38,7 @@
 
 
 
+    <string name="delay_na" translatable="false">N/A</string>
     <string name="delay_dispatcher">Dispatcher</string>
     <string name="delay_customer">Customer</string>
     <string name="delay_driver">Driver</string>
@@ -167,5 +168,6 @@
     <string name="reasons">Reason</string>
     <string name="source">Source</string>
     <string name="send">Send</string>
+    <string name="no_delay_reasons" translatable="false">Delay reasons are not available for this activity</string>
 
 </resources>
