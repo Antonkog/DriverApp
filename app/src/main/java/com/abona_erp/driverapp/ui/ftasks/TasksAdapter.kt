@@ -11,7 +11,6 @@ import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.databinding.TaskItemBinding
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.getImageResource
-import com.abona_erp.driverapp.ui.utils.UtilModel.getTimeDifference
 import com.abona_erp.driverapp.ui.utils.UtilModel.toDangerousGoodsClass
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 
@@ -33,7 +32,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         val color = ConfirmationType.getColor(
             context,
-            data.taskEntity.confirmationType ?: ConfirmationType.RECEIVED
+            data.taskEntity.confirmationType
         )
         binding.imageSync?.setColorFilter(color)
 
@@ -65,10 +64,9 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.progressTask.progress = data.taskEntity.status.intId
         binding.textTaskName.text = mResources.getString(nameId)
 
-        data.taskEntity.taskDueDateFinish?.let { //as we don't have taskDueDateFinish from server - here counting
-            binding.textFinishTime.text = UtilModel.serverDateShortener(it)
-            binding.textDueInTime.text = getTimeDifference(it, context)
-        }
+            binding.textFinishTime.text = UtilModel.formatLongTime( data.taskEntity.taskDueDateFinish)
+            binding.textDueInTime.text =  UtilModel.formatTimeDifference( data.taskEntity.taskDueDateFinish - System.currentTimeMillis() , context)
+
 
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmationType == ActivityConfirmationType.RECEIVED }?.name

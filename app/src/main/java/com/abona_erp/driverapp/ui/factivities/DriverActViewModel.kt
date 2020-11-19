@@ -187,7 +187,7 @@ class DriverActViewModel @ViewModelInject constructor(
         if (nextAct != null && nextAct.activityStatus == ActivityStatus.PENDING) {
             val newNextAct = nextAct.copy(
                 activityStatus = ActivityStatus.RUNNING,
-                started = getCurrentDateServerFormat()
+                started = System.currentTimeMillis()
             )
             val result = repository.updateActivity(newNextAct)
             Log.e(TAG, "update next activity to:\n $newNextAct  \n result:  $result")
@@ -202,14 +202,20 @@ class DriverActViewModel @ViewModelInject constructor(
             ActivityStatus.PENDING -> {
                 entity.copy(
                     activityStatus = ActivityStatus.RUNNING,
-                    started = getCurrentDateServerFormat()
+                    started =   System.currentTimeMillis()
                 )
             }
             ActivityStatus.RUNNING -> {
+                if(entity.started <= 0L){
+                    entity.copy(
+                        activityStatus = ActivityStatus.FINISHED,
+                        started =  System.currentTimeMillis(),
+                        finished =  System.currentTimeMillis()
+                    )
+                }else
                 entity.copy(
                     activityStatus = ActivityStatus.FINISHED,
-                    started = getCurrentDateServerFormat(),
-                    finished = getCurrentDateServerFormat()
+                    finished =   System.currentTimeMillis()
                 )
             }
             ActivityStatus.FINISHED -> entity

@@ -29,13 +29,13 @@ data class ActivityEntity(
     @ColumnInfo val customActivityId: Int,
     @ColumnInfo val delayReasons: List<DelayReasonEntity>?,
     @ColumnInfo val description: String?,
-    @ColumnInfo val finished: String?,
     @ColumnInfo val mandantId: Int,
     @ColumnInfo val name: String?,
     @ColumnInfo val radiusGeoFence: Int,
     @ColumnInfo val sequence: Int,
     @ColumnInfo val taskpId: Int,
-    @ColumnInfo val started: String?,
+    @ColumnInfo val started: Long,
+    @ColumnInfo val finished: Long,
     @ColumnInfo val activityStatus: ActivityStatus,
     @ColumnInfo val confirmationType: ActivityConfirmationType
 ) :Parcelable

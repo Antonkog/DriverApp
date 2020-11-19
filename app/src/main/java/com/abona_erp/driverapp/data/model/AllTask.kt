@@ -3,6 +3,7 @@ package com.abona_erp.driverapp.data.model
 
 import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class AllTask(
     @SerializedName("AbonaTransferNr")
@@ -60,9 +61,9 @@ data class AllTask(
     @SerializedName("TaskDetails")
     val taskDetails: TaskDetails,
     @SerializedName("TaskDueDateFinish")
-    val taskDueDateFinish: String,
+    val taskDueDateFinish: Date,
     @SerializedName("TaskDueDateStart")
-    val taskDueDateStart: String,
+    val taskDueDateStart: Date,
     @SerializedName("TaskId")
     val taskId: Int,
     @SerializedName("VehicleNextTaskId")

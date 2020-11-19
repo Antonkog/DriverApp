@@ -44,8 +44,8 @@ class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: 
             ActivityStatus.FINISHED -> {
                 binding.textFinished.visibility = View.VISIBLE
                 binding.buttonActConfirm.visibility = View.GONE
-                data.activity.finished?.let {
-                    binding.textFinishedValue.text = UtilModel.serverTimeShortener(it)
+                data.activity.finished.let {
+                    binding.textFinishedValue.text = UtilModel.formatLongTime(it)
                 }
                 binding.imageConfirmed.setColorFilter( // if activity finished setting green, even if confirmation status not saved in database (was removed when exit)
                     ResourcesCompat.getColor(
@@ -64,8 +64,8 @@ class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: 
             binding.buttonActConfirm.text =
                 binding.root.resources.getString(R.string.activity_finish)
         }
-        data.activity.started?.let {
-            binding.textStartedValue.text =  UtilModel.serverTimeShortener(it)
+        data.activity.started.let {
+            binding.textStartedValue.text =  UtilModel.formatLongTime(it)
         }
 
         binding.buttonActConfirm.setOnClickListener {

@@ -2,6 +2,7 @@ package com.abona_erp.driverapp.data.model
 
 
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class Activity(
     @SerializedName("ActivityId")
@@ -14,8 +15,6 @@ data class Activity(
     val description: String?,
     @SerializedName("DeviceId")
     val deviceId: String?,
-    @SerializedName("Finished")
-    val finished: String?,
     @SerializedName("MandantId")
     val mandantId: Int,
     @SerializedName("Name")
@@ -25,7 +24,9 @@ data class Activity(
     @SerializedName("Sequence")
     val sequence: Int,
     @SerializedName("Started")
-    val started: String?,
+    val started: Date,
+    @SerializedName("Finished")
+    val finished: Date,
     @SerializedName("Status")
     val status: Int,
     @SerializedName("TaskId")

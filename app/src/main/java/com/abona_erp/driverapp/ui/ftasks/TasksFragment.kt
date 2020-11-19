@@ -176,7 +176,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
-        val confirmationState = data.taskEntity.confirmationType ?: ConfirmationType.RECEIVED
+        val confirmationState = data.taskEntity.confirmationType
         if (confirmationState < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old starte - not opened and not confirmed
             context?.let {
                 val name =
