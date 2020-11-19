@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.data.local.LocalDataSource
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
-import com.abona_erp.driverapp.data.local.db.ChangeHistory
-import com.abona_erp.driverapp.data.local.db.DocumentEntity
-import com.abona_erp.driverapp.data.local.db.TaskEntity
+import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.rabbitMQ.RabbitService
 import com.abona_erp.driverapp.ui.RxBus
@@ -60,6 +57,10 @@ class AppRepositoryImpl @Inject constructor(
 
     override fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>> {
         return localDataSource.observeTasksWithActivities()
+    }
+
+    override fun observeDelayReasons(): LiveData<List<DelayReasonEntity>> {
+        return localDataSource.observeDelayReasons()
     }
 
     override suspend fun getAuthToken(
@@ -216,6 +217,14 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
         localDataSource.insertOrUpdateActivity(activityEntity)
+    }
+
+    override suspend fun cleanDelayReasons() {
+        localDataSource.deleteDelayReasons()
+    }
+
+    override suspend fun insertDelayReasons(reasons: List<DelayReasonEntity>) {
+        localDataSource.insertDelayReasons(reasons = reasons)
     }
 
     override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {

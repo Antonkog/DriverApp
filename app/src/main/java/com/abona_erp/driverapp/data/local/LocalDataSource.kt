@@ -47,6 +47,10 @@ class LocalDataSource internal constructor(
         return db.driverTaskDao().observeTaskWithActivities()
     }
 
+    fun observeDelayReasons(): LiveData<List<DelayReasonEntity>> {
+        return db.delayReasonsDao().observeDelayReasons()
+    }
+
     fun observeTasks(): LiveData<List<TaskEntity>> {
         return db.driverTaskDao().observeTasks()
     }
@@ -108,12 +112,21 @@ class LocalDataSource internal constructor(
         db.documentsDao().insertOrReplace(documentEntity)
     }
 
+    suspend fun insertDelayReasons(reasons : List<DelayReasonEntity>) {
+        db.delayReasonsDao().insert(reasons)
+    }
+
     suspend fun insertDocumentResponse(responseItems: List<DocumentResponse>) {
         responseItems.map {
             DocumentEntity(it.fileName, it.linkToFile, it.oid, it.orderNo, it.taskId, it.vehicleOid)
         }.let {
             db.documentsDao().insertOrReplace(it)
         }
+    }
+
+
+    suspend fun deleteDelayReasons() {
+        return db.delayReasonsDao().deleteAll()
     }
 
     suspend fun deleteDocuments() {

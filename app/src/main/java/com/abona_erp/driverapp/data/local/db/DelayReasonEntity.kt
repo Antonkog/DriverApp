@@ -9,10 +9,7 @@ import com.abona_erp.driverapp.data.model.DelaySource
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
-@Entity(
-    tableName = "delay_reason",
-    indices = arrayOf(Index(value = ["taskpId", "mandantId", "activityId"]))
-)
+@Entity(tableName = "delay_reason")
 @Parcelize
 data class DelayReasonEntity(
     @PrimaryKey val waitingReasongId: Int?,
@@ -23,7 +20,7 @@ data class DelayReasonEntity(
     @ColumnInfo val subcode: Int?,
     @ColumnInfo val mandantId: Int?,
     @ColumnInfo val taskId: Int?,
-    @ColumnInfo val timestampUtc: Date?,
+    @ColumnInfo val timestampUtc: Long,
     @ColumnInfo val delayInMinutes: Int?,
     @ColumnInfo val delaySource: DelaySource?,
     @ColumnInfo val comment: String?

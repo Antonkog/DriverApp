@@ -22,6 +22,7 @@ import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
+import com.abona_erp.driverapp.ui.utils.UtilModel.toDelayReasonEntity
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
@@ -195,6 +196,15 @@ class MainViewModel @ViewModelInject constructor(
                     }
                 }
             }
+
+            DataType.DELAY_REASONS.dataType -> {
+                Log.d(TAG, " got DELAY_REASONS")
+
+                messageStruct.delayReasonItems?.map { it.toDelayReasonEntity() }?.let {
+                    repository.insertDelayReasons(it)
+                }
+            }
+
         }
     }
 

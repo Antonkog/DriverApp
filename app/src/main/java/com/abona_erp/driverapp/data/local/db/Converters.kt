@@ -3,6 +3,7 @@ package com.abona_erp.driverapp.data.local.db
 import androidx.room.TypeConverter
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.model.Contact
+import com.abona_erp.driverapp.data.model.DelaySource
 import com.abona_erp.driverapp.data.model.NotesItem
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -67,6 +68,21 @@ class Converters {
 
     @TypeConverter
     fun getHistoryTypeInt(type: HistoryDataType?): Int? {
+        return type?.ordinal
+    }
+
+  @TypeConverter
+    fun getDelaySourceType(ordinal: Int): DelaySource? {
+        for (lt in DelaySource.values()) {
+            if (lt.ordinal == ordinal) {
+                return lt
+            }
+        }
+        return null
+    }
+
+    @TypeConverter
+    fun getDelaySourceTypeInt(type: DelaySource?): Int? {
         return type?.ordinal
     }
 

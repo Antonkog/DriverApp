@@ -123,7 +123,7 @@ object UtilModel {
             subcode,
             mandantId,
             taskId,
-            timestampUtc,
+            Date(timestampUtc),
             delayInMinutes,
             delaySource,
             comment
@@ -140,7 +140,7 @@ object UtilModel {
             subCode,
             mandantId,
             taskId,
-            timestampUtc,
+timestampUtc?.time ?: 0L,
             delayInMinutes,
             delaySource,
             comment

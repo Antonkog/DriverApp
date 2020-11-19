@@ -43,7 +43,6 @@ class FcmService : FirebaseMessagingService() {
             TAG,
             "FCM Message(" + message.data.toString() + " )"
         )
-        mNotifyData.add(message)
         sendNotification(message.data.toString())
         RxBus.publish(RxBusEvent.FirebaseMessage(message.data.toString()))
     }
@@ -78,7 +77,7 @@ class FcmService : FirebaseMessagingService() {
             )
             notificationManager.createNotificationChannel(channel)
         }
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+        notificationManager.notify(NOTIFICATION_ID/* ID of notification */, notificationBuilder.build())
     }
 
     override fun onNewToken(token: String) {
@@ -92,7 +91,5 @@ class FcmService : FirebaseMessagingService() {
     companion object {
         private val TAG = FcmService::class.java.simpleName
         private const val NOTIFICATION_ID = 1453
-        private val mNotifyData =
-            LinkedList<RemoteMessage>()
     }
 }
