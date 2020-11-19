@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -75,6 +76,7 @@ import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.GetAllTaskEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.PatchEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.ProtocolEvent;
 import com.abona_erp.driver.app.ui.event.QREvent;
@@ -182,6 +184,9 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
   private AppCompatImageView getAllTaskImage;
+  
+  private AsapTextView mPatchTitle;
+  private AsapTextView mPatchSubtitle;
   
   private PeriodicWorkRequest workEndpointRequest;
   
@@ -297,6 +302,9 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     mVehicleClientName.setText(TextSecurePreferences.getClientName(getBaseContext()));
     mVehicleRegistrationNumber = findViewById(R.id.tv_vehicle_registration_number);
     mVehicleRegistrationNumber.setText(TextSecurePreferences.getVehicleRegistrationNumber(getBaseContext()));
+    
+    mPatchTitle = findViewById(R.id.update_status_title);
+    mPatchSubtitle = findViewById(R.id.update_status_counter);
 
     ((AsapTextView)findViewById(R.id.tv_vehicle_client_name))
             .setText(TextSecurePreferences.getClientName(getBaseContext()));
@@ -696,6 +704,28 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   public void onMessageEvent(GetAllTaskEvent event) {
     Log.i(TAG, "GetAllTask starting...");
     onUpdateClick();
+  }
+  
+  @Subscribe
+  public void onMessageEvent(PatchEvent event) {
+    //AsyncTask.execute(new Runnable() {
+      //@Override
+      //public void run() {
+        
+        if (event.getVisibility()) {
+  
+          mPatchTitle.setVisibility(View.VISIBLE);
+          mPatchSubtitle.setVisibility(View.VISIBLE);
+          
+          mPatchTitle.setText("PATCH");
+          mPatchSubtitle.setText(event.getPatchText() + " - " + String.valueOf(event.getRandomNumber()));
+        
+        } else {
+          mPatchTitle.setVisibility(View.GONE);
+          mPatchSubtitle.setVisibility(View.GONE);
+        }
+      //}
+    //});
   }
 
   @Subscribe

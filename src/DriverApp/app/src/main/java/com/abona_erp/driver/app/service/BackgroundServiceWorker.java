@@ -61,6 +61,7 @@ import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.GetAllTaskEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
+import com.abona_erp.driver.app.ui.event.PatchEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
@@ -68,17 +69,23 @@ import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
+import com.abona_erp.driver.app.util.CustomDialogFragment;
 import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.UtilCommon;
 import com.abona_erp.driver.core.base.ContextUtils;
 import com.abona_erp.driver.core.util.MiscUtil;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +93,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -140,9 +148,25 @@ public class BackgroundServiceWorker extends Service {
     public void run() {
       Log.i(TAG, ">>>>>>> BACKGROUND SERVICE LISTENING... >>>>>>>");
   
+  
+      
+  
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
+  /*
+          TextSecurePreferences.setPatch00_State(0);
+          TextSecurePreferences.setPatch00_RandomNumber(60);
+          TextSecurePreferences.setPatch00_Completed(false);
+          */
+          
+          
+          if (!isPatch00_Completed()) {
+            Log.i(TAG, "******* PATCH IS RUNNING... **********");
+            allowRequest = true;
+            mHandler.postDelayed(this, 10000);
+            return;
+          }
           
           if (!isDevicePermissionGranted()) {
             Log.i(TAG, "******* DEVICE PERMISSION IS NOT GRANTED!!! *******");
@@ -901,6 +925,69 @@ public class BackgroundServiceWorker extends Service {
     return true;
   }
   
+  private void updateVersionForPatch() {
+  
+    patchRequestIsRunning = true;
+    
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+      
+        List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
+        if (deviceProfiles.size() > 0) {
+        
+          CommItem commItem = new CommItem();
+          Header header = new Header();
+          header.setDataType(DataType.DEVICE_PROFILE);
+          header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
+          commItem.setHeader(header);
+        
+          DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
+          //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
+          deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+          deviceProfileItem.setModel(Build.MODEL);
+          deviceProfileItem.setManufacturer(Build.MANUFACTURER);
+          try {
+            PackageInfo pInfo = ContextUtils.getApplicationContext()
+              .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
+            deviceProfileItem.setVersionCode(pInfo.versionCode);
+            deviceProfileItem.setVersionName(pInfo.versionName);
+          } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+          }
+          //deviceProfileItem.setLanguageCode(Locale.getDefault().toString());
+          commItem.setDeviceProfileItem(deviceProfileItem);
+        
+          Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
+          call.enqueue(new Callback<ResultOfAction>() {
+            @Override
+            public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+              patchRequestIsRunning = false;
+              if (response.isSuccessful()) {
+                if (response.body().getIsSuccess() && !response.body().getIsException()) {
+                  TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_GET_ALL_TASK);
+                }
+              } else {
+              
+                // error case:
+                switch (response.code()) {
+                  case 401:
+                    handleAccessToken();
+                    break;
+                }
+              }
+            }
+          
+            @Override
+            public void onFailure(Call<ResultOfAction> call, Throwable t) {
+              patchRequestIsRunning = false;
+            }
+          });
+        }
+      }
+    });
+  }
+  
   private boolean isUpdateDevice() {
     
     if (TextSecurePreferences.getDeviceUpdate()) {
@@ -1052,6 +1139,91 @@ public class BackgroundServiceWorker extends Service {
         });
       }
     });
+  }
+  
+  private static final int _PATCH_00_STATE_DELETE_ALL_TABLES = 0;
+  private static final int _PATCH_00_STATE_GENERATE_RANDOM_NUMBER = 1;
+  private static final int _PATCH_00_STATE_WAITING = 2;
+  private static final int _PATCH_00_STATE_CHECK_ENDPOINT = 4;
+  private static final int _PATCH_00_STATE_SEND_NEW_VERSION = 8;
+  private static final int _PATCH_00_STATE_GET_ALL_TASK = 16;
+  private static final int _PATCH_00_STATE_COMPLETED = 32;
+  private static boolean patchRequestIsRunning = false;
+  
+  private boolean isPatch00_Completed() {
+    if (TextSecurePreferences.isPatch00_Completed()) {
+      return true;
+    } else {
+      
+      String title = "Erledigt";
+      
+      int state = TextSecurePreferences.getPatch00_State();
+      switch (state) {
+        case _PATCH_00_STATE_DELETE_ALL_TABLES:
+          Log.i(TAG, "1. DELETE TABLES");
+          title = "Datenbank leeren...";
+          deleteTables();
+          TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_GENERATE_RANDOM_NUMBER);
+          break;
+          
+        case _PATCH_00_STATE_GENERATE_RANDOM_NUMBER:
+          Log.i(TAG, "2. RANDOM_NUMBER");
+          title = "Zufallszahl generiert...";
+          
+          int random = ThreadLocalRandom.current().nextInt(1, 7200);
+          Log.i(TAG, "RANDOM INT: " + random);
+          
+          if (random >= 1 && random <= 7200) {
+            TextSecurePreferences.setPatch00_RandomNumber(random);
+            TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_WAITING);
+          }
+          break;
+          
+        case _PATCH_00_STATE_WAITING:
+          Log.i(TAG, "3. WAITING");
+          title = "Warten...";
+          if (TextSecurePreferences.getPatch00_RandomNumber() <= 0) {
+            TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_CHECK_ENDPOINT);
+          }
+          break;
+          
+        case _PATCH_00_STATE_CHECK_ENDPOINT:
+          title = "Hole neuen Endpoint...";
+          Log.i(TAG, "4. ENDPOINT");
+          if (!patchRequestIsRunning) {
+            fetchEndpoint("10783");
+          }
+          break;
+          
+        case _PATCH_00_STATE_SEND_NEW_VERSION:
+          Log.i(TAG, "5. NEW VERSION");
+          title = "Sende App Version...";
+          if (!patchRequestIsRunning) {
+            updateVersionForPatch();
+          }
+          break;
+          
+        case _PATCH_00_STATE_GET_ALL_TASK:
+          Log.i(TAG, "5. GET ALL TASK");
+          title = "Get All Task...";
+          App.eventBus.post(new GetAllTaskEvent());
+          TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_COMPLETED);
+          TextSecurePreferences.setPatch00_Completed(true);
+          break;
+      }
+  
+      int randomNumber = TextSecurePreferences.getPatch00_RandomNumber();
+      randomNumber = randomNumber - 10;
+      TextSecurePreferences.setPatch00_RandomNumber(randomNumber);
+      
+      if (randomNumber <= 0) {
+        App.eventBus.post(new PatchEvent(randomNumber, title, false));
+      } else {
+        App.eventBus.post(new PatchEvent(randomNumber, title, true));
+      }
+      
+      return false;
+    }
   }
   
   private boolean isDeviceRegistrated() {
@@ -1507,5 +1679,59 @@ public class BackgroundServiceWorker extends Service {
       }
     }
     return mClient;
+  }
+  
+  private void deleteTables() {
+    
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        mOfflineConfirmationDAO.deleteAll();
+        mNotifyDAO.deleteAll();
+        mOfflineDelayReasonDAO.deleteAll();
+      }
+    });
+  }
+  
+  private void fetchEndpoint(String clientID) {
+    
+    patchRequestIsRunning = true;
+    
+    String url = "http://endpoint.abona-erp.com/Api/AbonaClients/GetServerURLByClientId/" + clientID + "/2";
+    
+    RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, new com.android.volley.Response.Listener<JSONObject>() {
+      
+      @Override
+      public void onResponse(JSONObject response) {
+        patchRequestIsRunning = false;
+        
+        try {
+          boolean active = response.getBoolean("IsActive");
+          if (active) {
+            String webService = response.getString("WebService");
+            if (TextUtils.isEmpty(webService) || webService.equals("null")) {
+              return;
+            }
+            TextSecurePreferences.setEndpoint(webService);
+            TextSecurePreferences.setClientID(clientID);
+  
+            TextSecurePreferences.setLoginPageEnable(false);
+            
+            TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_SEND_NEW_VERSION);
+          }
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }, new com.android.volley.Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError error) {
+        patchRequestIsRunning = false;
+      }
+    });
+    
+    // Add JsonObjectRequest to the RequestQueue:
+    requestQueue.add(jsonObjectRequest);
   }
 }
