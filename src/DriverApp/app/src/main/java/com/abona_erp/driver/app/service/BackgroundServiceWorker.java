@@ -426,7 +426,7 @@ public class BackgroundServiceWorker extends Service {
                   header.setDataType(DataType.CONFIRMATION);
                 }
                 header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
-                header.setTimestampSenderUTC(/*commItemDB.getHeader().getTimestampSenderUTC()*/new Date());
+                header.setTimestampSenderUTC(new Date());
                 commItemReq.setHeader(header);
   
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
@@ -464,124 +464,47 @@ public class BackgroundServiceWorker extends Service {
                       allowRequest = true;
                       requestIsRunning = false;
                       requestCounter = 0;
+                      
                       if (response.isSuccessful()) {
-                        //if (!response.body().getIsSuccess() && !response.body().getIsException()) {
-                        //  showErrorMessage(response.body().getText());
-                        //}
-                        if (response.body() != null && response.body().getIsSuccess()) {
-                          
-                          AsyncTask.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                              int oldConfirmId = offlineConfirmations.get(0).getId();
-                              mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                
-                              mLastActivityDAO.getLastActivityByTaskClientId(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(new DisposableSingleObserver<LastActivity>() {
-                                  @Override
-                                  public void onSuccess(LastActivity lastActivity) {
-                                    postActivityChangeSent((_currActivity.getStatus() == ActivityStatus.FINISHED) ? ActionType.FINISH_ACTIVITY : ActionType.START_ACTIVITY, _currActivity.getTaskId(), _currActivity.getActivityId(), UtilCommon.parseInt(lastActivity.getOrderNo()), _currActivity.getMandantId(), oldConfirmId);
-                                    updateLastActivity(mLastActivityDAO, lastActivity, 2, "CHANGED", -1);
-                                  }
-                    
-                                  @Override
-                                  public void onError(Throwable e) {
-                                    // TODO:
-                                  }
-                                });
-
-                            }
-                          });
-                        } else {
-            
-                          if (response.body().getIsException()) {
-                            mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                            showErrorMessage(response.body().getText());
-                            return;
-                          }
-                          
+                        
+                        int lastID = offlineConfirmations.get(0).getId();
   
-                          if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
-                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
-                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
+                        // Verbindung OK -> Entferne den Task.
+                        deleteTask(offlineConfirmations.get(0));
+                        
+                        if (response.body() == null) return;
+                        
+                        if (response.body().getIsSuccess()) {
+                          // Activity vom API akzeptiert.
+                          
+                          // LastActivity setzen.
+                          lastActivity(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId(), _currActivity, lastID);
+                        } else {
+                          
+                          // Fehlerbehandlung... -> vom API nicht akzeptiert oder fehlerzustand.
+                          if (!response.body().getIsException()) {
+                            
+                            // isSuccess = false, Exception = false, CommItem != null -> Task Updaten.
+                            if (response.body().getCommItem() != null) {
+                              updateTask(notify, response.body().getCommItem());
+                              
+                              // Entferne alle Einträge mit dieser ID aus dem Offline-Queue.
+                              // deleteAllTaskByID(notify.getId());
                             }
-                          }
-            
-                          if (response.body().getCommItem() != null) {
-                            notify.setData(App.getInstance().gson.toJson(response.body().getCommItem()));
-                            notify.setRead(false);
-                            if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-                              notify.setStatus(0);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-                              notify.setStatus(50);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
-                              notify.setStatus(90);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-                              notify.setStatus(100);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
-                              notify.setStatus(51);
-                            }
-                            notify.setTaskDueFinish(response.body().getCommItem().getTaskItem().getTaskDueDateFinish());
-              
-                            AsyncTask.execute(new Runnable() {
-                              @Override
-                              public void run() {
-                                mNotifyDAO.updateNotify(notify);
-                                mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                              }
-                            });
-              
-                            // TODO: LAST ACTIVITY
-              
-                            mLastActivityDAO.getLastActivityByTaskClientId(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId())
-                              .observeOn(AndroidSchedulers.mainThread())
-                              .subscribeOn(Schedulers.io())
-                              .subscribe(new DisposableSingleObserver<LastActivity>() {
-                                @Override
-                                public void onSuccess(LastActivity lastActivity) {
-                                  updateLastActivity(mLastActivityDAO, lastActivity, 6, "CHANGED BY ABONA", -1);
-                                }
-                  
-                                @Override
-                                public void onError(Throwable e) {
-                                  // TODO:
-                                }
-                              });
+                          
                           } else {
-                            AsyncTask.execute(new Runnable() {
-                              @Override
-                              public void run() {
-                                mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                              }
-                            });
+                            // Exception anzeigen.
+                            showErrorMessage(response.body().getText());
                           }
                         }
-  
-                        //DelayReasonUtil.getDelayReasonsFromService(notify.getMandantId());
                       } else if (response.code() == 401) {
-
-                            //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
-//                                    LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
-//                                    activityItem.getTaskId()));
-
                             handleAccessToken();
-                      } else {
-                        AsyncTask.execute(new Runnable() {
-                          @Override
-                          public void run() {
-                            mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                          }
-                        });
                       }
                     }
       
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
-                      //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_activity_sent_error),
-//                              LogType.SERVER_TO_APP, LogLevel.ERROR, getBaseContext().getString(R.string.log_title_activity),
-//                              activityItem.getTaskId()));
+                      // SERVER NICHT ERREICHBAR.
                       allowRequest = true;
                       requestIsRunning = false;
                       requestCounter = 0;
@@ -598,13 +521,8 @@ public class BackgroundServiceWorker extends Service {
                   } else if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal()) {
                     confirmationItem.setConfirmationType(ConfirmationType.TASK_CONFIRMED_BY_USER);
                   }
-    
-                  //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                  //  Locale.getDefault());
-                  //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                  //Date date = DateConverter.fromTimestamp(sdf.format(new Date()));
-                  //Date date = DateConverter.fromTimestamp(App.getSdfUtc().format(new Date()));
-                  confirmationItem.setTimeStampConfirmationUTC(/*date*/new Date());
+                  
+                  confirmationItem.setTimeStampConfirmationUTC(new Date());
                   confirmationItem.setMandantId(commItemDB.getTaskItem().getMandantId());
                   confirmationItem.setTaskId(commItemDB.getTaskItem().getTaskId());
                   confirmationItem.setTaskChangeId(commItemDB.getTaskItem().getTaskChangeId());
@@ -614,39 +532,23 @@ public class BackgroundServiceWorker extends Service {
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
+                      
                       allowRequest = true;
                       requestIsRunning = false;
                       requestCounter = 0;
-                      if (response.isSuccessful()) {
-          
-                        if (response.body().getIsException())
-                        {
-                          //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_confirm_error),
-//                                  LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
-//                                  confirmationItem.getTaskId()));
+                      
+                      if (response.isSuccessful() && response.body() != null) {
   
-                          mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                          showErrorMessage(response.body().getText());
-                          return;
-                        }
-                        
-                        if (!response.body().getIsSuccess() && !response.body().getIsException()) {
-                          mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                          showErrorMessage(response.body().getText());
-                        }
+                        // Verbindung OK -> Entferne den Task.
+                        deleteTask(offlineConfirmations.get(0));
 
                         if (response.body().getIsSuccess()) {
-                          if (response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
-                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
-                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
-                            }
-                          }
-
+                          
+                          // LastActivity setzen.
                           AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
-                              mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                
+                              
                               mLastActivityDAO.getLastActivityByTaskClientId(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(Schedulers.io())
@@ -678,83 +580,31 @@ public class BackgroundServiceWorker extends Service {
                     
                                   @Override
                                   public void onError(Throwable e) {
-                                    // TODO:
                                   }
                                 });
                             }
                           });
                         } else {
-                          
-                          
-  
-                          if (response.body() != null && response.body().getCommItem() != null && response.body().getCommItem().getPercentItem() != null) {
-                            if (response.body().getCommItem().getPercentItem().getTotalPercentFinished() != null && response.body().getCommItem().getPercentItem().getTotalPercentFinished() >= 0) {
-                              TextSecurePreferences.setTaskPercentage(ContextUtils.getApplicationContext(), (int)Math.round(response.body().getCommItem().getPercentItem().getTotalPercentFinished()));
-                            }
-                          }
             
-                          if (response.body().getCommItem() != null) {
-              
-                            notify.setData(App.getInstance().gson.toJson(response.body().getCommItem()));
-                            notify.setRead(false);
-                            if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
-                              notify.setStatus(0);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
-                              notify.setStatus(50);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
-                              notify.setStatus(90);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-                              notify.setStatus(100);
-                            } else if (response.body().getCommItem().getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
-                              notify.setStatus(51);
+                          // Fehlerbehandlung... -> vom API nicht akzeptiert oder Fehlerzustand.
+                          if (!response.body().getIsException()) {
+                          
+                            // isSuccess = false, Exception = false, CommItem != null -> Task Updaten.
+                            if (response.body().getCommItem() != null) {
+                              updateTask(notify, response.body().getCommItem());
+  
+                              // Entferne alle Einträge mit dieser ID aus dem Offline-Queue.
+                              //deleteAllTaskByID(notify.getId());
                             }
-                            notify.setTaskDueFinish(response.body().getCommItem().getTaskItem().getTaskDueDateFinish());
-              
-                            AsyncTask.execute(new Runnable() {
-                              @Override
-                              public void run() {
-                                mNotifyDAO.updateNotify(notify);
-                                //AppUtils.playNotificationTone();
-                              }
-                            });
-              
-                            mLastActivityDAO.getLastActivityByTaskClientId(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId())
-                              .observeOn(AndroidSchedulers.mainThread())
-                              .subscribeOn(Schedulers.io())
-                              .subscribe(new DisposableSingleObserver<LastActivity>() {
-                                @Override
-                                public void onSuccess(LastActivity lastActivity) {
-                                  updateLastActivity(mLastActivityDAO, lastActivity, 5, "CHANGED BY ABONA", -1);
-                                }
-                  
-                                @Override
-                                public void onError(Throwable e) {
-                                  // TODO:
-                                }
-                              });
                           } else {
-                            AsyncTask.execute(new Runnable() {
-                              @Override
-                              public void run() {
-                                mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                              }
-                            });
+  
+                            // Exception anzeigen.
+                            showErrorMessage(response.body().getText());
                           }
                         }
           
-                      } else {
-          
-                        // error case:
-                        switch (response.code()) {
-                          case 401:
-                          {
-                            //EventBus.getDefault().post(new LogEvent(getBaseContext().getString(R.string.log_token_error),
-//                                    LogType.SERVER_TO_APP, LogLevel.INFO, getBaseContext().getString(R.string.log_title_confirm_error),
-//                                    confirmationItem.getTaskId()));
-                            handleAccessToken();
-                          }
-                            break;
-                        }
+                      } else if (response.code() == 401) {
+                        handleAccessToken();
                       }
                     }
       
@@ -770,15 +620,6 @@ public class BackgroundServiceWorker extends Service {
   
               @Override
               public void onError(Throwable e) {
-                AsyncTask.execute(new Runnable() {
-                  @Override
-                  public void run() {
-                    mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
-                    allowRequest = true;
-                    requestIsRunning = false;
-                    requestCounter = 0;
-                  }
-                });
               }
             });
           
@@ -1374,6 +1215,90 @@ public class BackgroundServiceWorker extends Service {
     Intent broadcastIntent =
       new Intent("com.abona_erp.driver.app.RestartBackgroundServiceWorker");
     sendBroadcast(broadcastIntent);
+  }
+  
+  private void deleteTask(OfflineConfirmation offlineConfirmation) {
+    if (offlineConfirmation != null) {
+      AsyncTask.execute(new Runnable() {
+        @Override
+        public void run() {
+          mOfflineConfirmationDAO.delete(offlineConfirmation);
+        }
+      });
+    }
+  }
+  
+  private void deleteAllTaskByID(int id) {
+    if (id > 0) {
+      AsyncTask.execute(new Runnable() {
+        @Override
+        public void run() {
+  
+          List<OfflineConfirmation> offlineConfirmations = mOfflineConfirmationDAO.getAllOfflineConfirmations();
+          if (offlineConfirmations.size() > 0) {
+            for (int i = 0; i < offlineConfirmations.size(); i++) {
+              if (offlineConfirmations.get(i).getNotifyId() == id) {
+                mOfflineConfirmationDAO.delete(offlineConfirmations.get(i));
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+  
+  private void lastActivity(int taskID, int mandantID, ActivityItem activityItem, int lastID) {
+    
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+    
+        mLastActivityDAO.getLastActivityByTaskClientId(taskID, mandantID)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribeOn(Schedulers.io())
+          .subscribe(new DisposableSingleObserver<LastActivity>() {
+            
+            @Override
+            public void onSuccess(LastActivity lastActivity) {
+              postActivityChangeSent((activityItem.getStatus() == ActivityStatus.FINISHED) ? ActionType.FINISH_ACTIVITY : ActionType.START_ACTIVITY,
+                activityItem.getTaskId(), activityItem.getActivityId(), UtilCommon.parseInt(lastActivity.getOrderNo()), activityItem.getMandantId(), lastID);
+              updateLastActivity(mLastActivityDAO, lastActivity, 2, "CHANGED", -1);
+            }
+            
+            @Override
+            public void onError(Throwable e) {
+            }
+          });
+      }
+    });
+  }
+  
+  private void updateTask(Notify notify, CommItem commItem) {
+    
+    if (commItem == null) return;
+    if (notify == null) return;
+  
+    notify.setData(App.getInstance().gson.toJson(commItem));
+    //notify.setRead(false);
+    if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+      notify.setStatus(0);
+    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+      notify.setStatus(50);
+    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
+      notify.setStatus(90);
+    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
+      notify.setStatus(100);
+    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.BREAK)) {
+      notify.setStatus(51);
+    }
+    notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
+  
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        mNotifyDAO.updateNotify(notify);
+      }
+    });
   }
   
   @Override
