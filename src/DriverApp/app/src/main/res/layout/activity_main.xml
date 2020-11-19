@@ -93,6 +93,41 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/image_logo" />
 
+        <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintTop_toTopOf="parent">
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/update_status_title"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+              android:textColor="#1F1C2C"
+              android:visibility="gone"
+              tools:text="PATCH Status"
+              tools:visibility="visible"
+              />
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+              android:id="@+id/update_status_counter"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+              android:textColor="@color/clrAbona"
+              android:visibility="gone"
+              tools:text="Bereit in - 7200 sek."
+              tools:visibility="visible"
+              />
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

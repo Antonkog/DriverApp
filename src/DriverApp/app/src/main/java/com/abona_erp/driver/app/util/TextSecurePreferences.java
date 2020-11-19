@@ -68,6 +68,10 @@ public class TextSecurePreferences {
   
   public static final String PREF_ONE_TIME_CHECK_ENDPOINT = "pref_one_time_check_endpoint";
   
+  public static final String PREF_PATCH_00 = "pref_patch_00";
+  public static final String PREF_PATCH_00_STATE = "pref_patch_00_state";
+  public static final String PREF_PATCH_00_RANDOM_NUMBER = "pref_patch_00_random_number";
+  
   public static String getRestApiVersion() {
     return getStringPreference(ContextUtils.getApplicationContext(),
       PREF_REST_API_VERSION, "");
@@ -361,6 +365,30 @@ public class TextSecurePreferences {
   
   public static void setOneTimeCheckEndpoint(Boolean enable) {
     setBooleanPreference(ContextUtils.getApplicationContext(), PREF_ONE_TIME_CHECK_ENDPOINT, enable);
+  }
+  
+  public static Boolean isPatch00_Completed() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(), PREF_PATCH_00, false);
+  }
+  
+  public static void setPatch00_Completed(Boolean completed) {
+    setBooleanPreference(ContextUtils.getApplicationContext(), PREF_PATCH_00, completed);
+  }
+  
+  public static Integer getPatch00_State() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(), PREF_PATCH_00_STATE, 0);
+  }
+  
+  public static void setPatch00_State(int state) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_PATCH_00_STATE, state);
+  }
+  
+  public static Integer getPatch00_RandomNumber() {
+    return getIntegerPreference(ContextUtils.getApplicationContext(), PREF_PATCH_00_RANDOM_NUMBER, 0);
+  }
+  
+  public static void setPatch00_RandomNumber(int randomNumber) {
+    setIntegerPrefrence(ContextUtils.getApplicationContext(), PREF_PATCH_00_RANDOM_NUMBER, randomNumber);
   }
   
   public static void setBooleanPreference(Context context, String key, boolean value) {
