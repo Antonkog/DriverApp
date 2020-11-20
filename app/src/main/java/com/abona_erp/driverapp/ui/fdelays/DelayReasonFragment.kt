@@ -1,0 +1,93 @@
+package com.abona_erp.driverapp.ui.fdelays
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.abona_erp.driverapp.R
+import com.abona_erp.driverapp.data.local.db.DelayReasonEntity
+import com.abona_erp.driverapp.databinding.DelayReasonFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class DelayReasonFragment : DialogFragment() {
+
+    val args: DelayReasonFragmentArgs by navArgs()
+
+    private val delayViewModel by viewModels<DelayReasonViewModel>()
+
+    lateinit var dialogDelayReasonBinding: DelayReasonFragmentBinding
+
+    val reasons = arrayListOf<DelayReasonEntity>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val root =  inflater.inflate(
+            R.layout.delay_reason_fragment,
+            container, false)
+            dialogDelayReasonBinding = DelayReasonFragmentBinding.bind(root).apply {
+                viewmodel = delayViewModel
+                lifecycleOwner = this.lifecycleOwner
+            }
+
+
+        val sources = arrayOf(
+            resources.getString(R.string.delay_na),
+            resources.getString(R.string.delay_customer),
+            resources.getString(R.string.delay_dispatcher),
+            resources.getString(R.string.delay_driver)
+        )
+
+        dialogDelayReasonBinding.sourcePicker.maxValue = sources.size -1
+        dialogDelayReasonBinding.sourcePicker.displayedValues = sources
+
+
+        val data = args.activityEntity
+        if(data?.delayReasons != null){
+            reasons.addAll(data.delayReasons)
+        } else {
+            Toast.makeText(context, getString(R.string.no_delay_reason), Toast.LENGTH_SHORT).show()
+        }
+
+        if(reasons.isNotEmpty()){
+            dialogDelayReasonBinding.reasonPicker.maxValue = reasons.size -1
+            dialogDelayReasonBinding.reasonPicker.displayedValues = reasons.map {it.reasonText}.toTypedArray()
+        } else{
+            dialogDelayReasonBinding.button.visibility = View.GONE
+            dialogDelayReasonBinding.reasonPicker.displayedValues = arrayOf(getString(R.string.no_delay_reasons))
+        }
+
+        dialogDelayReasonBinding.button.setOnClickListener {
+            val current  = reasons[dialogDelayReasonBinding.reasonPicker.value]
+            if (checkData(dialogDelayReasonBinding)) sendDelay(current)
+            else showWrongData()
+        }
+        return root
+    }
+
+
+    private fun showWrongData() {
+       Toast.makeText(context, getString(R.string.set_all_data), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun sendDelay(delayReasonEntity: DelayReasonEntity) {
+        delayViewModel.postDelayReason( delayReasonEntity )
+        findNavController().popBackStack()
+
+    }
+
+    private fun checkData(dialogDelayReasonBinding:  DelayReasonFragmentBinding): Boolean {
+        return  (dialogDelayReasonBinding.sourcePicker.value !=0 ||
+            dialogDelayReasonBinding.rangedTimePicker.getMinutes() != 0 ||
+                    dialogDelayReasonBinding.editReasonText.text.isNotBlank()
+        )
+    }
+}

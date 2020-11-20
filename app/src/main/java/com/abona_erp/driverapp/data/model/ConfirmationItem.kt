@@ -6,10 +6,10 @@ import java.util.*
 
 data class ConfirmationItem(
     @SerializedName("ConfirmationType")
-    val confirmationType: ConfirmationType? = null,
+    val confirmationType: ConfirmationType,
 
     @SerializedName("TimeStampConfirmationUTC")
-    val timeStampConfirmationUTC: Date? = null,
+    val timeStampConfirmationUTC: String,
 
     @SerializedName("MandantId")
     val mandantId: Int? = null,
@@ -24,9 +24,9 @@ data class ConfirmationItem(
     val text: String?
 ) {
     data class Builder(
-        var confirmationType: ConfirmationType? = null,
+        var confirmationType: ConfirmationType,
 
-        var timeStampConfirmationUTC: Date? = null,
+        var timeStampConfirmationUTC: String,
 
         var mandantId: Int? = null,
 
@@ -36,8 +36,8 @@ data class ConfirmationItem(
 
         var text: String?
     ) {
-        fun confirmationType(confirmType: ConfirmationType?) = apply { this.confirmationType = confirmType }
-        fun timeStampConfirmationUTC(confirmType: Date?) = apply { this.timeStampConfirmationUTC = confirmType }
+        fun confirmationType(confirmType: ConfirmationType) = apply { this.confirmationType = confirmType }
+        fun timeStampConfirmationUTC(dateString: String) = apply { this.timeStampConfirmationUTC = dateString }
         fun mandantId(mandantId: Int?) = apply { this.mandantId = mandantId }
         fun taskId(taskId: Int?) = apply { this.taskId = taskId }
         fun taskChangeId(taskChangeId: Int?) = apply { this.taskChangeId = taskChangeId }

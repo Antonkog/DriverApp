@@ -1,10 +1,7 @@
 package com.abona_erp.driverapp.data.remote
 
 import androidx.lifecycle.LiveData
-import com.abona_erp.driverapp.data.local.db.ActivityEntity
-import com.abona_erp.driverapp.data.local.db.ChangeHistory
-import com.abona_erp.driverapp.data.local.db.DocumentEntity
-import com.abona_erp.driverapp.data.local.db.TaskEntity
+import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities
 import com.abona_erp.driverapp.ui.utils.UtilModel
@@ -38,6 +35,7 @@ interface AppRepository {
     fun observeDocuments(taskId: Int): LiveData<List<DocumentEntity>>
     fun observeChangeHistory(): LiveData<List<ChangeHistory>>
     fun observeTaskWithActivities(): LiveData<List<TaskWithActivities>>
+    fun observeDelayReasons(): LiveData<List<DelayReasonEntity>>
 
     suspend fun getDocuments(
         forceUpdate: Boolean,
@@ -56,6 +54,12 @@ interface AppRepository {
         commItem: CommItem
     ): ResultWrapper<ResultOfAction>
 
+    suspend fun postDelayReason(delayReasonItems: DelayReasonItem): ResultWrapper<ResultOfAction>
+
+    /**
+     * used to refresh delay reasons when task come from Firebase.
+     */
+    suspend fun getDelayReasons(mandantId: Int, langCode: String): ResultWrapper<ResultOfAction>
 
     /**
      * offline mode
@@ -72,6 +76,12 @@ interface AppRepository {
         changeHistory: ChangeHistory
     ): ResultWrapper<ResultOfAction>
 
+    /**
+     * offline mode
+     */
+    suspend fun postDelayReasons(
+        changeHistory: ChangeHistory
+    ): ResultWrapper<ResultOfAction>
 
     suspend fun refreshTasks()
     suspend fun refreshDocuments(
@@ -97,4 +107,7 @@ interface AppRepository {
     suspend fun cleanDatabase()
     suspend fun getAllOfflineRequests(): List<ChangeHistory>
 
+
+    suspend fun cleanDelayReasons()
+    suspend fun insertDelayReasons(reasons : List<DelayReasonEntity>)
 }

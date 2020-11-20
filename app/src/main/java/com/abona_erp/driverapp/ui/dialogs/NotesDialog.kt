@@ -1,4 +1,4 @@
-package com.abona_erp.driverapp.ui.fpallets
+package com.abona_erp.driverapp.ui.dialogs
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,47 +7,41 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.model.NotesItem
-import com.abona_erp.driverapp.data.model.PalletExchange
-import com.abona_erp.driverapp.databinding.PalletsFragmentBinding
-import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.databinding.NotesFragmentBinding
 import com.abona_erp.driverapp.ui.utils.JsonParser
 import com.google.gson.Gson
 import org.json.JSONObject
 
-class PalletsFragment : BaseFragment() {
-
+class NotesDialog : DialogFragment() {
 
     companion object {
-        const val TAG = "PalletsFragment"
+        const val TAG = "NotesFragment"
     }
 
 
-    private val notesViewModel by viewModels<PalletsViewModel>()
-    private lateinit var notesBinding: PalletsFragmentBinding
+    private lateinit var notesBinding: NotesFragmentBinding
 
-    val args: PalletsFragmentArgs by navArgs()
+    val args: NotesDialogArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.pallets_fragment, container, false)
+        val view = inflater.inflate(R.layout.notes_fragment, container, false)
 
-        notesBinding = PalletsFragmentBinding.bind(view).apply {
-            viewmodel = notesViewModel
-        }
+        notesBinding = NotesFragmentBinding.bind(view)
 
         notesBinding.lifecycleOwner = this.viewLifecycleOwner
 
-        val data = args.palletsData
+        val data = args.notesData
         if (data != null)
             addTestRows(data)
         else {
-            Toast.makeText(context, getString(R.string.error_pallets_not_found), Toast.LENGTH_SHORT)
+            Toast.makeText(context, getString(R.string.error_notes_not_found), Toast.LENGTH_SHORT)
                 .show()
         }
         return view
@@ -55,7 +49,7 @@ class PalletsFragment : BaseFragment() {
     }
 
 
-    private fun addTestRows(item: PalletExchange) {
+    private fun addTestRows(item: NotesItem) {
         val jsonObject = JSONObject(Gson().toJson(item).trim())
 
 

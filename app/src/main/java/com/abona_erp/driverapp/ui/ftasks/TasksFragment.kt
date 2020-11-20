@@ -11,13 +11,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.databinding.TasksFragmentBinding
+import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import kotlin.NoSuchElementException
 
 
 @AndroidEntryPoint
@@ -120,7 +124,10 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         if (!tasksViewModel.loggedIn()) {
             Log.e(TAG, "  not logged in ")
             findNavController().navigate(TasksFragmentDirections.actionNavHomeToLoginFragment())
+        } else {
+            RxBus.publish(RxBusEvent.LanguageUpdate(Locale.getDefault())) //todo: implement locale change listener
         }
+
         when (tasksViewModel.tabStatus) {
             TasksViewModel.TabStatus.TO_DO -> {
                 tasksBinding.tabLayout.getTabAt(TasksViewModel.TabStatus.TO_DO.ordinal)?.select()
@@ -176,7 +183,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
-        val confirmationState = data.taskEntity.confirmationType ?: ConfirmationType.RECEIVED
+        val confirmationState = data.taskEntity.confirmationType
         if (confirmationState < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old starte - not opened and not confirmed
             context?.let {
                 val name =

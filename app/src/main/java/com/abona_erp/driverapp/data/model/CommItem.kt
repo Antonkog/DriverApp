@@ -1,14 +1,13 @@
 package com.abona_erp.driverapp.data.model
 
 
-import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class CommItem(
-    @SerializedName("CompressedTasksCount")
-    val compressedTasksCount: Int? = null,
     @SerializedName("Header")
     val header: Header,
+    @SerializedName("CompressedTasksCount")
+    val compressedTasksCount: Int? = null,
     @SerializedName("PercentItem")
     val percentItem: PercentItem? = null,
     @SerializedName("TaskItem")
@@ -20,36 +19,41 @@ data class CommItem(
     @SerializedName("DeviceProfileItem")
     val deviceProfileItem: DeviceProfileItem? = null,
     @SerializedName("ConfirmationItem")
-    private var confirmationItem: ConfirmationItem? = null
+    var confirmationItem: ConfirmationItem? = null,
+    @SerializedName("DocumentItem")
+    val documentItem: DocumentItem? = null,
+    @SerializedName("DelayReasons")
+    val delayReasonItems: List<DelayReasonItem>? = null
+
 ) {
     data class Builder(
-        var compressedTasksCount: Int? = null,
         var header: Header,
+        var compressedTasksCount: Int? = null,
         var percentItem: PercentItem? = null,
         var taskItem: TaskItem? = null,
         var activityItem: Activity? = null,
         var vehicleItem: VehicleItem? = null,
         var deviceProfileItem: DeviceProfileItem? = null,
-        var confirmationItem: ConfirmationItem? = null
+        var confirmationItem: ConfirmationItem? = null,
+        var documentItem: DocumentItem?  = null,
+        var delayReasonItems: List<DelayReasonItem>? = null
     ) {
-        fun compressedTasksCount(count: Int?) = apply { this.compressedTasksCount = count }
-        fun header(headerb: Header) = apply { this.header = headerb }
-        fun percentItem(percent: PercentItem?) = apply { this.percentItem = percent }
-        fun taskItem(task: TaskItem?) = apply { this.taskItem = task }
-        fun activityItem(activity: Activity?) = apply { this.activityItem = activity }
-        fun vehicleItem(item: VehicleItem?) = apply { this.vehicleItem = item }
-        fun deviceProfileItem(device: DeviceProfileItem?) = apply { this.deviceProfileItem = device }
-        fun confirmationItem(confirmationItem: ConfirmationItem?) = apply { this.confirmationItem = confirmationItem }
+        fun activityItem(activity: Activity) = apply { this.activityItem = activity }
+        fun deviceProfileItem(device: DeviceProfileItem) = apply { this.deviceProfileItem = device }
+        fun confirmationItem(confirmationItem: ConfirmationItem) = apply { this.confirmationItem = confirmationItem }
+        fun delayReasonItems(delayReasonItems: List<DelayReasonItem>) = apply { this.delayReasonItems = delayReasonItems }
 
         fun build() = CommItem(
-            compressedTasksCount,
             header,
+            compressedTasksCount,
             percentItem,
             taskItem,
             activityItem,
             vehicleItem,
             deviceProfileItem,
-            confirmationItem
+            confirmationItem,
+            documentItem,
+            delayReasonItems
         )
     }
 }

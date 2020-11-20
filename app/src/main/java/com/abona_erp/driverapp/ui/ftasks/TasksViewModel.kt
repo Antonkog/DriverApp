@@ -137,7 +137,8 @@ class TasksViewModel @ViewModelInject constructor(
 
     fun updateTask(data: TaskEntity) {
         viewModelScope.launch {
-            repository.updateTask(data)
+           val result =  repository.updateTask(data)
+            Log.e(TAG, "task update result: $result")
         }
     }
 

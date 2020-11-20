@@ -3,8 +3,8 @@ package com.abona_erp.driverapp.data.local.db
 import androidx.room.TypeConverter
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.model.Contact
+import com.abona_erp.driverapp.data.model.DelaySource
 import com.abona_erp.driverapp.data.model.NotesItem
-import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
@@ -71,18 +71,20 @@ class Converters {
         return type?.ordinal
     }
 
-    @TypeConverter
-    fun getTimeStampDate(string: String): Date? {
-        return UtilModel.serverStringToDate(string)
+  @TypeConverter
+    fun getDelaySourceType(ordinal: Int): DelaySource? {
+        for (lt in DelaySource.values()) {
+            if (lt.ordinal == ordinal) {
+                return lt
+            }
+        }
+        return null
     }
 
     @TypeConverter
-    fun getTimeStampString(date: Date?): String? {
-        return if(date!=null)
-            UtilModel.formatLongDateTime(date)
-        else null
+    fun getDelaySourceTypeInt(type: DelaySource?): Int? {
+        return type?.ordinal
     }
-
 
     @TypeConverter
     fun getActivityStatusInt(type: ActivityStatus): Int {

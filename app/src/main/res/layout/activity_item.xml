@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
@@ -21,13 +22,13 @@
                 android:id="@+id/button_act_confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/activity_start"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image_confirmed" />
+                app:layout_constraintTop_toBottomOf="@+id/image_delays" />
 
             <TextView
                 android:id="@+id/text_act_name"
@@ -58,9 +59,10 @@
                 style="@style/TextDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/finished"
                 app:layout_constraintStart_toStartOf="@+id/txt_started"
-                app:layout_constraintTop_toTopOf="@+id/image_confirmed" />
+                app:layout_constraintTop_toBottomOf="@+id/text_started_value" />
 
             <TextView
                 android:id="@+id/text_started_value"
@@ -77,6 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:paddingBottom="24dp"
                 app:layout_constraintStart_toStartOf="@+id/text_finished"
                 app:layout_constraintTop_toBottomOf="@+id/text_finished" />
 
@@ -85,10 +88,11 @@
                 style="@style/ActionImageTint"
                 android:layout_width="@dimen/icon_action_size"
                 android:layout_height="@dimen/icon_action_size"
-                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:contentDescription="@string/image_confirmed"
+                app:layout_constraintBottom_toBottomOf="@+id/text_started_value"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image_delays"
+                app:layout_constraintTop_toTopOf="@+id/txt_started"
                 app:srcCompat="@drawable/ic_sync" />
 
             <ImageView
@@ -96,12 +100,10 @@
                 style="@style/ActionImageTint"
                 android:layout_width="@dimen/icon_action_size"
                 android:layout_height="@dimen/icon_action_size"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:contentDescription="@string/image_delays"
-                app:layout_constraintBottom_toBottomOf="@+id/text_started_value"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_act_name"
+                app:layout_constraintTop_toBottomOf="@+id/text_started_value"
                 app:srcCompat="@drawable/ic_timer" />
 
 

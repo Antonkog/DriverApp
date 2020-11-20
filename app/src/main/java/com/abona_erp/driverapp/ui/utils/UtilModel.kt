@@ -13,7 +13,6 @@ import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.model.*
 import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -36,6 +35,13 @@ object UtilModel {
         return CommItem.Builder(header = header)
             .deviceProfileItem(getDeviceProfileItem(context))
             .activityItem(activity).build()
+    }
+
+    fun getCommDelayChangeItem(context: Context, delayReasonItems: List<DelayReasonItem>): CommItem {
+        val header = Header.Builder(DataType.DELAY_REASONS.dataType, DeviceUtils.getUniqueID(context)).build()
+        return CommItem.Builder(header = header)
+            .delayReasonItems(delayReasonItems)
+            .build()
     }
 
     fun getCommDeviceProfileItem(context: Context): CommItem {
@@ -64,12 +70,12 @@ object UtilModel {
             reasons,
             description,
             deviceId,
-            finished,
             mandantId,
             name,
             radiusGeoFence,
             sequence,
-            started,
+            Date(started),
+            Date(finished),
             activityStatus.status,
             taskpId
         )
@@ -83,13 +89,13 @@ object UtilModel {
             activityId,
             reasons,
             description,
-            finished,
             mandantId,
             name,
             radiusGeoFence,
             sequence,
             taskId,
-            started,
+            started.time,
+            finished.time,
             ActivityStatus.getActivityStatus(status),
             ActivityConfirmationType.RECEIVED
         )
@@ -104,17 +110,17 @@ object UtilModel {
         return 0
     }
 
-    private fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
+     fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
         return DelayReasonItem(
-            waitingReasongId,
+            waitingReasonType,
             activityId,
             reasonText,
             translatedReasonText,
-            code,
-            subcode,
+            0,
+            0,//todo: ask why we using this values
             mandantId,
             taskId,
-            timestampUtc,
+            Date(timestampUtc),
             delayInMinutes,
             delaySource,
             comment
@@ -123,17 +129,15 @@ object UtilModel {
 
     fun DelayReasonItem.toDelayReasonEntity(): DelayReasonEntity {
         return DelayReasonEntity(
-            waitingReasongId,
-            activityId,
-            reasonText,
-            translatedReasonText,
-            code,
-            subCode,
             mandantId,
             taskId,
-            timestampUtc,
-            delayInMinutes,
-            delaySource,
+            activityId,
+            translatedReasonText,
+            reasonText,
+            delaySource?: DelaySource.NA,
+            waitingReasonType,
+            delayInMinutes?:0,
+            timestampUtc?.time ?: 0L,
             comment
         )
     }
@@ -269,28 +273,16 @@ object UtilModel {
     }
 
 
-    private fun dateFormat(parsedString: String): DateFormat {
-        val dfUtc: DateFormat =  when(parsedString.length){
-            21->  SimpleDateFormat(Constant.abonaCommunicationDateFormat, Locale.getDefault())
-            20->  SimpleDateFormat(Constant.abonaCommunicationDateVarTwo, Locale.getDefault())
-            19->  SimpleDateFormat(Constant.abonaCommunicationDateVarThree, Locale.getDefault())
-            else -> SimpleDateFormat(Constant.abonaCommunicationDateFormat, Locale.getDefault())
-        }
-        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-        return dfUtc
-    }
 
-    private fun uiDateFormat(): DateFormat {
-        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaUIDateFormat, Locale.getDefault())
-        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-        return dfUtc
-    }
 
-    private fun uiDateFormatLong(): DateFormat {
-        val dfUtc: DateFormat =
-            SimpleDateFormat(Constant.abonaUiDateLongFormat, Locale.getDefault())
-        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
-        return dfUtc
+    fun formatTimeDifference(difference: Long, context: Context): String {
+        return String.format(
+                context.resources.getString(R.string.task_duein_format),
+                TimeUnit.MILLISECONDS.toDays(difference),
+                TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
+                TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
+            )
     }
 
     private fun uiTimeFormat(): DateFormat {
@@ -300,64 +292,15 @@ object UtilModel {
     }
 
     fun formatLongTime(dateMills: Long): String {
-        return uiDateFormatLong().format(Date(dateMills))
-    }
-
-
-    fun formatLongDateTime(date: Date): String {
-        return SimpleDateFormat(Constant.abonaUITimeFormat, Locale.getDefault()).format(date)
-    }
-
-    fun serverStringToDate(date: String): Date? {
-        return try {
-            dateFormat(date).parse(date)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-
-    fun getTimeDifference(it: String, context: Context): String {
-        serverStringToDate(it)?.let { oldDate ->
-            val difference = oldDate.time - Date().time
-            if (difference < 0)
-                return context.resources.getString(R.string.task_overdue)
-
-            return String.format(
-                context.resources.getString(R.string.task_duein_format),
-                TimeUnit.MILLISECONDS.toDays(difference),
-                TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
-                TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
-            )
-        }
-        return it
-    }
-
-    fun serverDateShortener(date: String): String {
-        return try {
-            val dateOpt = dateFormat(date).parse(date)
-            dateOpt?.let { uiDateFormat().format(it) } ?: date
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            date
-        }
-    }
-
-    fun serverTimeShortener(date: String): String {
-        return try {
-            val dateOpt = dateFormat(date).parse(date)
-            dateOpt?.let {uiTimeFormat().format(it) } ?: date
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            date
-        }
+        return uiTimeFormat().format(Date(dateMills))
     }
 
     fun getCurrentDateServerFormat(): String {
-        return formatLongDateTime(Date())
+        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaCommunicationDateVarThree, Locale.getDefault())
+        dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
+        return dfUtc.format(Date())
     }
+
 
 
     /**
@@ -417,7 +360,7 @@ object UtilModel {
     private fun getInnerTaskConfirmation(taskItem: TaskEntity): ConfirmationItem {
         val confirmationItem = ConfirmationItem.Builder(
             confirmationType = taskItem.confirmationType,
-            timeStampConfirmationUTC = Date(),
+            timeStampConfirmationUTC =  getCurrentDateServerFormat(),
             mandantId = taskItem.mandantId,
             taskId = taskItem.taskId,
             taskChangeId = taskItem.taskId, //todo: ask Tilman what is taskChangeId and why we use it

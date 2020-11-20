@@ -80,8 +80,8 @@ interface DriverTaskDao {
                     it.orderDetails,
                     it.taskDetails,
                     it.palletExchange,
-                    it.taskDueDateStart,
-                    it.taskDueDateFinish,
+                    it.taskDueDateStart.time,
+                    it.taskDueDateFinish.time,
                     it.mandantId,
                     it.kundenName,
                     it.notes,
@@ -94,7 +94,7 @@ interface DriverTaskDao {
         }
     }
 
-    private suspend fun getStatus(taskid: Int): ConfirmationType? {
+    private suspend fun getStatus(taskid: Int): ConfirmationType {
         getTasks().forEach { 
             if(it.taskId == taskid){
                 return it.confirmationType

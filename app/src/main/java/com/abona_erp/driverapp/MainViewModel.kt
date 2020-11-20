@@ -18,10 +18,14 @@ import com.abona_erp.driverapp.data.local.preferences.putLong
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
+import com.abona_erp.driverapp.data.remote.data
+import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
+import com.abona_erp.driverapp.ui.utils.UtilModel.toDelayReasonEntity
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
@@ -79,6 +83,14 @@ class MainViewModel @ViewModelInject constructor(
         RxBus.listen(RxBusEvent.AuthError::class.java).subscribe {
             authReset.postValue(true)
         }
+        RxBus.listen(RxBusEvent.LanguageUpdate::class.java).subscribe {
+            updateDelayReasons(it.locale)
+          //  refreshTasks()
+        }
+    }
+
+    private fun refreshTasks() = viewModelScope.launch(IO){
+        repository.refreshTasks()
     }
 
 
@@ -179,8 +191,8 @@ class MainViewModel @ViewModelInject constructor(
                             taskItem.orderDetails,
                             taskItem.taskDetails,
                             taskItem.palletExchange,
-                            taskItem.taskDueDateStart,
-                            taskItem.taskDueDateFinish,
+                            taskItem.taskDueDateStart.time,
+                            taskItem.taskDueDateFinish.time,
                             taskItem.mandantId,
                             taskItem.kundenName,
                             taskItem.notes,
@@ -195,6 +207,15 @@ class MainViewModel @ViewModelInject constructor(
                     }
                 }
             }
+
+            DataType.DELAY_REASONS.dataType -> {
+                Log.d(TAG, " got DELAY_REASONS")
+
+                messageStruct.delayReasonItems?.map { it.toDelayReasonEntity() }?.let {
+                    repository.insertDelayReasons(it)
+                }
+            }
+
         }
     }
 
@@ -217,4 +238,20 @@ class MainViewModel @ViewModelInject constructor(
     private fun ConnectivityProvider.NetworkState.hasInternet(): Boolean {
         return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true
     }
+
+    fun updateDelayReasons(locale: Locale ) = viewModelScope.launch {
+        val result =  repository.getDelayReasons(
+            prefs.getInt(Constant.mandantId, 3),
+            DeviceUtils.getLocaleCode(locale)
+        )
+
+        if (result.succeeded ){
+            result.data?.delayReasonItems?.map { it.toDelayReasonEntity() }?.let {
+                repository.insertDelayReasons(it)
+            }
+        } else{
+            Log.e(TAG, "can't update delay reasons from server $result")
+        }
+    }
+
 }

@@ -36,6 +36,14 @@
     <string name="started" translatable="false">Started</string>
     <string name="finished" translatable="false">Finished</string>
 
+
+
+    <string name="delay_na" translatable="false">N/A</string>
+    <string name="delay_dispatcher">Dispatcher</string>
+    <string name="delay_customer">Customer</string>
+    <string name="delay_driver">Driver</string>
+
+
     <!--used to parse status code and give string-->
     <string name="action_type_pick_up">Pick Up</string>
     <string name="action_type_drop_off">Drop Off</string>
@@ -57,6 +65,7 @@
     <string name="screen_danger_goods" translatable="false">Dangerous goods</string>
     <string name="screen_pallets" translatable="false">Pallets</string>
     <string name="screen_contacts" translatable="false">Contacts</string>
+    <string name="screen_delays" translatable="false">DelayReasons</string>
     <string name="screen_notes" translatable="false">Notes</string>
     <string name="screen_map" translatable="false">Map</string>
 
@@ -113,6 +122,7 @@
     <string name="key_notes_data" translatable="false">notes_data</string>
     <string name="key_map_data" translatable="false">map_data</string>
     <string name="key_task_entity" translatable="false">task_entity</string>
+    <string name="key_activity_entity" translatable="false">activity_entity</string>
     <string name="key_goods_data" translatable="false">goods_data</string>
     <string name="key_pallets_data" translatable="false">pallets_data</string>
     <string name="key_auto_login" translatable="false">auto_login</string>
@@ -154,5 +164,14 @@
     <string name="image_retry" translatable="false">Image retry</string>
     <string name="arrow_open" translatable="false">arrow_open</string>
     <string name="document_image" translatable="false">document image</string>
+    <string name="hh" translatable="false">Hh:</string>
+    <string name="mm" translatable="false">Mm:</string>
+    <string name="reasons">Reason</string>
+    <string name="source">Source</string>
+    <string name="send">Send</string>
+    <string name="no_delay_reasons" translatable="false">Delay reasons are not available for this activity</string>
+    <string name="set_all_data" translatable="false">please set all data before sending</string>
+    <string name="delay_comments" translatable="false">Delay comments</string>
+    <string name="no_delay_reason" translatable="false">No delay reasons for this activity</string>
 
 </resources>

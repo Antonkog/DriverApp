@@ -6,12 +6,33 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.abona_erp.driverapp.data.Constant;
+
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.Locale;
 
 public class DeviceUtils {
     private final static String TAG = "DeviceUtils";
+
+
+    /**
+     * @return language code Abona format
+     */
+    public static String getLocaleCode(Locale locale) {
+        switch (locale.getISO3Language().toLowerCase()) {
+            case "rus":
+            case "ukr":
+                return Constant.LANG_TO_SERVER_RUSSIAN;//as ukrainian is not implemented on server.
+            case "pol":
+                return Constant.LANG_TO_SERVER_POLISH;
+            case "deu":
+                return Constant.LANG_TO_SERVER_GERMAN;
+            default:
+                return Constant.LANG_TO_SERVER_ENGLISH;
+        }
+    }
 
     /**
      * see:

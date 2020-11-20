@@ -27,9 +27,7 @@ object Constant {
     const val abonaCommunicationDateVarThree = "yyyy-MM-dd'T'HH:mm:ss"
 
 
-    const val abonaUIDateFormat = "yyyy-MM-dd"
     const val abonaUITimeFormat = "yyyy-MM-dd HH:mm"
-    const val abonaUiDateLongFormat = "yyyy-MM-dd'T'HH:mm:ss"
 
     const val abonaTimeZone = "UTC"
     const val tokenUpdateHours = 48
@@ -49,5 +47,15 @@ object Constant {
     const val currentVisibleTaskid = "current_visible_taskId"
     const val currentVisibleOrderId = "current_visible_OrderId"
     const val mandantId = "mandantId"
+
+
+
+    //language
+
+    const val LANG_TO_SERVER_ENGLISH = "en_US"
+    const val LANG_TO_SERVER_GERMAN = "de_DE"
+    const val LANG_TO_SERVER_RUSSIAN = "ru_RU"
+    //  var LANG_TO_SERVER_UKRAINIAN = "uk_UA" //not used
+    const val LANG_TO_SERVER_POLISH = "pl_PL"
 
 }

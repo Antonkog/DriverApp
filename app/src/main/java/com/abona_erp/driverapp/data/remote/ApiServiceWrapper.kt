@@ -133,6 +133,31 @@ class ApiServiceWrapper(
     }
 
 
+
+    suspend fun postDelayItems(commItem: CommItem): ResultWrapper<ResultOfAction> {
+        sentLoadingToUI()
+        return try {
+            val result = api.postDelayItems(commItem)
+            sendSuccessToUI(result.toString())
+            ResultWrapper.Success(result)
+        } catch (e :java.lang.Exception){
+            ResultWrapper.Error(e)
+        }
+    }
+
+    suspend fun getDelayItems(mandantId: Int, langCode : String): ResultWrapper<ResultOfAction> {
+        sentLoadingToUI()
+        return try {
+            val result = api.getDelayReasons(mandantId, langCode)
+            sendSuccessToUI(result.toString())
+            ResultWrapper.Success(result)
+        } catch (e :java.lang.Exception){
+            ResultWrapper.Error(e)
+        }
+    }
+
+
+
     private suspend fun setDeviceProfile(
         commItem: CommItem,
         changeHistory: ChangeHistory?
@@ -141,10 +166,10 @@ class ApiServiceWrapper(
         val change = changeHistory(changeHistory, commItem).copy(status = Status.SENT) //as i don't want to recreate request  - set it as sent. (user can't login when offline)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
-            val result = ResultWrapper.Success(api.setDeviceProfile(commItem))
+            val result = api.setDeviceProfile(commItem)
             sendSuccessToUI(result.toString())
             updateHistoryOnSuccess(change, gson.toJson(result), autoGenId)
-            result
+            ResultWrapper.Success(result)
         } catch (ex: Exception) {
             sendErrorToUI(ex)
             updateHistoryOnError(change, autoGenId)
@@ -175,10 +200,10 @@ class ApiServiceWrapper(
         val change = changeHistory(changeHistory, commItem)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
-            val result = ResultWrapper.Success(api.postActivityChange(commItem))
+            val result =api.postActivityChange(commItem)
             updateHistoryOnSuccess(change, gson.toJson(result), autoGenId)
             sendSuccessToUI(result.toString())
-            result
+            ResultWrapper.Success(result)
         } catch (ex: Exception) {
             updateHistoryOnError(change, autoGenId)
             sendErrorToUI(ex)

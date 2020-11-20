@@ -23,15 +23,15 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.abona_erp.driverapp.data.Constant.REQUEST_OPEN_DOC
-import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback{
+class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
     val TAG = MainActivity::class.simpleName
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var navController: NavController
@@ -77,7 +77,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             }
         })
 
-
         setupErrorHandling()
         navView.setupWithNavController(navController)
     }
@@ -90,7 +89,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         mainViewModel.authReset.observe(this, {
             mainViewModel.resetAuthTime()
             val bundle = bundleOf(resources.getString(R.string.key_auto_login) to true)
-            navController.navigate(R.id.action_nav_home_to_loginFragment, bundle)
+            navController.navigate(R.id.nav_login, bundle)
         })
 
         mainViewModel.requestStatus.observe(this, {

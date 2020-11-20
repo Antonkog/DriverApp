@@ -11,7 +11,6 @@ import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.databinding.TaskItemBinding
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.getImageResource
-import com.abona_erp.driverapp.ui.utils.UtilModel.getTimeDifference
 import com.abona_erp.driverapp.ui.utils.UtilModel.toDangerousGoodsClass
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 
@@ -33,7 +32,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
         val color = ConfirmationType.getColor(
             context,
-            data.taskEntity.confirmationType ?: ConfirmationType.RECEIVED
+            data.taskEntity.confirmationType
         )
         binding.imageSync?.setColorFilter(color)
 
@@ -52,7 +51,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
                 binding.cardView.elevation = context.resources.getDimension(R.dimen.elevation_VIII)
                 binding.cardView.alpha = 1F
             }
-            else ->{
+            else -> {
                 binding.cardView.elevation = context.resources.getDimension(R.dimen.elevation_VIII)
                 binding.cardView.alpha = 1F
             }
@@ -65,10 +64,9 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.progressTask.progress = data.taskEntity.status.intId
         binding.textTaskName.text = mResources.getString(nameId)
 
-        data.taskEntity.taskDueDateFinish?.let { //as we don't have taskDueDateFinish from server - here counting
-            binding.textFinishTime.text = UtilModel.serverDateShortener(it)
-            binding.textDueInTime.text = getTimeDifference(it, context)
-        }
+            binding.textFinishTime.text = UtilModel.formatLongTime( data.taskEntity.taskDueDateFinish)
+            binding.textDueInTime.text =  UtilModel.formatTimeDifference( data.taskEntity.taskDueDateFinish - System.currentTimeMillis() , context)
+
 
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmationType == ActivityConfirmationType.RECEIVED }?.name
@@ -94,7 +92,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.imageDocuments.setOnClickListener {
             val bundle =
                 bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
-            navController.navigate(R.id.action_nav_home_to_nav_documents, bundle)
+            navController.navigate(R.id.action_nav_home_to_docFragment, bundle)
         }
     }
 
@@ -103,7 +101,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
             bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
         binding.activityButton.setOnClickListener {
             navController.navigate(
-                R.id.action_nav_home_to_nav_activities,
+                R.id.action_nav_home_to_actFragment,
                 bundle
             )
         }
@@ -118,7 +116,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
                     data.taskEntity.constacts!!.toTypedArray()//checked for null or empty
                 val bundle =
                     bundleOf(binding.root.context.getString(R.string.key_contacts_data) to contactsArray)
-                navController.navigate(R.id.action_nav_home_to_contactsFragment, bundle)
+                navController.navigate(R.id.action_nav_home_to_contactsDialog, bundle)
             }
         } else {
             binding.imagePhone.visibility = View.GONE
@@ -132,7 +130,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
             binding.imageNotes.setOnClickListener {
                 val bundle =
                     bundleOf(binding.root.context.getString(R.string.key_notes_data) to data.taskEntity.notesItem)
-                navController.navigate(R.id.action_nav_home_to_notesFragment, bundle)
+                navController.navigate(R.id.action_nav_home_to_notesDialog, bundle)
             }
         }
 
@@ -155,8 +153,9 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding: TaskItemBinding
     ) {
         binding.imageInfo.setOnClickListener {
-            val bundle = bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
-            navController.navigate(R.id.action_nav_home_to_taskInfoFragment, bundle)
+            val bundle =
+                bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
+            navController.navigate(R.id.action_nav_home_to_taskInfoDialog, bundle)
         }
     }
 
@@ -185,7 +184,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.imagePallet.setOnClickListener {
             val bundle =
                 bundleOf(binding.root.context.getString(R.string.key_pallets_data) to data.taskEntity.palletExchange)
-            navController.navigate(R.id.action_nav_home_to_palletsFragment, bundle)
+            navController.navigate(R.id.action_nav_home_to_palletsDialog, bundle)
         }
     }
 
@@ -203,7 +202,7 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
             binding.imageDanger.setOnClickListener {
                 val bundle =
                     bundleOf(binding.root.context.getString(R.string.key_goods_data) to data.taskEntity.dangerousGoods)
-                navController.navigate(R.id.action_nav_home_to_dangerousGoodsFragment, bundle)
+                navController.navigate(R.id.action_nav_home_to_goodsDialog, bundle)
             }
 
         } else binding.imageDanger.visibility = View.GONE
