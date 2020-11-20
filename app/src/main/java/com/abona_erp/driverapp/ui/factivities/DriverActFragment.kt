@@ -55,6 +55,13 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
             })
         }
 
+            driverActViewModel.getDelayReasonObservable().observe(viewLifecycleOwner, { delays->
+                if (delays!= null&& delays.isNotEmpty()) {
+                    driverActViewModel.addDelaysToActivities(delays)
+                }
+            })
+
+
         driverActViewModel.wrappedActivities.observe(viewLifecycleOwner, {
             adapter.swapData(it)
         })

@@ -6,7 +6,7 @@ import java.util.*
 data class DelayReasonItem(
     /** WaitingReason.Oid  */
     @SerializedName("WaitingReasonId")
-    var waitingReasongId: Int? = null,
+    var waitingReasonType: Int? = null, //changed to type, as id should be unique and it is not.
 
     /** TransportOrderStatusValue.Oid  */
     @SerializedName("ActivityId")

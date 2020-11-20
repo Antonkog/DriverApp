@@ -12,7 +12,7 @@ import java.util.*
 @Entity(tableName = "delay_reason")
 @Parcelize
 data class DelayReasonEntity(
-    @PrimaryKey val waitingReasongId: Int?,
+    @ColumnInfo val waitingReasonType: Int?,
     @ColumnInfo val activityId: Int?,
     @ColumnInfo val reasonText: String?,
     @ColumnInfo val translatedReasonText: String?,
@@ -23,5 +23,7 @@ data class DelayReasonEntity(
     @ColumnInfo val timestampUtc: Long,
     @ColumnInfo val delayInMinutes: Int?,
     @ColumnInfo val delaySource: DelaySource?,
-    @ColumnInfo val comment: String?
+    @ColumnInfo val comment: String?,
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L
 ) : Parcelable

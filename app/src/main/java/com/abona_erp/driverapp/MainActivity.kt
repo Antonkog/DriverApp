@@ -28,6 +28,7 @@ import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             }
         })
 
+        RxBus.publish(RxBusEvent.LanguageUpdate(Locale.getDefault())) //todo: implement locale change listener
 
         setupErrorHandling()
         navView.setupWithNavController(navController)

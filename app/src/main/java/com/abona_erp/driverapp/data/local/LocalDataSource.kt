@@ -113,6 +113,7 @@ class LocalDataSource internal constructor(
     }
 
     suspend fun insertDelayReasons(reasons : List<DelayReasonEntity>) {
+        db.delayReasonsDao().deleteAll()
         db.delayReasonsDao().insert(reasons)
     }
 
@@ -168,8 +169,9 @@ class LocalDataSource internal constructor(
     suspend fun cleanDatabase() {
         db.driverActDao().deleteActivities()//delete first - as we have foreign key in activity
         db.driverTaskDao().deleteTasks()
-        db.documentsDao().deleteDocuments()
-        db.changeHistoryDao().deleteChangeHistory()
+        deleteDocuments()
+        deleteDelayReasons()
+        db.changeHistoryDao().deleteChangeHistory() //should we delete history?
     }
 
     suspend fun insertHistoryChange(changeHistory: ChangeHistory): Long {

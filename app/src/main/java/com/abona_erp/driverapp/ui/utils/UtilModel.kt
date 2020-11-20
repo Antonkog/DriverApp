@@ -6,8 +6,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import androidx.core.content.res.ResourcesCompat
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
 import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.Constant
@@ -15,7 +13,6 @@ import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.model.*
 import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -115,7 +112,7 @@ object UtilModel {
 
     private fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
         return DelayReasonItem(
-            waitingReasongId,
+            waitingReasonType,
             activityId,
             reasonText,
             translatedReasonText,
@@ -132,7 +129,7 @@ object UtilModel {
 
     fun DelayReasonItem.toDelayReasonEntity(): DelayReasonEntity {
         return DelayReasonEntity(
-            waitingReasongId,
+            waitingReasonType,
             activityId,
             reasonText,
             translatedReasonText,

@@ -48,4 +48,14 @@ object Constant {
     const val currentVisibleOrderId = "current_visible_OrderId"
     const val mandantId = "mandantId"
 
+
+
+    //language
+
+    const val LANG_TO_SERVER_ENGLISH = "en_US"
+    const val LANG_TO_SERVER_GERMAN = "de_DE"
+    const val LANG_TO_SERVER_RUSSIAN = "ru_RU"
+    //  var LANG_TO_SERVER_UKRAINIAN = "uk_UA" //not used
+    const val LANG_TO_SERVER_POLISH = "pl_PL"
+
 }

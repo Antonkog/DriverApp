@@ -55,6 +55,7 @@ class DelayReasonDialog : DialogFragment() {
             else if(it.reasonText != null) reasons.add(it.reasonText)
         }
         if(reasons.isNotEmpty()){
+            dialogDelayReasonBinding.reasonPicker.maxValue = reasons.size -1
             dialogDelayReasonBinding.reasonPicker.displayedValues = reasons.toTypedArray()
         } else{
             dialogDelayReasonBinding.button.visibility = View.GONE
