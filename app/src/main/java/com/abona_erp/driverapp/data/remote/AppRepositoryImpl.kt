@@ -146,8 +146,8 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun postDelayReasons(commItem: CommItem): ResultWrapper<ResultOfAction> {
-        return api.postDelayItems(commItem)
+    override suspend fun postDelayReason(delayReasonItem: DelayReasonItem): ResultWrapper<ResultOfAction> {
+        return api.postDelayItems(UtilModel.getCommDelayChangeItem(context, listOf(delayReasonItem)))
     }
 
     override suspend fun postDelayReasons(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {

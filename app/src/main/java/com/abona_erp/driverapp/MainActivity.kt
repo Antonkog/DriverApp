@@ -77,8 +77,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             }
         })
 
-        RxBus.publish(RxBusEvent.LanguageUpdate(Locale.getDefault())) //todo: implement locale change listener
-
         setupErrorHandling()
         navView.setupWithNavController(navController)
     }

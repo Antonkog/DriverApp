@@ -85,7 +85,12 @@ class MainViewModel @ViewModelInject constructor(
         }
         RxBus.listen(RxBusEvent.LanguageUpdate::class.java).subscribe {
             updateDelayReasons(it.locale)
+          //  refreshTasks()
         }
+    }
+
+    private fun refreshTasks() = viewModelScope.launch(IO){
+        repository.refreshTasks()
     }
 
 

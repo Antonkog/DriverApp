@@ -110,14 +110,14 @@ object UtilModel {
         return 0
     }
 
-    private fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
+     fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
         return DelayReasonItem(
             waitingReasonType,
             activityId,
             reasonText,
             translatedReasonText,
-            code,
-            subcode,
+            0,
+            0,//todo: ask why we using this values
             mandantId,
             taskId,
             Date(timestampUtc),
@@ -129,17 +129,15 @@ object UtilModel {
 
     fun DelayReasonItem.toDelayReasonEntity(): DelayReasonEntity {
         return DelayReasonEntity(
-            waitingReasonType,
-            activityId,
-            reasonText,
-            translatedReasonText,
-            code,
-            subCode,
             mandantId,
             taskId,
-timestampUtc?.time ?: 0L,
-            delayInMinutes,
-            delaySource,
+            activityId,
+            translatedReasonText,
+            reasonText,
+            delaySource?: DelaySource.NA,
+            waitingReasonType,
+            delayInMinutes?:0,
+            timestampUtc?.time ?: 0L,
             comment
         )
     }

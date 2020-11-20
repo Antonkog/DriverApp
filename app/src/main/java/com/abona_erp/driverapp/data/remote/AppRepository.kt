@@ -54,7 +54,7 @@ interface AppRepository {
         commItem: CommItem
     ): ResultWrapper<ResultOfAction>
 
-    suspend fun postDelayReasons(commItem: CommItem): ResultWrapper<ResultOfAction>
+    suspend fun postDelayReason(delayReasonItems: DelayReasonItem): ResultWrapper<ResultOfAction>
 
     /**
      * used to refresh delay reasons when task come from Firebase.
