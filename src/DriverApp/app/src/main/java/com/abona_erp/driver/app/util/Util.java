@@ -25,7 +25,7 @@ public class Util {
     }
     public static void updatePreferenceFlags() {
         TextSecurePreferences.setUpdateLangCode(true);
-        TextSecurePreferences.setUpdateAllTasks(true);
-        TextSecurePreferences.setUpdateDelayReason(true);
+        //TextSecurePreferences.setUpdateAllTasks(true);
+        //TextSecurePreferences.setUpdateDelayReason(true);
     }
 }
