@@ -14,6 +14,8 @@ data class CommItem(
     val taskItem: TaskItem? = null,
     @SerializedName("ActivityItem")
     val activityItem: Activity? = null,
+    @SerializedName("ActivityDelayItem")
+    val activityDelayItem: ActivityDelayItem? = null,
     @SerializedName("VehicleItem")
     val vehicleItem: VehicleItem? = null,
     @SerializedName("DeviceProfileItem")
@@ -32,6 +34,7 @@ data class CommItem(
         var percentItem: PercentItem? = null,
         var taskItem: TaskItem? = null,
         var activityItem: Activity? = null,
+        var activityDelayItem: ActivityDelayItem? = null,
         var vehicleItem: VehicleItem? = null,
         var deviceProfileItem: DeviceProfileItem? = null,
         var confirmationItem: ConfirmationItem? = null,
@@ -41,6 +44,7 @@ data class CommItem(
         fun activityItem(activity: Activity) = apply { this.activityItem = activity }
         fun deviceProfileItem(device: DeviceProfileItem) = apply { this.deviceProfileItem = device }
         fun confirmationItem(confirmationItem: ConfirmationItem) = apply { this.confirmationItem = confirmationItem }
+        fun activityDelayItem(activityDelayItem: ActivityDelayItem?) = apply { this.activityDelayItem = activityDelayItem }
         fun delayReasonItems(delayReasonItems: List<DelayReasonItem>) = apply { this.delayReasonItems = delayReasonItems }
 
         fun build() = CommItem(
@@ -49,6 +53,7 @@ data class CommItem(
             percentItem,
             taskItem,
             activityItem,
+            activityDelayItem,
             vehicleItem,
             deviceProfileItem,
             confirmationItem,

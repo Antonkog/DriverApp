@@ -1,55 +1,29 @@
 package com.abona_erp.driverapp.data.model
 
+
+import androidx.room.ColumnInfo
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
 data class DelayReasonItem(
-    /** WaitingReason.Oid  */
-    @SerializedName("WaitingReasonId")
-    var waitingReasonType: Int? = null, //changed to type, as id should be unique and it is not.
-
-    /** TransportOrderStatusValue.Oid  */
-    @SerializedName("ActivityId")
-    var activityId: Int? = null,
-
-    /** WaitingReason.Name  */
-    @SerializedName("ReasonText")
-    var reasonText: String? = null,
-
-    /** WaitingReason Text  */
-    @SerializedName("TranslatedReasonText")
-    var translatedReasonText: String? = null,
-
-    /** WaitingReason.Code  */
-    @SerializedName("Code")
-    var code: Int? = null,
-
-    /** WaitingReason.SubCode  */
-    @SerializedName("SubCode")
-    var subCode: Int? = null,
-
-    /** From driver app  */
     @SerializedName("MandantId")
-    var mandantId: Int? = null,
-
-    /** From driver app  */
+    val mandantId: Int,
     @SerializedName("TaskId")
-    var taskId: Int? = null,
-
-    /** From driver app  */
-    @SerializedName("TimestampUtc")
-    var timestampUtc: Date? = null,
-
-    /** From driver app  */
-    @SerializedName("DelayInMinutes")
-    var delayInMinutes: Int? = null,
-
-    /** From driver app  */
+    val taskId: Int,
+    @SerializedName("ActivityId") //    /** TransportOrderStatusValue.Oid  */
+    val activityId: Int,
+    @SerializedName("TranslatedReasonText")
+    var translatedReasonText: String?,
+    @SerializedName("ReasonText")
+    var reasonText: String?,
     @SerializedName("DelaySource")
-    var delaySource: DelaySource? = null,
-
-    /** From driver app  */
+    val delaySource: DelaySource,
+    @SerializedName("WaitingReasonId")
+    val waitingReasonType: Int,
+    @SerializedName("DelayInMinutes")
+    val delayInMinutes: Int,
+    @SerializedName("TimestampUtc")
+    val timestampUtc: String?,
     @SerializedName("Comment")
-    var comment: String? = null
-
+    val comment: String?
 )
