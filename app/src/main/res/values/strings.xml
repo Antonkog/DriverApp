@@ -169,7 +169,6 @@
     <string name="reasons">Reason</string>
     <string name="source">Source</string>
     <string name="send">Send</string>
-    <string name="no_delay_reasons" translatable="false">Delay reasons are not available for this activity</string>
     <string name="set_all_data" translatable="false">please set all data before sending</string>
     <string name="delay_comments" translatable="false">Delay comments</string>
     <string name="no_delay_reason" translatable="false">No delay reasons for this activity</string>

@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.abona_erp.driverapp.BuildConfig;
 import com.abona_erp.driverapp.data.Constant;
 
 import java.net.NetworkInterface;
@@ -45,7 +46,7 @@ public class DeviceUtils {
      * author A.KOGAN
      */
     public static String getUniqueID(Context context) {
-       // if(BuildConfig.DEBUG)return "bd92a5a47f4883c5";
+        if(BuildConfig.DEBUG)return "bd92a5a47f4883c5";
         StringBuilder idBuilder = new StringBuilder();
         try {
             idBuilder.append(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));

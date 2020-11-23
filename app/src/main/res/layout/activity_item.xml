@@ -22,13 +22,13 @@
                 android:id="@+id/button_act_confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/activity_start"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image_delays" />
+                app:layout_constraintTop_toBottomOf="@+id/text_finished_value" />
 
             <TextView
                 android:id="@+id/text_act_name"
@@ -98,6 +98,7 @@
             <ImageView
                 android:id="@+id/image_delays"
                 style="@style/ActionImageTint"
+                android:visibility="gone"
                 android:layout_width="@dimen/icon_action_size"
                 android:layout_height="@dimen/icon_action_size"
                 android:layout_marginEnd="16dp"
@@ -105,6 +106,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_started_value"
                 app:srcCompat="@drawable/ic_timer" />
+
+            <TextView
+                android:id="@+id/textDelayTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextDescription"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/image_delays"
+                app:layout_constraintEnd_toStartOf="@+id/image_delays" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
