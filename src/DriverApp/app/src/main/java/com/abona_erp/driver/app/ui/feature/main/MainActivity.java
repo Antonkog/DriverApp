@@ -532,14 +532,17 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
         progressBar.setVisibility(View.GONE);
         if (response.isSuccessful() && response.body() != null) {
 
-          mMainViewModel.addLog(getResources().getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getResources().getString(R.string.log_title_get_tasks));
+          //mMainViewModel.addLog(getResources().getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getResources().getString(R.string.log_title_get_tasks));
 
-          handleGetAllTasks(response.body());
+          if (response.body().getIsSuccess()) {
+            handleGetAllTasks(response.body());
+          }
+          
         } else {
 
           switch (response.code()) {
             case 401:
-              mMainViewModel.addLog(getResources().getString(R.string.log_token_error), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
+              //mMainViewModel.addLog(getResources().getString(R.string.log_token_error), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
 
               handleAccessToken();
               break;
@@ -554,7 +557,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
       public void onFailure(Call<ResultOfAction> call, Throwable t) {
         // TODO: Wahrscheinlich kein Internet!
 
-        mMainViewModel.addLog(getResources().getString(R.string.log_tasks_error), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
+        //mMainViewModel.addLog(getResources().getString(R.string.log_tasks_error), LogType.SERVER_TO_APP, LogLevel.ERROR, getResources().getString(R.string.log_title_get_tasks));
 
         getAllTaskImage.setEnabled(true);
         progressBar.setVisibility(View.GONE);

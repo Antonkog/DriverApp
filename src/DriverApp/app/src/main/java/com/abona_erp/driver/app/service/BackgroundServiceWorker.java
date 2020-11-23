@@ -160,7 +160,7 @@ public class BackgroundServiceWorker extends Service {
           TextSecurePreferences.setPatch00_Completed(false);
           */
           
-          
+  
           if (!isPatch00_Completed()) {
             Log.i(TAG, "******* PATCH IS RUNNING... **********");
             allowRequest = true;
@@ -200,16 +200,16 @@ public class BackgroundServiceWorker extends Service {
             updateLangCode();
             mHandler.postDelayed(this, delay);
             return;
-          } else if (TextSecurePreferences.isUpdateAllTasks()) {
+          } /*else if (TextSecurePreferences.isUpdateAllTasks()) {
             //EventBus.getDefault().post(new LogEvent(getString(R.string.log_update_schedule), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
             updateGetAllTasks();
             mHandler.postDelayed(this, delay);
             return;
-          } else if (TextSecurePreferences.isUpdateDelayReason()) {
+          } *//*else if (TextSecurePreferences.isUpdateDelayReason()) {
             DelayReasonUtil.getDelayReasonsFromService(TextSecurePreferences.getMandantID());
             mHandler.postDelayed(this, delay);
             return;
-          }
+          }*/
           
           AsyncTask.execute(new Runnable() {
             @Override
@@ -1067,7 +1067,7 @@ public class BackgroundServiceWorker extends Service {
         call.enqueue(new Callback<ResultOfAction>() {
           @Override
           public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
-            if (response.isSuccessful() && response.body() != null) {
+            if (response.isSuccessful() && response.body() != null && response.body().getIsSuccess()) {
               if(response.body().getAllTask().size() > 0)
               //EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
               handleGetAllTasks(response.body());
@@ -1209,6 +1209,9 @@ public class BackgroundServiceWorker extends Service {
           App.eventBus.post(new GetAllTaskEvent());
           TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_COMPLETED);
           TextSecurePreferences.setPatch00_Completed(true);
+          break;
+          
+        case _PATCH_00_STATE_COMPLETED:
           break;
       }
   
@@ -1477,7 +1480,7 @@ public class BackgroundServiceWorker extends Service {
   public void onLowMemory() {
     Log.i(TAG, "onLowMemory() called!");
     Log.i(TAG, "Send Event to GetAllTask");
-    App.eventBus.post(new GetAllTaskEvent());
+    //App.eventBus.post(new GetAllTaskEvent());
     super.onLowMemory();
   }
   

@@ -290,7 +290,7 @@ public class FCMParserWorker extends Worker implements FCMParser {
                         }
                     });
 
-            DelayReasonUtil.getDelayReasonsFromService(commItem.getTaskItem().getMandantId());
+            //DelayReasonUtil.getDelayReasonsFromService(commItem.getTaskItem().getMandantId());
         } else {
             Log.e(TAG, "Keine gültiger Task Item");
         }
