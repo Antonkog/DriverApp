@@ -22,11 +22,11 @@ import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.ftasks.TasksViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel
+import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateServerFormat
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import java.util.*
 
 class DriverActViewModel @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
@@ -36,17 +36,10 @@ class DriverActViewModel @ViewModelInject constructor(
 
     val wrappedActivities = MutableLiveData<List<ActivityWrapper>>()
 
-    val currentActivityList = LinkedList<ActivityWrapper>()
-    val currentDelayList = LinkedList<DelayReasonEntity>()
-
     fun getActivityObservable(taskId: Int): LiveData<List<ActivityEntity>> {
         return repository.observeActivities(taskId)
     }
 
-
-    fun getDelayReasonObservable(): LiveData<List<DelayReasonEntity>> {
-        return repository.observeDelayReasons()
-    }
 
     /**
      * post to server that activity change, then
@@ -220,10 +213,10 @@ class DriverActViewModel @ViewModelInject constructor(
                         finished =  System.currentTimeMillis()
                     )
                 }else
-                entity.copy(
-                    activityStatus = ActivityStatus.FINISHED,
-                    finished =   System.currentTimeMillis()
-                )
+                    entity.copy(
+                        activityStatus = ActivityStatus.FINISHED,
+                        finished =   System.currentTimeMillis()
+                    )
             }
             ActivityStatus.FINISHED -> entity
             ActivityStatus.ENUM_ERROR -> entity
@@ -231,7 +224,6 @@ class DriverActViewModel @ViewModelInject constructor(
     }
 
     fun wrapActivities(it: List<ActivityEntity>) {
-        currentActivityList.clear()
         val firstVisible =
             it.firstOrNull { // if Running exist show next, else show Start if not finished.
                     activityEntity ->
@@ -244,33 +236,13 @@ class DriverActViewModel @ViewModelInject constructor(
 
         val wrapped = it.map { activityEntity ->
             ActivityWrapper(
-                activityEntity.copy(delayReasons = currentDelayList.filter {it.activityId == activityEntity.activityId }),
+                activityEntity,
                 activityEntity.activityId == firstVisible?.activityId ?: false,
                 pendingNotExist
             )
         }
 
-        currentActivityList.addAll(wrapped)
-        wrappedActivities.postValue(currentActivityList)
-    }
-
-    fun addDelaysToActivities(delays: List<DelayReasonEntity>) {
-        if(delays.isNotEmpty()){
-            currentDelayList.clear()
-            currentDelayList.addAll(delays)
-
-            val newList = LinkedList<ActivityWrapper>()
-
-            currentActivityList.forEach { activityWrapper ->
-                newList.add(
-                    activityWrapper.copy(activity =
-                    activityWrapper.activity.copy(delayReasons =
-                    delays.filter { it.activityId == activityWrapper.activity.activityId })))}
-
-            currentActivityList.clear()
-            currentActivityList.addAll(newList)
-            wrappedActivities.postValue(currentActivityList)
-        }
+        wrappedActivities.postValue(wrapped)
     }
 
     companion object {

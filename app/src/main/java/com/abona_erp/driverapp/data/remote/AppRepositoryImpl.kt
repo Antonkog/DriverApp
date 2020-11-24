@@ -145,13 +145,12 @@ class AppRepositoryImpl @Inject constructor(
         return api.postActivityChange(UtilModel.getCommActivityChangeItem(context, activity))
     }
 
-
-    override suspend fun postDelayReason(delayReasonItem: DelayReasonItem): ResultWrapper<ResultOfAction> {
-        return api.postDelayItems(UtilModel.getCommDelayChangeItem(context, listOf(delayReasonItem)))
+    override suspend fun postDelayReasons(delayReasonEntity: DelayReasonEntity): ResultWrapper<ResultOfAction> {
+        return api.postDelayItems(UtilModel.getCommDelayChangeItem(context, delayReasonEntity))
     }
 
     override suspend fun postDelayReasons(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
-        TODO("Not yet implemented")
+        return api.postDelayItems(changeHistory)
     }
 
     override suspend fun getDelayReasons(mandantId: Int, langCode : String): ResultWrapper<ResultOfAction> {
@@ -219,10 +218,6 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.insertOrUpdateActivity(activityEntity)
     }
 
-    override suspend fun cleanDelayReasons() {
-        localDataSource.deleteDelayReasons()
-    }
-
     override suspend fun insertDelayReasons(reasons: List<DelayReasonEntity>) {
         localDataSource.insertDelayReasons(reasons = reasons)
     }
@@ -233,6 +228,10 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
         return localDataSource.getFirstTaskActivity(taskEntity)
+    }
+
+    override suspend fun getActivity(actId:  Int, taskId: Int, mandantId: Int): ActivityEntity? {
+        return localDataSource.getActivity(actId, taskId, mandantId)
     }
 
     override suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity? {

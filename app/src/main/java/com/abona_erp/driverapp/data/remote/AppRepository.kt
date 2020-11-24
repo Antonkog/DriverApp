@@ -20,14 +20,6 @@ interface AppRepository {
 
     suspend fun registerDevice(commItem: CommItem): ResultWrapper<ResultOfAction>
 
-    fun upladDocument(
-        mandantId: Int,
-        orderNo: Int,
-        taskID: Int,
-        driverNo: Int,
-        documentType: Int,
-        inputStream: InputStream
-    ): Single<UploadResult>
 
     fun observeTasks(deviceId: String): LiveData<List<TaskEntity>>
     fun observeActivities(taskId: Int): LiveData<List<ActivityEntity>>
@@ -43,18 +35,18 @@ interface AppRepository {
         orderNo: Int,
         deviceId: String
     ): ResultWrapper<List<DocumentEntity>>
-    //rest API
+
+    fun upladDocument(
+        mandantId: Int,
+        orderNo: Int,
+        taskID: Int,
+        driverNo: Int,
+        documentType: Int,
+        inputStream: InputStream
+    ): Single<UploadResult>
+
+
     suspend fun getTasks(forceUpdate: Boolean, changeHistory: ChangeHistory?): ResultWrapper<List<TaskEntity>>
-
-    suspend fun postActivity(
-        activity: Activity
-    ): ResultWrapper<ResultOfAction>
-
-    suspend fun confirmTask(
-        commItem: CommItem
-    ): ResultWrapper<ResultOfAction>
-
-    suspend fun postDelayReason(delayReasonItems: DelayReasonItem): ResultWrapper<ResultOfAction>
 
     /**
      * used to refresh delay reasons when task come from Firebase.
@@ -62,26 +54,35 @@ interface AppRepository {
     suspend fun getDelayReasons(mandantId: Int, langCode: String): ResultWrapper<ResultOfAction>
 
     /**
+     * when user start/finish activity
+     */
+    suspend fun postActivity(activity: Activity): ResultWrapper<ResultOfAction>
+
+    /**
+     * when user receive/open/start task
+     */
+    suspend fun confirmTask(commItem: CommItem): ResultWrapper<ResultOfAction>
+
+    /**
+     * to post delay reason to server
+     */
+    suspend fun postDelayReasons(delayReasonEntity: DelayReasonEntity): ResultWrapper<ResultOfAction>
+
+    /**
      * offline mode
      * @param changeHistory - object to recreate request
      */
-    suspend fun postActivity(
-        changeHistory: ChangeHistory
-    ): ResultWrapper<ResultOfAction>
+    suspend fun postActivity(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction>
 
     /**
-     * offline mode
+     * offline mode: recreate request queue
      */
-    suspend fun confirmTask(
-        changeHistory: ChangeHistory
-    ): ResultWrapper<ResultOfAction>
+    suspend fun confirmTask(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction>
 
     /**
-     * offline mode
+     * offline mode: recreate request queue
      */
-    suspend fun postDelayReasons(
-        changeHistory: ChangeHistory
-    ): ResultWrapper<ResultOfAction>
+    suspend fun postDelayReasons(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction>
 
     suspend fun refreshTasks()
     suspend fun refreshDocuments(
@@ -99,15 +100,19 @@ interface AppRepository {
     //new document
     suspend fun insertDocument(documentEntity: DocumentEntity)
 
+    //for logic manipulations: start next activity, next task in current order
     suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
     suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity?
+    suspend fun getActivity(mandantId: Int, taskId: Int, actId: Int): ActivityEntity?
     suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity?
     suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity?
 
     suspend fun cleanDatabase()
+
+    /**
+     * offline mode: recreate request queue
+     */
     suspend fun getAllOfflineRequests(): List<ChangeHistory>
 
-
-    suspend fun cleanDelayReasons()
     suspend fun insertDelayReasons(reasons : List<DelayReasonEntity>)
 }

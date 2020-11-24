@@ -77,7 +77,21 @@ class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: 
 
 
     fun setDelayReasonButton(data: ActivityWrapper, binding: ActivityItemBinding){
-        if(data.activity.delayReasons?.isNotEmpty() == true){
+        val statusLetShow = when(data.activity.activityStatus){
+            ActivityStatus.FINISHED, ActivityStatus.RUNNING -> true
+            else -> false
+        }
+
+        if(data.activity.delayReasons?.isNotEmpty() == true && statusLetShow){
+
+            var totalTime = 0
+            data.activity.delayReasons.forEach {totalTime += it.delayInMinutes  }
+
+            if(totalTime > 0){
+                binding.textDelayTime.visibility = View.VISIBLE
+                binding.textDelayTime.text = totalTime.toString()
+            }
+            else binding.textDelayTime.visibility = View.GONE
             val bundle = bundleOf(binding.root.context.getString(R.string.key_activity_entity) to data.activity)
             binding.imageDelays.visibility = View.VISIBLE
             binding.imageDelays.setOnClickListener {
@@ -87,6 +101,7 @@ class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: 
                 )
             }
         } else {
+            binding.textDelayTime.visibility = View.GONE
             binding.imageDelays.visibility = View.GONE
         }
     }

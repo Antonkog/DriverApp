@@ -138,6 +138,9 @@ class MainViewModel @ViewModelInject constructor(
                 HistoryDataType.POST_ACTIVITY -> {
                     repository.postActivity(changeHistory)
                 }
+                HistoryDataType.POST_DELAY_REASON -> {
+                    repository.postDelayReasons(changeHistory)
+                }
                 HistoryDataType.GET_TASKS -> {
                     repository.getTasks(true, changeHistory)
                 }

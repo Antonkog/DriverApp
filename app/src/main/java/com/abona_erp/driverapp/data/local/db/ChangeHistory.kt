@@ -41,6 +41,7 @@ enum class HistoryDataType {
     GET_DOCUMENTS,
     POST_ACTIVITY,
     CONFIRM_TASK,
+    POST_DELAY_REASON,
     UPLOAD_DOCUMENT
 }
 

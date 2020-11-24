@@ -37,11 +37,17 @@ object UtilModel {
             .activityItem(activity).build()
     }
 
-    fun getCommDelayChangeItem(context: Context, delayReasonItems: List<DelayReasonItem>): CommItem {
-        val header = Header.Builder(DataType.DELAY_REASONS.dataType, DeviceUtils.getUniqueID(context)).build()
+    fun getCommDelayChangeItem(context: Context, delayReasonEntity: DelayReasonEntity): CommItem {
+        val deviceId = DeviceUtils.getUniqueID(context)
+        val header = Header.Builder(DataType.DELAY_REASONS.dataType, deviceId).build()
         return CommItem.Builder(header = header)
-            .delayReasonItems(delayReasonItems)
-            .build()
+            .activityDelayItem(
+                ActivityDelayItem(
+                    activityId = delayReasonEntity.activityId,
+                    mandantId = delayReasonEntity.mandantId,
+                    taskId = delayReasonEntity.taskId,
+                    delayReasons = listOf(delayReasonEntity.toDelayReason())
+            )).build()
     }
 
     fun getCommDeviceProfileItem(context: Context): CommItem {
@@ -110,19 +116,17 @@ object UtilModel {
         return 0
     }
 
-     fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
+    fun DelayReasonEntity.toDelayReason(): DelayReasonItem {
         return DelayReasonItem(
-            waitingReasonType,
+            mandantId,
+            taskId,
             activityId,
             reasonText,
             translatedReasonText,
-            0,
-            0,//todo: ask why we using this values
-            mandantId,
-            taskId,
-            Date(timestampUtc),
-            delayInMinutes,
             delaySource,
+            waitingReasonType,
+            delayInMinutes,
+            getCurrentDateServerFormat(),
             comment
         )
     }
@@ -134,10 +138,10 @@ object UtilModel {
             activityId,
             translatedReasonText,
             reasonText,
-            delaySource?: DelaySource.NA,
+            delaySource,
             waitingReasonType,
-            delayInMinutes?:0,
-            timestampUtc?.time ?: 0L,
+            delayInMinutes,
+            0L,
             comment
         )
     }
@@ -273,16 +277,14 @@ object UtilModel {
     }
 
 
-
-
     fun formatTimeDifference(difference: Long, context: Context): String {
         return String.format(
-                context.resources.getString(R.string.task_duein_format),
-                TimeUnit.MILLISECONDS.toDays(difference),
-                TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
-                TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
-            )
+            context.resources.getString(R.string.task_duein_format),
+            TimeUnit.MILLISECONDS.toDays(difference),
+            TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
+            TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
+            TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
+        )
     }
 
     private fun uiTimeFormat(): DateFormat {
@@ -296,11 +298,11 @@ object UtilModel {
     }
 
     fun getCurrentDateServerFormat(): String {
-        val dfUtc: DateFormat = SimpleDateFormat(Constant.abonaCommunicationDateVarThree, Locale.getDefault())
+        val dfUtc: DateFormat =
+            SimpleDateFormat(Constant.abonaCommunicationDateFormat, Locale.getDefault())
         dfUtc.timeZone = TimeZone.getTimeZone(Constant.abonaTimeZone)
         return dfUtc.format(Date())
     }
-
 
 
     /**
@@ -360,7 +362,7 @@ object UtilModel {
     private fun getInnerTaskConfirmation(taskItem: TaskEntity): ConfirmationItem {
         val confirmationItem = ConfirmationItem.Builder(
             confirmationType = taskItem.confirmationType,
-            timeStampConfirmationUTC =  getCurrentDateServerFormat(),
+            timeStampConfirmationUTC = getCurrentDateServerFormat(),
             mandantId = taskItem.mandantId,
             taskId = taskItem.taskId,
             taskChangeId = taskItem.taskId, //todo: ask Tilman what is taskChangeId and why we use it

@@ -33,7 +33,7 @@ class RangedTimePicker @JvmOverloads constructor(
         minPick.maxValue = MINUTE_MAX -1
         minPick.minValue = 0
         minPick.wrapSelectorWheel = true
-
+        minPick.value = 1
         attrs?.let {
             processAttributeSet(it, context)
         }
@@ -84,7 +84,7 @@ class RangedTimePicker @JvmOverloads constructor(
         }
     }
 
-    fun getMinutes()= hoursPick.value * HOURS_MAX + minPick.value * velocity
+    fun getMinutes()= hoursPick.value * 60 + minPick.value * velocity
 
     companion object {
         const val MINUTE_MAX = 60
