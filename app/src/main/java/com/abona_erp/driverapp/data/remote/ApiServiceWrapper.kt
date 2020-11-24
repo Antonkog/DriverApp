@@ -4,10 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.data.local.LocalDataSource
-import com.abona_erp.driverapp.data.local.db.ChangeHistory
+import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.local.db.HistoryDataType.*
-import com.abona_erp.driverapp.data.local.db.LogType
-import com.abona_erp.driverapp.data.local.db.Status
 import com.abona_erp.driverapp.data.model.*
 import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
 import com.abona_erp.driverapp.ui.RxBus
@@ -45,18 +43,8 @@ class ApiServiceWrapper(
     private suspend fun authentication(
         authModel: UtilModel.AuthModel, changeHistory: ChangeHistory?
     ): ResultWrapper<TokenResponse> {
-        val time = System.currentTimeMillis()
-        val change = changeHistory?: ChangeHistory(
-            Status.SENT, //as i don't want to recreate request  - set it as sent. (user can't login when offline)
-            LogType.APP_TO_SERVER,
-            AUTH,
-            gson.toJson(authModel),
-            null,
-            time,
-            time
-        )
+        val change = prerapeChangeChistory( gson.toJson(authModel), changeHistory, AUTH)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
-
         sentLoadingToUI()
         return try {
             val result = ResultWrapper.Success(
@@ -81,23 +69,10 @@ class ApiServiceWrapper(
      * so no need to send exception to UI here and no try/catch block
      */
     suspend fun updateTasksFromServer(changeHistory: ChangeHistory?) {
-        val time = System.currentTimeMillis()
-        val connected = NetworkUtil.isConnectedWithWifi(context)
-
-        val deviceId = DeviceUtils.getUniqueID(context)
-        val change = changeHistory ?: ChangeHistory(
-            if (connected) Status.SENT else Status.SENT_OFFLINE,
-            LogType.APP_TO_SERVER,
-            GET_TASKS,
-            deviceId,
-            null,
-            time,
-            time
-        )
-
+        val id = DeviceUtils.getUniqueID(context)
+        val change = prerapeChangeChistory(id, changeHistory, GET_TASKS)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
-
-        val remoteTasks = api.getAllTasks(deviceId)
+        val remoteTasks = api.getAllTasks(id)
         if (remoteTasks.isSuccess && !remoteTasks.isException) {
             localDataSource.updateFromCommItem(remoteTasks)
             updateHistoryOnSuccess(change, gson.toJson(remoteTasks), autoGenId)
@@ -106,6 +81,7 @@ class ApiServiceWrapper(
             throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text} ")
         }
     }
+
 
     /**
      * that method exception is handled in AppRepositoryImpl
@@ -135,15 +111,30 @@ class ApiServiceWrapper(
 
 
     suspend fun postDelayItems(commItem: CommItem): ResultWrapper<ResultOfAction> {
+        return postDelayItems(commItem, null)
+    }
+
+    suspend fun postDelayItems(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction> {
+        val item = gson.fromJson(changeHistory.params, CommItem::class.java)
+        return postDelayItems(item, changeHistory)
+    }
+
+    suspend fun postDelayItems(commItem: CommItem, changeHistory: ChangeHistory?): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
+        val change = prerapeChangeChistory(gson.toJson(commItem),changeHistory, POST_DELAY_REASON)
+        val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result = api.postDelayItems(commItem)
+            updateHistoryOnSuccess(change, gson.toJson(result), autoGenId)
             sendSuccessToUI(result.toString())
             ResultWrapper.Success(result)
-        } catch (e :java.lang.Exception){
-            ResultWrapper.Error(e)
+        } catch (ex: Exception) {
+            updateHistoryOnError(change, autoGenId)
+            sendErrorToUI(ex)
+            ResultWrapper.Error(ex)
         }
     }
+
 
     suspend fun getDelayItems(mandantId: Int, langCode : String): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
@@ -156,14 +147,12 @@ class ApiServiceWrapper(
         }
     }
 
-
-
     private suspend fun setDeviceProfile(
         commItem: CommItem,
         changeHistory: ChangeHistory?
     ): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
-        val change = changeHistory(changeHistory, commItem).copy(status = Status.SENT) //as i don't want to recreate request  - set it as sent. (user can't login when offline)
+        val change = prerapeChangeChistory( gson.toJson(commItem),changeHistory, SET_DEVICE_PROFILE)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result = api.setDeviceProfile(commItem)
@@ -197,7 +186,7 @@ class ApiServiceWrapper(
         changeHistory: ChangeHistory?
     ): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
-        val change = changeHistory(changeHistory, commItem)
+        val change = prerapeChangeChistory(gson.toJson(commItem),changeHistory, POST_ACTIVITY)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result =api.postActivityChange(commItem)
@@ -225,7 +214,7 @@ class ApiServiceWrapper(
         commItem: CommItem,
         changeHistory: ChangeHistory?
     ): ResultWrapper<ResultOfAction> {
-        val change = changeHistory(changeHistory, commItem)
+        val change = prerapeChangeChistory(gson.toJson(commItem), changeHistory, CONFIRM_TASK)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result = api.confirmTask(commItem)
@@ -348,33 +337,21 @@ class ApiServiceWrapper(
         )
     }
 
-    private fun changeHistory(
-        changeHistory: ChangeHistory?,
-        commItem: CommItem
-    ): ChangeHistory {
 
-        val dataType =
-            when (commItem.header.dataType) {
-                DataType.TASK_CONFIRMATION.dataType -> CONFIRM_TASK
-                DataType.DEVICE_PROFILE.dataType -> SET_DEVICE_PROFILE
-                DataType.ACTIVITY.dataType -> POST_ACTIVITY
-                else -> throw java.lang.Exception("this dataType not supported for offline mode logging")
-            }
-
+    fun prerapeChangeChistory(request: String , changeHistory: ChangeHistory?, historyDataType: HistoryDataType) : ChangeHistory{
         val time = System.currentTimeMillis()
-        val connected = NetworkUtil.isConnectedWithWifi(context)
-
+        var connected = NetworkUtil.isConnectedWithWifi(context)
+        if(historyDataType == AUTH) connected = true // we cant login when offline, so we don't save offline request in this case
         return changeHistory ?: ChangeHistory(
             if (connected) Status.SENT else Status.SENT_OFFLINE,
             LogType.APP_TO_SERVER,
-            dataType,
-            gson.toJson(commItem),
+            historyDataType,
+            request,
             null,
             time,
             time
         )
     }
-
 
     private fun String.toPlainTextBody() = toRequestBody("text/plain".toMediaType())
     private fun String.toMultipartBody() = toRequestBody("multipart/form-data".toMediaType())

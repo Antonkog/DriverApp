@@ -21,7 +21,7 @@ class ConfirmationAdapterJson : JsonDeserializer<ConfirmationItem?>, JsonSeriali
                     mandantId = jsonObject["MandantId"].asInt,
                     taskId = jsonObject["TaskId"].asInt,
                     taskChangeId = jsonObject["TaskChangeId"].asInt,
-                    text = jsonObject["Text"].asString
+                    text = jsonObject["Text"]?.asString
                 ).build()
         }
     }

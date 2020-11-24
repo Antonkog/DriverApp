@@ -99,8 +99,8 @@
                 android:inputType="text"
                 app:layout_constraintEnd_toEndOf="@+id/linearLayout"
                 app:layout_constraintStart_toStartOf="@+id/rangedTimePicker"
-                app:layout_constraintTop_toBottomOf="@+id/rangedTimePicker" />
-
+                app:layout_constraintTop_toBottomOf="@+id/rangedTimePicker"
+                android:importantForAutofill="no" />
 
             <Button
                 android:id="@+id/button"

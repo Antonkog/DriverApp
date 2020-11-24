@@ -91,12 +91,7 @@ class DelayReasonFragment : DialogFragment() {
     }
 
     private fun sendDelay(delayReasonEntity: DelayReasonEntity) {
-        val newAct =  args.activityEntity?.copy(delayReasons =  arrayListOf(delayReasonEntity))
-        if(newAct!=null){
-            delayViewModel.postDelayReason(newAct)
-        } else{
-            Toast.makeText(context, "error while posting delay", Toast.LENGTH_SHORT).show()
-        }
+        delayViewModel.postDelayReason(delayReasonEntity)
     }
 
     private fun checkData(dialogDelayReasonBinding:  DelayReasonFragmentBinding): Boolean {

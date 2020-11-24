@@ -37,18 +37,17 @@ object UtilModel {
             .activityItem(activity).build()
     }
 
-    fun getCommDelayChangeItem(context: Context, activityWithDelay: ActivityEntity): CommItem {
+    fun getCommDelayChangeItem(context: Context, delayReasonEntity: DelayReasonEntity): CommItem {
         val deviceId = DeviceUtils.getUniqueID(context)
         val header = Header.Builder(DataType.DELAY_REASONS.dataType, deviceId).build()
         return CommItem.Builder(header = header)
             .activityDelayItem(
                 ActivityDelayItem(
-                    activityId = activityWithDelay.activityId,
-                    mandantId = activityWithDelay.mandantId,
-                    taskId = activityWithDelay.taskpId,
-                    delayReasons = activityWithDelay.delayReasons?.map { it.toDelayReason() })
-            )
-            .build()
+                    activityId = delayReasonEntity.activityId,
+                    mandantId = delayReasonEntity.mandantId,
+                    taskId = delayReasonEntity.taskId,
+                    delayReasons = listOf(delayReasonEntity.toDelayReason())
+            )).build()
     }
 
     fun getCommDeviceProfileItem(context: Context): CommItem {

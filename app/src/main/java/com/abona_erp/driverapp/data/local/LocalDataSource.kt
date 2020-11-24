@@ -76,6 +76,10 @@ class LocalDataSource internal constructor(
         } else db.driverTaskDao().insertOrReplace(taskEntity)
     }
 
+    fun getActivity(activityId: Int, taskpId: Int, mandantId: Int): ActivityEntity?{
+        return db.driverActDao().getActivity(activityId, taskpId, mandantId)
+    }
+
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
         val old = db.driverActDao().getActivity(
             activityEntity.activityId,
@@ -126,10 +130,6 @@ class LocalDataSource internal constructor(
     }
 
 
-    suspend fun deleteDelayReasons() {
-        return db.delayReasonsDao().deleteAll()
-    }
-
     suspend fun deleteDocuments() {
         db.documentsDao().deleteDocuments()
     }
@@ -169,8 +169,8 @@ class LocalDataSource internal constructor(
     suspend fun cleanDatabase() {
         db.driverActDao().deleteActivities()//delete first - as we have foreign key in activity
         db.driverTaskDao().deleteTasks()
+        db.delayReasonsDao().deleteAll()
         deleteDocuments()
-        deleteDelayReasons()
         db.changeHistoryDao().deleteChangeHistory() //should we delete history?
     }
 
