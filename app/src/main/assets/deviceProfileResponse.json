@@ -1,0 +1,24 @@
+{
+  "IsSuccess" : true,
+  "IsException" : false,
+  "Text" : "Profile aktualisiert.",
+  "ExceptionText" : null,
+  "CommunicationItem" : null,
+  "AllTask" : null,
+  "AllTaskCommItem" : null,
+  "HttpResponseMessage" : null,
+  "TransportAuftragOid" : 0,
+  "AllAppFileInterchangeItem" : null,
+  "LogText" : null,
+  "AllDocumentCommItem" : null,
+  "ActivityDelayItem" : null,
+  "DelayReasons" : null,
+  "DeviceProfileEvaluation" : {
+    "DeviceId" : "bd92a5a47f4883c5",
+    "DateTimeLastApiCall" : "2020-11-19T14:46:37.1696813+01:00",
+    "DateTimeLastAbonaCall" : null,
+    "AuftragsNrKW" : null,
+    "MandantId" : null,
+    "LastAction" : "DeviceProfile"
+  }
+}

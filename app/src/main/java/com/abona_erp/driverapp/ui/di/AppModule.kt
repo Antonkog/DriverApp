@@ -114,14 +114,15 @@ object AppModule {
     @Provides
     fun provideHttpClient(@ApplicationContext context: Context): OkHttpClient {
         val okHttpBuilder = UnsafeOkHttpClient.getUnsafeOkHttpClient()
-        okHttpBuilder.connectTimeout(1, TimeUnit.MINUTES)
-        okHttpBuilder.readTimeout(1, TimeUnit.MINUTES)
-        okHttpBuilder.writeTimeout(1, TimeUnit.MINUTES)
+        okHttpBuilder.connectTimeout(1, if(App.isTesting()) TimeUnit.SECONDS else TimeUnit.MINUTES)
+        okHttpBuilder.readTimeout(1, if(App.isTesting()) TimeUnit.SECONDS else TimeUnit.MINUTES)
+        okHttpBuilder.writeTimeout(1, if(App.isTesting()) TimeUnit.SECONDS else TimeUnit.MINUTES)
+
         okHttpBuilder.addInterceptor(UserAgentInterceptor(context))
         okHttpBuilder.addInterceptor(NetworkInterceptor(context))
         if (BuildConfig.DEBUG) {
             if (App.isTesting()) {
-                okHttpBuilder.addInterceptor(MockInterceptor())
+                okHttpBuilder.addInterceptor(MockInterceptor(context))
             }
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY

@@ -1,5 +1,6 @@
 package com.abona_erp.driverapp.data.remote.utils
 
+import android.content.Context
 import android.util.Log
 import com.abona_erp.driverapp.BuildConfig
 import com.abona_erp.driverapp.data.Constant
@@ -9,24 +10,49 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import java.io.IOException
+import kotlin.jvm.Throws
 
-class MockInterceptor : Interceptor {
+class MockInterceptor(val context: Context) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         return if (BuildConfig.DEBUG) {
             Log.d(MockInterceptor::class.java.canonicalName, "response mocked")
             val uri = chain.request().url.toUri().toString()
+
+            var responce : String? = null
+
             if (uri.contains("GetAllTask")) {
-                val responce = testResponse
-                return chain.proceed(chain.request())
-                    .newBuilder()
-                    .code(Constant.SUCCESS_CODE)
-                    .protocol(Protocol.HTTP_2)
-                    .message(responce)
-                    .addHeader("content-type", "application/json")
-                    .body(responce.toResponseBody("application/json".toMediaTypeOrNull()))
-                    .build()
+                 responce = testResponse
+
             }
+            if (uri.contains("device/deviceprofile")) {
+                responce = getJsonDataFromAsset(context, "deviceProfileResponse.json")
+            }
+            if (uri.contains("authentication")) {
+                responce = getJsonDataFromAsset(context, "authResponse.json")
+            }
+            if (uri.contains("confirmation/confirm")) {
+                responce = getJsonDataFromAsset(context, "confirmTaskResponse.json")
+            }
+            if (uri.contains("activity/activity")) {
+                responce = getJsonDataFromAsset(context, "confirmActResponse.json")
+            }
+            if (uri.contains("GetDelayReasons")) {
+                responce = getJsonDataFromAsset(context, "getDelays.json")
+            }
+            if (uri.contains("activity/DelayReasons")) {
+                responce = getJsonDataFromAsset(context, "sendDelay.json")
+            }
+            if(responce!= null)
+            return chain.proceed(chain.request())
+                .newBuilder()
+                .code(Constant.SUCCESS_CODE)
+                .protocol(Protocol.HTTP_2)
+                .message(responce)
+                .addHeader("content-type", "application/json")
+                .body(responce.toResponseBody("application/json".toMediaTypeOrNull()))
+                .build()
+            else
             chain.proceed(chain.request())
         } else {
             throw IllegalAccessError(
@@ -36,7 +62,6 @@ class MockInterceptor : Interceptor {
         }
     }
 
-    //    /**
     private val testResponse: String =
         "{\"IsSuccess\":true,\"IsException\":false,\"Text\":null,\"ExceptionText\":null,\"CommunicationItem\":null,\"AllTask\":[{\"MandantId\":3,\"MandantName\":\"Hegelmann Express GmbH\",\"TaskId\":1213,\"TaskChangeId\":2331,\"AbonaTransferNr\":\"\",\"PreviousTaskId\":0,\"NextTaskId\":1215,\"VehiclePreviousTaskId\":0,\"VehicleNextTaskId\":0,\"ChangeReason\":1,\"ActionType\":0,\"OrderNo\":202023123,\"Description\":null,\"KundenName\":\"Amazon\",\"KundenNr\":30118,\"ReferenceIdCustomer1\":\"a\",\"ReferenceIdCustomer2\":null,\"PalletsAmount\":0," +
                 "\"TaskDueDateStart\":\"2020-08-20T17:27:00\"," +
@@ -67,6 +92,22 @@ class MockInterceptor : Interceptor {
                 "\"TaskDueDateFinish\":\"" +
                 "2020-06-20T00:00:00" +
                 "\",\"Status\":100,\"PercentFinishedActivities\":0,\"OrderDetails\":{\"OrderNo\":202026112,\"CustomerName\":\"Amazon\",\"CustomerNo\":30118,\"ReferenceIdCustomer1\":\"3234\",\"ReferenceIdCustomer2\":null},\"TaskDetails\":{\"Description\":null,\"LoadingOrder\":3,\"ReferenceId1\":null,\"ReferenceId2\":null},\"Address\":{\"Name1\":\"NAYMAR LOGISTICA\",\"Name2\":null,\"Street\":\"Pol.Ind. El Llano Av. De Europa s/n\",\"ZIP\":\"45360\",\"City\":\"Villarrubia de Santiago\",\"State\":null,\"Nation\":\"ES\",\"Longitude\":0,\"Latitude\":0,\"Note\":null},\"SwapInfoItem\":null,\"PalletExchange\":{\"ExchangeType\":0,\"PalletsAmount\":0,\"IsDPL\":false},\"DangerousGoods\":{\"IsGoodsDangerous\":false,\"ADRClass\":null,\"DangerousGoodsClassType\":0,\"UNNo\":null},\"Activities\":[{\"MandantId\":3,\"TaskId\":1357,\"ActivityId\":15,\"Name\":\"Driving to unloading\",\"Description\":null,\"Started\":\"2020-06-26T08:59:00\",\"Finished\":\"2020-06-26T08:59:03\",\"Status\":2,\"Sequence\":0,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null},{\"MandantId\":3,\"TaskId\":1357,\"ActivityId\":16,\"Name\":\"Waiting for unloading\",\"Description\":null,\"Started\":\"2020-06-26T08:59:03\",\"Finished\":\"2020-06-26T08:59:19.85\",\"Status\":2,\"Sequence\":1,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null},{\"MandantId\":3,\"TaskId\":1357,\"ActivityId\":26,\"Name\":\"Send me an  image\",\"Description\":null,\"Started\":\"2020-06-26T08:59:19\",\"Finished\":\"2020-07-13T14:34:17\",\"Status\":2,\"Sequence\":2,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null},{\"MandantId\":3,\"TaskId\":1357,\"ActivityId\":17,\"Name\":\"Unloading\",\"Description\":null,\"Started\":\"2020-07-13T14:34:17\",\"Finished\":\"2020-07-13T14:34:21\",\"Status\":2,\"Sequence\":3,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null},{\"MandantId\":3,\"TaskId\":1357,\"ActivityId\":27,\"Name\":\"Unloading Departed\",\"Description\":null,\"Started\":\"2020-07-13T14:34:21\",\"Finished\":\"2020-07-13T14:43:35\",\"Status\":2,\"Sequence\":4,\"CustomActivityId\":0,\"DeviceId\":null,\"DelayReasons\":null}],\"Contacts\":[{\"ContactType\":0,\"NumberType\":0,\"Name\":null,\"Number\":\"004915114744063\"}],\"Notes\":null,\"ChangedItems\":null}],\"AllTaskCommItem\":[],\"HttpResponseMessage\":null,\"TransportAuftragOid\":0,\"AllAppFileInterchangeItem\":null,\"LogText\":null,\"AllDocumentCommItem\":[],\"DelayReasons\":null}"
+
+
+    fun getJsonDataFromAsset(context: Context, fileName: String): String? {
+        val jsonString: String
+        try {
+            jsonString = context.assets.open(fileName).bufferedReader().use { it.readText() }
+        } catch (ioException: IOException) {
+            ioException.printStackTrace()
+            return null
+        }
+        return jsonString
+    }
+
+    private val getServerURLByClientId = "{\"IsActive\":true,\"WebService\":\"https://213.144.11.162:5000/\",\"ExpiryDate\":\"0001-01-01T00:00:00\"}{\"IsActive\":true,\"WebService\":\"https://213.144.11.162:5000/\",\"ExpiryDate\":\"0001-01-01T00:00:00\"}{\"IsActive\":true,\"WebService\":\"https://213.144.11.162:5000/\",\"ExpiryDate\":\"0001-01-01T00:00:00\"}"
+
+
     //     * get future time based on random, Constants.TEST_TIME_QUOTES,
     //     * Constants.REPEAT_TIME,
     //     * Constants.REPEAT_COUNT
