@@ -52,11 +52,17 @@
     <string name="action_type_delay">Delay</string>
     <string name="action_type_unknown">Unknown</string>
 
-
+    <!--new from base app start-->
+    <string name="dialog_server_error_title" translatable="false">Error:</string>
+    <string name="dialog_login_error">Login error, while getting response from server</string>
+    <string name="error_log_in" translatable="false">Error while log in</string>
     <string name="error_from_server">Error while parsing data from server</string>
+    <string name="doc_update_error" translatable="false">Error documents update</string>
+    <string name="error_task_update" translatable="false">Error while changing task status, task not updated</string>
     <string name="error_notes_not_found" translatable="false">notes data not found</string>
     <string name="error_pallets_not_found" translatable="false">pallets data not found</string>
     <string name="error_no_contacts" translatable="false">no contacts data</string>
+    <string name="error_act_update" translatable="false">can not update activity status</string>
 
     <!--    screen names-->
     <string name="screen_login" translatable="false">Login</string>
@@ -77,14 +83,10 @@
 
     <!--    login-->
     <string name="need_log_in" translatable="false">First log in</string>
-    <string name="error_log_in" translatable="false">Error while log in</string>
     <string name="name_hint" translatable="false">Login</string>
     <string name="password_hint" translatable="false">Password</string>
     <string name="client_id_hint" translatable="false">Client ID</string>
     <string name="set_test_data" translatable="false">Set test data</string>
-
-    <!--new from base app start-->
-    <string name="dialog_server_error_title" translatable="false">Error:</string>
 
 
     <!--    dialogs-->
@@ -95,7 +97,6 @@
     <string name="action_update_message">Update completed!</string>
     <string name="need_permissions_title">Need Permissions!</string>
     <string name="need_location_permission">Need location Permission to show current position</string>
-    <string name="dialog_login_error">Login error, while getting response from server</string>
     <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
 
     <!--     need translation-->
@@ -147,7 +148,6 @@
 
     <!--logs, do not translate-->
     <string name="success_task_update" translatable="false">"Success while changing task status to "</string>
-    <string name="error_task_update" translatable="false">Error while changing task status, task not updated</string>
     <string name="deviceId" translatable="false">DeviceId:</string>
     <string name="image_confirmed" translatable="false">image_confirmed</string>
     <string name="image_delays" translatable="false">image_delays</string>
@@ -172,5 +172,7 @@
     <string name="set_all_data" translatable="false">please set all data before sending</string>
     <string name="delay_comments" translatable="false">Delay comments</string>
     <string name="no_delay_reason" translatable="false">No delay reasons for this activity</string>
+    <string name="doc_update_success" translatable="false">success documents update</string>
+    <string name="error_get_tasks">cant get tasks, server error</string>
 
 </resources>

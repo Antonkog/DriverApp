@@ -46,7 +46,6 @@ interface AppRepository {
     ): Single<UploadResult>
 
 
-    suspend fun getTasks(forceUpdate: Boolean, changeHistory: ChangeHistory?): ResultWrapper<List<TaskEntity>>
 
     /**
      * used to refresh delay reasons when task come from Firebase.
@@ -69,6 +68,12 @@ interface AppRepository {
     suspend fun postDelayReasons(delayReasonEntity: DelayReasonEntity): ResultWrapper<ResultOfAction>
 
     /**
+     * offline mode recreate request queue
+     * to refresh tasks when we going online - we are keeping request queue and logic.
+     */
+    suspend fun updateTasksFromRemoteDataSource(changeHistory: ChangeHistory?) : ResultWrapper<CommResponseItem>
+
+    /**
      * offline mode
      * @param changeHistory - object to recreate request
      */
@@ -84,7 +89,6 @@ interface AppRepository {
      */
     suspend fun postDelayReasons(changeHistory: ChangeHistory): ResultWrapper<ResultOfAction>
 
-    suspend fun refreshTasks()
     suspend fun refreshDocuments(
         mandantId: Int,
         orderNo: Int,
@@ -93,9 +97,9 @@ interface AppRepository {
 
     //local from db
     suspend fun updateTask(taskEntity: TaskEntity): Int //from fcm
+    suspend fun updateActivity(activityEntity: ActivityEntity): Int // call api to set db
     suspend fun insertOrUpdateTask(taskEntity: TaskEntity)
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity)
-    suspend fun updateActivity(activityEntity: ActivityEntity): Int // call api to set db
 
     //new document
     suspend fun insertDocument(documentEntity: DocumentEntity)
@@ -103,7 +107,7 @@ interface AppRepository {
     //for logic manipulations: start next activity, next task in current order
     suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
     suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity?
-    suspend fun getActivity(mandantId: Int, taskId: Int, actId: Int): ActivityEntity?
+    suspend fun getActivity(actId:  Int, taskId: Int, mandantId: Int): ActivityEntity?
     suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity?
     suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity?
 

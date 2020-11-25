@@ -89,11 +89,6 @@ class MainViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun refreshTasks() = viewModelScope.launch(IO){
-        repository.refreshTasks()
-    }
-
-
     fun doOnConnectionChange(hasInternet: Boolean) {
         val justChanged =
             if (connectionHistory == null) {
@@ -142,7 +137,7 @@ class MainViewModel @ViewModelInject constructor(
                     repository.postDelayReasons(changeHistory)
                 }
                 HistoryDataType.GET_TASKS -> {
-                    repository.getTasks(true, changeHistory)
+                    repository.updateTasksFromRemoteDataSource(changeHistory)
                 }
                 else -> {
                     Log.e(TAG, "$changeHistory.dataType - not implemented")

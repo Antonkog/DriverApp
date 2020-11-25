@@ -10,6 +10,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.abona_erp.driverapp.MainActivity
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
@@ -57,8 +58,9 @@ class FcmService : FirebaseMessagingService() {
 
         val channelId = getString(R.string.fcmChannelId)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+        val notificationBuilder = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(R.drawable.ic_app_icon_driver)
+            .setLargeIcon(resources.getDrawable(R.drawable.ic_app_icon_driver, null).toBitmap())
             .setContentTitle(getString(R.string.fcmChannelId))
             .setContentText(messageBody)
             .setAutoCancel(true)

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,7 +15,6 @@ import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.databinding.DriverActFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
-import com.abona_erp.driverapp.ui.ftasks.TasksAdapter
 import com.kivi.remote.presentation.base.recycler.LazyAdapter
 import com.kivi.remote.presentation.base.recycler.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,19 +44,19 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
         adapter = ActivityAdapter(this, findNavController())
 
         driverActFragmentBinding.viewmodel = driverActViewModel
-        driverActFragmentBinding.lifecycleOwner = this.viewLifecycleOwner
+        driverActFragmentBinding.lifecycleOwner = viewLifecycleOwner
 
         args.taskEntity?.taskId?.let { it ->
-            driverActViewModel.getActivityObservable(it).observe(viewLifecycleOwner, { activities->
+            driverActViewModel.getActivityObservable(it).observe(viewLifecycleOwner) { activities->
                 if (activities!= null&& activities.isNotEmpty()) {
                     driverActViewModel.wrapActivities(activities)
                 }
-            })
+            }
         }
 
-        driverActViewModel.wrappedActivities.observe(viewLifecycleOwner, {
+        driverActViewModel.wrappedActivities.observe(viewLifecycleOwner) {
             adapter.swapData(it)
-        })
+        }
 
 
 //        if(args ==null) driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
@@ -80,6 +79,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     override fun onLazyItemClick(data: ActivityWrapper) {
         Log.d(TAG, " on activity click : ${data.activity.activityId}")
-        driverActViewModel.postActivityChange(data)
+        driverActViewModel.postActivityChange(data.activity, true)
     }
 }
