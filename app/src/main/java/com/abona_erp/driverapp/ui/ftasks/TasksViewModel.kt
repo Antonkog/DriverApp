@@ -136,7 +136,7 @@ class TasksViewModel @ViewModelInject constructor(
 
     fun getVisibleTaskId() = prefs.getInt(Constant.currentVisibleTaskid, 0)
 
-    private fun updateTask(data: TaskEntity) {
+    fun updateTask(data: TaskEntity) {
         viewModelScope.launch {
            val result =  repository.updateTask(data)
             Log.e(TAG, "task update result: $result")
@@ -169,7 +169,7 @@ class TasksViewModel @ViewModelInject constructor(
                     )
                 )
             }
-        } else {
+        }  else {
             if(!NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
                 updateTask(
                     taskEntity.copy(

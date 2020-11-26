@@ -65,8 +65,11 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.textTaskName.text = mResources.getString(nameId)
 
             binding.textFinishTime.text = UtilModel.formatLongTime( data.taskEntity.taskDueDateFinish)
-            binding.textDueInTime.text =  UtilModel.formatTimeDifference( data.taskEntity.taskDueDateFinish - System.currentTimeMillis() , context)
 
+        val difference = data.taskEntity.taskDueDateFinish - System.currentTimeMillis()
+        binding.textDueInTime.text =  UtilModel.formatTimeDifference( difference, context)
+
+        if(difference < 0) binding.textDueInTime.setTextColor(mResources.getColor(R.color.colorAccent))
 
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmationType == ActivityConfirmationType.RECEIVED }?.name

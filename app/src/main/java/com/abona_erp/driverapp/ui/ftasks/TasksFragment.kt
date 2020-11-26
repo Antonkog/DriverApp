@@ -182,8 +182,10 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
+         if (data.taskEntity.confirmationType < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old state - not opened and not confirmed
             context?.let {
-                val name =  it.resources.getString(UtilModel.getResIdByTaskActionType(data.taskEntity))
+                val name =
+                    it.resources.getString(UtilModel.getResIdByTaskActionType(data.taskEntity))
                 DialogBuilder.getStartTaskDialog(
                     name,
                     { _, _ ->
@@ -191,5 +193,9 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
                     }, it
                 ).show()
             }
+        } else { //here is ui update if server confirmed - can open task.
+            tasksViewModel.updateTask(data.taskEntity.copy(openCondition = !data.taskEntity.openCondition))
+        }
+        Log.e(TAG, "got click taskid " + data.taskEntity.taskId)
     }
 }
