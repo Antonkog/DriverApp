@@ -1,6 +1,5 @@
 package com.abona_erp.driverapp.ui.ftasks
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -51,7 +50,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_refresh -> {
-                tasksViewModel.refreshTasks()
+                tasksViewModel.refreshTasksFromServer()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -183,8 +182,7 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
     }
 
     override fun onLazyItemClick(data: TaskWithActivities) {
-        val confirmationState = data.taskEntity.confirmationType
-        if (confirmationState < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old starte - not opened and not confirmed
+         if (data.taskEntity.confirmationType < ConfirmationType.TASK_CONFIRMED_BY_USER) {// old state - not opened and not confirmed
             context?.let {
                 val name =
                     it.resources.getString(UtilModel.getResIdByTaskActionType(data.taskEntity))

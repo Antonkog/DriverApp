@@ -1,0 +1,45 @@
+{
+  "IsSuccess": true,
+  "IsException": false,
+  "Text": "Delayreasons1 wurde aktualisiert\r\n",
+  "ExceptionText": null,
+  "CommunicationItem": null,
+  "AllTask": null,
+  "AllTaskCommItem": null,
+  "HttpResponseMessage": null,
+  "TransportAuftragOid": 0,
+  "AllAppFileInterchangeItem": null,
+  "LogText": null,
+  "AllDocumentCommItem": null,
+  "ActivityDelayItem": {
+    "ActivityId": 16,
+    "MandantId": 3,
+    "TaskId": 18807,
+    "DelayReasons": [
+      {
+        "WaitingReasonId": 17029,
+        "WaitingReasonAppId": null,
+        "ReasonText": "prior unloading delay/ Verspätung bei vorheriger Entladung",
+        "TranslatedReasonText": "prior unloading delay/ Verspätung bei vorheriger Entladung",
+        "Code": 0,
+        "SubCode": 0,
+        "ActivityId": 16,
+        "MandantId": 3,
+        "TaskId": 18807,
+        "TimestampUtc": "2020-11-23T11:42:14Z",
+        "DelayInMinutes": 15,
+        "DelaySource": 3,
+        "Comment": "test"
+      }
+    ]
+  },
+  "DelayReasons": null,
+  "DeviceProfileEvaluation": {
+    "DeviceId": "bd92a5a47f4883c5",
+    "DateTimeLastApiCall": "2020-11-23T10:42:12.1699519+01:00",
+    "DateTimeLastAbonaCall": null,
+    "AuftragsNrKW": 202047152,
+    "MandantId": 3,
+    "LastAction": "DelayReasons"
+  }
+}

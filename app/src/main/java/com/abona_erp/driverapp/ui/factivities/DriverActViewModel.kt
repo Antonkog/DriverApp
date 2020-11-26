@@ -16,13 +16,12 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.ResultWrapper
 import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
+import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
-import com.abona_erp.driverapp.ui.ftasks.TasksViewModel
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel
-import com.abona_erp.driverapp.ui.utils.UtilModel.getCurrentDateServerFormat
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
@@ -49,64 +48,82 @@ class DriverActViewModel @ViewModelInject constructor(
      * Start first activity in task.
      *
      */
-    fun postActivityChange(wrapper: ActivityWrapper) {
-        val entity = wrapper.activity
+    fun postActivityChange(entity: ActivityEntity, startNext: Boolean) {
         val newAct = setNewActivityStatus(entity)
         viewModelScope.launch(IO) {
             val result = repository.postActivity(
                 newAct.toActivity(DeviceUtils.getUniqueID(context))
             )
 
-            if (result.succeeded && result.data?.isSuccess == true) { //todo: implement offline mode.
-                repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.SYNCED_WITH_ABONA))
-
-                val nextActStarted = startNextActivityCurrentTask(newAct)
-
-                val taskUpdated = updateParentTask(newAct, nextActStarted)
-
-                taskUpdated?.let {
-                    if (!nextActStarted) startActivityInNewTask(it)
+            if (result.succeeded) {
+                if (result.data?.isSuccess == true) {
+                    repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.SYNCED_WITH_ABONA))
+                   if(startNext) startNextActivity(newAct)
+                } else {
+                    postConfirmationErrorToUI(result.toString())
                 }
-
-
             } else {
-                postConfirmationErrorToUI(result.toString())
-                Log.e(TAG, result.toString())
+                if (!NetworkUtil.isConnectedWithWifi(context)) {
+                    repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.CHANGED_BY_USER))
+                    if(startNext) startNextActivity(newAct)
+                } else{
+                    postConfirmationErrorToUI(context.resources.getString(R.string.error_act_update) + result.toString())
+                }
             }
         }
     }
 
-    private suspend fun startActivityInNewTask(task: TaskEntity) {
+    private suspend fun startNextActivity(
+        newAct: ActivityEntity
+    ) {
+        val nextActStarted = startNextActivityCurrentTask(newAct)
 
+        val taskUpdated = updateParentTask(newAct, nextActStarted)
+
+        taskUpdated?.let {
+            if (!nextActStarted) startActivityInNewTask(it)
+        }
+    }
+
+    private suspend fun startActivityInNewTask(task: TaskEntity) {
         //check for activity in new task
         val taskEntity = repository.getNextTaskIfExist(task)
 
         taskEntity?.let { next ->
-            val newNextTask: TaskEntity =
-                incrementTaskStatus(next, true) // true, next task not started has activity
+            val newNextTask: TaskEntity = updateTaskStatus(next, true) // true, next task not started has activity
 
             val resultWrapper: ResultWrapper<ResultOfAction> = confirmTask(newNextTask)
 
             if (resultWrapper.succeeded) {
                 if (resultWrapper.data?.isSuccess == true) {
                     updateTaskConfirmedInDb(newNextTask)
-                    postNextTaskActivity(next)
+                    repository.getFirstTaskActivity(next)?.let { firstAct ->
+                        postActivityChange(firstAct, false)
+                    }
                 } else {
                     postConfirmationErrorToUI(
-                        resultWrapper.data?.text ?: "cant update next task status"
+                        resultWrapper.data?.text
+                            ?: context.resources.getString(R.string.error_task_update)
                     )
                 }
             } else {
-                postConfirmationErrorToUI("cant update next task status $resultWrapper")
-                Log.e(TasksViewModel.TAG, "can't update task status on server $resultWrapper")
+                if (!NetworkUtil.isConnectedWithWifi(context)) {
+                    updateTaskConfirmedInDb(newNextTask)
+                    repository.getFirstTaskActivity(next)?.let { firstAct ->
+                        postActivityChange(firstAct, false)
+                    }
+                } else {
+                    postConfirmationErrorToUI(context.resources.getString(R.string.error_task_update) + resultWrapper.toString())
+                }
             }
         }
 
     }
 
+
     private suspend fun updateParentTask(newAct: ActivityEntity, nextExist: Boolean): TaskEntity? {
         return repository.getParentTask(newAct)?.let { task ->
-            val newTask = incrementTaskStatus(task, nextExist) //finish task in no next activity
+            val newTask = updateTaskStatus(task, nextExist) //finish task in no next activity
             val updateResult = repository.updateTask(newTask)
             if (updateResult == 0) {
                 Log.e(TAG, context.getString(R.string.error_task_update))
@@ -137,20 +154,6 @@ class DriverActViewModel @ViewModelInject constructor(
         )
     }
 
-    private suspend fun postNextTaskActivity(next: TaskEntity) {
-        repository.getFirstTaskActivity(next)?.let { firstAct ->
-            val result = repository.postActivity(
-                firstAct.toActivity(DeviceUtils.getUniqueID(context))
-            )
-            if (result.succeeded && result.data?.isSuccess == true) { //todo: implement offline mode.
-                Log.e(TAG, "started next task activity (first) : $firstAct")
-                repository.updateActivity(firstAct.copy(confirmationType = ActivityConfirmationType.SYNCED_WITH_ABONA))
-            } else {
-                Log.e(TAG, result.toString())
-            }
-        }
-    }
-
     private suspend fun confirmTask(nextTask: TaskEntity) =
         repository.confirmTask(
             UtilModel.getTaskConfirmation(
@@ -160,7 +163,7 @@ class DriverActViewModel @ViewModelInject constructor(
         )
 
 
-    private fun incrementTaskStatus(
+    private fun updateTaskStatus(
         task: TaskEntity,
         nextExist: Boolean
     ): TaskEntity {
@@ -189,8 +192,8 @@ class DriverActViewModel @ViewModelInject constructor(
                 activityStatus = ActivityStatus.RUNNING,
                 started = System.currentTimeMillis()
             )
-            val result = repository.updateActivity(newNextAct)
-            Log.e(TAG, "update next activity to:\n $newNextAct  \n result:  $result")
+            val result = repository.updateActivity(newNextAct) // we update next activity in task, we do not send it to server when start, only when finish
+            Log.e(TAG, "updated next activity to:\n $newNextAct  \n result:  $result")
         } else {
             Log.e(TAG, "no next activity")
         }
@@ -202,20 +205,20 @@ class DriverActViewModel @ViewModelInject constructor(
             ActivityStatus.PENDING -> {
                 entity.copy(
                     activityStatus = ActivityStatus.RUNNING,
-                    started =   System.currentTimeMillis()
+                    started = System.currentTimeMillis()
                 )
             }
             ActivityStatus.RUNNING -> {
-                if(entity.started <= 0L){
+                if (entity.started <= 0L) {
                     entity.copy(
                         activityStatus = ActivityStatus.FINISHED,
-                        started =  System.currentTimeMillis(),
-                        finished =  System.currentTimeMillis()
+                        started = System.currentTimeMillis(),
+                        finished = System.currentTimeMillis()
                     )
-                }else
+                } else
                     entity.copy(
                         activityStatus = ActivityStatus.FINISHED,
-                        finished =   System.currentTimeMillis()
+                        finished = System.currentTimeMillis()
                     )
             }
             ActivityStatus.FINISHED -> entity

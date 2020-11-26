@@ -20,6 +20,7 @@ import com.abona_erp.driverapp.data.model.Activity
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
+import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
@@ -115,8 +116,8 @@ class TasksViewModel @ViewModelInject constructor(
         }
     }
 
-    fun refreshTasks() = viewModelScope.launch {
-        repository.refreshTasks()
+    fun refreshTasksFromServer() = viewModelScope.launch {
+        repository.updateTasksFromRemoteDataSource(null)
     }
 
     //to post from task fragment use
@@ -150,15 +151,15 @@ class TasksViewModel @ViewModelInject constructor(
                     taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
                 )
             )
-        if (result.succeeded) {
-            if (result.data?.isSuccess == true) {
+        if (result.succeeded) {//common errors like no networks
+            if (result.data?.isSuccess == true) { // internal errors on ok from Abona
                 updateTask(
                     taskEntity.copy(
                         confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER,
                         openCondition = !taskEntity.openCondition
                     )
                 )//green checkers
-            } else {
+            } else { //posting error from Abona to UI, to show why can't update
                 RxBus.publish(
                     RxBusEvent.RequestStatus(
                         MainViewModel.Status(
@@ -168,11 +169,14 @@ class TasksViewModel @ViewModelInject constructor(
                     )
                 )
             }
-        } else {
-            Log.e(TAG, "can't update task status on server $result")
-
-            //todo: put in offline confirmations table here
-            // or when requesting and delete on error
+        }  else {
+            if(!NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
+                updateTask(
+                    taskEntity.copy(
+                        openCondition = !taskEntity.openCondition
+                    )
+                )//green checkers
+            } else  Log.e(TAG, "can't update task status on server $result")
         }
     }
 

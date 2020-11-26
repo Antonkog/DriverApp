@@ -3,6 +3,7 @@ package com.abona_erp.driverapp.data.remote
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.abona_erp.driverapp.MainViewModel
+import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.LocalDataSource
 import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.model.*
@@ -79,6 +80,7 @@ class AppRepositoryImpl @Inject constructor(
 
 
     /**
+     * as we have different auth service, error is handled here
      * calling auth api, that is not showing any credentials,
      * no need to add credentials to database and error handle is here
      */
@@ -94,23 +96,13 @@ class AppRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getTasks(
-        forceUpdate: Boolean,
-        changeHistory: ChangeHistory?
-    ): ResultWrapper<List<TaskEntity>> {
-        if (forceUpdate) {
-            postToUi(null, MainViewModel.StatusType.LOADING)
-            try {
-                updateTasksFromRemoteDataSource(changeHistory)
-                postToUi("success task update", MainViewModel.StatusType.COMPLETE)
-            } catch (ex: Exception) {
-                postToUi("error task update: ${ex.message}", MainViewModel.StatusType.ERROR)
-                return ResultWrapper.Error(ex)
-            }
-        }
-        return localDataSource.getTasks()
-    }
 
+    override suspend fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) {
+        getDocuments(true, mandantId, orderNo, deviceId)
+    }
+    /**
+     * handle it here before merge with documents branch (A.Kogan)
+     */
     override suspend fun getDocuments(
         forceUpdate: Boolean,
         mandantId: Int,
@@ -121,9 +113,9 @@ class AppRepositoryImpl @Inject constructor(
             postToUi(null, MainViewModel.StatusType.LOADING)
             try {
                 updateDocumentsFromRemoteDataSource(mandantId, orderNo, deviceId)
-                postToUi("success documents update", MainViewModel.StatusType.COMPLETE)
+                postToUi(context.getString(R.string.doc_update_success), MainViewModel.StatusType.COMPLETE)
             } catch (ex: Exception) {
-                postToUi("error documents update", MainViewModel.StatusType.ERROR)
+                postToUi(context.getString(R.string.doc_update_error), MainViewModel.StatusType.ERROR)
                 return ResultWrapper.Error(ex)
             }
         }
@@ -185,8 +177,8 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
-    private suspend fun updateTasksFromRemoteDataSource(changeHistory: ChangeHistory?) {
-        api.updateTasksFromServer(changeHistory)
+    override suspend fun updateTasksFromRemoteDataSource(changeHistory: ChangeHistory?) : ResultWrapper<CommResponseItem>{
+        return api.updateTasksFromServer(changeHistory)
     }
 
 
@@ -202,13 +194,6 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun refreshTasks() {
-        getTasks(true, null)
-    }
-
-    override suspend fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) {
-        getDocuments(true, mandantId, orderNo, deviceId)
-    }
 
     override suspend fun insertOrUpdateTask(taskEntity: TaskEntity) {
         localDataSource.insertOrUpdateTask(taskEntity)

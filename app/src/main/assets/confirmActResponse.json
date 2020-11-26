@@ -1,0 +1,44 @@
+
+{
+  "IsSuccess" : true,
+  "IsException" : false,
+  "Text" : "Die Aktivität wurde aktualisiert",
+  "ExceptionText" : null,
+  "CommunicationItem" : {
+    "Header" : null,
+    "TaskItem" : null,
+    "ActivityItem" : null,
+    "ConfirmationItem" : null,
+    "DeviceProfileItem" : null,
+    "VehicleItem" : null,
+    "PercentItem" : {
+      "MandantId" : 3,
+      "TaskId" : 18806,
+      "OrderNo" : 202047152,
+      "PercentFinished" : 33.0,
+      "TotalPercentFinished" : 16.0
+    },
+    "DocumentItem" : null,
+    "CompressedTasks" : null,
+    "CompressedTasksCount" : 0,
+    "ActivityDelayItem" : null,
+    "DelayReasons" : null
+  },
+  "AllTask" : null,
+  "AllTaskCommItem" : null,
+  "HttpResponseMessage" : null,
+  "TransportAuftragOid" : 446296,
+  "AllAppFileInterchangeItem" : null,
+  "LogText" : null,
+  "AllDocumentCommItem" : null,
+  "ActivityDelayItem" : null,
+  "DelayReasons" : null,
+  "DeviceProfileEvaluation" : {
+    "DeviceId" : "bd92a5a47f4883c5",
+    "DateTimeLastApiCall" : "2020-11-19T14:59:27.5198002+01:00",
+    "DateTimeLastAbonaCall" : null,
+    "AuftragsNrKW" : 202047152,
+    "MandantId" : 3,
+    "LastAction" : "Activity"
+  }
+}

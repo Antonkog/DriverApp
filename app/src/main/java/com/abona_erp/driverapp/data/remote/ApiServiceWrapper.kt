@@ -3,6 +3,7 @@ package com.abona_erp.driverapp.data.remote
 import android.content.Context
 import android.util.Log
 import com.abona_erp.driverapp.MainViewModel
+import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.LocalDataSource
 import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.local.db.HistoryDataType.*
@@ -68,24 +69,34 @@ class ApiServiceWrapper(
      * that method exception is handled in AppRepositoryImpl
      * so no need to send exception to UI here and no try/catch block
      */
-    suspend fun updateTasksFromServer(changeHistory: ChangeHistory?) {
+    suspend fun updateTasksFromServer(changeHistory: ChangeHistory?): ResultWrapper<CommResponseItem> {
         val id = DeviceUtils.getUniqueID(context)
         val change = prerapeChangeChistory(id, changeHistory, GET_TASKS)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
-        val remoteTasks = api.getAllTasks(id)
-        if (remoteTasks.isSuccess && !remoteTasks.isException) {
-            localDataSource.updateFromCommItem(remoteTasks)
-            updateHistoryOnSuccess(change, gson.toJson(remoteTasks), autoGenId)
-        } else {
-            updateHistoryOnError(change, autoGenId)
-            throw java.lang.Exception("updateTasks exception:  ${remoteTasks.text} ")
+       return try {
+            val result = ResultWrapper.Success(api.getAllTasks(id))
+           if(result.data.isSuccess){
+               localDataSource.updateFromCommItem(result.data)
+               updateHistoryOnSuccess(change, gson.toJson(result.data), autoGenId)
+               result
+           } else {
+               val ex  = java.lang.Exception(result?.data?.text ?: context.getString(R.string.error_get_tasks))
+               sendErrorToUI(ex)
+               ResultWrapper.Error(ex)
+           }
+        } catch (ex: Exception){
+           if(NetworkUtil.isConnectedWithWifi(context)){
+               sendErrorToUI(ex)
+           }
+           updateHistoryOnError(change, autoGenId)
+           ResultWrapper.Error(ex)
         }
     }
 
 
     /**
-     * that method exception is handled in AppRepositoryImpl
-     * so no need to send exception to UI here and no try/catch block
+     * that method exception is handled in AppRepositoryImpl - need to rewrite after merge
+     * so no need to send exception to UI here and no try/catch block now
      */
     suspend fun updateDocumentsFromServer(
         mandantId: Int,

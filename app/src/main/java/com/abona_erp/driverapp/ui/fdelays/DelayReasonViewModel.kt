@@ -28,7 +28,7 @@ class DelayReasonViewModel @ViewModelInject constructor(
     fun postDelayReason(delayReasonEntity: DelayReasonEntity) = viewModelScope.launch(IO){
             val result  = repository.postDelayReasons(delayReasonEntity)//here activity to wrap delay when doing rest sync
             if(result.succeeded){
-                repository.refreshTasks()
+                repository.updateTasksFromRemoteDataSource(null)
                 goBack.postValue(true)
             } else {
                 if(!NetworkUtil.isConnectedWithWifi(context)){
