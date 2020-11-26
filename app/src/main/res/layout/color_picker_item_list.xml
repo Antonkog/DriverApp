@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/color_picker_view"
+            android:layout_width="@dimen/space_40"
+            android:layout_height="@dimen/space_50"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/white" />
+
+    </RelativeLayout>
+</layout>

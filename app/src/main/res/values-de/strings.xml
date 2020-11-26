@@ -23,6 +23,7 @@
     <string name="pending">Offen</string>
     <string name="running">In Arbeit\u0020</string>
     <string name="completed">Erledigt\u0020</string>
+    <string name="empty_document_message">Keine Dokumente, hochladen, um hier zu sehen</string>
 
     <string name="airplane_warning">Bei Flugzeugmodus ist die Funktion der ABONA Driver App eingeschränkt</string>
 
@@ -53,5 +54,21 @@
     <string name="reasons">Grund</string>
     <string name="source">Quelle</string>
     <string name="send">Senden</string>
+
+    <!-- Document Type -->
+    <string name="document_type">Dokument Typ</string>
+    <string name="document_type_na">Keine (N/A)</string>
+    <string name="document_type_pod">Zustellnachweis (POD)</string>
+    <string name="document_type_cmr">CMR</string>
+    <string name="document_type_pn">Paletten Hinweis (PN)</string>
+    <string name="document_type_sc">Sicherheitszertifikat (SC)</string>
+    <string name="document_type_si">Versandbild (SI)</string>
+    <string name="document_type_dsi">Beschädigtes Versandbild (DSI)</string>
+    <string name="document_type_dvi">Beschädigtes Fahrzeugbild (DVI)</string>
+    <string name="action_ok">OK</string>
+    <string name="filter">Filter</string>
+    <string name="done">Выполнено</string>
+    <string name="brush">Bürste</string>
+    <string name="opacity">Opazität</string>
 
 </resources>

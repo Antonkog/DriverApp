@@ -43,7 +43,7 @@
         android:id="@+id/nav_login"
         android:name="com.abona_erp.driverapp.ui.flogin.LoginFragment"
         android:label="@string/screen_login"
-        tools:layout="@layout/login_fragment">
+        tools:layout="@layout/login_fragment" >
         <argument
             android:name="auto_login"
             app:argType="boolean"
@@ -57,9 +57,9 @@
         tools:layout="@layout/driver_act_fragment">
         <argument
             android:name="task_entity"
+            android:defaultValue="@null"
             app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <action
             android:id="@+id/action_nav_activities_to_delayReasonDialog"
             app:destination="@id/delayReasonFragment" />
@@ -71,10 +71,11 @@
         android:label="@string/screen_documents"
         tools:layout="@layout/documents_fragment">
         <argument
-            android:name="task_entity"
-            app:argType="com.abona_erp.driverapp.data.local.db.TaskEntity"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            android:name="task_data"
+            app:argType="com.abona_erp.driverapp.ui.fdocuments.TaskData" />
+        <action
+            android:id="@+id/action_nav_document_to_selectDocumentFragment"
+            app:destination="@id/selectDocumentFragment" />
     </fragment>
 
 
@@ -129,9 +130,9 @@
         tools:layout="@layout/notes_fragment">
         <argument
             android:name="notes_data"
+            android:defaultValue="@null"
             app:argType="com.abona_erp.driverapp.data.model.NotesItem"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </dialog>
     <dialog
         android:id="@+id/palletsDialog"
@@ -140,9 +141,9 @@
         tools:layout="@layout/pallets_fragment">
         <argument
             android:name="pallets_data"
+            android:defaultValue="@null"
             app:argType="com.abona_erp.driverapp.data.model.PalletExchange"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </dialog>
 
 
@@ -153,10 +154,23 @@
         tools:layout="@layout/contacts_fragment">
         <argument
             android:name="contacts_data"
+            android:defaultValue="@null"
             app:argType="com.abona_erp.driverapp.data.model.Contact[]"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </dialog>
+
+    <fragment
+        android:id="@+id/selectDocumentFragment"
+        android:name="com.abona_erp.driverapp.ui.fdocuments.SelectDocumentFragment"
+        android:label="@string/screen_select_documents"
+        tools:layout="@layout/select_document_fragment">
+        <argument
+            android:name="task_data"
+            app:argType="com.abona_erp.driverapp.ui.fdocuments.TaskData" />
+        <action
+            android:id="@+id/action_nav_document_to_editDocumentFragment"
+            app:destination="@id/editDocumentFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/delayReasonFragment"
@@ -170,4 +184,22 @@
             app:argType="com.abona_erp.driverapp.data.local.db.ActivityEntity" />
     </fragment>
 
+    <fragment
+        android:id="@+id/editDocumentFragment"
+        android:name="com.abona_erp.driverapp.ui.fdocuments.DocumentEditFragment"
+        android:label="@string/screen_edit_documents"
+        tools:layout="@layout/document_edit_fragment">
+        <argument
+            android:name="upload_document"
+            app:argType="com.abona_erp.driverapp.ui.fdocuments.UploadDocumentItem" />
+        <argument
+            android:name="task_data"
+            app:argType="com.abona_erp.driverapp.ui.fdocuments.TaskData" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/propertiesDocumentFragment"
+        android:name="com.abona_erp.driverapp.ui.fdocuments.PropertiesFragment"
+        android:label="@string/screen_edit_documents"
+        tools:layout="@layout/document_edit_fragment" />
 </navigation>

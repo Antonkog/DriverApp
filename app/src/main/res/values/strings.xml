@@ -21,6 +21,7 @@
     <string name="pending">Pending</string>
     <string name="running">Running</string>
     <string name="completed">Completed</string>
+    <string name="empty_document_message">No documents, upload to see here</string>
 
     <string name="to_do" translatable="false">TO DO</string>
 
@@ -77,6 +78,8 @@
 
     <string name="screen_activities" translatable="false">Activities</string>
     <string name="screen_documents" translatable="false">Documents</string>
+    <string name="screen_select_documents" translatable="false">Select Document</string>
+    <string name="screen_edit_documents" translatable="false">Edit Document</string>
     <string name="screen_settings" translatable="false">Settings</string>
     <string name="screen_protocol" translatable="false">Protocol</string>
 
@@ -127,6 +130,8 @@
     <string name="key_goods_data" translatable="false">goods_data</string>
     <string name="key_pallets_data" translatable="false">pallets_data</string>
     <string name="key_auto_login" translatable="false">auto_login</string>
+    <string name="key_upload_document" translatable="false">upload_document</string>
+    <string name="key_task_data" translatable="false">task_data</string>
 
 
     <!--    attributes, do not translate -->
@@ -175,4 +180,19 @@
     <string name="doc_update_success" translatable="false">success documents update</string>
     <string name="error_get_tasks">cant get tasks, server error</string>
 
+    <!-- Document Type -->
+    <string name="document_type">Document Type</string>
+    <string name="document_type_na">No (N/A)</string>
+    <string name="document_type_pod">Proof of Delivery (POD)</string>
+    <string name="document_type_cmr">CMR</string>
+    <string name="document_type_pn">Pallets Note (PN)</string>
+    <string name="document_type_sc">Safety Certificate (SC)</string>
+    <string name="document_type_si">Shipment Image (SI)</string>
+    <string name="document_type_dsi">Damaged Shipment Image (DSI)</string>
+    <string name="document_type_dvi">Damaged Vehicle Image (DVI)</string>
+    <string name="action_ok">OK</string>
+    <string name="filter">Filter</string>
+    <string name="done">Done</string>
+    <string name="brush">Brush</string>
+    <string name="opacity">Opacity</string>
 </resources>

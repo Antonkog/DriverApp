@@ -12,5 +12,6 @@ class RxBusEvent {
     data class FirebaseMessage(val message: String)
     data class DocumentMessage(val uri: Uri)
     data class LanguageUpdate(val locale: Locale)
+    data class DocumentCropMessage(val uri: Uri)
 //    data class MessageEvent(val message: String)
 }

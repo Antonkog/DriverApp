@@ -16,6 +16,8 @@
     <string name="pending">В ожидании</string>
     <string name="running">В работе</string>
     <string name="completed">Завершено</string>
+    <string name="empty_document_message">Нет документа, скачайте, чтобы увидеть здесь</string>
+
     <!-- MULTILANG -->
 
 
@@ -50,5 +52,21 @@
     <string name="source">Источник</string>
     <string name="reasons">Причина</string>
     <string name="send">Отправить</string>
+
+    <!-- Document Type -->
+    <string name="document_type">Тип документа</string>
+    <string name="document_type_na">Нет (N/A)</string>
+    <string name="document_type_pod">Доказательство доставки (POD)</string>
+    <string name="document_type_cmr">CMR</string>
+    <string name="document_type_pn">Поддоны Примечание (PN)</string>
+    <string name="document_type_sc">Сертификат безопасности (SC)</string>
+    <string name="document_type_si">Изображение отгрузки (SI)</string>
+    <string name="document_type_dsi">Изображение поврежденного груза (DSI)</string>
+    <string name="document_type_dvi">Изображение поврежденного автомобиля (DVI)</string>
+    <string name="action_ok">OK</string>
+    <string name="filter">Фильтр</string>
+    <string name="done">Выполнено</string>
+    <string name="brush">Щетка</string>
+    <string name="opacity">Непрозрачность</string>
 
 </resources>

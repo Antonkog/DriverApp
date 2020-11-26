@@ -23,4 +23,20 @@
     <!--    using sw for icons, as they are squere-->
     <dimen name="icon_action_size">64dp</dimen>
 
+    <dimen name="space_2">2dp</dimen>
+    <dimen name="space_4">4dp</dimen>
+    <dimen name="space_8">8dp</dimen>
+    <dimen name="space_10">10dp</dimen>
+    <dimen name="space_16">16dp</dimen>
+    <dimen name="space_20">20dp</dimen>
+    <dimen name="space_24">24sp</dimen>
+    <dimen name="space_32">32dp</dimen>
+    <dimen name="space_40">40dp</dimen>
+    <dimen name="space_50">50dp</dimen>
+    <dimen name="height_100">100dp</dimen>
+
+    <dimen name="size_8">8sp</dimen>
+    <dimen name="size_16">16sp</dimen>
+    <dimen name="size_24">24sp</dimen>
+    <dimen name="size_40">40sp</dimen>
 </resources>

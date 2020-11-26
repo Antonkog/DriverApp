@@ -10,7 +10,7 @@ import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.databinding.ActivityItemBinding
 import com.abona_erp.driverapp.ui.utils.UtilModel
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
+import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
 
 
 class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: NavController) :
