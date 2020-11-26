@@ -9,7 +9,7 @@ import com.abona_erp.driverapp.databinding.RequestItemBinding
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.utils.UtilModel
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
+import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
 
 
 class ProtocolAdapter(listener: OnItemClickListener<ChangeHistory>) :

@@ -3,4 +3,5 @@
     <files-path name="my_images" path="images/"/>
     <files-path name="my_downloads" path="downloads/"/>
     <files-path name="my_docs" path="downloads.documents/"/>
+    <external-path name="Pictures" path="."/>
 </paths>

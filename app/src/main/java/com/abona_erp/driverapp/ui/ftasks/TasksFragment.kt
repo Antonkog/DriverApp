@@ -16,8 +16,8 @@ import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import com.kivi.remote.presentation.base.recycler.initWithLinLay
+import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
+import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import kotlin.NoSuchElementException

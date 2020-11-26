@@ -16,6 +16,8 @@ object Constant {
     const val REQUEST_OPEN_DOC = 122
     const val KEY_PERMISSION_LOCATION = 101
 
+    const val OPEN_DOC_REQUEST_CODE = 122
+    const val OPEN_CAMERA_REQUEST_CODE = 1
     const val userAgentAppName = "ABONA DriverApp"
     const val baseRabbitUrl: String = "http://yms-test.abona-erp.com:50517/"
     const val grantTypeToken: String = "password"
