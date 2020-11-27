@@ -4,7 +4,7 @@ import com.abona_erp.driverapp.data.model.*
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
@@ -24,7 +24,7 @@ interface ApiService {
         @Query("mandantId") mandantId: Int,
         @Query("orderNo") orderNo: Int,
         @Query("deviceId") deviceId: String
-    ): List<DocumentResponse>?
+    ): Response<List<DocumentResponse>?>
 
 
     @POST("/api/device/deviceprofile")

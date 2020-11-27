@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.databinding.DriverActFragmentBinding
+import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
 import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<ActivityWrapper> {
@@ -57,10 +60,7 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
         driverActViewModel.wrappedActivities.observe(viewLifecycleOwner) {
             adapter.swapData(it)
         }
-
-
-//        if(args ==null) driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context))
-//        else driverActViewModel.populateActivities(DeviceUtils.getUniqueID(context), args.taskId)
+        RxBus.publish(RxBusEvent.LanguageUpdate(Locale.getDefault())) //todo: that is to get fresh delay reasons. Also need to implement locale change reason
 
         return driverActFragmentBinding.root
     }
