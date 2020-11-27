@@ -103,7 +103,8 @@ object UtilModel {
             started.time,
             finished.time,
             ActivityStatus.getActivityStatus(status),
-            ActivityConfirmationType.RECEIVED
+            if(this.status == ActivityStatus.FINISHED.status) //we dont do any changes on comleted activity, so make sense to show it as synced, when getting from server.
+            ActivityConfirmationType.SYNCED_WITH_ABONA else   ActivityConfirmationType.RECEIVED
         )
     }
 

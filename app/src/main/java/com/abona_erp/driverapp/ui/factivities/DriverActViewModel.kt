@@ -2,9 +2,7 @@ package com.abona_erp.driverapp.ui.factivities
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Looper
 import android.util.Log
-import android.util.TimeUtils
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,6 +27,7 @@ import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -44,9 +43,16 @@ class DriverActViewModel @ViewModelInject constructor(
         return repository.observeActivities(taskId)
     }
 
+
+    /**
+     * this method is to fix condition, when server sends 200 ok and it is not changed database.
+     * so when change next activity server say "preveous was not changed if we are not waiting,
+     * this time will be managed on settings screen as "SERVER_DELAY"
+     */
     fun checkTimeAndPostActivity(entity: ActivityEntity){
+        val allActConfirmTime = 2 * TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN) //2 1 min for posting, 1 min for next act posting
         val lastTimeUpdate = prefs.getLong(Constant.lastConfirmDate, 0L)
-        if(lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN))){
+        if(lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)){
             postConfirmationErrorToUI(String.format(context.resources.getString(R.string.error_act_update_time, Constant.PAUSE_SERVER_REQUEST_MIN)))
         }  else  {
             prefs.putAny(Constant.lastConfirmDate, System.currentTimeMillis())
@@ -66,6 +72,7 @@ class DriverActViewModel @ViewModelInject constructor(
     private fun postActivityChange(entity: ActivityEntity, startNext: Boolean) {
             val newAct = setNewActivityStatus(entity)
             viewModelScope.launch(IO) {
+                Log.d(TAG, " posting activity ${entity.activityId}, time:  ${System.currentTimeMillis()}")
                 val result = repository.postActivity(
                     newAct.toActivity(DeviceUtils.getUniqueID(context))
                 )
@@ -91,6 +98,7 @@ class DriverActViewModel @ViewModelInject constructor(
     private suspend fun startNextActivity(
         newAct: ActivityEntity
     ) {
+        delay(TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN))
         val nextActStarted = startNextActivityCurrentTask(newAct)
 
         val taskUpdated = updateParentTask(newAct, nextActStarted)
