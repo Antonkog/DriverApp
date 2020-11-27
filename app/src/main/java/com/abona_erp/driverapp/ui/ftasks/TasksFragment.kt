@@ -123,8 +123,6 @@ class TasksFragment : BaseFragment(), LazyAdapter.OnItemClickListener<TaskWithAc
         if (!tasksViewModel.loggedIn()) {
             Log.e(TAG, "  not logged in ")
             findNavController().navigate(TasksFragmentDirections.actionNavHomeToLoginFragment())
-        } else {
-            RxBus.publish(RxBusEvent.LanguageUpdate(Locale.getDefault())) //todo: implement locale change listener
         }
 
         when (tasksViewModel.tabStatus) {

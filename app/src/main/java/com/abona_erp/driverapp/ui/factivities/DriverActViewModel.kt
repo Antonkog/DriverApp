@@ -98,7 +98,6 @@ class DriverActViewModel @ViewModelInject constructor(
     private suspend fun startNextActivity(
         newAct: ActivityEntity
     ) {
-        delay(TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN))
         val nextActStarted = startNextActivityCurrentTask(newAct)
 
         val taskUpdated = updateParentTask(newAct, nextActStarted)
@@ -121,6 +120,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 if (resultWrapper.data?.isSuccess == true) {
                     updateTaskConfirmedInDb(newNextTask)
                     repository.getFirstTaskActivity(next)?.let { firstAct ->
+                        delay(TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN))
                         postActivityChange(firstAct, false)
                     }
                 } else {
@@ -133,6 +133,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 if (!NetworkUtil.isConnectedWithWifi(context)) {
                     updateTaskConfirmedInDb(newNextTask)
                     repository.getFirstTaskActivity(next)?.let { firstAct ->
+                        delay(TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN))
                         postActivityChange(firstAct, false)
                     }
                 } else {

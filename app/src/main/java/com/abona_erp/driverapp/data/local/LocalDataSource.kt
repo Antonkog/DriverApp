@@ -119,6 +119,13 @@ class LocalDataSource internal constructor(
     suspend fun insertDelayReasons(reasons : List<DelayReasonEntity>) {
         db.delayReasonsDao().deleteAll()
         db.delayReasonsDao().insert(reasons)
+        val oldAct =    db.driverActDao().getAllAsList()
+        var newAct  = arrayListOf<ActivityEntity>()
+        oldAct.forEach { newAct.add(it.copy(delayReasons =  reasons))}
+        if(newAct.isNotEmpty()){
+            db.driverActDao().deleteActivities()
+            db.driverActDao().insert(newAct)
+        }
     }
 
     suspend fun insertDocumentResponse(responseItems: List<DocumentResponse>) {

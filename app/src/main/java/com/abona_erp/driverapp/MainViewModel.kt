@@ -237,7 +237,7 @@ class MainViewModel @ViewModelInject constructor(
         return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true
     }
 
-    fun updateDelayReasons(locale: Locale ) = viewModelScope.launch {
+    fun updateDelayReasons(locale: Locale ) = viewModelScope.launch(IO){
         val result =  repository.getDelayReasons(
             prefs.getInt(Constant.mandantId, 3),
             DeviceUtils.getLocaleCode(locale)
