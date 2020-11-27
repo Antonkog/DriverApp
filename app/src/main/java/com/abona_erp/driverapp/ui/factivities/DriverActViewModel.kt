@@ -50,7 +50,7 @@ class DriverActViewModel @ViewModelInject constructor(
      * this time will be managed on settings screen as "SERVER_DELAY"
      */
     fun checkTimeAndPostActivity(entity: ActivityEntity){
-        val allActConfirmTime = 2 * TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN) //2 1 min for posting, 1 min for next act posting
+        val allActConfirmTime = TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN) //2 1 min for posting, 1 min for next act posting
         val lastTimeUpdate = prefs.getLong(Constant.lastConfirmDate, 0L)
         if(lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)){
             postConfirmationErrorToUI(String.format(context.resources.getString(R.string.error_act_update_time, Constant.PAUSE_SERVER_REQUEST_MIN)))

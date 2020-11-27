@@ -80,7 +80,7 @@ class ApiServiceWrapper(
                updateHistoryOnSuccess(change, gson.toJson(result.data), autoGenId)
                result
            } else {
-               val ex  = java.lang.Exception(result?.data?.text ?: context.getString(R.string.error_get_tasks))
+               val ex  = java.lang.Exception(result.data.text ?: context.getString(R.string.error_get_tasks))
                sendErrorToUI(ex)
                ResultWrapper.Error(ex)
            }
@@ -105,13 +105,12 @@ class ApiServiceWrapper(
     ) {
         val resp = api.getDocuments(mandantId, orderNo, deviceId)
 
-        resp?.let {
+        resp.body()?.let {
             if (it.isNotEmpty()) {
                 localDataSource.deleteDocuments()
                 localDataSource.insertDocumentResponse(it)
             }
         }
-
     }
 
 

@@ -22,6 +22,7 @@ import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import java.io.*
 
@@ -52,7 +53,7 @@ class DocumentsViewModel @ViewModelInject constructor(
 
 
     fun refreshDocuments(mandantId: Int, orderNo: Int, deviceId: String) =
-        viewModelScope.launch {
+        viewModelScope.launch(IO) {
             repository.refreshDocuments(mandantId, orderNo, deviceId)
         }
 
