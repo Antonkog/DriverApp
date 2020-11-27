@@ -48,7 +48,7 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
         args.taskEntity?.taskId?.let { it ->
             driverActViewModel.getActivityObservable(it).observe(viewLifecycleOwner) { activities->
-                if (activities!= null&& activities.isNotEmpty()) {
+                if (activities.isNotEmpty()) {
                     driverActViewModel.wrapActivities(activities)
                 }
             }
@@ -79,6 +79,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     override fun onLazyItemClick(data: ActivityWrapper) {
         Log.d(TAG, " on activity click : ${data.activity.activityId}")
-        driverActViewModel.postActivityChange(data.activity, true)
+        driverActViewModel.checkTimeAndPostActivity(data.activity)
     }
 }

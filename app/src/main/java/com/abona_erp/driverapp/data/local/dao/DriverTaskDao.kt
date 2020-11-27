@@ -1,13 +1,9 @@
 package com.abona_erp.driverapp.data.local.dao
 
-import android.os.AsyncTask
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.abona_erp.driverapp.data.local.db.ActionType
-import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
-import com.abona_erp.driverapp.data.local.db.ConfirmationType
-import com.abona_erp.driverapp.data.local.db.TaskEntity
+import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.model.CommResponseItem
 import com.abona_erp.driverapp.ui.ftasks.TaskWithActivities

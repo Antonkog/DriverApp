@@ -47,23 +47,17 @@ class ActivityAdapter(itemClickListener: DriverActFragment,  val navController: 
                 data.activity.finished.let {
                     binding.textFinishedValue.text = UtilModel.formatLongTime(it)
                 }
-                binding.imageConfirmed.setColorFilter( // if activity finished setting green, even if confirmation status not saved in database (was removed when exit)
-                    ResourcesCompat.getColor(
-                    context.resources,
-                    R.color.confirm_green,
-                    null
-                ))
-            }
-            ActivityStatus.ENUM_ERROR -> {
-                binding.textFinished.visibility = View.INVISIBLE
-                binding.buttonActConfirm.visibility = View.VISIBLE
             }
         }
+
+         binding.imageConfirmed.setColorFilter( // if activity finished setting green, even if confirmation status not saved in database (was removed when exit)
+             ActivityConfirmationType.getColor(context, data.activity.confirmationType))
 
         if(data.isLastActivity){
             binding.buttonActConfirm.text =
                 binding.root.resources.getString(R.string.activity_finish)
         }
+
         data.activity.started.let {
             binding.textStartedValue.text =  UtilModel.formatLongTime(it)
         }

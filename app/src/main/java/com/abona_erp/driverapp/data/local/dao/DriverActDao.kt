@@ -45,20 +45,7 @@ interface DriverActDao {
                 it.activities.map { act -> act.toActivityEntity() }
             }
 
-            val mergedList = arrayListOf<ActivityEntity>()
-            //update old activity without status, or insert
-            strActList.forEach {
-                val oldActivity = getActivity(it.activityId, it.taskpId, it.mandantId)
-                if (oldActivity != null) {
-                    mergedList.add(
-                        it.copy(
-                            confirmationType = oldActivity.confirmationType,
-                            activityStatus = it.activityStatus
-                        )
-                    )
-                } else mergedList.add(it)
-            }
-            insert(mergedList)
+            insert(strActList) // server always wins, -means activity status can be modified on server side and should be replaced.
         }
     }
 }

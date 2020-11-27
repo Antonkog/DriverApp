@@ -280,10 +280,9 @@ object UtilModel {
     fun formatTimeDifference(difference: Long, context: Context): String {
         return String.format(
             context.resources.getString(R.string.task_duein_format),
-            TimeUnit.MILLISECONDS.toDays(difference),
-            TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
-            TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
-            TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
+            TimeUnit.MILLISECONDS.toDays(difference) % TimeUnit.DAYS.toHours(1),
+            TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toMinutes(1),
+            TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.MINUTES.toSeconds(1)
         )
     }
 

@@ -62,6 +62,7 @@
     <string name="error_notes_not_found" translatable="false">notes data not found</string>
     <string name="error_pallets_not_found" translatable="false">pallets data not found</string>
     <string name="error_no_contacts" translatable="false">no contacts data</string>
+    <string name="error_act_update_time" translatable="false">Server can not update more then 1 activity at time, please wait for %d minute</string>
     <string name="error_act_update" translatable="false">can not update activity status</string>
 
     <!--    screen names-->
@@ -173,6 +174,6 @@
     <string name="delay_comments" translatable="false">Delay comments</string>
     <string name="no_delay_reason" translatable="false">No delay reasons for this activity</string>
     <string name="doc_update_success" translatable="false">success documents update</string>
-    <string name="error_get_tasks">cant get tasks, server error</string>
+    <string name="error_get_tasks" translatable="false">cant get tasks, server error</string>
 
 </resources>

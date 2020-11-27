@@ -46,6 +46,7 @@ object Constant {
     const val currentVechicle = "currentVechicle"
     const val currentVisibleTaskid = "current_visible_taskId"
     const val currentVisibleOrderId = "current_visible_OrderId"
+    const val lastConfirmDate = "last_confirm_date"
     const val mandantId = "mandantId"
 
 
