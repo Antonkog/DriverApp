@@ -175,6 +175,7 @@
     <fragment
         android:id="@+id/delayReasonFragment"
         android:name="com.abona_erp.driverapp.ui.fdelays.DelayReasonFragment"
+        tools:layout="@layout/delay_reason_fragment"
         android:label="@string/screen_delays">
 
         <argument
