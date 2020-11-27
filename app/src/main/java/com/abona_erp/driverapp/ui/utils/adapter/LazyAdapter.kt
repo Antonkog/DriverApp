@@ -1,4 +1,4 @@
-package com.kivi.remote.presentation.base.recycler
+package com.abona_erp.driverapp.ui.utils.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class LazyAdapter <DataType, LayoutClassBinding : ViewDataBinding> (val itemClickListener: OnItemClickListener<DataType>? = null) : RecyclerView.Adapter<LazyAdapter.LazyViewHolder<DataType>>() {
+abstract class LazyAdapter<DataType, LayoutClassBinding : ViewDataBinding>(val itemClickListener: OnItemClickListener<DataType>? = null) :
+    RecyclerView.Adapter<LazyAdapter.LazyViewHolder<DataType>>() {
 
     val data = mutableListOf<DataType>()
 
@@ -22,6 +23,12 @@ abstract class LazyAdapter <DataType, LayoutClassBinding : ViewDataBinding> (val
         notifyItemRangeInserted(newFirstIndex, newData.size)
     }
 
+    fun addItem(newData: DataType) {
+        val newFirstIndex = data.size
+        data.add(newData)
+        notifyItemRangeInserted(newFirstIndex, 1)
+    }
+
     fun clearData() {
         data.clear()
         notifyDataSetChanged()
@@ -32,8 +39,13 @@ abstract class LazyAdapter <DataType, LayoutClassBinding : ViewDataBinding> (val
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LazyViewHolder<DataType> {
-        val binding: LayoutClassBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), getLayoutId(), parent, false)
-        return object: LazyViewHolder<DataType>(binding) {
+        val binding: LayoutClassBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            getLayoutId(),
+            parent,
+            false
+        )
+        return object : LazyViewHolder<DataType>(binding) {
             override fun bindData(data: DataType) {
                 bindData(data, binding)
             }
@@ -46,11 +58,12 @@ abstract class LazyAdapter <DataType, LayoutClassBinding : ViewDataBinding> (val
 
     abstract fun getLayoutId(): Int
 
-    abstract class LazyViewHolder<DataType>(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
+    abstract class LazyViewHolder<DataType>(val binding: ViewDataBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         abstract fun bindData(data: DataType)
     }
 
-    interface OnItemClickListener <DataType> {
+    interface OnItemClickListener<DataType> {
         fun onLazyItemClick(data: DataType)
     }
 

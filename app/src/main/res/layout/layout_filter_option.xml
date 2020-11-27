@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_2">
+
+        <ImageView
+            android:id="@+id/imgFilterView"
+            android:layout_width="@dimen/height_100"
+            android:layout_height="@dimen/height_100"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/txtFilterName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="#90000000"
+            android:gravity="center"
+            android:padding="@dimen/space_4"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/size_8"
+            app:layout_constraintBottom_toBottomOf="@+id/imgFilterView"
+            app:layout_constraintEnd_toEndOf="@+id/imgFilterView"
+            app:layout_constraintStart_toStartOf="@+id/imgFilterView"
+            tools:text="@tools:sample/full_names" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

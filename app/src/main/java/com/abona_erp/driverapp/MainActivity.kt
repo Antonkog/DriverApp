@@ -27,8 +27,8 @@ import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
+import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
@@ -116,6 +116,9 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        menu.findItem(R.id.action_edit_doc).let {
+            it?.setVisible(false)
+        }
         return true
     }
 
@@ -131,10 +134,10 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 navController.navigate(R.id.nav_login)
                 true
             }
-            R.id.action_send_doc -> {
-                openDocumentPicker()
-                true
-            }
+            /* R.id.action_send_doc -> {
+                 openDocumentPicker()
+                 true
+             }*/
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -162,6 +165,15 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 // Perform operations on the document using its URI.
                 RxBus.publish(RxBusEvent.DocumentMessage(uri))
             }
+        } else if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
+            if (resultData != null) {
+                val resultUri = UCrop.getOutput(resultData)
+                println("result uri $resultUri")
+                resultUri?.let {
+                    RxBus.publish(RxBusEvent.DocumentCropMessage(resultUri))
+                }
+            }
         }
     }
+
 }

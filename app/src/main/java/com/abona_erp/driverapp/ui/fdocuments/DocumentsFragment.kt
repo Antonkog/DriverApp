@@ -2,9 +2,13 @@ package com.abona_erp.driverapp.ui.fdocuments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
@@ -12,9 +16,9 @@ import com.abona_erp.driverapp.data.local.db.DocumentEntity
 import com.abona_erp.driverapp.databinding.DocumentsFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
 import com.abona_erp.driverapp.ui.utils.DeviceUtils
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import com.kivi.remote.presentation.base.recycler.addItemDivider
-import com.kivi.remote.presentation.base.recycler.initWithLinLay
+import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
+import com.abona_erp.driverapp.ui.utils.adapter.addItemDivider
+import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -41,15 +45,27 @@ class DocumentsFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Docume
         docBinding.lifecycleOwner = this.viewLifecycleOwner
 
 
-        val taskId: Int? = args.taskEntity?.taskId
-        val mandant: Int? = args.taskEntity?.mandantId
-
+        val taskId: Int? = args.taskData.taskId
+        val mandant: Int? = args.taskData.mandantId
+        docBinding.uploadDocument.setOnClickListener {
+            val bundle =
+                bundleOf(
+                    docBinding.root.context.getString(R.string.key_task_data) to args.taskData
+                )
+            findNavController().navigate(R.id.action_nav_document_to_selectDocumentFragment, bundle)
+        }
         taskId?.let {
-            docViewModel.observeDocuments(it).observe(viewLifecycleOwner, { documents ->
-                if (documents != null && documents.isNotEmpty()) {
+            docViewModel.observeDocuments(it).observe(viewLifecycleOwner) { documents ->
+                if (documents.isNotEmpty()) {
+                    docBinding.documentList.visibility = View.VISIBLE
+                    docBinding.emptyDocumentView.visibility = View.GONE
                     adapter.swapData(documents)
-                } else Log.e(TAG, "got empty or null documents $it")
-            })
+                } else {
+                    docBinding.documentList.visibility = View.GONE
+                    docBinding.emptyDocumentView.visibility = View.VISIBLE
+                    Log.e(TAG, "got empty or null documents $it")
+                }
+            }
         }
 
         if (taskId != null && mandant != null) {
@@ -64,17 +80,11 @@ class DocumentsFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Docume
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.findItem(R.id.action_send_doc).let {
-            it?.setVisible(true)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // recyclerview init
-        docBinding.docsRecycler.initWithLinLay(LinearLayoutManager.VERTICAL, adapter, listOf())
-        docBinding.docsRecycler.addItemDivider()
+        docBinding.documentList.initWithLinLay(LinearLayoutManager.VERTICAL, adapter, listOf())
+        docBinding.documentList.addItemDivider()
 
     }
 

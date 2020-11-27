@@ -1,4 +1,4 @@
-package com.kivi.remote.presentation.base.recycler
+package com.abona_erp.driverapp.ui.utils.adapter
 
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DividerItemDecoration

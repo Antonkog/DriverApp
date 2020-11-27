@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ChangeHistory
 import com.abona_erp.driverapp.databinding.ProtocolFragmentBinding
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import com.kivi.remote.presentation.base.recycler.addItemDivider
-import com.kivi.remote.presentation.base.recycler.initWithLinLay
+import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
+import com.abona_erp.driverapp.ui.utils.adapter.addItemDivider
+import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

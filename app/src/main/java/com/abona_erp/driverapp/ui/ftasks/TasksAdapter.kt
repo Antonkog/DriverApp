@@ -9,10 +9,11 @@ import com.abona_erp.driverapp.data.local.db.ActivityConfirmationType
 import com.abona_erp.driverapp.data.local.db.ConfirmationType
 import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.databinding.TaskItemBinding
+import com.abona_erp.driverapp.ui.fdocuments.TaskData
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.getImageResource
 import com.abona_erp.driverapp.ui.utils.UtilModel.toDangerousGoodsClass
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
+import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
 
 
 class TasksAdapter(itemClickListener: TasksFragment, val navController: NavController) :
@@ -93,8 +94,13 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
 
     private fun setDocumentsButton(data: TaskWithActivities, binding: TaskItemBinding) {
         binding.imageDocuments.setOnClickListener {
+            val taskData = TaskData(
+                data.taskEntity.orderDetails?.orderNo,
+                data.taskEntity.taskId,
+                data.taskEntity.mandantId
+            )
             val bundle =
-                bundleOf(binding.root.context.getString(R.string.key_task_entity) to data.taskEntity)
+                bundleOf(binding.root.context.getString(R.string.key_task_data) to taskData)
             navController.navigate(R.id.action_nav_home_to_docFragment, bundle)
         }
     }

@@ -15,8 +15,8 @@ import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.db.ActivityWrapper
 import com.abona_erp.driverapp.databinding.DriverActFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
-import com.kivi.remote.presentation.base.recycler.LazyAdapter
-import com.kivi.remote.presentation.base.recycler.initWithLinLay
+import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
+import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
