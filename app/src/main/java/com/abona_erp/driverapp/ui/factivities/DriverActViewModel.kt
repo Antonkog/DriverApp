@@ -9,7 +9,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.R
+import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.*
+import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.model.ActivityStatus
 import com.abona_erp.driverapp.data.model.ResultOfAction
 import com.abona_erp.driverapp.data.remote.AppRepository
@@ -25,7 +27,9 @@ import com.abona_erp.driverapp.ui.utils.UtilModel
 import com.abona_erp.driverapp.ui.utils.UtilModel.toActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class DriverActViewModel @ViewModelInject constructor(
     @ApplicationContext private val context: Context,
@@ -41,6 +45,23 @@ class DriverActViewModel @ViewModelInject constructor(
 
 
     /**
+     * this method is to fix condition, when server sends 200 ok and it is not changed database.
+     * so when change next activity server say "preveous was not changed if we are not waiting,
+     * this time will be managed on settings screen as "SERVER_DELAY"
+     */
+    fun checkTimeAndPostActivity(entity: ActivityEntity){
+        val allActConfirmTime = 2 * TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN) //2 1 min for posting, 1 min for next act posting
+        val lastTimeUpdate = prefs.getLong(Constant.lastConfirmDate, 0L)
+        if(lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)){
+            postConfirmationErrorToUI(String.format(context.resources.getString(R.string.error_act_update_time, Constant.PAUSE_SERVER_REQUEST_MIN)))
+        }  else  {
+            prefs.putAny(Constant.lastConfirmDate, System.currentTimeMillis())
+            postActivityChange(entity, true)
+        }
+    }
+
+
+    /**
      * post to server that activity change, then
      * if next activity exist in this task - start next activity
      * if next taxt exist in order - start next task without asking driver.
@@ -48,34 +69,36 @@ class DriverActViewModel @ViewModelInject constructor(
      * Start first activity in task.
      *
      */
-    fun postActivityChange(entity: ActivityEntity, startNext: Boolean) {
-        val newAct = setNewActivityStatus(entity)
-        viewModelScope.launch(IO) {
-            val result = repository.postActivity(
-                newAct.toActivity(DeviceUtils.getUniqueID(context))
-            )
+    private fun postActivityChange(entity: ActivityEntity, startNext: Boolean) {
+            val newAct = setNewActivityStatus(entity)
+            viewModelScope.launch(IO) {
+                Log.d(TAG, " posting activity ${entity.activityId}, time:  ${System.currentTimeMillis()}")
+                val result = repository.postActivity(
+                    newAct.toActivity(DeviceUtils.getUniqueID(context))
+                )
 
-            if (result.succeeded) {
-                if (result.data?.isSuccess == true) {
-                    repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.SYNCED_WITH_ABONA))
-                   if(startNext) startNextActivity(newAct)
+                if (result.succeeded) {
+                    if (result.data?.isSuccess == true) {
+                        repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.SYNCED_WITH_ABONA))
+                        if(startNext) startNextActivity(newAct)
+                    } else {
+                        postConfirmationErrorToUI(result.toString())
+                    }
                 } else {
-                    postConfirmationErrorToUI(result.toString())
-                }
-            } else {
-                if (!NetworkUtil.isConnectedWithWifi(context)) {
-                    repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.CHANGED_BY_USER))
-                    if(startNext) startNextActivity(newAct)
-                } else{
-                    postConfirmationErrorToUI(context.resources.getString(R.string.error_act_update) + result.toString())
+                    if (!NetworkUtil.isConnectedWithWifi(context)) {
+                        repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.CHANGED_BY_USER))
+                        if(startNext) startNextActivity(newAct)
+                    } else{
+                        postConfirmationErrorToUI(context.resources.getString(R.string.error_act_update) + result.toString())
+                    }
                 }
             }
-        }
     }
 
     private suspend fun startNextActivity(
         newAct: ActivityEntity
     ) {
+        delay(TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN))
         val nextActStarted = startNextActivityCurrentTask(newAct)
 
         val taskUpdated = updateParentTask(newAct, nextActStarted)
@@ -193,7 +216,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 started = System.currentTimeMillis()
             )
             val result = repository.updateActivity(newNextAct) // we update next activity in task, we do not send it to server when start, only when finish
-            Log.e(TAG, "updated next activity to:\n $newNextAct  \n result:  $result")
+            Log.e(TAG, "local update next activity to:\n $newNextAct  \n result:  $result")
         } else {
             Log.e(TAG, "no next activity")
         }
@@ -222,7 +245,6 @@ class DriverActViewModel @ViewModelInject constructor(
                     )
             }
             ActivityStatus.FINISHED -> entity
-            ActivityStatus.ENUM_ERROR -> entity
         }
     }
 
@@ -235,13 +257,13 @@ class DriverActViewModel @ViewModelInject constructor(
                 activityEntity.activityStatus == ActivityStatus.PENDING
             }
 
-        val pendingNotExist = it.none { it.activityStatus == ActivityStatus.PENDING }
+        val lastActivity = it.none { it.activityStatus == ActivityStatus.PENDING } && it.filter {it.activityStatus == ActivityStatus.RUNNING}.size == 1
 
         val wrapped = it.map { activityEntity ->
             ActivityWrapper(
                 activityEntity,
                 activityEntity.activityId == firstVisible?.activityId ?: false,
-                pendingNotExist
+                lastActivity
             )
         }
 

@@ -98,6 +98,8 @@ interface AppRepository {
     //local from db
     suspend fun updateTask(taskEntity: TaskEntity): Int //from fcm
     suspend fun updateActivity(activityEntity: ActivityEntity): Int // call api to set db
+
+    //That is from FCM
     suspend fun insertOrUpdateTask(taskEntity: TaskEntity)
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity)
 

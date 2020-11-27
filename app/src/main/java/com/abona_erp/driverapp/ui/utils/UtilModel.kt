@@ -103,7 +103,8 @@ object UtilModel {
             started.time,
             finished.time,
             ActivityStatus.getActivityStatus(status),
-            ActivityConfirmationType.RECEIVED
+            if(this.status == ActivityStatus.FINISHED.status) //we dont do any changes on comleted activity, so make sense to show it as synced, when getting from server.
+            ActivityConfirmationType.SYNCED_WITH_ABONA else   ActivityConfirmationType.RECEIVED
         )
     }
 
@@ -280,10 +281,9 @@ object UtilModel {
     fun formatTimeDifference(difference: Long, context: Context): String {
         return String.format(
             context.resources.getString(R.string.task_duein_format),
-            TimeUnit.MILLISECONDS.toDays(difference),
-            TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toHours(1),
-            TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.HOURS.toMinutes(1),
-            TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1)
+            TimeUnit.MILLISECONDS.toDays(difference) % TimeUnit.DAYS.toHours(1),
+            TimeUnit.MILLISECONDS.toHours(difference) % TimeUnit.HOURS.toMinutes(1),
+            TimeUnit.MILLISECONDS.toMinutes(difference) % TimeUnit.MINUTES.toSeconds(1)
         )
     }
 

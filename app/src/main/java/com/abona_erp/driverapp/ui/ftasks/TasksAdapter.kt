@@ -2,6 +2,7 @@ package com.abona_erp.driverapp.ui.ftasks
 
 import android.content.res.Resources
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.abona_erp.driverapp.R
@@ -65,12 +66,13 @@ class TasksAdapter(itemClickListener: TasksFragment, val navController: NavContr
         binding.progressTask.progress = data.taskEntity.status.intId
         binding.textTaskName.text = mResources.getString(nameId)
 
-            binding.textFinishTime.text = UtilModel.formatLongTime( data.taskEntity.taskDueDateFinish)
+        binding.textFinishTime.text = UtilModel.formatLongTime( data.taskEntity.taskDueDateFinish)
 
         val difference = data.taskEntity.taskDueDateFinish - System.currentTimeMillis()
-        binding.textDueInTime.text =  UtilModel.formatTimeDifference( difference, context)
 
-        if(difference < 0) binding.textDueInTime.setTextColor(mResources.getColor(R.color.colorAccent))
+        binding.textDueInTime.text =  UtilModel.formatTimeDifference( difference, context)
+        binding.textDueInTime.setTextColor(ContextCompat.getColor(context, if(difference< 0) R.color.colorAccent else R.color.black))
+
 
         binding.textActName.text =
             data.activities.firstOrNull { it.confirmationType == ActivityConfirmationType.RECEIVED }?.name

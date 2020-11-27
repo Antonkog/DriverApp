@@ -68,10 +68,10 @@ class ProtocolAdapter(listener: OnItemClickListener<ChangeHistory>) :
         binding.textTimeCreatedVal.text = UtilModel.formatLongTime(data.created)
         binding.textTimeModifVal.text = UtilModel.formatLongTime(data.modified)
 
-        binding.textParamsVal.text = data.params.replace("{", "{\n").replace("}", "\n}")
+        binding.textParamsVal.text = data.params.replace(",",",\n")
 
         if (data.response != null) {
-            val format = data.response.replace("{", "\n{").replace("}", "\n}")
+            val format = data.response.replace(",",",\n")
             binding.textResponse.visibility = View.VISIBLE
             binding.textResponseVal.text = format
             binding.imageResponseArrow.visibility = View.VISIBLE
