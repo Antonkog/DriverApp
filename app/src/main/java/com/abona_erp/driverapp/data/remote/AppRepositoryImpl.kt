@@ -137,6 +137,10 @@ class AppRepositoryImpl @Inject constructor(
         return api.postActivityChange(UtilModel.getCommActivityChangeItem(context, activity))
     }
 
+    override suspend fun saveActivityPost(activity: Activity): Boolean {
+       return api.saveActivityPost(UtilModel.getCommActivityChangeItem(context, activity))
+    }
+
     override suspend fun postDelayReasons(delayReasonEntity: DelayReasonEntity): ResultWrapper<ResultOfAction> {
         return api.postDelayItems(UtilModel.getCommDelayChangeItem(context, delayReasonEntity))
     }
@@ -155,10 +159,16 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
+
     override suspend fun confirmTask(
         commItem: CommItem
     ): ResultWrapper<ResultOfAction> {
         return api.confirmTask(commItem)
+    }
+
+
+    override suspend fun saveConfirmTask(commItem: CommItem): Boolean {
+        return api.saveConfirmTask(commItem)
     }
 
     override suspend fun confirmTask(
@@ -166,7 +176,6 @@ class AppRepositoryImpl @Inject constructor(
     ): ResultWrapper<ResultOfAction> {
         return api.confirmTask(changeHistory)
     }
-
 
     private suspend fun updateDocumentsFromRemoteDataSource(
         mandantId: Int,

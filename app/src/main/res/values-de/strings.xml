@@ -70,5 +70,7 @@
     <string name="done">Выполнено</string>
     <string name="brush">Bürste</string>
     <string name="opacity">Opazität</string>
+    <string name="connection_change_title">Verbindungsänderung</string>
+    <string name="connection_change_message">Sie sind offline, in diesem Modus speichern wir Ihre Anfragen.\nWir erstellen sie neu, wenn wir online gehen.\nSiehe Protokollfragment</string>
 
 </resources>

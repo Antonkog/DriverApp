@@ -13,9 +13,7 @@ import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.*
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.model.ActivityStatus
-import com.abona_erp.driverapp.data.model.ResultOfAction
 import com.abona_erp.driverapp.data.remote.AppRepository
-import com.abona_erp.driverapp.data.remote.ResultWrapper
 import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
@@ -58,21 +56,21 @@ class DriverActViewModel @ViewModelInject constructor(
      */
 
     fun checkTimePostActChange(entity: ActivityWrapper){
-        val allActConfirmTime = TimeUnit.MINUTES.toMillis(Constant.PAUSE_SERVER_REQUEST_MIN) //2 1 min for posting, 1 min for next act posting
+        val allActConfirmTime = TimeUnit.SECONDS.toMillis(Constant.PAUSE_SERVER_REQUEST_SEC) //2 1 min for posting, 1 min for next act posting
         val lastTimeUpdate = prefs.getLong(Constant.lastConfirmDate, 0L)
         if(lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)){
-            postConfirmationErrorToUI(String.format(context.resources.getString(R.string.error_act_update_time, Constant.PAUSE_SERVER_REQUEST_MIN)))
+            postConfirmationErrorToUI(String.format(context.resources.getString(R.string.error_act_update_time, Constant.PAUSE_SERVER_REQUEST_SEC)))
         }  else  {
             viewModelScope.launch(IO) {
                 prefs.putAny(Constant.lastConfirmDate, System.currentTimeMillis())
                 postActivityChange(entity.activity)
                 //now do only local update, and send next time, or wait 1 min and then request.
-                delay(allActConfirmTime) //that delay is for server next activity or task confirmation
+              if(NetworkUtil.isConnectedWithWifi(context))  delay(allActConfirmTime) //that delay is for server next activity or task confirmation
                 if(entity.isLastActivity){
                     val nextTask = repository.getTask(entity.activity.taskpId +1, entity.activity.mandantId)
                     nextTask?.let {
                         confirmTask(nextTask)
-                        delay(allActConfirmTime) //that delay is for server next activity confirmation
+                        if(NetworkUtil.isConnectedWithWifi(context))  delay(allActConfirmTime) //that delay is for server next activity confirmation
                        val firstActNextTask =  repository.getFirstTaskActivity(nextTask)
                         firstActNextTask?.let {
                             postActivityChange(it)
@@ -100,6 +98,7 @@ class DriverActViewModel @ViewModelInject constructor(
                 false
             }
         } else {
+            repository.saveActivityPost(newAct.toActivity(DeviceUtils.getUniqueID(context)))
             repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.CHANGED_BY_USER))
             true
         }
@@ -120,24 +119,21 @@ class DriverActViewModel @ViewModelInject constructor(
 
 
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
+        val newTask =  UtilModel.getTaskConfirmation(
+            context,
+            taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
+        )
+
         if(NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
-            val result =
-                repository.confirmTask(
-                    UtilModel.getTaskConfirmation(
-                        context,
-                        taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
-                    )
-                )
+            val result = repository.confirmTask(newTask)
             if (result.succeeded && result.data?.isSuccess == true) {//common errors like no networks
-                val updateResult =  repository.updateTask( taskEntity.copy(
-                    openCondition = !taskEntity.openCondition
-                ))
-                Log.e(TasksViewModel.TAG, "task update result: $updateResult")
+               repository.updateTask(taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER, openCondition = !taskEntity.openCondition))
             } else {
                 postConfirmationErrorToUI(result.toString())
             }
         } else {
-            val updateResult =  repository.updateTask( taskEntity.copy(
+            repository.saveConfirmTask(newTask)
+            val updateResult =  repository.updateTask(taskEntity.copy(
                 openCondition = !taskEntity.openCondition
             ))
             Log.e(TasksViewModel.TAG, "task update result: $updateResult")

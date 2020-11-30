@@ -186,6 +186,12 @@ class ApiServiceWrapper(
         return postActivityChange(item, changeHistory)
     }
 
+    suspend fun saveActivityPost(commItem: CommItem) :Boolean{
+        val change = prerapeChangeChistory(gson.toJson(commItem), null, POST_ACTIVITY)
+        val result =  localDataSource.insertHistoryChange(change.copy(status =  Status.SENT_OFFLINE))
+        return result == 1L
+    }
+
     /**
      * Post activity and rewrite database logs
      * @param commItem - request body based on this param
@@ -199,7 +205,7 @@ class ApiServiceWrapper(
         val change = prerapeChangeChistory(gson.toJson(commItem),changeHistory, POST_ACTIVITY)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
-            val result =api.postActivityChange(commItem)
+            val result = api.postActivityChange(commItem)
             updateHistoryOnSuccess(change, gson.toJson(result), autoGenId)
             sendSuccessToUI(result.toString())
             ResultWrapper.Success(result)
@@ -218,6 +224,12 @@ class ApiServiceWrapper(
 
     suspend fun confirmTask(commItem: CommItem): ResultWrapper<ResultOfAction> {
         return confirmTask(commItem, null)
+    }
+
+    suspend fun saveConfirmTask(commItem: CommItem): Boolean {
+        val change = prerapeChangeChistory(gson.toJson(commItem), null, CONFIRM_TASK)
+        val result =  localDataSource.insertHistoryChange(change.copy(status =  Status.SENT_OFFLINE))
+        return result == 1L
     }
 
     private suspend fun confirmTask(

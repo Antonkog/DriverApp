@@ -146,29 +146,20 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
+        val newTask =  UtilModel.getTaskConfirmation(
+            context,
+            taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
+        )
         if(NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
             val result =
-                repository.confirmTask(
-                    UtilModel.getTaskConfirmation(
-                        context,
-                        taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
-                    )
-                )
-            if (result.succeeded) {//common errors like no networks
-                if (result.data?.isSuccess == true) { // internal errors on ok from Abona
-                    updateTask(
-                        taskEntity.copy(
-                            confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER,
-                            openCondition = !taskEntity.openCondition
-                        )
-                    )//green checkers
+                repository.confirmTask(newTask)
+            if (result.succeeded && result.data?.isSuccess == true) {//common errors like no networks
+                    updateTask(taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER, openCondition = !taskEntity.openCondition))//green checkers
                 } else { //posting error from Abona to UI, to show why can't update
                     postConfirmationErrorToUI(result)
                 }
-            }else{
-                postConfirmationErrorToUI(result)
-            }
         } else {
+            repository.saveConfirmTask(newTask)
             updateTask(
                 taskEntity.copy(
                     openCondition = !taskEntity.openCondition

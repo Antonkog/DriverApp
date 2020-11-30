@@ -10,7 +10,7 @@ object Constant {
     /**
      * that pause asked from Jaimon since we can't update Abona tables fast
      */
-    const val PAUSE_SERVER_REQUEST_MIN = 1L
+    const val PAUSE_SERVER_REQUEST_SEC = 30L
 
     const val REQUEST_APP_SETTINGS = 121
     const val REQUEST_OPEN_DOC = 122
@@ -49,6 +49,7 @@ object Constant {
     const val currentVisibleTaskid = "current_visible_taskId"
     const val currentVisibleOrderId = "current_visible_OrderId"
     const val lastConfirmDate = "last_confirm_date"
+    const val lastConnectionChange = "last_connection_change"
     const val mandantId = "mandantId"
 
 

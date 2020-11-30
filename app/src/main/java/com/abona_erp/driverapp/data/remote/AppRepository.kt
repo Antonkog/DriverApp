@@ -56,11 +56,13 @@ interface AppRepository {
      * when user start/finish activity
      */
     suspend fun postActivity(activity: Activity): ResultWrapper<ResultOfAction>
+    suspend fun saveActivityPost(activity: Activity): Boolean
 
     /**
      * when user receive/open/start task
      */
     suspend fun confirmTask(commItem: CommItem): ResultWrapper<ResultOfAction>
+    suspend fun saveConfirmTask(commItem: CommItem):Boolean
 
     /**
      * to post delay reason to server

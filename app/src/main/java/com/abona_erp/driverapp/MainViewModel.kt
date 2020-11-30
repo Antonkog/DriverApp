@@ -28,6 +28,7 @@ import com.abona_erp.driverapp.ui.utils.UtilModel.toActivityEntity
 import com.abona_erp.driverapp.ui.utils.UtilModel.toDelayReasonEntity
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import java.util.*
@@ -43,11 +44,10 @@ class MainViewModel @ViewModelInject constructor(
 ) : BaseViewModel(), ConnectivityProvider.ConnectivityStateListener {
     private val TAG = "MainViewModel"
 
-    private var connectionHistory: Pair<Boolean, Long>? = null
-
     val vechicle = MutableLiveData<VehicleItem>()
     val requestStatus = MutableLiveData<Status>()
     val authReset = MutableLiveData<Boolean>()
+    val connectionChange = MutableLiveData<Boolean>()
 
     data class Status(val message: String?, val type: StatusType)
     enum class StatusType {
@@ -90,37 +90,37 @@ class MainViewModel @ViewModelInject constructor(
     }
 
     fun doOnConnectionChange(hasInternet: Boolean) {
-        val justChanged =
-            if (connectionHistory == null) {
-                connectionHistory = Pair(hasInternet, System.currentTimeMillis())
-                false
-            } else {
-                System.currentTimeMillis() - connectionHistory!!.second < TimeUnit.SECONDS.toMillis(Constant.CONNECTION_VELOCITY_SEC)
-            }
+        val lastChangeTime = prefs.getLong(Constant.lastConnectionChange, 0L)
 
-        if (hasInternet && !justChanged)
-            viewModelScope.launch {
-                val offline = LinkedList<ChangeHistory>()
-                offline.addAll(repository.getAllOfflineRequests())
-                //here is basic implementation of sending offline requests.
-                if (offline.isNotEmpty()) {
-                    val disposable = io.reactivex.Observable.interval(
-                        Constant.PAUSE_SERVER_REQUEST_MIN,
-                        TimeUnit.MINUTES
-                    )
-                        .take(offline.size.toLong())
-                        .doOnNext {
-                            retryRequest(offline.first())
-                            Log.d(TAG, "sending ${offline.first.dataType}")
-                            offline.pop()
-                        }
-                        .subscribe {
-                            Log.d(TAG, "all offline items was resend")
-                        }
+        if(System.currentTimeMillis() - lastChangeTime > TimeUnit.SECONDS.toMillis(10))// don't show changes more then in 30sec
+        {
+            prefs.putAny(Constant.lastConnectionChange, System.currentTimeMillis())
+            if(hasInternet) resetOfflineRequests()
+            else connectionChange.postValue(hasInternet)
+        }
+    }
 
-                    disposables.add(disposable)
+    private fun resetOfflineRequests() =  viewModelScope.launch(IO){
+        val offline = LinkedList<ChangeHistory>()
+        offline.addAll(repository.getAllOfflineRequests())
+        //here is basic implementation of sending offline requests.
+        if (offline.isNotEmpty()) {
+            val disposable = Observable.interval(
+                Constant.PAUSE_SERVER_REQUEST_SEC,
+                TimeUnit.SECONDS
+            )
+                .take(offline.size.toLong())
+                .doOnNext {
+                    retryRequest(offline.first())
+                    Log.d(TAG, "sending ${offline.first.dataType}")
+                    offline.pop()
                 }
-            }
+                .subscribe {
+                    Log.d(TAG, "all offline items was resend")
+                }
+
+            disposables.add(disposable)
+        }
     }
 
     private fun retryRequest(changeHistory: ChangeHistory) {

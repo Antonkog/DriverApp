@@ -46,12 +46,20 @@ class DialogBuilder(val context: Context) {
                 .create()
         }
 
-        fun getPermissionErrorDialog(context: Context,   positiveListener: DialogInterface.OnClickListener,): Dialog {
+        fun getPermissionErrorDialog(context: Context,   positiveListener: DialogInterface.OnClickListener): Dialog {
             return getBaseDialogBuilder(context).setTitle(R.string.need_permissions_title)
                 .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton(android.R.string.ok, positiveListener)
                 .setMessage(R.string.need_location_permission).create()
 
+        }
+
+        fun getConnectionDialog(context: Context, connected: Boolean): Dialog {
+            return getBaseDialogBuilder(context)
+                .setTitle(R.string.connection_change_title)
+                .setMessage(String.format(context.resources.getString(R.string.connection_change_message), connected))
+                .setCancelable(true)
+                .create()
         }
     }
 
