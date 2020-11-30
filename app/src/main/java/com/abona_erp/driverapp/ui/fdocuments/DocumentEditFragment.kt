@@ -2,12 +2,13 @@ package com.abona_erp.driverapp.ui.fdocuments
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abona_erp.driverapp.R
@@ -15,13 +16,15 @@ import com.abona_erp.driverapp.databinding.DocumentEditFragmentBinding
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseFragment
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.fdocuments.util.FileUtils
 import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
 import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
-import ja.burhanrashid52.photoeditor.*
+import ja.burhanrashid52.photoeditor.PhotoEditor
 import ja.burhanrashid52.photoeditor.PhotoEditor.OnSaveListener
+import ja.burhanrashid52.photoeditor.SaveSettings
+import ja.burhanrashid52.photoeditor.TextStyleBuilder
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -160,12 +163,15 @@ class DocumentEditFragment : BaseFragment(), PropertiesListener,
                                             destinationFileName
                                         )
                                     )
-                                    val uCrop = UCrop.of(saveImageUri, destinationUri)
-                                    val options = UCrop.Options()
-                                    options.setCompressionFormat(Bitmap.CompressFormat.PNG)
-                                    options.setFreeStyleCropEnabled(true)
-                                    uCrop.withOptions(options)
-                                    uCrop.start(requireActivity())
+                                    val bundle =
+                                        bundleOf(
+                                            getString(R.string.key_input_uri) to saveImageUri,
+                                            getString(R.string.key_output_uri) to destinationUri
+                                        )
+                                    findNavController().navigate(
+                                        R.id.action_nav_document_to_cropRotateFragment,
+                                        bundle
+                                    )
                                 }
 
                                 override fun onFailure(exception: Exception) {
@@ -246,8 +252,7 @@ class DocumentEditFragment : BaseFragment(), PropertiesListener,
                     saveSettings,
                     object : OnSaveListener {
                         override fun onSuccess(imagePath: String) {
-                            val saveImageUri =
-                                Uri.fromFile(File(imagePath))
+                            val saveImageUri = Uri.fromFile(File(imagePath))
                             uploadDocumentItem.uri = saveImageUri
                             uploadDocumentItem.ModifiedAt = Date()
                             requireActivity().onBackPressed()

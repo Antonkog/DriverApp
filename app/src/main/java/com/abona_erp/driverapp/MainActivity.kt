@@ -25,13 +25,16 @@ import androidx.navigation.ui.setupWithNavController
 import com.abona_erp.driverapp.data.Constant.REQUEST_OPEN_DOC
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.fdocuments.UCrop
+import com.abona_erp.driverapp.ui.fdocuments.UCropFragment
+import com.abona_erp.driverapp.ui.fdocuments.UCropFragmentCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
-import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
+class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback,
+    UCropFragmentCallback {
     val TAG = MainActivity::class.simpleName
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var navController: NavController
@@ -134,21 +137,10 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 navController.navigate(R.id.nav_login)
                 true
             }
-            /* R.id.action_send_doc -> {
-                 openDocumentPicker()
-                 true
-             }*/
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun openDocumentPicker() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            type = "*/*"
-            addCategory(Intent.CATEGORY_OPENABLE)
-        }
-        startActivityForResult(intent, REQUEST_OPEN_DOC)
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)
@@ -165,13 +157,14 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 // Perform operations on the document using its URI.
                 RxBus.publish(RxBusEvent.DocumentMessage(uri))
             }
-        } else if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
-            if (resultData != null) {
-                val resultUri = UCrop.getOutput(resultData)
-                println("result uri $resultUri")
-                resultUri?.let {
-                    RxBus.publish(RxBusEvent.DocumentCropMessage(resultUri))
-                }
+        }
+    }
+
+    override fun onCropFinish(result: UCropFragment.UCropResult?) {
+        result?.let {
+            val resultUri = UCrop.getOutput(it.mResultData)
+            resultUri?.let {
+                RxBus.publish(RxBusEvent.DocumentCropMessage(resultUri))
             }
         }
     }

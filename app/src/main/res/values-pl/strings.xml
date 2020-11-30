@@ -67,4 +67,11 @@
     <string name="brush">Szczotka</string>
     <string name="opacity">Nieprzezroczystość</string>
 
+    <!-- Crop and Rotate -->
+    <string name="ucrop_crop">Przyciąć</string>
+    <string name="ucrop_label_edit_photo">Edytuj zdjęcie</string>
+    <string name="ucrop_label_original">Oryginał</string>
+    <string name="ucrop_menu_crop">Przyciąć</string>
+    <string name="ucrop_rotate">Obracać się</string>
+    <string name="ucrop_scale">Skala</string>
 </resources>

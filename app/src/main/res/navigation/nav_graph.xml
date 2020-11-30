@@ -43,11 +43,11 @@
         android:id="@+id/nav_login"
         android:name="com.abona_erp.driverapp.ui.flogin.LoginFragment"
         android:label="@string/screen_login"
-        tools:layout="@layout/login_fragment" >
+        tools:layout="@layout/login_fragment">
         <argument
             android:name="auto_login"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
 
     <fragment
@@ -175,14 +175,14 @@
     <fragment
         android:id="@+id/delayReasonFragment"
         android:name="com.abona_erp.driverapp.ui.fdelays.DelayReasonFragment"
-        tools:layout="@layout/delay_reason_fragment"
-        android:label="@string/screen_delays">
+        android:label="@string/screen_delays"
+        tools:layout="@layout/delay_reason_fragment">
 
         <argument
             android:name="activity_entity"
-            app:nullable="true"
             android:defaultValue="@null"
-            app:argType="com.abona_erp.driverapp.data.local.db.ActivityEntity" />
+            app:argType="com.abona_erp.driverapp.data.local.db.ActivityEntity"
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -196,6 +196,9 @@
         <argument
             android:name="task_data"
             app:argType="com.abona_erp.driverapp.ui.fdocuments.TaskData" />
+        <action
+            android:id="@+id/action_nav_document_to_cropRotateFragment"
+            app:destination="@id/cropRotateFragment" />
     </fragment>
 
     <fragment
@@ -203,4 +206,17 @@
         android:name="com.abona_erp.driverapp.ui.fdocuments.PropertiesFragment"
         android:label="@string/screen_edit_documents"
         tools:layout="@layout/document_edit_fragment" />
+
+    <fragment
+        android:id="@+id/cropRotateFragment"
+        android:name="com.abona_erp.driverapp.ui.fdocuments.UCropFragment"
+        android:label="@string/screen_edit_documents"
+        tools:layout="@layout/ucrop_fragment_photobox">
+        <argument
+            android:name="output_uri"
+            app:argType="android.net.Uri" />
+        <argument
+            android:name="input_uri"
+            app:argType="android.net.Uri"/>
+    </fragment>
 </navigation>

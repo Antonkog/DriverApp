@@ -71,4 +71,11 @@
     <string name="brush">Bürste</string>
     <string name="opacity">Opazität</string>
 
+    <!-- Crop and Rotate -->
+    <string name="ucrop_crop">Zuschneiden</string>
+    <string name="ucrop_label_edit_photo">Foto bearbeiten</string>
+    <string name="ucrop_label_original">Original</string>
+    <string name="ucrop_menu_crop">Zuschneiden</string>
+    <string name="ucrop_rotate">Drehen</string>
+    <string name="ucrop_scale">Rahmen</string>
 </resources>

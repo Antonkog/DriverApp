@@ -25,6 +25,7 @@ import com.abona_erp.driverapp.data.Constant.OPEN_CAMERA_REQUEST_CODE
 import com.abona_erp.driverapp.data.model.DMSDocumentType
 import com.abona_erp.driverapp.databinding.SelectDocumentFragmentBinding
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.fdocuments.util.FileUtils
 import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
 import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
 import dagger.hilt.android.AndroidEntryPoint
@@ -138,7 +139,7 @@ class SelectDocumentFragment : BaseFragment(), LazyAdapter.OnItemClickListener<U
                 mandantId.toString()
             )
             val currentTimestamp = Date()
-            photoFile?.let {
+            photoFile.let {
                 val currentPath = Uri.fromFile(it)
                 val uploadItem = UploadDocumentItem(
                     currentPath,
