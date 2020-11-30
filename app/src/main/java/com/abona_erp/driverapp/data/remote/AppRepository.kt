@@ -107,11 +107,9 @@ interface AppRepository {
     suspend fun insertDocument(documentEntity: DocumentEntity)
 
     //for logic manipulations: start next activity, next task in current order
-    suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
     suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity?
     suspend fun getActivity(actId:  Int, taskId: Int, mandantId: Int): ActivityEntity?
-    suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity?
-    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity?
+    suspend fun getTask(taskId: Int, mandantId: Int): TaskEntity?
 
     suspend fun cleanDatabase()
 
