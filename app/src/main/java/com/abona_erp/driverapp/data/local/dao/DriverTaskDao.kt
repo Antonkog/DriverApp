@@ -66,6 +66,7 @@ interface DriverTaskDao {
 
                 TaskEntity(
                     it.taskId,
+                    it.vehicleNextTaskId,
                     ActionType.getActionType(it.actionType),
                     it.status,
                     it.activities.map { it.activityId },

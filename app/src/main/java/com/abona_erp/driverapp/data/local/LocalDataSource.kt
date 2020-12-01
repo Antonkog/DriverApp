@@ -79,6 +79,9 @@ class LocalDataSource internal constructor(
     fun getActivity(activityId: Int, taskpId: Int, mandantId: Int): ActivityEntity?{
         return db.driverActDao().getActivity(activityId, taskpId, mandantId)
     }
+    fun getActivityBySequence(sequence: Int, taskpId: Int, mandantId: Int): ActivityEntity?{
+        return db.driverActDao().getActivityBySequence(sequence, taskpId, mandantId)
+    }
 
     suspend fun insertOrUpdateActivity(activityEntity: ActivityEntity) {
         val old = db.driverActDao().getActivity(

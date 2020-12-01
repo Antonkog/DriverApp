@@ -44,8 +44,6 @@ class ApiServiceWrapper(
     private suspend fun authentication(
         authModel: UtilModel.AuthModel, changeHistory: ChangeHistory?
     ): ResultWrapper<TokenResponse> {
-        val change = prerapeChangeChistory( gson.toJson(authModel), changeHistory, AUTH)
-        val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         sentLoadingToUI()
         return try {
             val result = ResultWrapper.Success(
@@ -56,11 +54,9 @@ class ApiServiceWrapper(
                 )
             )
             sendSuccessToUI(result.toString())
-            updateHistoryOnSuccess(change, gson.toJson(result), autoGenId)
             result
         } catch (ex: Exception) {
             sendErrorToUI(ex)
-            updateHistoryOnError(change, autoGenId)
             ResultWrapper.Error(ex)
         }
     }
@@ -362,10 +358,8 @@ class ApiServiceWrapper(
 
     fun prerapeChangeChistory(request: String , changeHistory: ChangeHistory?, historyDataType: HistoryDataType) : ChangeHistory{
         val time = System.currentTimeMillis()
-        var connected = NetworkUtil.isConnectedWithWifi(context)
-        if(historyDataType == AUTH) connected = true // we cant login when offline, so we don't save offline request in this case
         return changeHistory ?: ChangeHistory(
-            if (connected) Status.SENT else Status.SENT_OFFLINE,
+             Status.SENT_OFFLINE,
             LogType.APP_TO_SERVER,
             historyDataType,
             request,

@@ -58,28 +58,32 @@ class DriverActViewModel @ViewModelInject constructor(
     fun checkTimePostActChange(entity: ActivityWrapper){
         val allActConfirmTime = TimeUnit.SECONDS.toMillis(Constant.PAUSE_SERVER_REQUEST_SEC) //2 1 min for posting, 1 min for next act posting
         val lastTimeUpdate = prefs.getLong(Constant.lastConfirmDate, 0L)
-        if(lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)){
+        if(NetworkUtil.isConnectedWithWifi(context) && lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)){
             postConfirmationErrorToUI(String.format(context.resources.getString(R.string.error_act_update_time, Constant.PAUSE_SERVER_REQUEST_SEC)))
         }  else  {
             viewModelScope.launch(IO) {
                 prefs.putAny(Constant.lastConfirmDate, System.currentTimeMillis())
-                postActivityChange(entity.activity)
-                //now do only local update, and send next time, or wait 1 min and then request.
-              if(NetworkUtil.isConnectedWithWifi(context))  delay(allActConfirmTime) //that delay is for server next activity or task confirmation
-                if(entity.isLastActivity){
-                    val nextTask = repository.getTask(entity.activity.taskpId +1, entity.activity.mandantId)
-                    nextTask?.let {
-                        confirmTask(nextTask)
-                        if(NetworkUtil.isConnectedWithWifi(context))  delay(allActConfirmTime) //that delay is for server next activity confirmation
-                       val firstActNextTask =  repository.getFirstTaskActivity(nextTask)
-                        firstActNextTask?.let {
-                            postActivityChange(it)
+                val actPostSuccess =  postActivityChange(entity.activity)
+                if(actPostSuccess){
+
+                    val isFirstPending = entity.activity.activityStatus == ActivityStatus.PENDING && entity.buttonVisible
+
+                    if(entity.isLastActivity){
+                        //set current task ui as finished, because all act finished
+                        //and no update of next activity if this was last one
+                        val currentTask = repository.getTask(entity.activity.taskpId, entity.activity.mandantId)
+                        currentTask?.let {
+                            val updated= currentTask.copy(status = TaskStatus.FINISHED)
+                            repository.updateTask(updated) //finish this task in db
+
+                        }
+                    } else {
+                        if(NetworkUtil.isConnectedWithWifi(context))  delay(allActConfirmTime) //that delay is for server next activity or task confirmation
+                        if(!isFirstPending){ //Start click  starts only current first activity, next - finish current and starts next
+                            val nextAct =   repository.getActivityBySequence(entity.activity.sequence +1 , entity.activity.taskpId, entity.activity.mandantId )
+                            nextAct?.let { postActivityChange(it) }
                         }
                     }
-                } else {
-                    //getting next activity assume that nextID is current +1
-                  val nextAct =   repository.getActivity(entity.activity.activityId +1 , entity.activity.taskpId, entity.activity.mandantId )
-                    nextAct?.let { postActivityChange(it) }
                 }
             }
         }

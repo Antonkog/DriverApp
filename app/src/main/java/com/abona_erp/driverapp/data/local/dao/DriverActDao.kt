@@ -14,6 +14,9 @@ interface DriverActDao {
     @Query("SELECT * FROM activity_entity WHERE mandantId =:mandantId AND taskpId =:taskId AND activityId =:actId")
     fun getActivity(actId: Int, taskId: Int, mandantId: Int): ActivityEntity?
 
+    @Query("SELECT * FROM activity_entity WHERE mandantId =:mandantId AND taskpId =:taskId AND sequence =:sequence")
+    fun getActivityBySequence(sequence: Int, taskId: Int, mandantId: Int): ActivityEntity?
+
     @Query("SELECT * FROM activity_entity  ORDER BY sequence ASC")
     fun getAllAsList(): List<ActivityEntity>
 

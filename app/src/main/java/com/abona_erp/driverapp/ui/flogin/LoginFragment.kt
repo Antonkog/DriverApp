@@ -47,7 +47,7 @@ class LoginFragment : BaseFragment() {
 
         loginViewModel.authenticationState.observe(
             viewLifecycleOwner,
-            Observer { authenticationState ->
+            { authenticationState ->
                 when (authenticationState) {
                     LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                         navigateHome()
@@ -71,17 +71,20 @@ class LoginFragment : BaseFragment() {
                 }
             })
 
-        loginViewModel.error.observe(viewLifecycleOwner, Observer { error ->
+        loginViewModel.error.observe(viewLifecycleOwner, { error ->
             loginBinding.textError?.text = error
         })
 
         loginBinding.buttonTest.setOnClickListener {
-            loginBinding.editClientId.setText("" + Constant.testMandantId)
+            loginBinding.editClientId.setText(Constant.testMandantId.toString())
             loginBinding.editName.setText(R.string.name_test)
             loginBinding.editPassword.setText(R.string.password_test)
         }
 
         loginBinding.buttonLogIn.setOnClickListener {
+            if(loginBinding.editName.text.isNotBlank() &&
+                loginBinding.editPassword.text.isNotBlank()&&
+                loginBinding.editClientId.text.isNotBlank())
             loginViewModel.authenticate(
                 loginBinding.editName.text.toString(),
                 loginBinding.editPassword.text.toString(),
