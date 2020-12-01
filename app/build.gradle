@@ -163,5 +163,4 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
     //Photo Editor
     implementation 'ja.burhanrashid52:photoeditor:1.1.0'
-    implementation 'com.github.yalantis:ucrop:2.2.6'
 }

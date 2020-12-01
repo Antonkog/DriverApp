@@ -69,4 +69,11 @@
     <string name="connection_change_title">Zmiana połączenia</string>
     <string name="connection_change_message">Jesteś offline, w tym trybie zapisujemy Twoje żądania.\nOdtwarzamy je w trybie online.\nZobacz fragment protokołu</string>
 
+    <!-- Crop and Rotate -->
+    <string name="ucrop_crop">Przyciąć</string>
+    <string name="ucrop_label_edit_photo">Edytuj zdjęcie</string>
+    <string name="ucrop_label_original">Oryginał</string>
+    <string name="ucrop_menu_crop">Przyciąć</string>
+    <string name="ucrop_rotate">Obracać się</string>
+    <string name="ucrop_scale">Skala</string>
 </resources>
