@@ -79,6 +79,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
 
     override fun onLazyItemClick(data: ActivityWrapper) {
         Log.d(TAG, " on activity click : ${data.activity.activityId}")
-        driverActViewModel.checkTimeAndPostActivity(data.activity)
+        driverActViewModel.checkTimePostActChange(data)
     }
 }

@@ -24,13 +24,12 @@ class PrivatePreferences {
             }
         }
 
-        fun getEndpoint(context: Context): String {
-            val sharedPref = getSharedPrefs(
+        fun getEndpoint(context: Context): String? {
+            return getSharedPrefs(
                 context
-            ) ?: return Constant.defaultApiUrl
-            return sharedPref.getString(
-                Constant.preferencesEndpoint, Constant.defaultApiUrl
-            ) ?: Constant.defaultApiUrl
+            )?.getString(
+                Constant.preferencesEndpoint, null
+            )
         }
 
 

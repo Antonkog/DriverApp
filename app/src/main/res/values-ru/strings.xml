@@ -68,5 +68,7 @@
     <string name="done">Выполнено</string>
     <string name="brush">Щетка</string>
     <string name="opacity">Непрозрачность</string>
+    <string name="connection_change_title">Изменение подключения</string>
+    <string name="connection_change_message">Вы не в сети, в этом режиме мы сохраняем ваши запросы.\nМы воссоздаем их при выходе в Интернет.\nСм. Фрагмент протокола</string>
 
 </resources>

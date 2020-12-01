@@ -17,7 +17,9 @@ import com.abona_erp.driverapp.data.local.db.TaskStatus
 import com.abona_erp.driverapp.data.local.preferences.PrivatePreferences
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.model.Activity
+import com.abona_erp.driverapp.data.model.ResultOfAction
 import com.abona_erp.driverapp.data.remote.AppRepository
+import com.abona_erp.driverapp.data.remote.ResultWrapper
 import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
@@ -144,40 +146,38 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
-        val result =
-            repository.confirmTask(
-                UtilModel.getTaskConfirmation(
-                    context,
-                    taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
+        val newTask =  UtilModel.getTaskConfirmation(
+            context,
+            taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
+        )
+        if(NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
+            val result =
+                repository.confirmTask(newTask)
+            if (result.succeeded && result.data?.isSuccess == true) {//common errors like no networks
+                    updateTask(taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER, openCondition = !taskEntity.openCondition))//green checkers
+                } else { //posting error from Abona to UI, to show why can't update
+                    postConfirmationErrorToUI(result)
+                }
+        } else {
+            repository.saveConfirmTask(newTask)
+            updateTask(
+                taskEntity.copy(
+                    openCondition = !taskEntity.openCondition
+                )
+            )//green checkers
+        }
+    }
+
+    private fun postConfirmationErrorToUI(result: ResultWrapper<ResultOfAction>) {
+        Log.e(TAG, "can't update task status on server $result")
+        RxBus.publish(
+            RxBusEvent.RequestStatus(
+                MainViewModel.Status(
+                    result.data?.text,
+                    MainViewModel.StatusType.ERROR
                 )
             )
-        if (result.succeeded) {//common errors like no networks
-            if (result.data?.isSuccess == true) { // internal errors on ok from Abona
-                updateTask(
-                    taskEntity.copy(
-                        confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER,
-                        openCondition = !taskEntity.openCondition
-                    )
-                )//green checkers
-            } else { //posting error from Abona to UI, to show why can't update
-                RxBus.publish(
-                    RxBusEvent.RequestStatus(
-                        MainViewModel.Status(
-                            result.data?.text,
-                            MainViewModel.StatusType.ERROR
-                        )
-                    )
-                )
-            }
-        }  else {
-            if(!NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
-                updateTask(
-                    taskEntity.copy(
-                        openCondition = !taskEntity.openCondition
-                    )
-                )//green checkers
-            } else  Log.e(TAG, "can't update task status on server $result")
-        }
+        )
     }
 
     companion object {

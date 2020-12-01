@@ -155,7 +155,7 @@ object AppModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-            .baseUrl(PrivatePreferences.getEndpoint(context)).build().create(ApiService::class.java)
+            .baseUrl(Constant.defaultApiUrl).build().create(ApiService::class.java)
         return ApiServiceWrapper(api, localDataSource, context, gson)
     }
 

@@ -142,28 +142,12 @@ class LocalDataSource internal constructor(
         return db.driverTaskDao().update(taskEntity)
     }
 
-    fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
-        return db.driverActDao().getActivity(
-            activityEntity.activityId + 1,
-            activityEntity.taskpId,
-            activityEntity.mandantId
-        )
-    }
-
     fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
-        return db.driverActDao().getActByTask(taskId = taskEntity.taskId)
+        return db.driverActDao().getFirstTaskAct(taskId = taskEntity.taskId)
     }
 
-    suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity? {
-        return db.driverTaskDao().getTaskByOrder(
-            taskEntity.orderDetails?.orderNo ?: 0,
-            taskEntity.taskId + 1,
-            taskEntity.mandantId
-        )
-    }
-
-    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
-        return db.driverTaskDao().getTaskByIds(activityEntity.taskpId, activityEntity.mandantId)
+    suspend fun getTask(taskId: Int, mandantId: Int): TaskEntity? {
+        return db.driverTaskDao().getTaskByIds(taskId, mandantId)
     }
 
     suspend fun cleanDatabase() {

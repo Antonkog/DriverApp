@@ -56,11 +56,13 @@ interface AppRepository {
      * when user start/finish activity
      */
     suspend fun postActivity(activity: Activity): ResultWrapper<ResultOfAction>
+    suspend fun saveActivityPost(activity: Activity): Boolean
 
     /**
      * when user receive/open/start task
      */
     suspend fun confirmTask(commItem: CommItem): ResultWrapper<ResultOfAction>
+    suspend fun saveConfirmTask(commItem: CommItem):Boolean
 
     /**
      * to post delay reason to server
@@ -107,11 +109,9 @@ interface AppRepository {
     suspend fun insertDocument(documentEntity: DocumentEntity)
 
     //for logic manipulations: start next activity, next task in current order
-    suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity?
     suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity?
     suspend fun getActivity(actId:  Int, taskId: Int, mandantId: Int): ActivityEntity?
-    suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity?
-    suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity?
+    suspend fun getTask(taskId: Int, mandantId: Int): TaskEntity?
 
     suspend fun cleanDatabase()
 

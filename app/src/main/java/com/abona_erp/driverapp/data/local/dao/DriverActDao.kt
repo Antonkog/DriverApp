@@ -21,7 +21,7 @@ interface DriverActDao {
     fun getAllByTask(taskId: Int): LiveData<List<ActivityEntity>>
 
     @Query("SELECT * FROM activity_entity WHERE taskpId =:taskId  ORDER BY sequence ASC LIMIT 1")
-    fun getActByTask(taskId: Int): ActivityEntity?
+    fun getFirstTaskAct(taskId: Int): ActivityEntity?
 
     /**
      * Delete all Activities.

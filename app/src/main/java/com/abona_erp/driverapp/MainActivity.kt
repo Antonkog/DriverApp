@@ -25,9 +25,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.abona_erp.driverapp.data.Constant.REQUEST_OPEN_DOC
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
+import com.abona_erp.driverapp.ui.ftasks.DialogBuilder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
-import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -90,6 +90,10 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             mainViewModel.resetAuthTime()
             val bundle = bundleOf(resources.getString(R.string.key_auto_login) to true)
             navController.navigate(R.id.nav_login, bundle)
+        })
+
+        mainViewModel.connectionChange.observe(this, {
+            DialogBuilder.getConnectionDialog(this, it).show()
         })
 
         mainViewModel.requestStatus.observe(this, {
@@ -165,15 +169,16 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 // Perform operations on the document using its URI.
                 RxBus.publish(RxBusEvent.DocumentMessage(uri))
             }
-        } else if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
-            if (resultData != null) {
-                val resultUri = UCrop.getOutput(resultData)
-                println("result uri $resultUri")
-                resultUri?.let {
-                    RxBus.publish(RxBusEvent.DocumentCropMessage(resultUri))
-                }
-            }
         }
+//        else if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
+//            if (resultData != null) {
+//                val resultUri = UCrop.getOutput(resultData)
+//                println("result uri $resultUri")
+//                resultUri?.let {
+//                    RxBus.publish(RxBusEvent.DocumentCropMessage(resultUri))
+//                }
+//            }
+//        }
     }
 
 }

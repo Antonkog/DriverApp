@@ -137,6 +137,10 @@ class AppRepositoryImpl @Inject constructor(
         return api.postActivityChange(UtilModel.getCommActivityChangeItem(context, activity))
     }
 
+    override suspend fun saveActivityPost(activity: Activity): Boolean {
+       return api.saveActivityPost(UtilModel.getCommActivityChangeItem(context, activity))
+    }
+
     override suspend fun postDelayReasons(delayReasonEntity: DelayReasonEntity): ResultWrapper<ResultOfAction> {
         return api.postDelayItems(UtilModel.getCommDelayChangeItem(context, delayReasonEntity))
     }
@@ -155,10 +159,16 @@ class AppRepositoryImpl @Inject constructor(
     }
 
 
+
     override suspend fun confirmTask(
         commItem: CommItem
     ): ResultWrapper<ResultOfAction> {
         return api.confirmTask(commItem)
+    }
+
+
+    override suspend fun saveConfirmTask(commItem: CommItem): Boolean {
+        return api.saveConfirmTask(commItem)
     }
 
     override suspend fun confirmTask(
@@ -166,7 +176,6 @@ class AppRepositoryImpl @Inject constructor(
     ): ResultWrapper<ResultOfAction> {
         return api.confirmTask(changeHistory)
     }
-
 
     private suspend fun updateDocumentsFromRemoteDataSource(
         mandantId: Int,
@@ -207,21 +216,11 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.insertDelayReasons(reasons = reasons)
     }
 
-    override suspend fun getNextActivityIfExist(activityEntity: ActivityEntity): ActivityEntity? {
-        return localDataSource.getNextActivityIfExist(activityEntity)
-    }
-
-    override suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
-        return localDataSource.getFirstTaskActivity(taskEntity)
-    }
 
     override suspend fun getActivity(actId:  Int, taskId: Int, mandantId: Int): ActivityEntity? {
         return localDataSource.getActivity(actId, taskId, mandantId)
     }
 
-    override suspend fun getNextTaskIfExist(taskEntity: TaskEntity): TaskEntity? {
-        return localDataSource.getNextTaskIfExist(taskEntity)
-    }
 
     override suspend fun cleanDatabase() {
         localDataSource.cleanDatabase()
@@ -235,14 +234,18 @@ class AppRepositoryImpl @Inject constructor(
         localDataSource.insertDocument(documentEntity)
     }
 
+    override suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity? {
+        return  localDataSource.getFirstTaskActivity(taskEntity)
+    }
+
 
     override suspend fun updateTask(taskEntity: TaskEntity): Int {
         return localDataSource.updateTask(taskEntity)
     }
 
 
-    override suspend fun getParentTask(activityEntity: ActivityEntity): TaskEntity? {
-        return localDataSource.getParentTask(activityEntity)
+    override suspend fun getTask(taskId: Int, mandantId: Int): TaskEntity? {
+        return localDataSource.getTask(taskId, mandantId)
     }
 
 

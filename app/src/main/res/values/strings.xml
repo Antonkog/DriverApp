@@ -63,7 +63,7 @@
     <string name="error_notes_not_found" translatable="false">notes data not found</string>
     <string name="error_pallets_not_found" translatable="false">pallets data not found</string>
     <string name="error_no_contacts" translatable="false">no contacts data</string>
-    <string name="error_act_update_time" translatable="false">Server can not update more then 1 activity at time, please wait for %d minute</string>
+    <string name="error_act_update_time" translatable="false">Server can not update more then 1 activity at time, please wait for %d seconds</string>
     <string name="error_act_update" translatable="false">can not update activity status</string>
 
     <!--    screen names-->
@@ -100,6 +100,8 @@
     <string name="action_update">Update</string>
     <string name="action_update_message">Update completed!</string>
     <string name="need_permissions_title">Need Permissions!</string>
+    <string name="connection_change_title">Connection change</string>
+    <string name="connection_change_message">You are offline, in this mode we save your requests.\nWe recreate them when go online.\nSee protocol fragment</string>
     <string name="need_location_permission">Need location Permission to show current position</string>
     <string name="airplane_warning">The function of the ABONA Driver App is restricted in airplane mode</string>
 
