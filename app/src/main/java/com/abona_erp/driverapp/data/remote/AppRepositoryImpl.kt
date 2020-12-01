@@ -221,6 +221,14 @@ class AppRepositoryImpl @Inject constructor(
         return localDataSource.getActivity(actId, taskId, mandantId)
     }
 
+    override suspend fun getActivityBySequence(
+        sequence: Int,
+        taskId: Int,
+        mandantId: Int
+    ): ActivityEntity? {
+        return localDataSource.getActivityBySequence(sequence, taskId, mandantId)
+    }
+
 
     override suspend fun cleanDatabase() {
         localDataSource.cleanDatabase()

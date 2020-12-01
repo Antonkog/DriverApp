@@ -365,8 +365,8 @@ object UtilModel {
             timeStampConfirmationUTC = getCurrentDateServerFormat(),
             mandantId = taskItem.mandantId,
             taskId = taskItem.taskId,
-            taskChangeId = taskItem.taskId, //todo: ask Tilman what is taskChangeId and why we use it
-            text = null//todo: ask Tilman what is text and where we use text, why we send it user don`t put text anywhere
+            taskChangeId = taskItem.taskId,
+            text = null
         )
         return confirmationItem.build()
     }

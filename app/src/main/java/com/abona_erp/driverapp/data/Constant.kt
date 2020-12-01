@@ -10,7 +10,7 @@ object Constant {
     /**
      * that pause asked from Jaimon since we can't update Abona tables fast
      */
-    const val PAUSE_SERVER_REQUEST_SEC = 30L
+    const val PAUSE_SERVER_REQUEST_SEC = 60L
 
     const val REQUEST_APP_SETTINGS = 121
     const val REQUEST_OPEN_DOC = 122

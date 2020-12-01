@@ -14,6 +14,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class TaskEntity(
     @ColumnInfo val taskId: Int,
+    @ColumnInfo val nextTaskId: Int,
     @ColumnInfo val actionType: ActionType,
     @ColumnInfo val status: TaskStatus,
     val activityIds: List<Int>,

@@ -60,7 +60,6 @@ class DriverActFragment : BaseFragment(), LazyAdapter.OnItemClickListener<Activi
         driverActViewModel.wrappedActivities.observe(viewLifecycleOwner) {
             adapter.swapData(it)
         }
-        RxBus.publish(RxBusEvent.LanguageUpdate(Locale.getDefault())) //todo: that is to get fresh delay reasons. Also need to implement locale change reason
 
         return driverActFragmentBinding.root
     }

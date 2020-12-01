@@ -20,6 +20,7 @@ import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.data.remote.data
 import com.abona_erp.driverapp.data.remote.succeeded
+import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
@@ -84,6 +85,7 @@ class MainViewModel @ViewModelInject constructor(
             authReset.postValue(true)
         }
         RxBus.listen(RxBusEvent.LanguageUpdate::class.java).subscribe {
+            if(NetworkUtil.isConnectedWithWifi(context))
             updateDelayReasons(it.locale)
           //  refreshTasks()
         }
@@ -179,6 +181,7 @@ class MainViewModel @ViewModelInject constructor(
                     repository.insertOrUpdateTask(
                         TaskEntity(
                             taskItem.taskId,
+                            taskItem.vehicleNextTaskId,
                             taskItem.actionType,
                             taskItem.status,
                             taskItem.activities.map { it.activityId },

@@ -111,6 +111,7 @@ interface AppRepository {
     //for logic manipulations: start next activity, next task in current order
     suspend fun getFirstTaskActivity(taskEntity: TaskEntity): ActivityEntity?
     suspend fun getActivity(actId:  Int, taskId: Int, mandantId: Int): ActivityEntity?
+    suspend fun getActivityBySequence(sequence: Int, taskId: Int, mandantId: Int): ActivityEntity?
     suspend fun getTask(taskId: Int, mandantId: Int): TaskEntity?
 
     suspend fun cleanDatabase()

@@ -28,9 +28,11 @@ import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.fdocuments.UCrop
 import com.abona_erp.driverapp.ui.fdocuments.UCropFragment
 import com.abona_erp.driverapp.ui.fdocuments.UCropFragmentCallback
+import com.abona_erp.driverapp.ui.ftasks.DialogBuilder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback,
@@ -78,6 +80,11 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 v.findViewById<TextView>(R.id.vehicle_num).text = it.registrationNumber
                 v.findViewById<TextView>(R.id.client_name).text = it.clientName
             }
+        })
+        RxBus.publish(RxBusEvent.LanguageUpdate(Locale.getDefault())) //todo: that is to get fresh delay reasons. Also need to implement locale change reason
+
+        mainViewModel.connectionChange.observe(this, {
+            DialogBuilder.getConnectionDialog(this, it).show()
         })
 
         setupErrorHandling()
