@@ -66,6 +66,7 @@
     <string name="done">Gotowe</string>
     <string name="brush">Szczotka</string>
     <string name="opacity">Nieprzezroczystość</string>
+    <string name="no_document">Wybierz dokument do przesłania</string>
     <string name="connection_change_title">Zmiana połączenia</string>
     <string name="connection_change_message">Jesteś offline, w tym trybie zapisujemy Twoje żądania.\nOdtwarzamy je w trybie online.\nZobacz fragment protokołu</string>
 

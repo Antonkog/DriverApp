@@ -13,7 +13,6 @@ object Constant {
     const val PAUSE_SERVER_REQUEST_SEC = 60L
 
     const val REQUEST_APP_SETTINGS = 121
-    const val REQUEST_OPEN_DOC = 122
     const val KEY_PERMISSION_LOCATION = 101
 
     const val OPEN_DOC_REQUEST_CODE = 122
@@ -51,7 +50,6 @@ object Constant {
     const val lastConfirmDate = "last_confirm_date"
     const val lastConnectionChange = "last_connection_change"
     const val mandantId = "mandantId"
-
 
 
     //language

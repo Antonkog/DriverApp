@@ -24,7 +24,9 @@ import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.Constant.OPEN_CAMERA_REQUEST_CODE
 import com.abona_erp.driverapp.data.model.DMSDocumentType
 import com.abona_erp.driverapp.databinding.SelectDocumentFragmentBinding
+import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseFragment
+import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.fdocuments.util.FileUtils
 import com.abona_erp.driverapp.ui.utils.adapter.LazyAdapter
 import com.abona_erp.driverapp.ui.utils.adapter.initWithLinLay
@@ -67,7 +69,16 @@ class SelectDocumentFragment : BaseFragment(), LazyAdapter.OnItemClickListener<U
             chooseDocumentType()
         }
         selectDocumentFragmentBinding.done.setOnClickListener {
-
+            if (documentList.size > 0) {
+                RxBus.publish(RxBusEvent.DocumentMessage(documentList))
+                requireActivity().onBackPressed()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Please select the document to upload",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
         return view
     }
@@ -143,6 +154,9 @@ class SelectDocumentFragment : BaseFragment(), LazyAdapter.OnItemClickListener<U
                 val currentPath = Uri.fromFile(it)
                 val uploadItem = UploadDocumentItem(
                     currentPath,
+                    orderNo,
+                    mandantId,
+                    taskId,
                     false,
                     documentType,
                     currentTimestamp,

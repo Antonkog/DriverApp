@@ -1,6 +1,7 @@
 package com.abona_erp.driverapp.data.remote
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.R
@@ -197,12 +198,10 @@ class AppRepositoryImpl @Inject constructor(
         taskID: Int,
         driverNo: Int,
         documentType: Int,
-        inputStream: InputStream
+        uri: Uri
     ): Single<UploadResult> {
-        return api.uploadDocument(mandantId, orderNo, taskID, driverNo, documentType, inputStream)
+        return api.uploadDocument(mandantId, orderNo, taskID, driverNo, documentType, uri)
     }
-
-
 
     override suspend fun insertOrUpdateTask(taskEntity: TaskEntity) {
         localDataSource.insertOrUpdateTask(taskEntity)

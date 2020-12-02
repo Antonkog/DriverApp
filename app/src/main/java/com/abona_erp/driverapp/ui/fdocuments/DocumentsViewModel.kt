@@ -13,7 +13,6 @@ import androidx.lifecycle.viewModelScope
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.data.Constant
 import com.abona_erp.driverapp.data.local.db.DocumentEntity
-import com.abona_erp.driverapp.data.model.DMSDocumentType
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
@@ -41,8 +40,7 @@ class DocumentsViewModel @ViewModelInject constructor(
     init {
         RxBus.listen(RxBusEvent.DocumentMessage::class.java).subscribe { event ->
             viewModelScope.launch {
-                Log.d(TAG, "Got document uri: ${event.uri} ")
-                uploadDocuments(DMSDocumentType.POD_CMR, event.uri)
+                uploadDocuments(event.documents)
             }
         }
     }
@@ -57,53 +55,62 @@ class DocumentsViewModel @ViewModelInject constructor(
             repository.refreshDocuments(mandantId, orderNo, deviceId)
         }
 
-    fun uploadDocuments(documentType: DMSDocumentType, uri: Uri) {
-        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-        if (inputStream == null) Log.e(TAG, "can't open document")
-        (inputStream)?.use {
-            RxBus.publish(
-                RxBusEvent.RequestStatus(
-                    MainViewModel.Status(
-                        null,
-                        MainViewModel.StatusType.LOADING
+    private fun uploadDocuments(documentList: ArrayList<UploadDocumentItem>) {
+        var resultCount = 0
+        for (document in documentList) {
+            val inputStream: InputStream? =
+                context.contentResolver.openInputStream(document.uri)
+            if (inputStream == null) Log.e(TAG, "can't open document")
+            (inputStream)?.use {
+                RxBus.publish(
+                    RxBusEvent.RequestStatus(
+                        MainViewModel.Status(
+                            null,
+                            MainViewModel.StatusType.LOADING
+                        )
                     )
                 )
-            )
-            repository.upladDocument(
-                prefs.getInt(Constant.mandantId, 0),
-                prefs.getInt(Constant.currentVisibleOrderId, 0),
-                prefs.getInt(Constant.currentVisibleTaskid, 0),
-                -1,
-                documentType.documentType,
-                inputStream
-            )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.e(TAG, "upload result : $it")
-                    RxBus.publish(
-                        RxBusEvent.RequestStatus(
-                            MainViewModel.Status(
-                                it.toString(),
-                                MainViewModel.StatusType.COMPLETE
+                repository.upladDocument(
+                    document.mandantId,
+                    document.orderNo,
+                    document.taskId,
+                    -1,
+                    document.documentType.documentType,
+                    document.uri
+                ).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({
+                    resultCount++
+                    if (resultCount == documentList.size) {
+                        Log.e(TAG, "upload result : $it")
+                        RxBus.publish(
+                            RxBusEvent.RequestStatus(
+                                MainViewModel.Status(
+                                    it.toString(),
+                                    MainViewModel.StatusType.COMPLETE
+                                )
                             )
                         )
-                    )
-                    refreshDocuments(
-                        prefs.getInt(Constant.mandantId, 0),
-                        prefs.getInt(Constant.currentVisibleOrderId, 0),
-                        DeviceUtils.getUniqueID(context)
-                    ) //to get vehicle number etc.
+                        refreshDocuments(
+                            prefs.getInt(Constant.mandantId, 0),
+                            prefs.getInt(Constant.currentVisibleOrderId, 0),
+                            DeviceUtils.getUniqueID(context)
+                        ) //to get vehicle number etc.
+                    } else {
+                        Log.e(TAG, "Waiting for other document to upload")
+                    }
                 }, {
-                    RxBus.publish(
-                        RxBusEvent.RequestStatus(
-                            MainViewModel.Status(
-                                it.message,
-                                MainViewModel.StatusType.ERROR
+                    resultCount++
+                    if (resultCount == documentList.size) {
+                        RxBus.publish(
+                            RxBusEvent.RequestStatus(
+                                MainViewModel.Status(
+                                    it.message,
+                                    MainViewModel.StatusType.ERROR
+                                )
                             )
                         )
-                    )
+                    }
                 })
+            }
         }
     }
 

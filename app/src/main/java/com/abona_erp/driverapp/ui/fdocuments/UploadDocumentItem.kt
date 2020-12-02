@@ -9,6 +9,9 @@ import java.util.*
 @Parcelize
 data class UploadDocumentItem(
     var uri: Uri,
+    var orderNo: Int,
+    var mandantId: Int,
+    var taskId: Int,
     var uploaded: Boolean,
     val documentType: DMSDocumentType,
     var createdAt: Date,
