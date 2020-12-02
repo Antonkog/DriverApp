@@ -1,9 +1,6 @@
 package com.abona_erp.driverapp
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -22,7 +19,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.abona_erp.driverapp.data.Constant.REQUEST_OPEN_DOC
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.events.RxBusEvent
 import com.abona_erp.driverapp.ui.fdocuments.UCrop
@@ -145,25 +141,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, resultData)
-        if (requestCode == REQUEST_OPEN_DOC && resultCode == Activity.RESULT_OK) {
-            Log.e(TAG, " got result: $resultData ")
-            // The result data contains a URI for the document or directory that
-            // the user selected.
-            resultData?.data?.also { uri ->
-                contentResolver.takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
-                Log.e(TAG, " got uri: $uri ")
-                // Perform operations on the document using its URI.
-                RxBus.publish(RxBusEvent.DocumentMessage(uri))
-            }
         }
     }
 

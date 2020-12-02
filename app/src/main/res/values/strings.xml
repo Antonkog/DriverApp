@@ -199,6 +199,7 @@
     <string name="done">Done</string>
     <string name="brush">Brush</string>
     <string name="opacity">Opacity</string>
+    <string name="no_document">Please select the document to upload</string>
 
     <!-- Crop and Rotate -->
     <string name="ucrop_crop">Crop</string>

@@ -1,7 +1,7 @@
 package com.abona_erp.driverapp.data.remote
 
 import android.content.Context
-import android.util.Log
+import android.net.Uri
 import com.abona_erp.driverapp.MainViewModel
 import com.abona_erp.driverapp.R
 import com.abona_erp.driverapp.data.local.LocalDataSource
@@ -20,10 +20,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.apache.commons.io.FileUtils
 import java.io.File
-import java.io.IOException
-import java.io.InputStream
 
 /**
  * Created by Anton Kogan email: Akogan777@gmail.com on 11/9/2020
@@ -69,23 +66,25 @@ class ApiServiceWrapper(
         val id = DeviceUtils.getUniqueID(context)
         val change = prerapeChangeChistory(id, changeHistory, GET_TASKS)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
-       return try {
+        return try {
             val result = ResultWrapper.Success(api.getAllTasks(id))
-           if(result.data.isSuccess){
-               localDataSource.updateFromCommItem(result.data)
-               updateHistoryOnSuccess(change, gson.toJson(result.data), autoGenId)
-               result
-           } else {
-               val ex  = java.lang.Exception(result.data.text ?: context.getString(R.string.error_get_tasks))
-               sendErrorToUI(ex)
-               ResultWrapper.Error(ex)
-           }
-        } catch (ex: Exception){
-           if(NetworkUtil.isConnectedWithWifi(context)){
-               sendErrorToUI(ex)
-           }
-           updateHistoryOnError(change, autoGenId)
-           ResultWrapper.Error(ex)
+            if (result.data.isSuccess) {
+                localDataSource.updateFromCommItem(result.data)
+                updateHistoryOnSuccess(change, gson.toJson(result.data), autoGenId)
+                result
+            } else {
+                val ex = java.lang.Exception(
+                    result.data.text ?: context.getString(R.string.error_get_tasks)
+                )
+                sendErrorToUI(ex)
+                ResultWrapper.Error(ex)
+            }
+        } catch (ex: Exception) {
+            if (NetworkUtil.isConnectedWithWifi(context)) {
+                sendErrorToUI(ex)
+            }
+            updateHistoryOnError(change, autoGenId)
+            ResultWrapper.Error(ex)
         }
     }
 
@@ -114,8 +113,6 @@ class ApiServiceWrapper(
         return setDeviceProfile(commItem, null)
     }
 
-
-
     suspend fun postDelayItems(commItem: CommItem): ResultWrapper<ResultOfAction> {
         return postDelayItems(commItem, null)
     }
@@ -125,9 +122,12 @@ class ApiServiceWrapper(
         return postDelayItems(item, changeHistory)
     }
 
-    suspend fun postDelayItems(commItem: CommItem, changeHistory: ChangeHistory?): ResultWrapper<ResultOfAction> {
+    suspend fun postDelayItems(
+        commItem: CommItem,
+        changeHistory: ChangeHistory?
+    ): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
-        val change = prerapeChangeChistory(gson.toJson(commItem),changeHistory, POST_DELAY_REASON)
+        val change = prerapeChangeChistory(gson.toJson(commItem), changeHistory, POST_DELAY_REASON)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result = api.postDelayItems(commItem)
@@ -142,13 +142,13 @@ class ApiServiceWrapper(
     }
 
 
-    suspend fun getDelayItems(mandantId: Int, langCode : String): ResultWrapper<ResultOfAction> {
+    suspend fun getDelayItems(mandantId: Int, langCode: String): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
         return try {
             val result = api.getDelayReasons(mandantId, langCode)
             sendSuccessToUI(result.toString())
             ResultWrapper.Success(result)
-        } catch (e :java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             ResultWrapper.Error(e)
         }
     }
@@ -158,7 +158,7 @@ class ApiServiceWrapper(
         changeHistory: ChangeHistory?
     ): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
-        val change = prerapeChangeChistory( gson.toJson(commItem),changeHistory, SET_DEVICE_PROFILE)
+        val change = prerapeChangeChistory(gson.toJson(commItem), changeHistory, SET_DEVICE_PROFILE)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result = api.setDeviceProfile(commItem)
@@ -182,9 +182,9 @@ class ApiServiceWrapper(
         return postActivityChange(item, changeHistory)
     }
 
-    suspend fun saveActivityPost(commItem: CommItem) :Boolean{
+    suspend fun saveActivityPost(commItem: CommItem): Boolean {
         val change = prerapeChangeChistory(gson.toJson(commItem), null, POST_ACTIVITY)
-        val result =  localDataSource.insertHistoryChange(change.copy(status =  Status.SENT_OFFLINE))
+        val result = localDataSource.insertHistoryChange(change.copy(status = Status.SENT_OFFLINE))
         return result == 1L
     }
 
@@ -198,7 +198,7 @@ class ApiServiceWrapper(
         changeHistory: ChangeHistory?
     ): ResultWrapper<ResultOfAction> {
         sentLoadingToUI()
-        val change = prerapeChangeChistory(gson.toJson(commItem),changeHistory, POST_ACTIVITY)
+        val change = prerapeChangeChistory(gson.toJson(commItem), changeHistory, POST_ACTIVITY)
         val autoGenId = changeHistory?.id ?: localDataSource.insertHistoryChange(change)
         return try {
             val result = api.postActivityChange(commItem)
@@ -224,7 +224,7 @@ class ApiServiceWrapper(
 
     suspend fun saveConfirmTask(commItem: CommItem): Boolean {
         val change = prerapeChangeChistory(gson.toJson(commItem), null, CONFIRM_TASK)
-        val result =  localDataSource.insertHistoryChange(change.copy(status =  Status.SENT_OFFLINE))
+        val result = localDataSource.insertHistoryChange(change.copy(status = Status.SENT_OFFLINE))
         return result == 1L
     }
 
@@ -252,45 +252,27 @@ class ApiServiceWrapper(
         taskID: Int,
         driverNo: Int,
         documentType: Int,
-        inputStream: InputStream
+        uri: Uri
     ): Single<UploadResult> {
         val mandantBody = mandantId.toMultipartBody()
         val orderBody = orderNo.toMultipartBody()
         val taskBody = taskID.toMultipartBody()
         val driverBody = driverNo.toMultipartBody()
         val docTypeBody = documentType.toMultipartBody()
-        // val ims : InputStream =  file.inputStream()
-
-        val newFIle = File.createTempFile(
-            "abona",
-            ".pdf",
-            context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
-        )
-
-        try {
-            FileUtils.copyToFile(inputStream, newFIle)
-        } catch (e: IOException) {
-            Log.e(TAG, "can't send document")
-        }
-
-
-        val fileBody = newFIle.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-//        val out =  IOUtils.toByteArray(ims).toRequestBody()
-//        val name = ""+ System.currentTimeMillis() + ".dpf"
-
-        val multiparFileBody = MultipartBody.Part.createFormData(
+        val file = File(uri.path ?: "")
+        val fileBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val multipartFileBody = MultipartBody.Part.createFormData(
             name = "files[]",
-            filename = newFIle.name,
+            filename = file.name,
             body = fileBody
         )
-
         return api.uploadDocument(
             mandantBody,
             orderBody,
             taskBody,
             driverBody,
             docTypeBody,
-            multiparFileBody
+            multipartFileBody
         )
     }
 
@@ -356,10 +338,14 @@ class ApiServiceWrapper(
     }
 
 
-    fun prerapeChangeChistory(request: String , changeHistory: ChangeHistory?, historyDataType: HistoryDataType) : ChangeHistory{
+    fun prerapeChangeChistory(
+        request: String,
+        changeHistory: ChangeHistory?,
+        historyDataType: HistoryDataType
+    ): ChangeHistory {
         val time = System.currentTimeMillis()
         return changeHistory ?: ChangeHistory(
-             Status.SENT_OFFLINE,
+            Status.SENT_OFFLINE,
             LogType.APP_TO_SERVER,
             historyDataType,
             request,
