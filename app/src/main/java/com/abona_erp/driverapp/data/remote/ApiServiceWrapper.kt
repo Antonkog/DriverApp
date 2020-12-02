@@ -35,12 +35,6 @@ class ApiServiceWrapper(
     suspend fun authentication(
         authModel: UtilModel.AuthModel
     ): ResultWrapper<TokenResponse> {
-        return authentication(authModel, null)
-    }
-
-    private suspend fun authentication(
-        authModel: UtilModel.AuthModel, changeHistory: ChangeHistory?
-    ): ResultWrapper<TokenResponse> {
         sentLoadingToUI()
         return try {
             val result = ResultWrapper.Success(
@@ -80,7 +74,7 @@ class ApiServiceWrapper(
                 ResultWrapper.Error(ex)
             }
         } catch (ex: Exception) {
-            if (NetworkUtil.isConnectedWithWifi(context)) {
+            if (NetworkUtil.isConnected(context)) {
                 sendErrorToUI(ex)
             }
             updateHistoryOnError(change, autoGenId)
@@ -283,7 +277,7 @@ class ApiServiceWrapper(
     ) {
         localDataSource.updateHistoryChange(
             change.copy(
-                status = if (NetworkUtil.isConnectedWithWifi(context)) Status.ERROR else Status.SENT_OFFLINE,
+                status = if (NetworkUtil.isConnected(context)) Status.ERROR else Status.SENT_OFFLINE,
                 id = autoGenId
             )
         )

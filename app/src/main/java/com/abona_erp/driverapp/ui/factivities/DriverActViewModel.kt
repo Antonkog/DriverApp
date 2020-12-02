@@ -55,32 +55,46 @@ class DriverActViewModel @ViewModelInject constructor(
      * Start first activity in task.
      */
 
-    fun checkTimePostActChange(entity: ActivityWrapper){
-        val allActConfirmTime = TimeUnit.SECONDS.toMillis(Constant.PAUSE_SERVER_REQUEST_SEC) //2 1 min for posting, 1 min for next act posting
+    fun checkTimePostActChange(entity: ActivityWrapper) {
+        val allActConfirmTime =
+            TimeUnit.SECONDS.toMillis(Constant.PAUSE_SERVER_REQUEST_SEC) //2 1 min for posting, 1 min for next act posting
         val lastTimeUpdate = prefs.getLong(Constant.lastConfirmDate, 0L)
-        if(NetworkUtil.isConnectedWithWifi(context) && lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)){
-            postConfirmationErrorToUI(String.format(context.resources.getString(R.string.error_act_update_time, Constant.PAUSE_SERVER_REQUEST_SEC)))
-        }  else  {
+        if (NetworkUtil.isConnected(context) && lastTimeUpdate != 0L && (System.currentTimeMillis() - lastTimeUpdate < allActConfirmTime)) {
+            postConfirmationErrorToUI(
+                String.format(
+                    context.resources.getString(
+                        R.string.error_act_update_time,
+                        Constant.PAUSE_SERVER_REQUEST_SEC
+                    )
+                )
+            )
+        } else {
             viewModelScope.launch(IO) {
                 prefs.putAny(Constant.lastConfirmDate, System.currentTimeMillis())
-                val actPostSuccess =  postActivityChange(entity.activity)
-                if(actPostSuccess){
+                val actPostSuccess = postActivityChange(entity.activity)
+                if (actPostSuccess) {
 
-                    val isFirstPending = entity.activity.activityStatus == ActivityStatus.PENDING && entity.buttonVisible
+                    val isFirstPending =
+                        entity.activity.activityStatus == ActivityStatus.PENDING && entity.buttonVisible
 
-                    if(entity.isLastActivity){
+                    if (entity.isLastActivity) {
                         //set current task ui as finished, because all act finished
                         //and no update of next activity if this was last one
-                        val currentTask = repository.getTask(entity.activity.taskpId, entity.activity.mandantId)
+                        val currentTask =
+                            repository.getTask(entity.activity.taskpId, entity.activity.mandantId)
                         currentTask?.let {
-                            val updated= currentTask.copy(status = TaskStatus.FINISHED)
+                            val updated = currentTask.copy(status = TaskStatus.FINISHED)
                             repository.updateTask(updated) //finish this task in db
 
                         }
                     } else {
-                        if(NetworkUtil.isConnectedWithWifi(context))  delay(allActConfirmTime) //that delay is for server next activity or task confirmation
-                        if(!isFirstPending){ //Start click  starts only current first activity, next - finish current and starts next
-                            val nextAct =   repository.getActivityBySequence(entity.activity.sequence +1 , entity.activity.taskpId, entity.activity.mandantId )
+                        if (NetworkUtil.isConnected(context)) delay(allActConfirmTime) //that delay is for server next activity or task confirmation
+                        if (!isFirstPending) { //Start click  starts only current first activity, next - finish current and starts next
+                            val nextAct = repository.getActivityBySequence(
+                                entity.activity.sequence + 1,
+                                entity.activity.taskpId,
+                                entity.activity.mandantId
+                            )
                             nextAct?.let { postActivityChange(it) }
                         }
                     }
@@ -90,10 +104,11 @@ class DriverActViewModel @ViewModelInject constructor(
     }
 
 
-    private suspend fun postActivityChange(entity: ActivityEntity) : Boolean {
+    private suspend fun postActivityChange(entity: ActivityEntity): Boolean {
         val newAct = setNewActivityStatus(entity)
-        return if (NetworkUtil.isConnectedWithWifi(context)) {
-            val result = repository.postActivity(newAct.toActivity(DeviceUtils.getUniqueID(context)))
+        return if (NetworkUtil.isConnected(context)) {
+            val result =
+                repository.postActivity(newAct.toActivity(DeviceUtils.getUniqueID(context)))
             if (result.succeeded && result.data?.isSuccess == true) {
                 repository.updateActivity(newAct.copy(confirmationType = ActivityConfirmationType.SYNCED_WITH_ABONA))
                 true
@@ -121,25 +136,31 @@ class DriverActViewModel @ViewModelInject constructor(
     }
 
 
-
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
-        val newTask =  UtilModel.getTaskConfirmation(
+        val newTask = UtilModel.getTaskConfirmation(
             context,
             taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
         )
 
-        if(NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
+        if (NetworkUtil.isConnected(context)) { //app is not connected so we are opening this task, but we dont confirm it
             val result = repository.confirmTask(newTask)
             if (result.succeeded && result.data?.isSuccess == true) {//common errors like no networks
-               repository.updateTask(taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER, openCondition = !taskEntity.openCondition))
+                repository.updateTask(
+                    taskEntity.copy(
+                        confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER,
+                        openCondition = !taskEntity.openCondition
+                    )
+                )
             } else {
                 postConfirmationErrorToUI(result.toString())
             }
         } else {
             repository.saveConfirmTask(newTask)
-            val updateResult =  repository.updateTask(taskEntity.copy(
-                openCondition = !taskEntity.openCondition
-            ))
+            val updateResult = repository.updateTask(
+                taskEntity.copy(
+                    openCondition = !taskEntity.openCondition
+                )
+            )
             Log.e(TasksViewModel.TAG, "task update result: $updateResult")
         }
     }
@@ -178,7 +199,8 @@ class DriverActViewModel @ViewModelInject constructor(
                 activityEntity.activityStatus == ActivityStatus.PENDING
             }
 
-        val lastActivity = it.none { it.activityStatus == ActivityStatus.PENDING } && it.filter {it.activityStatus == ActivityStatus.RUNNING}.size == 1
+        val lastActivity =
+            it.none { it.activityStatus == ActivityStatus.PENDING } && it.filter { it.activityStatus == ActivityStatus.RUNNING }.size == 1
 
         val wrapped = it.map { activityEntity ->
             ActivityWrapper(

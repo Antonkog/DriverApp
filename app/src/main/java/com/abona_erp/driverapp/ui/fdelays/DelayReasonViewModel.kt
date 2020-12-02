@@ -2,11 +2,10 @@ package com.abona_erp.driverapp.ui.fdelays
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.abona_erp.driverapp.data.local.db.*
+import com.abona_erp.driverapp.data.local.db.DelayReasonEntity
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.succeeded
 import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
@@ -21,20 +20,21 @@ class DelayReasonViewModel @ViewModelInject constructor(
     private val prefs: SharedPreferences
 ) : BaseViewModel() {
 
-     val goBack = MutableLiveData<Boolean>()
+    val goBack = MutableLiveData<Boolean>()
 
-     val delayReasons = repository.observeDelayReasons()
+    val delayReasons = repository.observeDelayReasons()
 
-    fun postDelayReason(delayReasonEntity: DelayReasonEntity) = viewModelScope.launch(IO){
-            val result  = repository.postDelayReasons(delayReasonEntity)//here activity to wrap delay when doing rest sync
-            if(result.succeeded){
+    fun postDelayReason(delayReasonEntity: DelayReasonEntity) = viewModelScope.launch(IO) {
+        val result =
+            repository.postDelayReasons(delayReasonEntity)//here activity to wrap delay when doing rest sync
+        if (result.succeeded) {
+            localUpdate(delayReasonEntity)
+            goBack.postValue(true)
+        } else {
+            if (!NetworkUtil.isConnected(context)) {
                 localUpdate(delayReasonEntity)
-                goBack.postValue(true)
-            } else {
-                if(!NetworkUtil.isConnectedWithWifi(context)){
-                    localUpdate(delayReasonEntity)
-                } //no else - we assume that errors handled in mainViewModel common Courutine exception handler
-            }
+            } //no else - we assume that errors handled in mainViewModel common Courutine exception handler
+        }
     }
 
 
@@ -42,14 +42,18 @@ class DelayReasonViewModel @ViewModelInject constructor(
      * used to show user in UI that delay is set and waiting for sync with abona: total time shown inclement. When go online -  we sync app by sending changeHistory.
      */
     suspend fun localUpdate(delayReasonEntity: DelayReasonEntity) {
-        repository.getActivity(delayReasonEntity.activityId, delayReasonEntity.taskId, delayReasonEntity.mandantId)?.let { entity ->
+        repository.getActivity(
+            delayReasonEntity.activityId,
+            delayReasonEntity.taskId,
+            delayReasonEntity.mandantId
+        )?.let { entity ->
             val delays = arrayListOf<DelayReasonEntity>()
-           entity.delayReasons?.let {
-               delays.addAll(it)
-           }
+            entity.delayReasons?.let {
+                delays.addAll(it)
+            }
             delays.add(delayReasonEntity)
-            val result = repository.updateActivity(entity.copy(delayReasons =  delays))
-            if(result == 1)  {
+            val result = repository.updateActivity(entity.copy(delayReasons = delays))
+            if (result == 1) {
                 goBack.postValue(true)
             }
         }

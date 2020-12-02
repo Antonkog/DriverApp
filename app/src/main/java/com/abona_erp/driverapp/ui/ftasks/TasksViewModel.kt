@@ -26,7 +26,6 @@ import com.abona_erp.driverapp.data.remote.utils.NetworkUtil
 import com.abona_erp.driverapp.ui.RxBus
 import com.abona_erp.driverapp.ui.base.BaseViewModel
 import com.abona_erp.driverapp.ui.events.RxBusEvent
-import com.abona_erp.driverapp.ui.utils.DeviceUtils
 import com.abona_erp.driverapp.ui.utils.UtilModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -140,24 +139,29 @@ class TasksViewModel @ViewModelInject constructor(
 
     fun updateTask(data: TaskEntity) {
         viewModelScope.launch {
-           val result =  repository.updateTask(data)
+            val result = repository.updateTask(data)
             Log.e(TAG, "task update result: $result")
         }
     }
 
     fun confirmTask(taskEntity: TaskEntity) = viewModelScope.launch {
-        val newTask =  UtilModel.getTaskConfirmation(
+        val newTask = UtilModel.getTaskConfirmation(
             context,
             taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER)
         )
-        if(NetworkUtil.isConnectedWithWifi(context)){ //app is not connected so we are opening this task, but we dont confirm it
+        if (NetworkUtil.isConnected(context)) { //app is not connected so we are opening this task, but we dont confirm it
             val result =
                 repository.confirmTask(newTask)
             if (result.succeeded && result.data?.isSuccess == true) {//common errors like no networks
-                    updateTask(taskEntity.copy(confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER, openCondition = !taskEntity.openCondition))//green checkers
-                } else { //posting error from Abona to UI, to show why can't update
-                    postConfirmationErrorToUI(result)
-                }
+                updateTask(
+                    taskEntity.copy(
+                        confirmationType = ConfirmationType.TASK_CONFIRMED_BY_USER,
+                        openCondition = !taskEntity.openCondition
+                    )
+                )//green checkers
+            } else { //posting error from Abona to UI, to show why can't update
+                postConfirmationErrorToUI(result)
+            }
         } else {
             repository.saveConfirmTask(newTask)
             updateTask(

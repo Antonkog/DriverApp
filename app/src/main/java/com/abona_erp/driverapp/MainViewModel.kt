@@ -15,7 +15,10 @@ import com.abona_erp.driverapp.data.local.db.HistoryDataType
 import com.abona_erp.driverapp.data.local.db.TaskEntity
 import com.abona_erp.driverapp.data.local.preferences.putAny
 import com.abona_erp.driverapp.data.local.preferences.putLong
-import com.abona_erp.driverapp.data.model.*
+import com.abona_erp.driverapp.data.model.ActivityStatus
+import com.abona_erp.driverapp.data.model.CommItem
+import com.abona_erp.driverapp.data.model.DataType
+import com.abona_erp.driverapp.data.model.VehicleItem
 import com.abona_erp.driverapp.data.remote.AppRepository
 import com.abona_erp.driverapp.data.remote.connection.base.ConnectivityProvider
 import com.abona_erp.driverapp.data.remote.data
@@ -85,24 +88,24 @@ class MainViewModel @ViewModelInject constructor(
             authReset.postValue(true)
         }
         RxBus.listen(RxBusEvent.LanguageUpdate::class.java).subscribe {
-            if(NetworkUtil.isConnectedWithWifi(context))
-            updateDelayReasons(it.locale)
-          //  refreshTasks()
+            if (NetworkUtil.isConnected(context))
+                updateDelayReasons(it.locale)
+            //  refreshTasks()
         }
     }
 
     fun doOnConnectionChange(hasInternet: Boolean) {
         val lastChangeTime = prefs.getLong(Constant.lastConnectionChange, 0L)
 
-        if(System.currentTimeMillis() - lastChangeTime > TimeUnit.SECONDS.toMillis(10))// don't show changes more then in 30sec
+        if (System.currentTimeMillis() - lastChangeTime > TimeUnit.SECONDS.toMillis(10))// don't show changes more then in 30sec
         {
             prefs.putAny(Constant.lastConnectionChange, System.currentTimeMillis())
-            if(hasInternet) resetOfflineRequests()
+            if (hasInternet) resetOfflineRequests()
             else connectionChange.postValue(hasInternet)
         }
     }
 
-    private fun resetOfflineRequests() =  viewModelScope.launch(IO){
+    private fun resetOfflineRequests() = viewModelScope.launch(IO) {
         val offline = LinkedList<ChangeHistory>()
         offline.addAll(repository.getAllOfflineRequests())
         //here is basic implementation of sending offline requests.
@@ -240,17 +243,17 @@ class MainViewModel @ViewModelInject constructor(
         return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true
     }
 
-    fun updateDelayReasons(locale: Locale ) = viewModelScope.launch(IO){
-        val result =  repository.getDelayReasons(
+    fun updateDelayReasons(locale: Locale) = viewModelScope.launch(IO) {
+        val result = repository.getDelayReasons(
             prefs.getInt(Constant.mandantId, 3),
             DeviceUtils.getLocaleCode(locale)
         )
 
-        if (result.succeeded ){
+        if (result.succeeded) {
             result.data?.delayReasonItems?.map { it.toDelayReasonEntity() }?.let {
                 repository.insertDelayReasons(it)
             }
-        } else{
+        } else {
             Log.e(TAG, "can't update delay reasons from server $result")
         }
     }
