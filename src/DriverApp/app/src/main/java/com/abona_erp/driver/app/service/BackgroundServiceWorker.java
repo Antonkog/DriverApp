@@ -55,7 +55,6 @@ import com.abona_erp.driver.app.data.model.UploadItem;
 import com.abona_erp.driver.app.data.model.UploadResult;
 import com.abona_erp.driver.app.data.remote.NetworkUtil;
 import com.abona_erp.driver.app.data.remote.client.UnsafeOkHttpClient;
-import com.abona_erp.driver.app.data.remote.interceptor.HostSelectionInterceptor;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
@@ -69,8 +68,6 @@ import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
-import com.abona_erp.driver.app.util.CustomDialogFragment;
-import com.abona_erp.driver.app.util.DelayReasonUtil;
 import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
 import com.abona_erp.driver.app.util.UtilCommon;
@@ -85,14 +82,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -161,12 +156,15 @@ public class BackgroundServiceWorker extends Service {
           */
           
   
+  /*
           if (!isPatch00_Completed()) {
             Log.i(TAG, "******* PATCH IS RUNNING... **********");
             allowRequest = true;
             mHandler.postDelayed(this, 10000);
             return;
           }
+          
+   */
           
           if (!isDevicePermissionGranted()) {
             Log.i(TAG, "******* DEVICE PERMISSION IS NOT GRANTED!!! *******");
