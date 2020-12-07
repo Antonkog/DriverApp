@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -91,7 +90,7 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.history.HistoryFragment
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.protocol.ProtocolFragment;
-import com.abona_erp.driver.app.ui.feature.main.fragment.qr.QRFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.specialfunction.SpecialFunctionFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.sync.SyncProgressFragment;
@@ -668,6 +667,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    
     if (requestCode == REQUEST_APP_SETTINGS) {
       Log.i(TAG, "onActivityResult() called! - REQUEST_APP_SETTINGS");
       if (!hasPermissions(Manifest.permission.READ_PHONE_STATE)||
@@ -908,7 +908,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   public void onMessageEvent(QREvent event) {
     getSupportFragmentManager()
       .beginTransaction()
-      .replace(R.id.main_container, QRFragment.newInstance())
+      .replace(R.id.main_container, SpecialFunctionFragment.newInstance(event.getNotifyId(), event.getActivityId()))
       .addToBackStack(null)
       .commit();
   }

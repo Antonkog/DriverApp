@@ -244,6 +244,7 @@
       android:paddingStart="15dp"
       android:paddingEnd="15dp"
       android:src="@drawable/ic_qr_code"
+      app:tint="#1F1C2C"
       android:visibility="gone"
       tools:visibility="visible"
       />

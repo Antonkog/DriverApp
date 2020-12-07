@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize">
+
+      <!-- BACK BUTTON -->
+      <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/spacing_large"
+        android:layout_marginEnd="@dimen/spacing_large"
+        android:padding="@dimen/spacing_large"
+        android:backgroundTint="@color/clrAbona"
+        android:src="@drawable/ic_arrow_back"
+        android:tint="@color/white"
+        />
+
+      <com.abona_erp.driver.app.ui.widget.AsapTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/btn_back"
+        android:text="Special Function"
+        android:textSize="28sp"
+        android:textColor="@color/grey_80"
+        />
+
+    </RelativeLayout>
+
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:weightSum="3">
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:gravity="center"
+          android:layout_margin="5dp"
+          android:background="#cccccc">
+
+          <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/ic_no_image"
+            />
+
+        </LinearLayout>
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <FrameLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_margin="5dp"
+          android:background="#cccccc">
+
+          <LinearLayout
+            android:id="@+id/llScanScreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:background="#cccccc"
+            android:visibility="gone">
+
+            <RelativeLayout
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+              <com.journeyapps.barcodescanner.DecoratedBarcodeView
+                android:id="@+id/barcode_scanner"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_above="@+id/buttonsLayout"
+                android:layout_alignParentTop="true">
+
+              </com.journeyapps.barcodescanner.DecoratedBarcodeView>
+
+              <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/buttonsLayout">
+
+                <Button
+                  android:id="@+id/btn_pause"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="Pause" />
+
+                <Button
+                  android:id="@+id/btn_resume"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="Resume" />
+
+              </LinearLayout>
+
+            </RelativeLayout>
+
+          </LinearLayout>
+
+        </FrameLayout>
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_margin="5dp"
+          android:background="#cccccc">
+
+          <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        </LinearLayout>
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/camera_bottom_sheet"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    app:behavior_hideable="true"
+    app:behavior_fitToContents="true"
+    app:behavior_peekHeight="0dp">
+
+    <LinearLayout
+      android:id="@+id/bottom_sheet_root"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="#000000">
+
+      <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_above="@id/ll_gallery">
+
+          <com.otaliastudios.cameraview.CameraView
+            android:id="@+id/camera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:keepScreenOn="true"
+            app:cameraExperimental="false"
+            app:cameraPictureSizeBiggest="true"
+            app:cameraEngine="camera2"
+            app:cameraPreview="glSurface"
+            app:cameraPlaySounds="true"
+            app:cameraGrid="draw3x3"
+            app:cameraFlash="off"
+            app:cameraAudio="off"
+            app:cameraFacing="back"
+            app:cameraGestureTap="none"
+            app:cameraGestureLongTap="none"
+            app:cameraGesturePinch="zoom"
+            app:cameraGestureScrollHorizontal="filterControl1"
+            app:cameraGestureScrollVertical="exposureCorrection"
+            app:cameraMode="picture"
+            app:cameraWhiteBalance="auto"
+            app:cameraUseDeviceOrientation="true"
+            app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"
+            />
+
+          <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="@dimen/spacing_large">
+
+            <androidx.appcompat.widget.AppCompatImageView
+              android:id="@+id/takePhoto"
+              android:layout_width="72dp"
+              android:layout_height="72dp"
+              android:layout_centerInParent="true"
+              android:tint="@color/clrAbona"
+              android:src="@drawable/bd_ocr_take_photo_normal"
+              android:clickable="true"
+              android:focusable="true"
+              />
+
+          </RelativeLayout>
+
+        </FrameLayout>
+
+        <LinearLayout
+          android:id="@+id/ll_gallery"
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true">
+
+          <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvGalleryView"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/clrFont"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/row_image_view"
+            />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+          android:id="@+id/btnCameraBack"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/spacing_medium"
+          android:layout_marginStart="@dimen/spacing_medium"
+          android:layout_marginEnd="@dimen/spacing_large"
+          android:backgroundTint="@color/clrAbona"
+          android:padding="@dimen/spacing_large"
+          android:src="@drawable/ic_arrow_back"
+          android:tint="#fff"
+          />
+
+      </RelativeLayout>
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

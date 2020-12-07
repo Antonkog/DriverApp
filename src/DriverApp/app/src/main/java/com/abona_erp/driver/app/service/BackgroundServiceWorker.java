@@ -147,10 +147,7 @@ public class BackgroundServiceWorker extends Service {
     @Override
     public void run() {
       Log.i(TAG, ">>>>>>> BACKGROUND SERVICE LISTENING... >>>>>>>");
-  
-  
       
-  
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
