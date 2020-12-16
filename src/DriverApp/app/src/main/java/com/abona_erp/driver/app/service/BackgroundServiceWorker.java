@@ -49,6 +49,9 @@ import com.abona_erp.driver.app.data.model.DeviceProfileItem;
 import com.abona_erp.driver.app.data.model.Header;
 import com.abona_erp.driver.app.data.model.LastActivityDetails;
 import com.abona_erp.driver.app.data.model.ResultOfAction;
+import com.abona_erp.driver.app.data.model.SpecialActivities;
+import com.abona_erp.driver.app.data.model.SpecialActivityResult;
+import com.abona_erp.driver.app.data.model.SpecialFunction;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.model.UploadItem;
@@ -133,7 +136,7 @@ public class BackgroundServiceWorker extends Service {
     }
   }
   
-  private volatile static int delay = 5000;
+  private volatile static int delay = 7000;
   public volatile static boolean allowRequest = true;
   public volatile static boolean registrationRequest = false;
   public volatile static boolean requestIsRunning = false;
@@ -142,10 +145,7 @@ public class BackgroundServiceWorker extends Service {
     @Override
     public void run() {
       Log.i(TAG, ">>>>>>> BACKGROUND SERVICE LISTENING... >>>>>>>");
-  
-  
       
-  
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
@@ -439,7 +439,7 @@ public class BackgroundServiceWorker extends Service {
   
                 CommItem commItemDB = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                 CommItem commItemReq = new CommItem();
-  
+                
                 // SET HEADER:
                 Header header = new Header();
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
@@ -476,6 +476,134 @@ public class BackgroundServiceWorker extends Service {
                     activityItem.setFinished(_currActivity.getFinished());
                   }
                   activityItem.setSequence(_currActivity.getSequence());
+                  
+                  if (_currActivity.getSpecialActivities() != null) {
+                    int saSize = _currActivity.getSpecialActivities().size();
+                    if (saSize > 0) {
+                      for (int i = 0; i < saSize; i++) {
+                        SpecialActivities sa = _currActivity.getSpecialActivities().get(i);
+                        if (sa.getSpecialFunction().equals(SpecialFunction.STANDARD) || sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE))
+                          continue;
+  
+                        if (sa.getSpecialActivityResults() != null) {
+                          int resultOfSize = sa.getSpecialActivityResults().size();
+                          if (resultOfSize > 0) {
+                            for (int j = 0; j < resultOfSize; j++) {
+  
+                              SpecialActivityResult sar = sa.getSpecialActivityResults().get(j);
+                              if (sar.getSpecialFunctionFinished() != null)
+                                continue;
+                              
+                              //_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
+                              commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
+                              updateTask(notify, commItemDB);
+                              uploadSpecialFunctionImages(sar.getResultString1(), String.valueOf(_currActivity.getMandantId()), String.valueOf(notify.getOrderNo()), String.valueOf(notify.getTaskId()), sa.getSpecialFunction());
+                            }
+                          }
+                        }
+                      }
+                    }
+                    activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
+                  }
+                  
+                  
+                  // HANDLE SPECIAL FUNCTION:
+                  /*
+                  if (_currActivity.getSpecialActivities() != null) {
+                    int saSize = _currActivity.getSpecialActivities().size();
+                    if (saSize > 0) {
+                      for (int i = 0; i < saSize; i++) {
+  
+                        SpecialActivities sa = _currActivity.getSpecialActivities().get(i);
+                        if (sa.getSpecialFunction().equals(SpecialFunction.STANDARD) || sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE))
+                          continue;
+                        
+                        if (sa.getSpecialActivityResults() != null) {
+                          int resultOfSize = sa.getSpecialActivityResults().size();
+                          if (resultOfSize > 0) {
+                            for (int j = 0; j < resultOfSize; j++) {
+  
+                              SpecialActivityResult sar = sa.getSpecialActivityResults().get(j);
+                              if (sar.getSpecialFunctionFinished() != null)
+                                continue;
+                              
+                              File file = new File(sar.getResultString1());
+                              RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                              MultipartBody.Part body = MultipartBody.Part.createFormData("", file.getName(), requestBody);
+                              
+                              RequestBody mandantId = RequestBody.create(MediaType.parse("multipart/form-data"),
+                                String.valueOf(_currActivity.getMandantId()));
+                              RequestBody orderNo = RequestBody.create(MediaType.parse("multipart/form-data"),
+                                String.valueOf(commItemDB.getTaskItem().getOrderNo()));
+                              RequestBody taskId = RequestBody.create(MediaType.parse("multipart/form-data"),
+                                String.valueOf(commItemDB.getTaskItem().getTaskId()));
+                              RequestBody driverNo = RequestBody.create(MediaType
+                                .parse("multipart/form-data"), String.valueOf(-1));
+                              
+                              String dmsType = "0";
+                              if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                                dmsType = "24";
+                              } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                                dmsType = "28";
+                              }
+                              RequestBody documentType = RequestBody.create(MediaType
+                                .parse("multipart/form-data"), dmsType);
+                              
+                              Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
+                                .upload(mandantId, orderNo, taskId, driverNo, documentType, body);
+                              call.enqueue(new Callback<UploadResult>() {
+                                @Override
+                                public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
+  
+                                  allowRequest = true;
+                                  requestIsRunning = false;
+                                  requestCounter = 0;
+      
+                                  if (response.isSuccessful()) {
+                                    sar.setSpecialFunctionFinished(new Date());
+                                  } else if (response.code() == 401) {
+                                    handleAccessToken();
+                                  }
+                                }
+    
+                                @Override
+                                public void onFailure(Call<UploadResult> call, Throwable t) {
+                                  allowRequest = true;
+                                  requestIsRunning = false;
+                                }
+                              });
+                            }
+                          }
+                        }
+                      }
+                      
+                      activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
+                    }
+                  }*/
+                  /*
+                  if (_currActivity.getSpecialActivities() != null) {
+                    boolean changed = false;
+                    if (_currActivity.getSpecialActivities().size() > 0) {
+                      for (int i = 0; i < _currActivity.getSpecialActivities().size(); i++) {
+    
+                        if (_currActivity.getSpecialActivities().get(i) != null && _currActivity.getSpecialActivities().get(i).getSpecialActivityResults() != null) {
+                          int resultsSize = _currActivity.getSpecialActivities().get(i).getSpecialActivityResults().size();
+                          for (int j = 0; j < resultsSize; j++) {
+    
+                            if (_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).getResultString1() != null
+                              && !TextUtils.isEmpty(_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).getResultString1())
+                              && _currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).getSpecialFunctionFinished() == null) {
+                              changed = true;
+                              _currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
+                            }
+                          }
+                        }
+                      }
+                    }
+                    if (changed) {
+                      activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
+                    }
+                  }*/
                   commItemReq.setActivityItem(activityItem);
     
                   Call<ResultOfAction> call = App.getInstance().apiManager.getActivityApi().activityChange(commItemReq);
@@ -1734,5 +1862,77 @@ public class BackgroundServiceWorker extends Service {
     
     // Add JsonObjectRequest to the RequestQueue:
     requestQueue.add(jsonObjectRequest);
+  }
+  
+  private boolean uploadSpecialFunctionImages(
+    String filePath,
+    String mandantId,
+    String orderNo,
+    String taskId,
+    SpecialFunction specialFunction
+  ) {
+    
+    boolean success = false;
+    
+    File file = new File(filePath);
+    
+    RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+    MultipartBody.Part body = MultipartBody.Part.createFormData("", file.getName(), requestBody);
+  
+    RequestBody _mandantId = RequestBody.create(MediaType.parse("multipart/form-data"), mandantId);
+    RequestBody _orderNo = RequestBody.create(MediaType.parse("multipart/form-data"), orderNo);
+    RequestBody _taskId = RequestBody.create(MediaType.parse("multipart/form-data"), taskId);
+    RequestBody _driverNo = RequestBody.create(MediaType.parse("multipart/form-data"), String.valueOf(-1));
+  
+    String dmsType = "0";
+    if (specialFunction.equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+      dmsType = "24";
+    } else if (specialFunction.equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+      dmsType = "28";
+    }
+    RequestBody _documentType = RequestBody.create(MediaType
+      .parse("multipart/form-data"), dmsType);
+    
+    Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
+      .upload(_mandantId, _orderNo, _taskId, _driverNo, _documentType, body);
+    call.enqueue(new Callback<UploadResult>() {
+      @Override
+      public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
+      
+        //allowRequest = true;
+        //requestIsRunning = false;
+        //requestCounter = 0;
+      
+        if (response.isSuccessful()) {
+        } else if (response.code() == 401) {
+          handleAccessToken();
+        }
+      }
+    
+      @Override
+      public void onFailure(Call<UploadResult> call, Throwable t) {
+        //allowRequest = true;
+        //requestIsRunning = false;
+      }
+    });
+    /*
+    try {
+      Response<UploadResult> response = call.execute();
+      if (response.isSuccessful()) {
+        success = true;
+      } else {
+        switch (response.code()) {
+          case 401: handleAccessToken(); break;
+          default:
+            break;
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
+     */
+    
+    return success;
   }
 }

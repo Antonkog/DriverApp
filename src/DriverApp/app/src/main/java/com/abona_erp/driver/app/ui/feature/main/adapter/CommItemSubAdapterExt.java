@@ -37,6 +37,9 @@ import com.abona_erp.driver.app.data.model.ActivityStep;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.ConfirmationType;
 import com.abona_erp.driver.app.data.model.DelayReasonItem;
+import com.abona_erp.driver.app.data.model.SpecialActivities;
+import com.abona_erp.driver.app.data.model.SpecialFunction;
+import com.abona_erp.driver.app.data.model.SpecialFunctionOperationType;
 import com.abona_erp.driver.app.data.model.TaskChangeReason;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
@@ -244,6 +247,7 @@ public class CommItemSubAdapterExt
                     public void onSuccess(Notify notify) {
                       
                       CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
+                      
                       notify.setStatus(50);
                       nextItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
                       nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
@@ -273,13 +277,46 @@ public class CommItemSubAdapterExt
             addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());//press next button even if it's last item
             addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
-              commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
-              commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
-              mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-              updateNotify(mData);
-          
-              addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
-              addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
+              if (commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities() != null) {
+                int sfCount = commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities().size();
+                if (sfCount > 0) {
+                  if (commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities().get(0).getSpecialFunction().equals(SpecialFunction.STANDARD)) {
+                    commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
+                    commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
+                    mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                    updateNotify(mData);
+  
+                    addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
+                  } else if (commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities().get(0).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
+                    commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
+                    commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
+                    mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                    updateNotify(mData);
+  
+                    addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
+                  } else {
+                  
+                  }
+                } else {
+                  commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
+                  commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
+                  mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                  updateNotify(mData);
+  
+                  addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                  addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
+                }
+              } else {
+                commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
+                commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
+                mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                updateNotify(mData);
+  
+                addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
+              }
             } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
               
               
@@ -621,12 +658,127 @@ public class CommItemSubAdapterExt
       }
     });
     
+    // Special Function.
+    if (item.getActivityItem().getSpecialActivities() == null) {
+      holder.btn_special_func.setVisibility(View.INVISIBLE);
+    } else {
+    
+      holder.btn_special_func.setVisibility(View.INVISIBLE);
+      holder.btn_activity_next.setEnabled(true);
+      
+      int sfCount = item.getActivityItem().getSpecialActivities().size();
+      if (sfCount > 0) {
+        for (int i = 0; i < sfCount; i++) {
+          
+          SpecialActivities sa = item.getActivityItem().getSpecialActivities().get(i);
+          
+          if (sa.getSpecialFunction() == SpecialFunction.STANDARD)
+            continue;
+  
+          holder.btn_special_func.setVisibility(View.VISIBLE);
+          
+          
+          if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
+            holder.btn_activity_next.setEnabled(false);
+            break;
+          }
+          /*
+          if (sa.getSpecialActivityResults() != null && sa.getSpecialActivityResults().size() == 0 && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
+            holder.btn_activity_next.setEnabled(false);
+            break;
+          }*/
+          else if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
+            if (item.getActivityItem().getStatus().equals(ActivityStatus.PENDING)) {
+              holder.btn_activity_next.setEnabled(true);
+            } else if (item.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
+              holder.btn_activity_next.setEnabled(false);
+            } else if (item.getActivityItem().getStatus().equals(ActivityStatus.FINISHED)) {
+              holder.btn_activity_next.setEnabled(true);
+            }
+            break;
+          }/*
+          if (sa.getSpecialActivityResults() != null && sa.getSpecialActivityResults().size() == 0 && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
+            if (item.getActivityItem().getStatus().equals(ActivityStatus.PENDING)) {
+              holder.btn_activity_next.setEnabled(true);
+            } else if (item.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
+              holder.btn_activity_next.setEnabled(false);
+            } else if (item.getActivityItem().getStatus().equals(ActivityStatus.FINISHED)) {
+              holder.btn_activity_next.setEnabled(true);
+            }
+            break;
+          }*/
+          else if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY)) {
+            holder.btn_activity_next.setEnabled(false);
+            break;
+          }/*
+          if (sa.getSpecialActivityResults() != null && sa.getSpecialActivityResults().size() == 0 && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY)) {
+            holder.btn_activity_next.setEnabled(false);
+            break;
+          }*/
+        }
+      }
+    }
+    
+    
     holder.btn_special_func.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        App.eventBus.post(new QREvent());
+        App.eventBus.post(new QREvent(mData.getId(), position));
       }
     });
+    
+    /*
+    if (item.getActivityItem().getSpecialActivities() == null) {
+      holder.btn_special_func.setVisibility(View.INVISIBLE);
+    } else {
+      
+      holder.btn_special_func.setVisibility(View.INVISIBLE);
+      
+      int sizeOfSF = item.getActivityItem().getSpecialActivities().size();
+      if (sizeOfSF > 0) {
+        boolean visibleFlag = false;
+        for (int i = 0; i < sizeOfSF; i++) {
+          if (item.getActivityItem().getSpecialActivities().get(i).getSpecialFunction() != SpecialFunction.STANDARD)
+            visibleFlag = true;
+        }
+        if (visibleFlag) {
+  
+          holder.btn_special_func.setVisibility(View.VISIBLE);
+          try {
+            int index = position-1;
+            if (item.getActivityItem().getSpecialActivities().get(index) == null) return;
+            if (item.getActivityItem().getSpecialActivities().get(index).getSpecialFunction() == null) return;
+            List<SpecialActivities> specialActivities = item.getActivityItem().getSpecialActivities();
+            if (specialActivities.get(index).getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+              holder.btn_special_func.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_qr_code));
+            } else if (specialActivities.get(index).getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+              holder.btn_special_func.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_camera));
+            } else if (specialActivities.get(index).getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+              holder.btn_special_func.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_camera));
+            }
+            
+            if (specialActivities.get(index).getSpecialFunctionOperationType() == null) return;
+            if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
+              holder.btn_activity_next.setEnabled(false);
+            } else if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
+              holder.btn_activity_next.setEnabled(false);
+            } else if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY)) {
+              holder.btn_activity_next.setEnabled(false);
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+    holder.btn_special_func.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        int index = position-1;
+        App.eventBus.post(new QREvent(mData.getId(), position));
+      }
+    });
+    */
   }
   
   @Override

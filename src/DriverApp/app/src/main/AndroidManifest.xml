@@ -82,6 +82,12 @@
             </intent-filter>
         </service>
 
+        <activity android:name=".ui.feature.main.widget.ExtPhotoActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:screenOrientation="landscape">
+        </activity>
+
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

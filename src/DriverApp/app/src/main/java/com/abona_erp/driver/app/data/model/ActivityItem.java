@@ -54,14 +54,10 @@ public class ActivityItem {
   @Expose
   private List<DelayReasonItem> delayReasonItems;
   
-  @SerializedName("RadiusGeoFence")
-  @Expose
-  private Integer radiusGeoFence;
-  /*
   @SerializedName("SpecialActivities")
   @Expose
   private List<SpecialActivities> specialActivities;
-  */
+  
   public Integer getMandantId() {
     return mandantId;
   }
@@ -150,14 +146,6 @@ public class ActivityItem {
     this.delayReasonItems = delayReasonItems;
   }
   
-  public Integer getRadiusGeoFence() {
-    return this.radiusGeoFence;
-  }
-  
-  public void setRadiusGeoFence(Integer radiusGeoFence) {
-    this.radiusGeoFence = radiusGeoFence;
-  }
-  /*
   public List<SpecialActivities> getSpecialActivities() {
     return specialActivities;
   }
@@ -165,6 +153,4 @@ public class ActivityItem {
   public void setSpecialActivities(List<SpecialActivities> specialActivities) {
     this.specialActivities = specialActivities;
   }
-  
-   */
 }
