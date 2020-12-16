@@ -266,6 +266,17 @@
           android:tint="#fff"
           />
 
+        <com.abona_erp.driver.app.ui.widget.AsapTextView
+          android:id="@+id/tvCamDocumentTitle"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_toEndOf="@id/btnCameraBack"
+          android:layout_marginTop="16dp"
+          android:textColor="#ffffff"
+          android:text="CMR"
+          android:textAppearance="@style/TextAppearance.AppCompat.Title"
+          />
+
       </RelativeLayout>
 
     </LinearLayout>

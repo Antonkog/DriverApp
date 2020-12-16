@@ -55,7 +55,7 @@ public class SpecialFunctionAdapter extends RecyclerView.Adapter<SpecialFunction
     
     if (item.getSpecialActivityResults() != null && item.getSpecialActivityResults().size() > 0) {
       holder.ivDone.setVisibility(View.VISIBLE);
-      holder.btnDelete.setVisibility(View.VISIBLE);
+      //holder.btnDelete.setVisibility(View.VISIBLE);
       if (item.getSpecialActivityResults().size() > 0) {
         if (item.getSpecialActivityResults().get(0).getResultString1() != null) {
           holder.tvResult.setText(item.getSpecialActivityResults().get(0).getResultString1());
@@ -89,6 +89,17 @@ public class SpecialFunctionAdapter extends RecyclerView.Adapter<SpecialFunction
             }
           }
         } else if (mSpecialActivities.get(i).getSpecialActivityResults().size() > 0 && mSpecialActivities.get(i).getSpecialActivityResults().get(0).getResultString1().length() == 0) {
+          holder.tvTaskName.setTextColor(Color.parseColor("#E30613"));
+          if (mSpecialActivities.get(i).getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+            if (mListener != null) {
+              mListener.changeScreen(0, i);
+            }
+          } else {
+            if (mListener != null) {
+              mListener.changeScreen(1, i);
+            }
+          }
+        } else if (mSpecialActivities.get(i).getSpecialActivityResults().size() == 0){
           holder.tvTaskName.setTextColor(Color.parseColor("#E30613"));
           if (mSpecialActivities.get(i).getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
             if (mListener != null) {

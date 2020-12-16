@@ -54,6 +54,10 @@ public class ActivityItem {
   @Expose
   private List<DelayReasonItem> delayReasonItems;
   
+  @SerializedName("SpecialActivities")
+  @Expose
+  private List<SpecialActivities> specialActivities;
+  
   public Integer getMandantId() {
     return mandantId;
   }
@@ -140,5 +144,13 @@ public class ActivityItem {
   
   public void setDelayReasonItems(List<DelayReasonItem> delayReasonItems) {
     this.delayReasonItems = delayReasonItems;
+  }
+  
+  public List<SpecialActivities> getSpecialActivities() {
+    return specialActivities;
+  }
+  
+  public void setSpecialActivities(List<SpecialActivities> specialActivities) {
+    this.specialActivities = specialActivities;
   }
 }

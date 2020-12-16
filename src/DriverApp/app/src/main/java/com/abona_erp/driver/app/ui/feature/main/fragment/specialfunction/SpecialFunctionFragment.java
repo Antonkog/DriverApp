@@ -34,12 +34,14 @@ import com.abona_erp.driver.app.data.model.ActivityItem;
 import com.abona_erp.driver.app.data.model.CommItem;
 import com.abona_erp.driver.app.data.model.SpecialActivities;
 import com.abona_erp.driver.app.data.model.SpecialActivityResult;
+import com.abona_erp.driver.app.data.model.SpecialFunction;
 import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.feature.main.adapter.SpecialFunctionAdapter;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.GalleryListener;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.adapter.ExtGalleryAdapter;
+import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.android.BeepManager;
@@ -101,6 +103,7 @@ public class SpecialFunctionFragment extends Fragment
   private ExtGalleryAdapter mGalleryViewAdapter = new ExtGalleryAdapter(this);
   private AppCompatImageView takePhoto;
   private AppCompatImageButton btnCameraBack;
+  private AsapTextView tvCamDocumentTitle;
   
   // Special Function List
   private int mSFIndex;
@@ -325,7 +328,7 @@ public class SpecialFunctionFragment extends Fragment
           List<SpecialActivityResult> specialActivityResults = new ArrayList<SpecialActivityResult>();
           for (int i = 0; i < results.size(); i++) {
             SpecialActivityResult sar = new SpecialActivityResult();
-            sar.setSpecialFunctionFinished(new Date());
+            //sar.setSpecialFunctionFinished(new Date());
             sar.setResultString1(results.get(i));
             specialActivityResults.add(sar);
           }
@@ -336,7 +339,7 @@ public class SpecialFunctionFragment extends Fragment
           for (int i = 0; i < results.size(); i++) {
   
             SpecialActivityResult sar = new SpecialActivityResult();
-            sar.setSpecialFunctionFinished(new Date());
+            //sar.setSpecialFunctionFinished(new Date());
             sar.setResultString1(results.get(i));
             sa.get(SFPos).getSpecialActivityResults().add(sar);
           }
@@ -355,6 +358,7 @@ public class SpecialFunctionFragment extends Fragment
     
         // Array leeren.
         mResults.clear();
+        mPhotoUrls.clear();
         
         // Task laden.
         if (mNotifyId > 0) {
@@ -374,6 +378,11 @@ public class SpecialFunctionFragment extends Fragment
                   
                     // Special activities holen.
                     List<SpecialActivities> sa = ai.getSpecialActivities();
+                    if (sa.get(0).getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                      tvCamDocumentTitle.setText("CMR");
+                    } else if (sa.get(0).getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                      tvCamDocumentTitle.setText("Shipment");
+                    }
                     // Special activities laden.
                     SpecialFunctionAdapter adapter = new SpecialFunctionAdapter(sa, SpecialFunctionFragment.this);
                     rvSAList.setAdapter(adapter);
@@ -515,6 +524,8 @@ public class SpecialFunctionFragment extends Fragment
   
     bottom_sheet = root.findViewById(R.id.camera_bottom_sheet);
     sheetBehavior = BottomSheetBehavior.from(bottom_sheet);
+    
+    tvCamDocumentTitle = root.findViewById(R.id.tvCamDocumentTitle);
   
     rvGallery = (RecyclerView)root.findViewById(R.id.rvGalleryView);
     LinearLayoutManager llmGallery = new LinearLayoutManager(getApplicationContext(),
