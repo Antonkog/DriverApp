@@ -18,7 +18,8 @@ public class ProtocolViewModel extends AndroidViewModel {
   public ProtocolViewModel(Application application) {
     super(application);
     _repo = new DriverRepository(application);
-    mAllLogs = _repo.getLogsDAO().getProtocolLogs();
+    //mAllLogs = _repo.getLogsDAO().getProtocolLogs();
+    mAllLogs = _repo.getLogsDAO().getLogs();
   }
   
   public LiveData<List<LogItem>> getAllLogs() {

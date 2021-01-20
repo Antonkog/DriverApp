@@ -90,7 +90,7 @@ public class CompletedFragment extends Fragment implements CommonItemClickListen
                 // Check older tasks:
                 CommItem commItem = new CommItem();
                 commItem = App.getInstance().gsonUtc.fromJson(notifies.get(i).getData(), CommItem.class);
-        
+        /*
                 final int k = i;
                 if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
                   AsyncTask.execute(new Runnable() {
@@ -122,7 +122,7 @@ public class CompletedFragment extends Fragment implements CommonItemClickListen
                     });
                   continue;
                 }
-        
+        */
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(commItem.getTaskItem().getActivities().get(commItem.getTaskItem().getActivities().size()-1).getFinished());
         
@@ -130,6 +130,38 @@ public class CompletedFragment extends Fragment implements CommonItemClickListen
                   // Older than 2 minutes.
                   Log.i("CompletedFragment", "Older than 5 days...");
                   Log.i("CompletedFragment", "++++++++++++++++++++++++++++++++++++++++++++");
+  
+                  final int k = i;
+                  if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)) {
+                    AsyncTask.execute(new Runnable() {
+                      @Override
+                      public void run() {
+                        viewModel.delete(notifies.get(k));
+                      }
+                    });
+    
+                    viewModel.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(),
+                      commItem.getTaskItem().getMandantId())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribeOn(Schedulers.io())
+                      .subscribe(new DisposableSingleObserver<LastActivity>() {
+                        @Override
+                        public void onSuccess(LastActivity lastActivity) {
+                          AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                              viewModel.delete(lastActivity);
+                            }
+                          });
+                        }
+        
+                        @Override
+                        public void onError(Throwable e) {
+          
+                        }
+                      });
+                    continue;
+                  }
           
                   viewModel.getLastActivityByTaskClientId(commItem.getTaskItem().getTaskId(), commItem.getTaskItem().getMandantId())
                     .observeOn(AndroidSchedulers.mainThread())

@@ -412,9 +412,9 @@ public class DriverRepository {
           @Override
           public void onSuccess(Notify notify) {
             
-            if (notify.getRead()) {
-              params[0].setRead(true);
-            }
+            //if (notify.getRead()) {
+            //  params[0].setRead(true);
+            //}
             mAsyncTaskDao.updateNotify(params[0]);
           }
   
