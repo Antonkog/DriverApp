@@ -27,7 +27,60 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_sm"
+            app:layout_constraintBottom_toBottomOf="@+id/image_logo"
+            app:layout_constraintStart_toEndOf="@+id/image_logo"
+            app:layout_constraintTop_toTopOf="@+id/image_logo">
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.abona_erp.driver.app.ui.widget.AsapTextView
+                    android:id="@+id/tv_vehicle_registration_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:singleLine="true"
+                    android:text="@string/registration_number"
+                    android:textAllCaps="true"
+                    android:textColor="#1F1C2C"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="12dp"
+                    android:layout_height="0dp"
+                    />
+
+                <com.abona_erp.driver.app.ui.widget.AsapTextView
+                    android:id="@+id/tv_vehicle_client_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:ellipsize="marquee"
+                    android:textColor="@color/grey_60"
+                    android:textSize="12sp"
+                    tools:ignore="DuplicateIds"
+                    tools:text="Hegeesvsvsv svslmann Express" />
+
+            </LinearLayout>
+
+            <com.abona_erp.driver.app.ui.widget.AsapTextView
+                android:id="@+id/tvAppVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                tools:ignore="SmallSp" />
+
+        </LinearLayout>
+
+<!--
         <com.abona_erp.driver.app.ui.widget.AsapTextView
             android:id="@+id/tv_vehicle_registration_number"
             android:layout_width="wrap_content"
@@ -59,7 +112,7 @@
             app:layout_constraintTop_toTopOf="@+id/tv_vehicle_registration_number"
             tools:ignore="DuplicateIds"
             tools:text="Hegeesvsvsv svslmann Express" />
-
+        -->
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyle"

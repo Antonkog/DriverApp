@@ -22,9 +22,11 @@ import com.abona_erp.driver.app.App;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.DateConverter;
+import com.abona_erp.driver.app.data.converters.LogLevel;
 import com.abona_erp.driver.app.data.converters.LogType;
 import com.abona_erp.driver.app.data.dao.DeviceProfileDAO;
 import com.abona_erp.driver.app.data.dao.LastActivityDAO;
+import com.abona_erp.driver.app.data.dao.LogDAO;
 import com.abona_erp.driver.app.data.dao.NotifyDao;
 import com.abona_erp.driver.app.data.dao.OfflineConfirmationDAO;
 import com.abona_erp.driver.app.data.dao.OfflineDelayReasonDAO;
@@ -32,6 +34,7 @@ import com.abona_erp.driver.app.data.entity.ActionType;
 import com.abona_erp.driver.app.data.entity.ChangeHistoryState;
 import com.abona_erp.driver.app.data.entity.DeviceProfile;
 import com.abona_erp.driver.app.data.entity.LastActivity;
+import com.abona_erp.driver.app.data.entity.LogItem;
 import com.abona_erp.driver.app.data.entity.Notify;
 import com.abona_erp.driver.app.data.entity.OfflineConfirmation;
 import com.abona_erp.driver.app.data.entity.OfflineDelayReasonEntity;
@@ -125,6 +128,7 @@ public class BackgroundServiceWorker extends Service {
   private NotifyDao mNotifyDAO = mDB.notifyDao();
   private LastActivityDAO mLastActivityDAO = mDB.lastActivityDAO();
   private OfflineDelayReasonDAO mOfflineDelayReasonDAO = mDB.offlineDelayReasonDAO();
+  private LogDAO mLogDao = mDB.logDAO();
   
   public BackgroundServiceWorker() {
   }
@@ -136,7 +140,7 @@ public class BackgroundServiceWorker extends Service {
     }
   }
   
-  private volatile static int delay = 7000;
+  private volatile static int delay = 5000;
   public volatile static boolean allowRequest = true;
   public volatile static boolean registrationRequest = false;
   public volatile static boolean requestIsRunning = false;
@@ -173,8 +177,8 @@ public class BackgroundServiceWorker extends Service {
             return;
           }
           
-          if (TextSecurePreferences.isStopService())
-            return;
+          //if (TextSecurePreferences.isStopService())
+          //  return;
           
           if (!isDeviceRegistrated()) {
             allowRequest = true;
@@ -396,6 +400,11 @@ public class BackgroundServiceWorker extends Service {
   }
   
   private void handleConfirmationJob() {
+    
+    if (!NetworkUtil.isConnected(getApplicationContext())) {
+      addLog(LogLevel.WARNING, LogType.APP_TO_SERVER, "BWS", "No Internet Connection!");
+      return;
+    }
   
     AsyncTask.execute(new Runnable() {
       @Override
@@ -406,8 +415,10 @@ public class BackgroundServiceWorker extends Service {
           Log.i(TAG, ">>>>>>> NOCH ZU BEARBEITEN......: " + offlineConfirmations.size() + " JOBS");
           Log.i(TAG, ">>>>>>> ID......................: " + offlineConfirmations.get(0).getId());
           
-          if (offlineConfirmations.get(0).getUploadFlag() == 1)
+          if (offlineConfirmations.get(0).getUploadFlag() == 1) {
+            addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "WAITING", "Warte, Bild wird hochgeladen...");
             return;
+          }
   
           if (requestCounter > 20) {
     
@@ -439,6 +450,15 @@ public class BackgroundServiceWorker extends Service {
   
                 CommItem commItemDB = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                 CommItem commItemReq = new CommItem();
+  
+                StringBuilder builder1 = new StringBuilder();
+                builder1.append("Handler Next Job - Task ID: ");
+                builder1.append(String.valueOf(notify.getTaskId()));
+                builder1.append(" - Order No: ");
+                builder1.append(String.valueOf(notify.getOrderNo()));
+                builder1.append(" - Mandant: ");
+                builder1.append(String.valueOf(notify.getMandantId()));
+                addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "BWS", builder1.toString());
                 
                 // SET HEADER:
                 Header header = new Header();
@@ -505,105 +525,6 @@ public class BackgroundServiceWorker extends Service {
                     }
                     activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
                   }
-                  
-                  
-                  // HANDLE SPECIAL FUNCTION:
-                  /*
-                  if (_currActivity.getSpecialActivities() != null) {
-                    int saSize = _currActivity.getSpecialActivities().size();
-                    if (saSize > 0) {
-                      for (int i = 0; i < saSize; i++) {
-  
-                        SpecialActivities sa = _currActivity.getSpecialActivities().get(i);
-                        if (sa.getSpecialFunction().equals(SpecialFunction.STANDARD) || sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE))
-                          continue;
-                        
-                        if (sa.getSpecialActivityResults() != null) {
-                          int resultOfSize = sa.getSpecialActivityResults().size();
-                          if (resultOfSize > 0) {
-                            for (int j = 0; j < resultOfSize; j++) {
-  
-                              SpecialActivityResult sar = sa.getSpecialActivityResults().get(j);
-                              if (sar.getSpecialFunctionFinished() != null)
-                                continue;
-                              
-                              File file = new File(sar.getResultString1());
-                              RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                              MultipartBody.Part body = MultipartBody.Part.createFormData("", file.getName(), requestBody);
-                              
-                              RequestBody mandantId = RequestBody.create(MediaType.parse("multipart/form-data"),
-                                String.valueOf(_currActivity.getMandantId()));
-                              RequestBody orderNo = RequestBody.create(MediaType.parse("multipart/form-data"),
-                                String.valueOf(commItemDB.getTaskItem().getOrderNo()));
-                              RequestBody taskId = RequestBody.create(MediaType.parse("multipart/form-data"),
-                                String.valueOf(commItemDB.getTaskItem().getTaskId()));
-                              RequestBody driverNo = RequestBody.create(MediaType
-                                .parse("multipart/form-data"), String.valueOf(-1));
-                              
-                              String dmsType = "0";
-                              if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
-                                dmsType = "24";
-                              } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
-                                dmsType = "28";
-                              }
-                              RequestBody documentType = RequestBody.create(MediaType
-                                .parse("multipart/form-data"), dmsType);
-                              
-                              Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
-                                .upload(mandantId, orderNo, taskId, driverNo, documentType, body);
-                              call.enqueue(new Callback<UploadResult>() {
-                                @Override
-                                public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
-  
-                                  allowRequest = true;
-                                  requestIsRunning = false;
-                                  requestCounter = 0;
-      
-                                  if (response.isSuccessful()) {
-                                    sar.setSpecialFunctionFinished(new Date());
-                                  } else if (response.code() == 401) {
-                                    handleAccessToken();
-                                  }
-                                }
-    
-                                @Override
-                                public void onFailure(Call<UploadResult> call, Throwable t) {
-                                  allowRequest = true;
-                                  requestIsRunning = false;
-                                }
-                              });
-                            }
-                          }
-                        }
-                      }
-                      
-                      activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
-                    }
-                  }*/
-                  /*
-                  if (_currActivity.getSpecialActivities() != null) {
-                    boolean changed = false;
-                    if (_currActivity.getSpecialActivities().size() > 0) {
-                      for (int i = 0; i < _currActivity.getSpecialActivities().size(); i++) {
-    
-                        if (_currActivity.getSpecialActivities().get(i) != null && _currActivity.getSpecialActivities().get(i).getSpecialActivityResults() != null) {
-                          int resultsSize = _currActivity.getSpecialActivities().get(i).getSpecialActivityResults().size();
-                          for (int j = 0; j < resultsSize; j++) {
-    
-                            if (_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).getResultString1() != null
-                              && !TextUtils.isEmpty(_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).getResultString1())
-                              && _currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).getSpecialFunctionFinished() == null) {
-                              changed = true;
-                              _currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
-                            }
-                          }
-                        }
-                      }
-                    }
-                    if (changed) {
-                      activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
-                    }
-                  }*/
                   commItemReq.setActivityItem(activityItem);
     
                   Call<ResultOfAction> call = App.getInstance().apiManager.getActivityApi().activityChange(commItemReq);
@@ -627,6 +548,8 @@ public class BackgroundServiceWorker extends Service {
                         if (response.body().getIsSuccess()) {
                           // Activity vom API akzeptiert.
                           
+                          addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "RESPONSE FROM API", response.body().toString());
+                          
                           // LastActivity setzen.
                           lastActivity(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId(), _currActivity, lastID);
                         } else {
@@ -640,11 +563,14 @@ public class BackgroundServiceWorker extends Service {
                               
                               // Entferne alle Einträge mit dieser ID aus dem Offline-Queue.
                               // deleteAllTaskByID(notify.getId());
+                              
+                              addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "NOT SUCCESS", response.body().getText());
                             }
                           
                           } else {
                             // Exception anzeigen.
                             showErrorMessage(response.body().getText());
+                            addLog(LogLevel.ASSERT, LogType.APP_TO_SERVER, "Exception", response.body().getText());
                           }
                         }
                       } else if (response.code() == 401) {
@@ -659,6 +585,8 @@ public class BackgroundServiceWorker extends Service {
                       requestIsRunning = false;
                       requestCounter = 0;
                       Log.e(TAG, t.getMessage());
+                      addLog(LogLevel.WARNING, LogType.APP_TO_SERVER, "onFailure", "Server nicht erreichbar - 10");
+                      addLog(LogLevel.WARNING, LogType.APP_TO_SERVER, "onFailure", t.getMessage());
                     }
                   });
     
@@ -688,12 +616,14 @@ public class BackgroundServiceWorker extends Service {
                       requestCounter = 0;
                       
                       if (response.isSuccessful() && response.body() != null) {
+                        
+                        addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "RESPONSE FROM API", response.body().toString());
   
                         // Verbindung OK -> Entferne den Task.
                         deleteTask(offlineConfirmations.get(0));
 
                         if (response.body().getIsSuccess()) {
-                          
+                          /*
                           // LastActivity setzen.
                           AsyncTask.execute(new Runnable() {
                             @Override
@@ -733,7 +663,7 @@ public class BackgroundServiceWorker extends Service {
                                   }
                                 });
                             }
-                          });
+                          });*/
                         } else {
             
                           // Fehlerbehandlung... -> vom API nicht akzeptiert oder Fehlerzustand.
@@ -745,11 +675,13 @@ public class BackgroundServiceWorker extends Service {
   
                               // Entferne alle Einträge mit dieser ID aus dem Offline-Queue.
                               //deleteAllTaskByID(notify.getId());
+                              addLog(LogLevel.WARNING, LogType.APP_TO_SERVER, "NOT SUCCESS", response.body().getText());
                             }
                           } else {
   
                             // Exception anzeigen.
                             showErrorMessage(response.body().getText());
+                            addLog(LogLevel.ASSERT, LogType.APP_TO_SERVER, "Exception", response.body().getText());
                           }
                         }
           
@@ -770,6 +702,11 @@ public class BackgroundServiceWorker extends Service {
   
               @Override
               public void onError(Throwable e) {
+                allowRequest = true;
+                requestIsRunning = false;
+                requestCounter = 0;
+  
+                deleteDocumentConfirmation(offlineConfirmations);
               }
             });
           
@@ -824,6 +761,7 @@ public class BackgroundServiceWorker extends Service {
         if (offlineConfirmations.size() > 0 && offlineConfirmations.get(0).getUploadFlag() == 1) {
           
           Log.i(TAG, ">>>>>>>>>> Prepare Upload..: " + offlineConfirmations.get(0).getId());
+          addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "UPLOADING", "Task ID: " + String.valueOf(offlineConfirmations.get(0).getNotifyId()));
           
           mNotifyDAO.loadNotifyByTaskId(offlineConfirmations.get(0).getNotifyId())
             .observeOn(AndroidSchedulers.mainThread())
@@ -831,10 +769,10 @@ public class BackgroundServiceWorker extends Service {
             .subscribe(new DisposableSingleObserver<Notify>() {
               @Override
               public void onSuccess(Notify notify) {
+  
+                deleteDocumentConfirmation(offlineConfirmations);
     
                 if (notify == null || notify.getPhotoUrls() == null) {
-                  // Entfernen:
-                  deleteDocumentConfirmation(offlineConfirmations);
                 } else {
                 
                   int photoSize = notify.getPhotoUrls().size();
@@ -851,19 +789,13 @@ public class BackgroundServiceWorker extends Service {
 
                       // UPLOADING FILES....BEGIN
                       if(NetworkUtil.isConnected(getApplicationContext())) {
-                        AsyncTask.execute(() -> uploadDocuments(notify, photoSize, offlineConfirmations));
+                        AsyncTask.execute(() -> uploadDocuments(notify, photoSize));
                       }
 
                       // UPLOADING FILES....END
                       EventBus.getDefault().post(new UploadAllDocsEvent(notify.getTaskId())); // even if it's no connection - document already waiting to upload in offline confirmations so removing photos from preview
                     
-                    } else {
-                      // Entfernen:
-                      deleteDocumentConfirmation(offlineConfirmations);
                     }
-                  } else {
-                    // Entfernen:
-                    deleteDocumentConfirmation(offlineConfirmations);
                   }
                 }
               }
@@ -887,7 +819,7 @@ public class BackgroundServiceWorker extends Service {
     return oldId;
   }
 
-  private void uploadDocuments(Notify notify, int photoSize, List<OfflineConfirmation> offlineConfirmations) {
+  private void uploadDocuments(Notify notify, int photoSize) {
     for (int counter = 0; counter < notify.getPhotoUrls().size(); counter++) {
 
       UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(counter), UploadItem.class);
@@ -955,7 +887,6 @@ public class BackgroundServiceWorker extends Service {
 
             if (counter >= photoSize-1) {
               // Entfernen:
-              mOfflineConfirmationDAO.delete(offlineConfirmations.get(0));
               mHandler.post(()->{
                 EventBus.getDefault().post(new ProgressBarEvent(false));
                 EventBus.getDefault().post(new DocumentEvent(notify.getMandantId(), notify.getOrderNo())); //used to reload document's but why? if we know that it is on server
@@ -976,9 +907,6 @@ public class BackgroundServiceWorker extends Service {
           e.printStackTrace();
           Log.e(TAG, " error while uploading photo: " + e.getMessage());
         }
-      } else {
-        // Entfernen:
-        deleteDocumentConfirmation(offlineConfirmations);
       }
     }
   }
@@ -1934,5 +1862,24 @@ public class BackgroundServiceWorker extends Service {
      */
     
     return success;
+  }
+  
+  // ------------------------------------------------------------------------
+  // Logging
+  private void addLog(LogLevel level, LogType type, String title, String message) {
+    LogItem item = new LogItem();
+    item.setLevel(level);
+    item.setType(type);
+    item.setTitle(title);
+    item.setMessage(message);
+    item.setCreatedAt(new Date());
+    if (mLogDao != null) {
+      AsyncTask.execute(new Runnable() {
+        @Override
+        public void run() {
+          mLogDao.insert(item);
+        }
+      });
+    }
   }
 }

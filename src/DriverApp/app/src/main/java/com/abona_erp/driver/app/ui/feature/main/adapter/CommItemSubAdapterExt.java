@@ -49,6 +49,7 @@ import com.abona_erp.driver.app.ui.event.QREvent;
 import com.abona_erp.driver.app.ui.event.TabChangeEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
+import com.abona_erp.driver.app.ui.feature.main.fragment.specialfunction.SFQRCodeDialog;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.ui.widget.CustomDelayReasonDialog;
 import com.abona_erp.driver.app.ui.widget.CustomDelayReasonHistory;
@@ -723,62 +724,19 @@ public class CommItemSubAdapterExt
     holder.btn_special_func.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        App.eventBus.post(new QREvent(mData.getId(), position));
-      }
-    });
-    
-    /*
-    if (item.getActivityItem().getSpecialActivities() == null) {
-      holder.btn_special_func.setVisibility(View.INVISIBLE);
-    } else {
-      
-      holder.btn_special_func.setVisibility(View.INVISIBLE);
-      
-      int sizeOfSF = item.getActivityItem().getSpecialActivities().size();
-      if (sizeOfSF > 0) {
-        boolean visibleFlag = false;
-        for (int i = 0; i < sizeOfSF; i++) {
-          if (item.getActivityItem().getSpecialActivities().get(i).getSpecialFunction() != SpecialFunction.STANDARD)
-            visibleFlag = true;
-        }
-        if (visibleFlag) {
-  
-          holder.btn_special_func.setVisibility(View.VISIBLE);
-          try {
-            int index = position-1;
-            if (item.getActivityItem().getSpecialActivities().get(index) == null) return;
-            if (item.getActivityItem().getSpecialActivities().get(index).getSpecialFunction() == null) return;
-            List<SpecialActivities> specialActivities = item.getActivityItem().getSpecialActivities();
-            if (specialActivities.get(index).getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
-              holder.btn_special_func.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_qr_code));
-            } else if (specialActivities.get(index).getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
-              holder.btn_special_func.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_camera));
-            } else if (specialActivities.get(index).getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
-              holder.btn_special_func.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_camera));
+        //App.eventBus.post(new QREvent(mData.getId(), position));
+        if (item.getActivityItem().getSpecialActivities() != null) {
+          if (item.getActivityItem().getSpecialActivities().get(0) != null && item.getActivityItem().getSpecialActivities().get(0).getSpecialFunction() != null) {
+            SpecialFunction specialFunction = item.getActivityItem().getSpecialActivities().get(0).getSpecialFunction();
+            if (specialFunction.equals(SpecialFunction.SCAN_BARCODE)) {
+              App.eventBus.post(new QREvent(mData.getId(), position, 0));
+            } else {
+              App.eventBus.post(new QREvent(mData.getId(), position, 1));
             }
-            
-            if (specialActivities.get(index).getSpecialFunctionOperationType() == null) return;
-            if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
-              holder.btn_activity_next.setEnabled(false);
-            } else if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
-              holder.btn_activity_next.setEnabled(false);
-            } else if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY)) {
-              holder.btn_activity_next.setEnabled(false);
-            }
-          } catch (Exception e) {
-            e.printStackTrace();
           }
         }
       }
-    }
-    holder.btn_special_func.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        int index = position-1;
-        App.eventBus.post(new QREvent(mData.getId(), position));
-      }
     });
-    */
   }
   
   @Override
