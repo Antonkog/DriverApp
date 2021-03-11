@@ -179,38 +179,68 @@ public class CommItemSubAdapterExt
   
           App.eventBus.post(new TabChangeEvent());
   
-          addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
+          addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1); //press start activity
           addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
         } else {
-          // Start Activity?
-          AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-          alertDialog.setTitle(mContext.getResources().getString(R.string.action_start_order))
-            .setMessage(mContext.getResources().getString(R.string.action_start_task_msg))
-                  .setPositiveButton(mContext.getResources().getString(R.string.action_start), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                      isPreviousTaskFinished = false;
-                      commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                      commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                      commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                      mData.setStatus(50);
-                      mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-                      updateNotify(mData);
-
-                      App.eventBus.post(new TabChangeEvent());
-
-                      addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()); //press start activity
-                      addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
-                      dialog.dismiss();
+          
+          boolean startActivity = true;
+          // Check SpecialFunction.
+          if (commItem != null && commItem.getTaskItem() != null && commItem.getTaskItem().getActivities() != null) {
+            int activities = commItem.getTaskItem().getActivities().size();
+            if (activities > 0) {
+              ActivityItem activity = commItem.getTaskItem().getActivities().get(0);
+              if (activity.getStatus().equals(ActivityStatus.PENDING)) {
+                if (activity.getSpecialActivities() != null) {
+                  int sfCount = activity.getSpecialActivities().size();
+                  if (sfCount > 0) {
+                    for (int i = 0; i < sfCount; i++) {
+    
+                      SpecialActivities sa = activity.getSpecialActivities().get(i);
+                      if (sa.getSpecialFunction() == SpecialFunction.STANDARD)
+                        continue;
+                      if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
+                        startActivity = false;
+                        App.eventBus.post(new QREvent(mData.getId(), i));
+                        break;
+                      }
                     }
-                  })
-                  .setNegativeButton(mContext.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                      dialog.dismiss();
-                    }
-                  }).show();
+                  }
+                }
+              }
+            }
+          }
+          
+          if (startActivity) {
+            // Start Activity?
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+            alertDialog.setTitle(mContext.getResources().getString(R.string.action_start_order))
+              .setMessage(mContext.getResources().getString(R.string.action_start_task_msg))
+              .setPositiveButton(mContext.getResources().getString(R.string.action_start), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+        
+                  isPreviousTaskFinished = false;
+                  commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                  commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                  commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                  mData.setStatus(50);
+                  mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                  updateNotify(mData);
+        
+                  App.eventBus.post(new TabChangeEvent());
+        
+                  addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1); //press start activity
+                  addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+                  dialog.dismiss();
+                }
+              })
+              .setNegativeButton(mContext.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                }
+              }).show();
+          }
         }
         
       } else {
@@ -231,7 +261,7 @@ public class CommItemSubAdapterExt
               commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
               mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               
-              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());//that is when last next pressed
+              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 2);//that is when last next pressed
               addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
               
               
@@ -254,7 +284,7 @@ public class CommItemSubAdapterExt
                       nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
                       notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                       updateNotify(notify);
-                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
                     }
   
                     @Override
@@ -269,12 +299,32 @@ public class CommItemSubAdapterExt
           }
       
           if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
+  
+            boolean checkValidSF = true;
+            if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
+              int sfCount = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().size();
+              if (sfCount > 0) {
+                for (int n = 0; n < sfCount; n++) {
+                  SpecialActivities sa = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().get(n);
+                  if (sa.getSpecialFunction() == SpecialFunction.STANDARD)
+                    continue;
+                  if (sa.getSpecialActivityResults() == null && (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY) || sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY))) {
+                    checkValidSF = false;
+                    App.eventBus.post(new QREvent(mData.getId(), i));
+                    break;
+                  }
+                }
+              }
+            }
+            if (!checkValidSF)
+              break;
+            
             commItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
             commItem.getTaskItem().getActivities().get(i).setFinished(AppUtils.getCurrentDateTimeUtc());
             mData.setData(App.getInstance().gsonUtc.toJson(commItem));
             updateNotify(mData);
         
-            addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());//press next button even if it's last item
+            addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 2);//press next button even if it's last item
             addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
               if (commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities() != null) {
@@ -286,7 +336,7 @@ public class CommItemSubAdapterExt
                     mData.setData(App.getInstance().gsonUtc.toJson(commItem));
                     updateNotify(mData);
   
-                    addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
                     addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
                   } else if (commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities().get(0).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
                     commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
@@ -294,7 +344,7 @@ public class CommItemSubAdapterExt
                     mData.setData(App.getInstance().gsonUtc.toJson(commItem));
                     updateNotify(mData);
   
-                    addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                    addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
                     addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
                   } else {
                   
@@ -305,7 +355,7 @@ public class CommItemSubAdapterExt
                   mData.setData(App.getInstance().gsonUtc.toJson(commItem));
                   updateNotify(mData);
   
-                  addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                  addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
                   addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
                 }
               } else {
@@ -314,10 +364,12 @@ public class CommItemSubAdapterExt
                 mData.setData(App.getInstance().gsonUtc.toJson(commItem));
                 updateNotify(mData);
   
-                addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
                 addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
               }
             } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
+              
+              // Special Function.
               
               
               if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
@@ -338,7 +390,7 @@ public class CommItemSubAdapterExt
                       notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
                       updateNotify(notify);
         
-                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
                     }
       
                     @Override
@@ -352,6 +404,25 @@ public class CommItemSubAdapterExt
           }
       
           if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
+            
+            boolean checkValidSF = true;
+            if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
+              int sfCount = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().size();
+              if (sfCount > 0) {
+                for (int n = 0; n < sfCount; n++) {
+                  SpecialActivities sa = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().get(n);
+                  if (sa.getSpecialFunction() == SpecialFunction.STANDARD)
+                    continue;
+                  if (sa.getSpecialActivityResults() == null && (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY) || sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY))) {
+                    checkValidSF = false;
+                    App.eventBus.post(new QREvent(mData.getId(), i));
+                    break;
+                  }
+                }
+              }
+            }
+            if (!checkValidSF)
+              break;
         
             commItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.RUNNING);
             commItem.getTaskItem().getActivities().get(i).setStarted(AppUtils.getCurrentDateTimeUtc());
@@ -359,7 +430,7 @@ public class CommItemSubAdapterExt
             updateNotify(mData);
         
             if (i != 0){
-              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal());
+              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
               addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
             }
             break;
@@ -632,6 +703,13 @@ public class CommItemSubAdapterExt
     holder.btn_activity_next.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        holder.btn_activity_next.setEnabled(false);
+        holder.btn_activity_next.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            holder.btn_activity_next.setEnabled(true);
+          }
+        }, 5000);
         handleNextButton();
       }
     });
@@ -665,7 +743,7 @@ public class CommItemSubAdapterExt
     
       holder.btn_special_func.setVisibility(View.INVISIBLE);
       holder.btn_activity_next.setEnabled(true);
-      
+      /*
       int sfCount = item.getActivityItem().getSpecialActivities().size();
       if (sfCount > 0) {
         for (int i = 0; i < sfCount; i++) {
@@ -682,11 +760,6 @@ public class CommItemSubAdapterExt
             holder.btn_activity_next.setEnabled(false);
             break;
           }
-          /*
-          if (sa.getSpecialActivityResults() != null && sa.getSpecialActivityResults().size() == 0 && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
-            holder.btn_activity_next.setEnabled(false);
-            break;
-          }*/
           else if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
             if (item.getActivityItem().getStatus().equals(ActivityStatus.PENDING)) {
               holder.btn_activity_next.setEnabled(true);
@@ -696,27 +769,13 @@ public class CommItemSubAdapterExt
               holder.btn_activity_next.setEnabled(true);
             }
             break;
-          }/*
-          if (sa.getSpecialActivityResults() != null && sa.getSpecialActivityResults().size() == 0 && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
-            if (item.getActivityItem().getStatus().equals(ActivityStatus.PENDING)) {
-              holder.btn_activity_next.setEnabled(true);
-            } else if (item.getActivityItem().getStatus().equals(ActivityStatus.RUNNING)) {
-              holder.btn_activity_next.setEnabled(false);
-            } else if (item.getActivityItem().getStatus().equals(ActivityStatus.FINISHED)) {
-              holder.btn_activity_next.setEnabled(true);
-            }
-            break;
-          }*/
+          }
           else if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY)) {
             holder.btn_activity_next.setEnabled(false);
             break;
-          }/*
-          if (sa.getSpecialActivityResults() != null && sa.getSpecialActivityResults().size() == 0 && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY)) {
-            holder.btn_activity_next.setEnabled(false);
-            break;
-          }*/
+          }
         }
-      }
+      }*/
     }
     
     
@@ -727,7 +786,7 @@ public class CommItemSubAdapterExt
       }
     });
     
-    /*
+    
     if (item.getActivityItem().getSpecialActivities() == null) {
       holder.btn_special_func.setVisibility(View.INVISIBLE);
     } else {
@@ -745,6 +804,7 @@ public class CommItemSubAdapterExt
   
           holder.btn_special_func.setVisibility(View.VISIBLE);
           try {
+            /*
             int index = position-1;
             if (item.getActivityItem().getSpecialActivities().get(index) == null) return;
             if (item.getActivityItem().getSpecialActivities().get(index).getSpecialFunction() == null) return;
@@ -757,6 +817,8 @@ public class CommItemSubAdapterExt
               holder.btn_special_func.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_camera));
             }
             
+             */
+            /*
             if (specialActivities.get(index).getSpecialFunctionOperationType() == null) return;
             if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
               holder.btn_activity_next.setEnabled(false);
@@ -764,7 +826,7 @@ public class CommItemSubAdapterExt
               holder.btn_activity_next.setEnabled(false);
             } else if (specialActivities.get(index).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY)) {
               holder.btn_activity_next.setEnabled(false);
-            }
+            }*/
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -778,7 +840,7 @@ public class CommItemSubAdapterExt
         App.eventBus.post(new QREvent(mData.getId(), position));
       }
     });
-    */
+    
   }
   
   @Override
@@ -867,14 +929,18 @@ public class CommItemSubAdapterExt
     });
   }
   
-  private void addOfflineWork(int notifyId, int activityId, int confirmationType) {
+  // activity Status:
+  // 0 - None
+  // 1 - Started
+  // 2 - Finished
+  private void addOfflineWork(int notifyId, int activityId, int confirmationType, int activityStatus) {
     OfflineConfirmationDAO dao = DriverDatabase.getDatabase().offlineConfirmationDAO();
 
     OfflineConfirmation offlineConfirmation = new OfflineConfirmation();
     offlineConfirmation.setNotifyId(notifyId);
     offlineConfirmation.setActivityId(activityId);
-
     offlineConfirmation.setConfirmType(confirmationType);
+    offlineConfirmation.setActivityStatus(activityStatus);
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
