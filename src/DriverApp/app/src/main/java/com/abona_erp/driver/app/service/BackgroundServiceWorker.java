@@ -223,6 +223,14 @@ public class BackgroundServiceWorker extends Service {
                 mOfflineDelayReasonDAO.getAllOfflineDelayReasons();
               
               if (!allowRequest && (offlineConfirmations.size() > 0 || offlineDelayReasonEntities.size() > 0)) {
+                
+                for (int n = 0; n < offlineConfirmations.size(); n++) {
+                  Log.i("TABLE ", "Id: " + offlineConfirmations.get(n).getId()
+                      + " NotifyId: " + offlineConfirmations.get(n).getNotifyId()
+                      + " ActivityId: " + offlineConfirmations.get(n).getActivityId()
+                      + " ConfirmType: " + offlineConfirmations.get(n).getConfirmType()
+                      + " UploadFlag: " + offlineConfirmations.get(n).getUploadFlag());
+                }
                 allowRequest = true;
               }
             }
@@ -473,7 +481,8 @@ public class BackgroundServiceWorker extends Service {
   
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
                   
-                  ActivityItem _currActivity = commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId());
+                  OfflineConfirmation apiJob = offlineConfirmations.get(0);
+                  ActivityItem _currActivity = commItemDB.getTaskItem().getActivities().get(apiJob.getActivityId());
                   
                   // SET ACTIVITY ITEM CHANGE:
                   ActivityItem activityItem = new ActivityItem();
@@ -483,18 +492,41 @@ public class BackgroundServiceWorker extends Service {
                   activityItem.setActivityId(_currActivity.getActivityId());
                   activityItem.setName(_currActivity.getName());
                   activityItem.setDescription(_currActivity.getDescription());
-    
+                  
+                  Date minDate = new Date(2018-1900, 1, 21);
+                  if (apiJob.getActivityStatus() == 1) {
+                    if (_currActivity.getStarted() == null || _currActivity.getStarted().before(minDate)) {
+                      _currActivity.setStarted(AppUtils.getCurrentDateTimeUtc());
+                    }
+                    activityItem.setStarted(_currActivity.getStarted());
+                    activityItem.setStatus(ActivityStatus.RUNNING);
+                  } else if (apiJob.getActivityStatus() == 2) {
+                    if (_currActivity.getStarted() == null || _currActivity.getStarted().before(minDate)) {
+                      _currActivity.setStarted(AppUtils.getCurrentDateTimeUtc());
+                    }
+                    if (_currActivity.getFinished() == null || _currActivity.getFinished().before(minDate)) {
+                      _currActivity.setFinished(AppUtils.getCurrentDateTimeUtc());
+                    }
+                    activityItem.setStarted(_currActivity.getStarted());
+                    activityItem.setFinished(_currActivity.getFinished());
+                    activityItem.setStatus(ActivityStatus.FINISHED);
+                  } else {
+                    activityItem.setStatus(ActivityStatus.PENDING);
+                  }
+    /*
                   if (_currActivity.getStatus().ordinal() == 0) {
                     activityItem.setStatus(ActivityStatus.PENDING);
                   } else if (_currActivity.getStatus().ordinal() == 1) {
                     activityItem.setStatus(ActivityStatus.RUNNING);
-                    activityItem.setStarted(_currActivity.getStarted());
-                    activityItem.setFinished(_currActivity.getFinished());
+                    //activityItem.setStarted(_currActivity.getStarted());
+                    //activityItem.setFinished(_currActivity.getFinished());
                   } else if (_currActivity.getStatus().ordinal() == 2) {
                     activityItem.setStatus(ActivityStatus.FINISHED);
-                    activityItem.setStarted(_currActivity.getStarted());
-                    activityItem.setFinished(_currActivity.getFinished());
+                    //activityItem.setStarted(_currActivity.getStarted());
+                    //activityItem.setFinished(_currActivity.getFinished());
                   }
+                  
+     */
                   activityItem.setSequence(_currActivity.getSequence());
                   
                   if (_currActivity.getSpecialActivities() != null) {
@@ -1451,7 +1483,9 @@ public class BackgroundServiceWorker extends Service {
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
+          
           mOfflineConfirmationDAO.delete(offlineConfirmation);
+          Log.i("TABLE", "--------------------------------------- Lösche Eintrag " + offlineConfirmation.getId());
         }
       });
     }

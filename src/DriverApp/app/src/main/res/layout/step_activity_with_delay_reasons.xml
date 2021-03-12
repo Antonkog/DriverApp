@@ -243,7 +243,7 @@
       android:layout_height="match_parent"
       android:paddingStart="15dp"
       android:paddingEnd="15dp"
-      android:src="@drawable/ic_qr_code"
+      android:src="@drawable/ic_label_barcode_picture"
       app:tint="#1F1C2C"
       android:visibility="gone"
       tools:visibility="visible"

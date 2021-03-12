@@ -22,6 +22,9 @@ public class OfflineConfirmation {
   @ColumnInfo(name = "upload_flag")
   private int uploadFlag;
   
+  @ColumnInfo(name = "activity_status")
+  private int activityStatus;
+  
   public int getId() {
     return id;
   }
@@ -62,4 +65,11 @@ public class OfflineConfirmation {
     this.uploadFlag = enableFlag;
   }
   
+  public int getActivityStatus() {
+    return activityStatus;
+  }
+  
+  public void setActivityStatus(int activityStatus) {
+    this.activityStatus = activityStatus;
+  }
 }
