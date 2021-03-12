@@ -90,6 +90,8 @@ import com.abona_erp.driver.app.ui.feature.main.fragment.history.HistoryFragment
 import com.abona_erp.driver.app.ui.feature.main.fragment.map.MapFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.photo.PhotoFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.protocol.ProtocolFragment;
+import com.abona_erp.driver.app.ui.feature.main.fragment.specialfunction.SFCameraDialog;
+import com.abona_erp.driver.app.ui.feature.main.fragment.specialfunction.SFQRCodeDialog;
 import com.abona_erp.driver.app.ui.feature.main.fragment.specialfunction.SpecialFunctionFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.registration.DeviceNotRegistratedFragment;
 import com.abona_erp.driver.app.ui.feature.main.fragment.settings.SettingsFragment;
@@ -183,6 +185,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   private AsapTextView mVehicleRegistrationNumber;
   private AsapTextView mVehicleClientName;
   private AppCompatImageView getAllTaskImage;
+  private AsapTextView tvAppVersion;
   
   private AsapTextView mPatchTitle;
   private AsapTextView mPatchSubtitle;
@@ -339,6 +342,9 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
         onUpdateClick();
       }
     });
+    
+    tvAppVersion = (AsapTextView)findViewById(R.id.tvAppVersion);
+    tvAppVersion.setText(BuildConfig.VERSION_NAME);
 
 
     observeNotifications();
@@ -906,11 +912,22 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
   
   @Subscribe
   public void onMessageEvent(QREvent event) {
+    FragmentManager fm = getSupportFragmentManager();
+    if (event.getType() == 0) {
+      SFQRCodeDialog dialog = SFQRCodeDialog.newInstance(event.getNotifyId(), event.getActivityId());
+      dialog.show(fm, "qrdialog");
+    } else if (event.getType() == 1) {
+      SFCameraDialog dialog = SFCameraDialog.newInstance(event.getNotifyId(), event.getActivityId());
+      dialog.show(fm, "cameradialog");
+    }
+    /*
     getSupportFragmentManager()
       .beginTransaction()
       .replace(R.id.main_container, SpecialFunctionFragment.newInstance(event.getNotifyId(), event.getActivityId()))
       .addToBackStack(null)
       .commit();
+      
+     */
   }
 
   @Subscribe
@@ -1117,8 +1134,8 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
           fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.TASKS_UPDATE_COMPLETE.name());
         } else {
           // Kein Update vorhanden:
-          CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.SERVER_ERROR, getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
-          fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.SERVER_ERROR.name());
+          CustomDialogFragment fragment = CustomDialogFragment.newInstance(CustomDialogFragment.DialogType.TASKS_UPDATE_COMPLETE, getApplicationContext().getResources().getString(R.string.action_exception_on_rest_api));
+          fragment.show(getSupportFragmentManager(), CustomDialogFragment.DialogType.TASKS_UPDATE_COMPLETE.name());
         }
 
       } else if (resultOfAction.getIsException()) {

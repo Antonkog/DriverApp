@@ -15,10 +15,12 @@ import io.reactivex.Flowable;
 @Dao
 public interface LogDAO {
 
-  @Query("SELECT * FROM logItem  where type != 0 ORDER BY id DESC")
+  //@Query("SELECT * FROM logItem  where type != 0 ORDER BY id DESC")
+  @Query("SELECT * FROM logItem ORDER BY id ASC")
   LiveData<List<LogItem>> getLogs();
 
   @Query("SELECT * FROM logItem where type = 0") //see LogLevel 2 = FCM and LogLevel 32 = FATAL
+  //@Query("SELECT * FROM")
   LiveData<List<LogItem>> getProtocolLogs();
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)

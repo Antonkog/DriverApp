@@ -368,7 +368,7 @@ public class TextSecurePreferences {
   }
   
   public static Boolean isPatch00_Completed() {
-    return getBooleanPreference(ContextUtils.getApplicationContext(), PREF_PATCH_00, false);
+    return getBooleanPreference(ContextUtils.getApplicationContext(), PREF_PATCH_00, true);
   }
   
   public static void setPatch00_Completed(Boolean completed) {
