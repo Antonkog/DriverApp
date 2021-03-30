@@ -493,22 +493,20 @@ public class BackgroundServiceWorker extends Service {
                   activityItem.setActivityId(_currActivity.getActivityId());
                   activityItem.setName(_currActivity.getName());
                   activityItem.setDescription(_currActivity.getDescription());
-                  /*
-                  Date minDate = new Date(2018-1900, 1, 21);
+                  
+                  //Date minDate = new Date(2018-1900, 1, 21);
                   
                   if (apiJob.getActivityStatus() == 1) {
-                    if (_currActivity.getStarted() == null || _currActivity.getStarted().before(minDate)) {
-                      _currActivity.setStarted(AppUtils.getCurrentDateTimeUtc());
-                    }
+                  
+                    //if (_currActivity.getStarted() == null || _currActivity.getStarted().before(minDate)) {
+                    //  _currActivity.setStarted(AppUtils.getCurrentDateTimeUtc());
+                    //}
                     activityItem.setStarted(_currActivity.getStarted());
                     activityItem.setStatus(ActivityStatus.RUNNING);
                   } else if (apiJob.getActivityStatus() == 2) {
-                    if (_currActivity.getStarted() == null || _currActivity.getStarted().before(minDate)) {
-                      _currActivity.setStarted(AppUtils.getCurrentDateTimeUtc());
-                    }
-                    if (_currActivity.getFinished() == null || _currActivity.getFinished().before(minDate)) {
-                      _currActivity.setFinished(AppUtils.getCurrentDateTimeUtc());
-                    }*/
+                    //if (_currActivity.getFinished() == null || _currActivity.getFinished().before(minDate)) {
+                    //  _currActivity.setFinished(AppUtils.getCurrentDateTimeUtc());
+                    //}
                     activityItem.setStarted(_currActivity.getStarted());
                     activityItem.setFinished(_currActivity.getFinished());
                     activityItem.setStatus(ActivityStatus.FINISHED);
