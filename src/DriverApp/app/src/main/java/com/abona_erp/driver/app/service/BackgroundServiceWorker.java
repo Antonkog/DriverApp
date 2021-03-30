@@ -223,7 +223,7 @@ public class BackgroundServiceWorker extends Service {
                 mOfflineDelayReasonDAO.getAllOfflineDelayReasons();
               
               if (!allowRequest && (offlineConfirmations.size() > 0 || offlineDelayReasonEntities.size() > 0)) {
-                
+                /*
                 for (int n = 0; n < offlineConfirmations.size(); n++) {
                   Log.i("TABLE ", "Id: " + offlineConfirmations.get(n).getId()
                       + " NotifyId: " + offlineConfirmations.get(n).getNotifyId()
@@ -231,6 +231,7 @@ public class BackgroundServiceWorker extends Service {
                       + " ConfirmType: " + offlineConfirmations.get(n).getConfirmType()
                       + " UploadFlag: " + offlineConfirmations.get(n).getUploadFlag());
                 }
+                */
                 allowRequest = true;
               }
             }
@@ -492,8 +493,9 @@ public class BackgroundServiceWorker extends Service {
                   activityItem.setActivityId(_currActivity.getActivityId());
                   activityItem.setName(_currActivity.getName());
                   activityItem.setDescription(_currActivity.getDescription());
-                  
+                  /*
                   Date minDate = new Date(2018-1900, 1, 21);
+                  
                   if (apiJob.getActivityStatus() == 1) {
                     if (_currActivity.getStarted() == null || _currActivity.getStarted().before(minDate)) {
                       _currActivity.setStarted(AppUtils.getCurrentDateTimeUtc());
@@ -506,7 +508,7 @@ public class BackgroundServiceWorker extends Service {
                     }
                     if (_currActivity.getFinished() == null || _currActivity.getFinished().before(minDate)) {
                       _currActivity.setFinished(AppUtils.getCurrentDateTimeUtc());
-                    }
+                    }*/
                     activityItem.setStarted(_currActivity.getStarted());
                     activityItem.setFinished(_currActivity.getFinished());
                     activityItem.setStatus(ActivityStatus.FINISHED);
