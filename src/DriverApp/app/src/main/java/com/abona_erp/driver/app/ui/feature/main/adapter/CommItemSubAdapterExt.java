@@ -171,17 +171,19 @@ public class CommItemSubAdapterExt
         if (!isPreviousTaskFinished) return;
     
         if (commItem.getTaskItem().getActivities().get(0).getStatus().equals(ActivityStatus.RUNNING)) {
-          commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-          commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-          commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-          mData.setStatus(50);
-          mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-          updateNotify(mData);
+          synchronized (this) {
+            commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+            commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+            commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+            mData.setStatus(50);
+            mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+            updateNotify(mData);
   
-          App.eventBus.post(new TabChangeEvent());
+            App.eventBus.post(new TabChangeEvent());
   
-          addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1); //press start activity
-          addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+            addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1); //press start activity
+            addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+          }
         } else {
           
           boolean startActivity = true;
@@ -221,17 +223,20 @@ public class CommItemSubAdapterExt
                 public void onClick(DialogInterface dialog, int which) {
         
                   isPreviousTaskFinished = false;
-                  commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                  commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                  commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                  mData.setStatus(50);
-                  mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-                  updateNotify(mData);
+                  synchronized (this) {
+                    commItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                    commItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                    commItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                    mData.setStatus(50);
+                    mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                    updateNotify(mData);
         
-                  App.eventBus.post(new TabChangeEvent());
+                    App.eventBus.post(new TabChangeEvent());
         
-                  addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1); //press start activity
-                  addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+                    addOfflineWork(mData.getId(),  0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1); //press start activity
+                    addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
+                  }
+                  
                   dialog.dismiss();
                 }
               })
@@ -245,11 +250,13 @@ public class CommItemSubAdapterExt
         }
         
       } else {
-    
-        mData.setStatus(100);
-        commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-        mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-        updateNotify(mData);
+  
+        synchronized (this) {
+          mData.setStatus(100);
+          commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+          mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+          updateNotify(mData);
+        }
       }
     
     } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
@@ -258,13 +265,15 @@ public class CommItemSubAdapterExt
         for (int i = 0; i < commItem.getTaskItem().getActivities().size(); i++) {
           if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
             if (i == commItem.getTaskItem().getActivities().size() - 1) {
-              mData.setStatus(100);
-              commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
-              mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+  
+              synchronized (this) {
+                mData.setStatus(100);
+                commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
+                mData.setData(App.getInstance().gsonUtc.toJson(commItem));
               
-              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 2);//that is when last next pressed
-              addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
-              
+                addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 2);//that is when last next pressed
+                addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
+              }
               
               // Check next previous task and start it.
               if (commItem.getTaskItem().getNextTaskId() != null && commItem.getTaskItem().getNextTaskId() > 0) {
@@ -278,14 +287,16 @@ public class CommItemSubAdapterExt
                     public void onSuccess(Notify notify) {
                       
                       CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
-                      
-                      notify.setStatus(50);
-                      nextItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                      nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                      nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                      notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
-                      updateNotify(notify);
-                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
+  
+                      synchronized (this) {
+                        notify.setStatus(50);
+                        nextItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                        nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                        nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                        notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
+                        updateNotify(notify);
+                        addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
+                      }
                     }
   
                     @Override
@@ -319,14 +330,17 @@ public class CommItemSubAdapterExt
             }
             if (!checkValidSF)
               break;
-            
-            commItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
-            commItem.getTaskItem().getActivities().get(i).setFinished(AppUtils.getCurrentDateTimeUtc());
-            mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-            updateNotify(mData);
+  
+            synchronized (this) {
+              commItem.getTaskItem().getActivities().get(i).setStatus(ActivityStatus.FINISHED);
+              commItem.getTaskItem().getActivities().get(i).setFinished(AppUtils.getCurrentDateTimeUtc());
+              mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+              updateNotify(mData);
         
-            addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 2);//press next button even if it's last item
-            addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
+              addOfflineWork(mData.getId(), i, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 2);//press next button even if it's last item
+              addHistoryLog(ActionType.FINISH_ACTIVITY, commItem.getTaskItem().getActivities().get(i), commItem);
+            }
+            
             if (i < commItem.getTaskItem().getActivities().size() - 1) {
               if (commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities() != null) {
                 int sfCount = commItem.getTaskItem().getActivities().get(i+1).getSpecialActivities().size();
@@ -360,13 +374,15 @@ public class CommItemSubAdapterExt
                   addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
                 }
               } else {
-                commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
-                commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
-                mData.setData(App.getInstance().gsonUtc.toJson(commItem));
-                updateNotify(mData);
+                synchronized (this) {
+                  commItem.getTaskItem().getActivities().get(i+1).setStatus(ActivityStatus.RUNNING);
+                  commItem.getTaskItem().getActivities().get(i+1).setStarted(AppUtils.getCurrentDateTimeUtc());
+                  mData.setData(App.getInstance().gsonUtc.toJson(commItem));
+                  updateNotify(mData);
   
-                addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
-                addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
+                  addOfflineWork(mData.getId(), i+1, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
+                  addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(i + 1), commItem); //that comes after  1st next button pressed
+                }
               }
             } else if (i == commItem.getTaskItem().getActivities().size() - 1) {
               
@@ -383,15 +399,17 @@ public class CommItemSubAdapterExt
                     public void onSuccess(Notify notify) {
         
                       // I found next task and start it.
-                      CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
-                      nextItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
-                      nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
-                      nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
-                      notify.setStatus(50);
-                      notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
-                      updateNotify(notify);
+                      synchronized (this) {
+                        CommItem nextItem = App.getInstance().gsonUtc.fromJson(notify.getData(), CommItem.class);
+                        nextItem.getTaskItem().setTaskStatus(TaskStatus.RUNNING);
+                        nextItem.getTaskItem().getActivities().get(0).setStarted(AppUtils.getCurrentDateTimeUtc());
+                        nextItem.getTaskItem().getActivities().get(0).setStatus(ActivityStatus.RUNNING);
+                        notify.setStatus(50);
+                        notify.setData(App.getInstance().gsonUtc.toJson(nextItem));
+                        updateNotify(notify);
         
-                      addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
+                        addOfflineWork(notify.getId(), 0, ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal(), 1);
+                      }
                     }
       
                     @Override
