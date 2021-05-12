@@ -254,6 +254,10 @@ public class FCMParserWorker extends Worker implements FCMParser {
                     addDelayReason(commItem);
                     break;
             }
+            
+            if (commItem != null && commItem.getTaskItem() != null && commItem.getTaskItem().getMandantId() != null && commItem.getTaskItem().getMandantId() > 0) {
+                DelayReasonUtil.getDelayReasonsFromService(commItem.getTaskItem().getMandantId());
+            }
 
             saveCommonTaskPercentage(commItem);
 
