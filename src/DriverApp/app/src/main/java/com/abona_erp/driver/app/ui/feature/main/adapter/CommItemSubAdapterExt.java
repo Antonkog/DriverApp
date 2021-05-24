@@ -202,6 +202,13 @@ public class CommItemSubAdapterExt
                       if (sa.getSpecialFunction() == SpecialFunction.STANDARD)
                         continue;
                       if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
+                        if (sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+                          App.eventBus.post(new QREvent(mData.getId(), 0, 0));
+                        } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                          App.eventBus.post(new QREvent(mData.getId(), 0, 1));
+                        } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                          App.eventBus.post(new QREvent(mData.getId(), 0, 1));
+                        }
                         startActivity = false;
                         //App.eventBus.post(new QREvent(mData.getId(), i));
                         break;
@@ -314,6 +321,22 @@ public class CommItemSubAdapterExt
   
             boolean checkValidSF = true;
             if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
+              SpecialActivities specialActivities = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().get(0);
+              if (specialActivities.getSpecialActivityResults() == null) {
+                if (specialActivities.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+                  App.eventBus.post(new QREvent(mData.getId(), i, 0));
+                  checkValidSF = false;
+                } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                  App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                  checkValidSF = false;
+                } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                  App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                  checkValidSF = false;
+                }
+              }
+            }
+/*
+            if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
               int sfCount = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().size();
               if (sfCount > 0) {
                 for (int n = 0; n < sfCount; n++) {
@@ -327,7 +350,7 @@ public class CommItemSubAdapterExt
                   }
                 }
               }
-            }
+            }*/
             if (!checkValidSF)
               break;
   
@@ -435,6 +458,13 @@ public class CommItemSubAdapterExt
                   if (sa.getSpecialActivityResults() == null && (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY) || sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY))) {
                     checkValidSF = false;
                     //App.eventBus.post(new QREvent(mData.getId(), i));
+                    if (sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+                      App.eventBus.post(new QREvent(mData.getId(), i, 0));
+                    } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                      App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                    } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                      App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                    }
                     break;
                   }
                 }
@@ -722,13 +752,14 @@ public class CommItemSubAdapterExt
     holder.btn_activity_next.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        /*
         holder.btn_activity_next.setEnabled(false);
         holder.btn_activity_next.postDelayed(new Runnable() {
           @Override
           public void run() {
             holder.btn_activity_next.setEnabled(true);
           }
-        }, 5000);
+        }, 5000);*/
         handleNextButton();
       }
     });
@@ -756,13 +787,15 @@ public class CommItemSubAdapterExt
     });
     
     // Special Function.
+
     if (item.getActivityItem().getSpecialActivities() == null) {
       holder.btn_special_func.setVisibility(View.INVISIBLE);
     } else {
-    
+
       holder.btn_special_func.setVisibility(View.INVISIBLE);
-      holder.btn_activity_next.setEnabled(true);
-      
+
+      //holder.btn_activity_next.setEnabled(true);
+
       int sfCount = item.getActivityItem().getSpecialActivities().size();
       if (sfCount > 0) {
         for (int i = 0; i < sfCount; i++) {
@@ -773,7 +806,7 @@ public class CommItemSubAdapterExt
             continue;
   
           holder.btn_special_func.setVisibility(View.VISIBLE);
-          
+          /*
           
           if (sa.getSpecialActivityResults() == null && sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
             holder.btn_activity_next.setEnabled(false);
@@ -793,6 +826,7 @@ public class CommItemSubAdapterExt
             holder.btn_activity_next.setEnabled(false);
             break;
           }
+          */
         }
       }
     }
