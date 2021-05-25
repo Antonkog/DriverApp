@@ -165,23 +165,6 @@ public class CommItemAdapterExt extends
             }
           }
         }
-  
-        
-        
-        /*
-        if (notify.isCurrentlySelected() && holder.root_content.getVisibility() == View.VISIBLE) {
-          holder.root_content.setVisibility(View.GONE);
-          getListener().onClick(view, position, notify, false);
-          mDataList.get(position).setCurrentlySelected(false);
-          updateNotify(mDataList.get(position));
-        } else if (notify.isCurrentlySelected() && holder.root_content.getVisibility() == View.GONE) {
-          holder.root_content.setVisibility(View.VISIBLE);
-          getListener().onClick(view, position, notify, true);
-          mDataList.get(position).setCurrentlySelected(true);
-          updateNotify(mDataList.get(position));
-        }
-        */
-        
       }
     });
     
