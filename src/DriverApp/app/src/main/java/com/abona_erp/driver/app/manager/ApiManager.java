@@ -258,6 +258,13 @@ public class ApiManager implements Manager {
     if (authRequestBuilder == null) {
       MediaType mediaType = MediaType.parse(RemoteConstants.MEDIA_TYPE_X_WWW_FORM_URLENCODED);
       RequestBody requestBody = RequestBody.create(mediaType, RemoteConstants.ENDPOINT_AUTH);
+  
+      int versionCode = BuildConfig.VERSION_CODE;
+      try {
+        PackageInfo pi = ContextUtils.getApplicationContext()
+          .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
+        versionCode = pi.versionCode;
+      } catch (PackageManager.NameNotFoundException ignore) {}
       
       authRequestBuilder = new Request.Builder()
         .url(TextSecurePreferences.getEndpoint() + "authentication")

@@ -111,8 +111,11 @@ public class CommItemSubAdapterExt
     if (mData == null) return;
     
     CommItem commItem = App.getInstance().gsonUtc.fromJson(mData.getData(), CommItem.class);
+    
+    TaskStatus taskStatus = commItem.getTaskItem().getTaskStatus();
+    
     if (commItem.getTaskItem().getChangeReason().equals(TaskChangeReason.DELETED)
-      && commItem.getTaskItem().getTaskStatus() != TaskStatus.FINISHED) {
+      && taskStatus != TaskStatus.FINISHED) {
   
       mData.setStatus(100);
       commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
@@ -120,7 +123,7 @@ public class CommItemSubAdapterExt
       updateNotify(mData);
   
       App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
-    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
+    } else if (taskStatus.equals(TaskStatus.PENDING)) {
   
       boolean fFinished = false;
       for (int i = 0; i < commItem.getTaskItem().getActivities().size(); i++) {
@@ -185,7 +188,6 @@ public class CommItemSubAdapterExt
             addHistoryLog(ActionType.START_ACTIVITY, commItem.getTaskItem().getActivities().get(0), commItem);
           }
         } else {
-          
           boolean startActivity = true;
           // Check SpecialFunction.
           if (commItem != null && commItem.getTaskItem() != null && commItem.getTaskItem().getActivities() != null) {
@@ -266,11 +268,50 @@ public class CommItemSubAdapterExt
         }
       }
     
-    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.RUNNING)) {
+    } else if (taskStatus.equals(TaskStatus.RUNNING)) {
+      
+      int sizeOfActivities = commItem.getTaskItem().getActivities().size();
   
-      if (commItem.getTaskItem().getActivities().size() > 0) {
-        for (int i = 0; i < commItem.getTaskItem().getActivities().size(); i++) {
-          if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED)) {
+      if (sizeOfActivities > 0) {
+        for (int i = 0; i < sizeOfActivities; i++) {
+  
+          ActivityItem activity = commItem.getTaskItem().getActivities().get(i);
+          ActivityStatus activityStatus = activity.getStatus();
+          
+          if (activityStatus.equals(ActivityStatus.FINISHED)) {
+  
+            boolean checkValidSF = true;
+            if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
+              SpecialActivities specialActivities = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().get(0);
+              if (specialActivities.getSpecialActivityResults() == null) {
+                /*if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING) && specialActivities.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {*/
+                  if (specialActivities.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 0));
+                    checkValidSF = false;
+                  } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                    checkValidSF = false;
+                  } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                    checkValidSF = false;
+                  }
+                /*} else if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.FINISHED) && specialActivities.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
+                  if (specialActivities.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 0));
+                    checkValidSF = false;
+                  } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                    checkValidSF = false;
+                  } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                    checkValidSF = false;
+                  }
+                }*/
+              }
+            }
+            if (!checkValidSF)
+              break;
+            
             if (i == commItem.getTaskItem().getActivities().size() - 1) {
   
               synchronized (this) {
@@ -315,42 +356,24 @@ public class CommItemSubAdapterExt
               updateNotify(mData);
             }
             continue;
-          }
-      
-          if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.RUNNING)) {
+          } else if (activityStatus.equals(ActivityStatus.RUNNING)) {
   
             boolean checkValidSF = true;
-            if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
-              SpecialActivities specialActivities = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().get(0);
-              if (specialActivities.getSpecialActivityResults() == null) {
-                if (specialActivities.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
-                  App.eventBus.post(new QREvent(mData.getId(), i, 0));
+            if (activity.getSpecialActivities() != null) {
+              SpecialActivities specialActivity = activity.getSpecialActivities().get(0);
+              if (specialActivity.getSpecialActivityResults() == null) {
+                if (specialActivity.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
                   checkValidSF = false;
-                } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
-                  App.eventBus.post(new QREvent(mData.getId(), i, 1));
-                  checkValidSF = false;
-                } else if (specialActivities.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
-                  App.eventBus.post(new QREvent(mData.getId(), i, 1));
-                  checkValidSF = false;
-                }
-              }
-            }
-/*
-            if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
-              int sfCount = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().size();
-              if (sfCount > 0) {
-                for (int n = 0; n < sfCount; n++) {
-                  SpecialActivities sa = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().get(n);
-                  if (sa.getSpecialFunction() == SpecialFunction.STANDARD)
-                    continue;
-                  if (sa.getSpecialActivityResults() == null && (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY) || sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.SPECIAL_FUNCTION_ONLY))) {
-                    checkValidSF = false;
-                    //App.eventBus.post(new QREvent(mData.getId(), i));
-                    break;
+                  if (specialActivity.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 0));
+                  } else if (specialActivity.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                  } else if (specialActivity.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
                   }
                 }
               }
-            }*/
+            }
             if (!checkValidSF)
               break;
   
@@ -443,29 +466,20 @@ public class CommItemSubAdapterExt
               }
             }
             break;
-          }
-      
-          if (commItem.getTaskItem().getActivities().get(i).getStatus().equals(ActivityStatus.PENDING)) {
+          } else if (activityStatus.equals(ActivityStatus.PENDING)) {
             
             boolean checkValidSF = true;
-            if (commItem.getTaskItem().getActivities().get(i).getSpecialActivities() != null) {
-              int sfCount = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().size();
-              if (sfCount > 0) {
-                for (int n = 0; n < sfCount; n++) {
-                  SpecialActivities sa = commItem.getTaskItem().getActivities().get(i).getSpecialActivities().get(n);
-                  if (sa.getSpecialFunction() == SpecialFunction.STANDARD)
-                    continue;
-                  if (sa.getSpecialActivityResults() == null && (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY) || sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY))) {
-                    checkValidSF = false;
-                    //App.eventBus.post(new QREvent(mData.getId(), i));
-                    if (sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
-                      App.eventBus.post(new QREvent(mData.getId(), i, 0));
-                    } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
-                      App.eventBus.post(new QREvent(mData.getId(), i, 1));
-                    } else if (sa.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
-                      App.eventBus.post(new QREvent(mData.getId(), i, 1));
-                    }
-                    break;
+            if (activity.getSpecialActivities() != null) {
+              SpecialActivities specialActivity = activity.getSpecialActivities().get(0);
+              if (specialActivity.getSpecialActivityResults() == null) {
+                if (specialActivity.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
+                  checkValidSF = false;
+                  if (specialActivity.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 0));
+                  } else if (specialActivity.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_SHIPMENT)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
+                  } else if (specialActivity.getSpecialFunction().equals(SpecialFunction.TAKE_IMAGES_CMR)) {
+                    App.eventBus.post(new QREvent(mData.getId(), i, 1));
                   }
                 }
               }
@@ -487,15 +501,11 @@ public class CommItemSubAdapterExt
         }
       }
     
-    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.CMR)) {
-  
+    } else if (taskStatus.equals(TaskStatus.CMR)) {
       mData.setStatus(100);
       commItem.getTaskItem().setTaskStatus(TaskStatus.FINISHED);
       mData.setData(App.getInstance().gsonUtc.toJson(commItem));
       updateNotify(mData);
-    
-    } else if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.FINISHED)) {
-    
     }
   }
   

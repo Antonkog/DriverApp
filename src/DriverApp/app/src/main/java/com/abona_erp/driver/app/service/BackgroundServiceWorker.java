@@ -55,6 +55,7 @@ import com.abona_erp.driver.app.data.model.ResultOfAction;
 import com.abona_erp.driver.app.data.model.SpecialActivities;
 import com.abona_erp.driver.app.data.model.SpecialActivityResult;
 import com.abona_erp.driver.app.data.model.SpecialFunction;
+import com.abona_erp.driver.app.data.model.SpecialFunctionOperationType;
 import com.abona_erp.driver.app.data.model.TaskItem;
 import com.abona_erp.driver.app.data.model.TaskStatus;
 import com.abona_erp.driver.app.data.model.UploadItem;
@@ -83,6 +84,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
@@ -91,6 +94,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -108,9 +112,11 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
 
 public class BackgroundServiceWorker extends Service {
@@ -503,6 +509,13 @@ public class BackgroundServiceWorker extends Service {
                     //}
                     activityItem.setStarted(_currActivity.getStarted());
                     activityItem.setStatus(ActivityStatus.RUNNING);
+                    /*
+                    if (_currActivity.getSpecialActivities() != null) {
+                      if (_currActivity.getSpecialActivities().get(0).getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
+                        activityItem.setFinished(AppUtils.getCurrentDateTimeUtc());
+                      }
+                    }
+                    */
                   } else if (apiJob.getActivityStatus() == 2) {
                     //if (_currActivity.getFinished() == null || _currActivity.getFinished().before(minDate)) {
                     //  _currActivity.setFinished(AppUtils.getCurrentDateTimeUtc());
@@ -511,7 +524,7 @@ public class BackgroundServiceWorker extends Service {
                     activityItem.setFinished(_currActivity.getFinished());
                     activityItem.setStatus(ActivityStatus.FINISHED);
                   } else {
-                    activityItem.setStatus(ActivityStatus.PENDING);
+                    //activityItem.setStatus(ActivityStatus.PENDING);
                   }
     /*
                   if (_currActivity.getStatus().ordinal() == 0) {
@@ -606,7 +619,25 @@ public class BackgroundServiceWorker extends Service {
                           }
                         }
                       } else if (response.code() == 401) {
-                            handleAccessToken();
+                        handleAccessToken();
+                      } else if (response.code() == 400 || response.code() == 404 || response.code() == 406 || response.code() == 412 || response.code() == 409) {
+                        
+                        // ERROR HANDLING:
+  
+                        Gson gson = new Gson();
+                        Type type = new TypeToken<ResultOfAction>() {}.getType();
+                        
+                        ResultOfAction resultOfAction = gson.fromJson(response.errorBody().charStream(),type);
+                        if (resultOfAction != null && !resultOfAction.getIsException()) {
+                          if (resultOfAction.getCommItem() != null) {
+                            deleteTask(offlineConfirmations.get(0));
+                            updateTask(notify, resultOfAction.getCommItem());
+                            addLog(LogLevel.INFO, LogType.APP_TO_SERVER, String.valueOf(response.code()) + " : NOT SUCCESS - UPDATE", resultOfAction.getText());
+                          }
+                        } else {
+                          showErrorMessage(response.body().getText());
+                          addLog(LogLevel.ASSERT, LogType.APP_TO_SERVER, "Exception", resultOfAction.getText());
+                        }
                       }
                     }
       
