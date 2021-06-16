@@ -624,10 +624,11 @@ public class BackgroundServiceWorker extends Service {
                         
                         // ERROR HANDLING:
   
-                        Gson gson = new Gson();
+                        //Gson gson = new Gson();
                         Type type = new TypeToken<ResultOfAction>() {}.getType();
                         
-                        ResultOfAction resultOfAction = gson.fromJson(response.errorBody().charStream(),type);
+                        //ResultOfAction resultOfAction = gson.fromJson(response.errorBody().charStream(),type);
+                        ResultOfAction resultOfAction = App.getInstance().gsonUtc.fromJson(response.errorBody().charStream(),type);
                         if (resultOfAction != null && !resultOfAction.getIsException()) {
                           if (resultOfAction.getCommItem() != null) {
                             deleteTask(offlineConfirmations.get(0));
@@ -1572,7 +1573,7 @@ public class BackgroundServiceWorker extends Service {
     if (commItem == null) return;
     if (notify == null) return;
   
-    notify.setData(App.getInstance().gson.toJson(commItem));
+    notify.setData(App.getInstance().gsonUtc.toJson(commItem));
     //notify.setRead(false);
     if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
       notify.setStatus(0);
