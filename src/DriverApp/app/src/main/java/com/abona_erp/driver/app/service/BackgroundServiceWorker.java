@@ -516,6 +516,38 @@ public class BackgroundServiceWorker extends Service {
                       }
                     }
                     */
+                    
+                    if (_currActivity.getSpecialActivities() != null) {
+                      int saSize = _currActivity.getSpecialActivities().size();
+                      if (saSize > 0) {
+                        for (int i = 0; i < saSize; i++) {
+                          SpecialActivities sa = _currActivity.getSpecialActivities().get(i);
+                          if (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
+                            if (sa.getSpecialFunction().equals(SpecialFunction.STANDARD) || sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE))
+                              continue;
+                            
+                            if (sa.getSpecialActivityResults() != null) {
+                              int resultOfSize = sa.getSpecialActivityResults().size();
+                              if (resultOfSize > 0) {
+                                for (int j = 0; j < resultOfSize; j++) {
+    
+                                  SpecialActivityResult sar = sa.getSpecialActivityResults().get(j);
+                                  if (sar.getSpecialFunctionFinished() != null)
+                                    continue;
+    
+                                  //_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
+                                  commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
+                                  updateTask(notify, commItemDB);
+                                  uploadSpecialFunctionImages(sar.getResultString1(), String.valueOf(_currActivity.getMandantId()), String.valueOf(notify.getOrderNo()), String.valueOf(notify.getTaskId()), sa.getSpecialFunction());
+                                }
+                              }
+                            }
+                            activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
+                          }
+                        }
+                      }
+                      
+                    }
                   } else if (apiJob.getActivityStatus() == 2) {
                     //if (_currActivity.getFinished() == null || _currActivity.getFinished().before(minDate)) {
                     //  _currActivity.setFinished(AppUtils.getCurrentDateTimeUtc());
@@ -523,6 +555,39 @@ public class BackgroundServiceWorker extends Service {
                     activityItem.setStarted(_currActivity.getStarted());
                     activityItem.setFinished(_currActivity.getFinished());
                     activityItem.setStatus(ActivityStatus.FINISHED);
+  
+                    if (_currActivity.getSpecialActivities() != null) {
+                      int saSize = _currActivity.getSpecialActivities().size();
+                      if (saSize > 0) {
+                        for (int i = 0; i < saSize; i++) {
+                          SpecialActivities sa = _currActivity.getSpecialActivities().get(i);
+                          if (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
+                            if (sa.getSpecialFunction().equals(SpecialFunction.STANDARD) || sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE))
+                              continue;
+          
+                            if (sa.getSpecialActivityResults() != null) {
+                              int resultOfSize = sa.getSpecialActivityResults().size();
+                              if (resultOfSize > 0) {
+                                for (int j = 0; j < resultOfSize; j++) {
+                
+                                  SpecialActivityResult sar = sa.getSpecialActivityResults().get(j);
+                                  if (sar.getSpecialFunctionFinished() != null)
+                                    continue;
+                
+                                  //_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
+                                  commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
+                                  updateTask(notify, commItemDB);
+                                  uploadSpecialFunctionImages(sar.getResultString1(), String.valueOf(_currActivity.getMandantId()), String.valueOf(notify.getOrderNo()), String.valueOf(notify.getTaskId()), sa.getSpecialFunction());
+                                }
+                              }
+                            }
+                            activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
+                          }
+                        }
+                      }
+                      
+                    }
+                    
                   } else {
                     //activityItem.setStatus(ActivityStatus.PENDING);
                   }
@@ -541,7 +606,7 @@ public class BackgroundServiceWorker extends Service {
                   
      */
                   activityItem.setSequence(_currActivity.getSequence());
-                  
+                  /*
                   if (_currActivity.getSpecialActivities() != null) {
                     int saSize = _currActivity.getSpecialActivities().size();
                     if (saSize > 0) {
@@ -569,7 +634,8 @@ public class BackgroundServiceWorker extends Service {
                       }
                     }
                     activityItem.setSpecialActivities(_currActivity.getSpecialActivities());
-                  }
+                  }*/
+                  //commItemReq.setActivityItem(activityItem);
                   commItemReq.setActivityItem(activityItem);
     
                   Call<ResultOfAction> call = App.getInstance().apiManager.getActivityApi().activityChange(commItemReq);
