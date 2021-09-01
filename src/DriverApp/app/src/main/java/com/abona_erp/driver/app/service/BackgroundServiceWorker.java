@@ -199,13 +199,13 @@ public class BackgroundServiceWorker extends Service {
             mHandler.postDelayed(this, delay);
             return;
           }
-          
+          /*
           if (!isUpdateDevice()) {
             allowRequest = true;
             mHandler.postDelayed(this, delay);
             return;
           }
-          
+          */
           if (!TextUtils.isEmpty(TextSecurePreferences.getEndpoint())) {
             String endpoint = TextSecurePreferences.getEndpoint();
             String ip = "";
