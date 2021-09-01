@@ -95,6 +95,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,7 +148,7 @@ public class BackgroundServiceWorker extends Service {
     }
   }
   
-  private volatile static int delay = 5000;
+  private volatile static int delay = 7000;
   public volatile static boolean allowRequest = true;
   public volatile static boolean registrationRequest = false;
   public volatile static boolean requestIsRunning = false;
@@ -202,6 +204,19 @@ public class BackgroundServiceWorker extends Service {
             allowRequest = true;
             mHandler.postDelayed(this, delay);
             return;
+          }
+          
+          if (!TextUtils.isEmpty(TextSecurePreferences.getEndpoint())) {
+            String endpoint = TextSecurePreferences.getEndpoint();
+            String ip = "";
+            if (endpoint.contains("https://")) {
+              ip = endpoint.substring(8, endpoint.lastIndexOf(':'));
+              if (!pingServer(ip)) {
+                Log.e("BWS", "Server nicht erreichbar...");
+                mHandler.postDelayed(this, delay);
+                return;
+              }
+            }
           }
           
           if (TextSecurePreferences.isUpdateLangCode()) {
@@ -1834,6 +1849,8 @@ public class BackgroundServiceWorker extends Service {
                 if (!TextUtils.isEmpty(access_token)) {
                   TextSecurePreferences.setAccessToken(getApplicationContext(), access_token);
                 }
+  
+                addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "ACCESS TOKEN", "GET NEW TOKEN");
               } catch (NullPointerException e) {
                 e.printStackTrace();
               } catch (JSONException e) {
@@ -2013,5 +2030,25 @@ public class BackgroundServiceWorker extends Service {
         }
       });
     }
+  }
+  
+  
+  private boolean pingServer(String ipAddress) {
+    Runtime runtime = Runtime.getRuntime();
+    try {
+      Process mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 " + ipAddress);
+      int mExitValue = mIpAddrProcess.waitFor();
+      if (mExitValue == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (InterruptedException ignore) {
+      ignore.printStackTrace();
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 }

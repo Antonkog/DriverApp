@@ -2,17 +2,20 @@ package com.abona_erp.driver.app.ui.feature.main.fragment.map;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -74,6 +77,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
   private MapView mMapView;
   private AppCompatImageButton mBtnBack;
+  private TextView mBtnNavigation;
   
   private GeofencingRequest mGeofencingRequest;
   private MarkerOptions markerOptions;
@@ -94,6 +98,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
   
   private double mLongitude;
   private double mLatitude;
+  private double mDestLAT;
+  private double mDestLNG;
   private String mName;
   
   private AsapTextView tv_current_location_lat;
@@ -104,13 +110,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
   private AsapTextView tv_destination_location_lng;
   
   // -----------------------------------------------------------------------------------------------
-
+  
   public MapFragment() {
-    // Required empty public constructor.
+  }
+
+  public MapFragment(double destLAT, double destLNG) {
+    this.mDestLAT = destLAT;
+    this.mDestLNG = destLNG;
   }
   
-  public static MapFragment newInstance() {
-    return new MapFragment();
+  public static MapFragment newInstance(double destLAT, double destLNG) {
+    return new MapFragment(destLAT, destLNG);
   }
 
   @Override
@@ -379,6 +389,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
       @Override
       public void onClick(View view) {
         App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_BACK), null));
+      }
+    });
+    
+    mBtnNavigation = (TextView)root.findViewById(R.id.navigation);
+    mBtnNavigation.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        String lon = String.valueOf(mDestLNG);
+        String lat = String.valueOf(mDestLAT);
+        String type = "drive";
+        String str = "com.sygic.aura://coordinate|" + lon + "|" + lat + "|" + type;
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(str)));
       }
     });
     

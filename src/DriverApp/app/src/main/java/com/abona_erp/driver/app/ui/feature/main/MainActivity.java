@@ -363,7 +363,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     }
     startBackgroundWorkerService();
     
-    fetchRestApiVersion();
+    //fetchRestApiVersion();
     
     
     updateDeviceIsNeeded();
@@ -848,7 +848,16 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
         break;
         
       case PageItemDescriptor.PAGE_MAP:
-        loadFragment(event, MapFragment.newInstance());
+        Notify mapNotify = event.getNotify();
+        if (mapNotify == null) return;
+        
+        CommItem _item = new CommItem();
+        _item = App.getInstance().gson.fromJson(mapNotify.getData(), CommItem.class);
+        
+        //_item.getTaskItem().getAddress().getLatitude();
+        //_item.getTaskItem().getAddress().getLongitude();
+        
+        loadFragment(event, MapFragment.newInstance(_item.getTaskItem().getAddress().getLatitude(), _item.getTaskItem().getAddress().getLongitude()));
         break;
         
       case PageItemDescriptor.PAGE_CAMERA:
@@ -1440,9 +1449,8 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
       PackageInfo pInfo = getApplicationContext().getPackageManager()
         .getPackageInfo(getApplicationContext().getPackageName(), 0);
       if (pInfo.versionCode > TextSecurePreferences.getAppVersionCode()) {
-        TextSecurePreferences.setDeviceUpdate(true);
-      }
-      if (!TextSecurePreferences.getAppVersionName().equals(pInfo.versionName)) {
+        TextSecurePreferences.setAppVersionCode(pInfo.versionCode);
+        TextSecurePreferences.setAppVersionName(pInfo.versionName);
         TextSecurePreferences.setDeviceUpdate(true);
       }
     } catch (PackageManager.NameNotFoundException e) {
