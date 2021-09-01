@@ -515,6 +515,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
                     TextSecurePreferences.setFcmTokenLastSetTime(getBaseContext(), dfUtc.format(currentTimestamp));
 
                     deviceProfiles.get(0).setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
+                    deviceProfiles.get(0).setDeviceManufacturer("MainActivity - addFirebaseListener()");
                     mMainViewModel.update(deviceProfiles.get(0));
                   }
                 }
@@ -591,6 +592,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
                                           if (result.getIsSuccess()) {
                                             databaseProfile.setDeviceId(getAndroidQnewID());
                                             databaseProfile.setDeviceSerial(DeviceUtils.getSerial());
+                                            databaseProfile.setDeviceManufacturer("MainActivity - changeDeviceIdNewApi()");
                                             mMainViewModel.update(databaseProfile); //that is old implementation to update room table
                                             mMainViewModel.deleteOldTables();
                                             Log.d(TAG, " success, id updatedToNew: " +  result.toString());
@@ -1265,7 +1267,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
       deviceProfile.setDeviceId(DeviceUtils.getUniqueIMEI(getBaseContext()));
       deviceProfile.setInstanceId(TextSecurePreferences.getFcmToken(getBaseContext()));
       deviceProfile.setDeviceModel(Build.MODEL);
-      deviceProfile.setDeviceManufacturer(Build.MANUFACTURER);
+      deviceProfile.setDeviceManufacturer("MainActivity - initFirstTimeRun()");
       deviceProfile.setDeviceSerial(DeviceUtils.getSerial());
       deviceProfile.setLanguageCode(Locale.getDefault().toString());
       deviceProfile.setVersionCode(BuildConfig.VERSION_CODE);

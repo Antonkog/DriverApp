@@ -1209,7 +1209,7 @@ public class BackgroundServiceWorker extends Service {
             //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
             deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
             deviceProfileItem.setModel(Build.MODEL);
-            deviceProfileItem.setManufacturer(Build.MANUFACTURER);
+            deviceProfileItem.setManufacturer("BWS - VERSION CHANGE");
             try {
               PackageInfo pInfo = ContextUtils.getApplicationContext()
                 .getPackageManager().getPackageInfo(ContextUtils.getApplicationContext().getPackageName(), 0);
@@ -1309,7 +1309,7 @@ public class BackgroundServiceWorker extends Service {
         //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
         deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
         //deviceProfileItem.setModel(deviceProfiles.get(0).getDeviceModel());
-        //deviceProfileItem.setManufacturer(deviceProfiles.get(0).getDeviceManufacturer());
+        deviceProfileItem.setManufacturer("BWS - Language Change()");
         //deviceProfileItem.setUpdatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getModifiedAt()));
         deviceProfileItem.setLanguageCode(TextSecurePreferences.getLanguage(ContextUtils.getApplicationContext()));
         commItem.setDeviceProfileItem(deviceProfileItem);
@@ -1458,7 +1458,7 @@ public class BackgroundServiceWorker extends Service {
             deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
             deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
             deviceProfileItem.setModel(deviceProfiles.get(0).getDeviceModel());
-            deviceProfileItem.setManufacturer(deviceProfiles.get(0).getDeviceManufacturer());
+            deviceProfileItem.setManufacturer("BWS - Device Registrated()");
             deviceProfileItem.setCreatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getCreatedAt()));
             deviceProfileItem.setUpdatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getModifiedAt()));
             deviceProfileItem.setLanguageCode(deviceProfiles.get(0).getLanguageCode().replace("_", "-"));
