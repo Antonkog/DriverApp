@@ -1,8 +1,8 @@
 package dependencies
 
 class Versions(val major: String,val minor:String,val rev:String,val offset:String) {
-    val androidCompileSdkVersion = 29
-    val androidMinSdkVersion = 23
+    val androidCompileSdkVersion = 31
+    val androidMinSdkVersion = 24
 
     public var versionMajor = 1//envrMajor
     public var versionMinor = 1    // Release gerade Zahlen im PlayStore
