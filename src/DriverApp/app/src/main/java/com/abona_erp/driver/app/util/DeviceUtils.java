@@ -24,8 +24,12 @@ public class DeviceUtils {
   public static String getUniqueIMEI(Context context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
       return useDeprecatedMac(context);
-    else
-      return getUniqueID(context);
+    else{
+      String id =  getUniqueID(context);
+      Log.e("DeviceUtils", "deviceID: " +id);
+      return id;
+    }
+
   }
 
   /**

@@ -27,12 +27,12 @@ android {
 //    def Versions=new Versions(ext."build.Major",ext."build.Minor",ext."build.Revision",ext."build.Offset")
 //	  logger.quiet("Configured versions Name:$Versions.androidVersionName Code:$Versions.androidVersionCode")
   
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.abona_erp.driver.app"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 31
 
         versionCode 1090000
         versionName "1.09.01" // ungerade Zahlen -> immer 2 erhoehen

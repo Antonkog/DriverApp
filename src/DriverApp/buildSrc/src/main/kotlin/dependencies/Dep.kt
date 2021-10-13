@@ -3,7 +3,7 @@ package dependencies
 @Suppress("unused")
 object Dep {
   object GradlePlugin {
-    val android = "com.android.tools.build:gradle:3.5.1"
+    val android = "com.android.tools.build:gradle:4.0.2"
   }
 
   object Dagger {
