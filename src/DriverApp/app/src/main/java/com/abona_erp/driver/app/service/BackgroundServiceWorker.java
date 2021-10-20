@@ -1085,7 +1085,7 @@ public class BackgroundServiceWorker extends Service {
 
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
             deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
-            deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+            deviceProfileItem.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             commItem.setDeviceProfileItem(deviceProfileItem);
 
             Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
@@ -1144,7 +1144,7 @@ public class BackgroundServiceWorker extends Service {
 
           DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
           //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
-          deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+          deviceProfileItem.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
           deviceProfileItem.setModel(Build.MODEL);
           deviceProfileItem.setManufacturer(Build.MANUFACTURER);
           try {
@@ -1208,7 +1208,7 @@ public class BackgroundServiceWorker extends Service {
 
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
             //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
-            deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+            deviceProfileItem.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             deviceProfileItem.setModel(Build.MODEL);
             deviceProfileItem.setManufacturer("BWS - VERSION CHANGE");
             try {
@@ -1308,7 +1308,7 @@ public class BackgroundServiceWorker extends Service {
 
         DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
         //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
-        deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+        deviceProfileItem.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         //deviceProfileItem.setModel(deviceProfiles.get(0).getDeviceModel());
         deviceProfileItem.setManufacturer("BWS - Language Change()");
         //deviceProfileItem.setUpdatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getModifiedAt()));
@@ -1457,7 +1457,7 @@ public class BackgroundServiceWorker extends Service {
 
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
             deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
-            deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
+            deviceProfileItem.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             deviceProfileItem.setModel(deviceProfiles.get(0).getDeviceModel());
             deviceProfileItem.setManufacturer("BWS - Device Registrated()");
             deviceProfileItem.setCreatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getCreatedAt()));

@@ -28,7 +28,9 @@ import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.ui.widget.AsapTextView;
 import com.abona_erp.driver.app.util.CustomDialogFragment;
+import com.abona_erp.driver.app.util.DeviceUtils;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
+import com.abona_erp.driver.core.base.ContextUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -109,11 +111,12 @@ public class SettingsFragment extends Fragment {
       List<DeviceProfile> deviceProfiles = mDeviceDao.getDeviceProfiles();
       if (deviceProfiles.size() > 0) {
         DeviceProfile devProf = deviceProfiles.get(0);
-    
-        if (devProf.getDeviceId() != null) {
-          mDeviceId.setText(devProf.getDeviceId());
+
+        String deviceID= DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext());
+        if (deviceID!=null && !deviceID.trim().isEmpty()) {
+          mDeviceId.setText(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         } else {
-          mDeviceId.setText("<Error By Device>");
+          mDeviceId.setText("deviceIDNotSet");
         }
     
         if (devProf.getDeviceManufacturer() != null && devProf.getDeviceModel() != null) {
