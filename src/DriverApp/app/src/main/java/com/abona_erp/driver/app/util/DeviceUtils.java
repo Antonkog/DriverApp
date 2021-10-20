@@ -33,7 +33,7 @@ public class DeviceUtils {
   }
 
   public static boolean isDeviceIDChanged(String oldID,Context context){
-    return oldID.equals(getUniqueIMEI(context));
+    return !oldID.equals(getUniqueIMEI(context));
   }
 
   /**
