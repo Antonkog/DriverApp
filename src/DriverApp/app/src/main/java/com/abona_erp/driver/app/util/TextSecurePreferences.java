@@ -62,7 +62,7 @@ public class TextSecurePreferences {
   
   public static final String PREF_STOP_SERVICE = "pref_stop_service";
   public static final String PREF_REGISTRATION_STARTED = "pref_registration_started";
-  
+  public static final String MIGRATION_TO_MOBILE_DONE = "pref_migration_to_mobile";
   public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
   public static final String PREF_APP_VERSION_NAME = "pref_app_version_name";
   
@@ -91,7 +91,17 @@ public class TextSecurePreferences {
     setBooleanPreference(ContextUtils.getApplicationContext(),
       PREF_REGISTRATION_STARTED, started);
   }
-  
+
+  public static boolean isMigrationDone() {
+    return getBooleanPreference(ContextUtils.getApplicationContext(),
+            MIGRATION_TO_MOBILE_DONE, false);
+  }
+
+  public static void setMigrationDone(boolean done) {
+    setBooleanPreference(ContextUtils.getApplicationContext(),
+            MIGRATION_TO_MOBILE_DONE, done);
+  }
+
   public static boolean enableLoginPage() {
     return getBooleanPreference(ContextUtils.getApplicationContext(),
       PREF_LOGIN, true);

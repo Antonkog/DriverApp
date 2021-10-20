@@ -4,7 +4,11 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -19,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.abona_erp.driver.app.App;
+import com.abona_erp.driver.app.MigrationUtil;
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.DriverDatabase;
 import com.abona_erp.driver.app.data.converters.DateConverter;
@@ -84,7 +89,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.greenrobot.eventbus.EventBus;
@@ -95,8 +99,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -114,7 +116,6 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -122,14 +123,14 @@ import retrofit2.Converter;
 import retrofit2.Response;
 
 public class BackgroundServiceWorker extends Service {
-  
+
   private static final String TAG = MiscUtil.getTag(BackgroundServiceWorker.class);
 
   private Handler mHandler;
   private Handler mDelayReasonHandler;
   private Runner  mRunner;
   private DelayReasonRunner mDelayReasonRunner;
-  
+
   private DriverDatabase mDB = DriverDatabase.getDatabase();
   private DeviceProfileDAO mDeviceProfileDAO = mDB.deviceProfileDAO();
   private OfflineConfirmationDAO mOfflineConfirmationDAO = mDB.offlineConfirmationDAO();
@@ -137,17 +138,17 @@ public class BackgroundServiceWorker extends Service {
   private LastActivityDAO mLastActivityDAO = mDB.lastActivityDAO();
   private OfflineDelayReasonDAO mOfflineDelayReasonDAO = mDB.offlineDelayReasonDAO();
   private LogDAO mLogDao = mDB.logDAO();
-  
+
   public BackgroundServiceWorker() {
   }
-  
+
   public class DelayReasonRunner implements Runnable {
     @Override
     public void run() {
-    
+
     }
   }
-  
+
   private volatile static int delay = 7000;
   public volatile static boolean allowRequest = true;
   public volatile static boolean registrationRequest = false;
@@ -157,7 +158,7 @@ public class BackgroundServiceWorker extends Service {
     @Override
     public void run() {
       Log.i(TAG, ">>>>>>> BACKGROUND SERVICE LISTENING... >>>>>>>");
-      
+
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
@@ -177,23 +178,23 @@ public class BackgroundServiceWorker extends Service {
           }
           
    */
-          
+
           if (!isDevicePermissionGranted()) {
             Log.i(TAG, "******* DEVICE PERMISSION IS NOT GRANTED!!! *******");
             allowRequest = true;
             mHandler.postDelayed(this, delay);
             return;
           }
-          
+
           //if (TextSecurePreferences.isStopService())
           //  return;
-          
+
           if (!isDeviceRegistrated()) {
             allowRequest = true;
             mHandler.postDelayed(this, delay);
             return;
           }
-          
+
           if (!isDeviceUpdateToken()) {
             allowRequest = true;
             mHandler.postDelayed(this, delay);
@@ -218,7 +219,7 @@ public class BackgroundServiceWorker extends Service {
               }
             }
           }
-          
+
           if (TextSecurePreferences.isUpdateLangCode()) {
             updateLangCode();
             mHandler.postDelayed(this, delay);
@@ -233,16 +234,16 @@ public class BackgroundServiceWorker extends Service {
             mHandler.postDelayed(this, delay);
             return;
           }*/
-          
+
           AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
               List<OfflineConfirmation> offlineConfirmations =
                 mOfflineConfirmationDAO.getAllOfflineConfirmations();
-  
+
               List<OfflineDelayReasonEntity> offlineDelayReasonEntities =
                 mOfflineDelayReasonDAO.getAllOfflineDelayReasons();
-              
+
               if (!allowRequest && (offlineConfirmations.size() > 0 || offlineDelayReasonEntities.size() > 0)) {
                 /*
                 for (int n = 0; n < offlineConfirmations.size(); n++) {
@@ -257,7 +258,7 @@ public class BackgroundServiceWorker extends Service {
               }
             }
           });
-          
+
           if (allowRequest) {
             allowRequest = false;
             Log.i(TAG, "allowRequest " + allowRequest);
@@ -266,17 +267,17 @@ public class BackgroundServiceWorker extends Service {
             mHandler.postDelayed(this, delay);
             return;
           }
-  
+
           handleJobs();
-  
+
           mHandler.postDelayed(this, delay);
         }
       });
     }
   }
-  
+
   private void handleJobs() {
-  
+
     handleConfirmationJob();
     handleDelayReasonJob();
     handleUploadJob();
@@ -286,13 +287,13 @@ public class BackgroundServiceWorker extends Service {
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-    
+
         List<OfflineDelayReasonEntity> offlineDelayReasonEntities = mOfflineDelayReasonDAO.getAllOfflineDelayReasons();
         if (offlineDelayReasonEntities.size() > 0) {
-          
+
           Log.i(">>>>>>>>>>", "Delay Reasons vorhanden, wird abgearbeitet..." + offlineDelayReasonEntities.get(0).getInProgress());
           if (offlineDelayReasonEntities.get(0).getInProgress() == 0) {
-            
+
             OfflineDelayReasonEntity entity = offlineDelayReasonEntities.get(0);
             entity.setInProgress(1);
             AsyncTask.execute(new Runnable() {
@@ -301,14 +302,14 @@ public class BackgroundServiceWorker extends Service {
                 mOfflineDelayReasonDAO.update(entity);
               }
             });
-            
+
             CommItem reqItem = new CommItem();
             Header header = new Header();
             header.setTimestampSenderUTC(new Date());
             header.setDataType(DataType.DELAY_REASONS);
             header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             reqItem.setHeader(header);
-  
+
             DelayReasonItem delayReasonItem = new DelayReasonItem();
             delayReasonItem.setWaitingReasongId(offlineDelayReasonEntities.get(0).getWaitingReasonId());
             delayReasonItem.setWaitingReasonAppId(offlineDelayReasonEntities.get(0).getWaitingReasonAppId());
@@ -327,25 +328,25 @@ public class BackgroundServiceWorker extends Service {
               delayReasonItem.setDelaySource(DelaySource.DRIVER);
             }
             delayReasonItem.setComment(offlineDelayReasonEntities.get(0).getComment());
-  
+
             List<DelayReasonItem> items = new ArrayList<>();
             items.add(delayReasonItem);
             //reqItem.setDelayReasonItems(items);
-  
+
             ActivityDelayItem activityDelayItem = new ActivityDelayItem();
             activityDelayItem.setMandantId(offlineDelayReasonEntities.get(0).getMandantId());
             activityDelayItem.setTaskId(offlineDelayReasonEntities.get(0).getTaskId());
             activityDelayItem.setActivityId(offlineDelayReasonEntities.get(0).getActivityId());
             activityDelayItem.setDelayReasonItems(items);
             reqItem.setActivityDelayItem(activityDelayItem);
-  
+
             Call<ResultOfAction> call = App.getInstance().apiManager
               .getDelayReasonApi().setDelayReasons(reqItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
               public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
                 // Log.i(TAG, response.body().getCommItem().toString());
-      
+
                 if (response.body() == null) {
                   AsyncTask.execute(new Runnable() {
                     @Override
@@ -356,17 +357,17 @@ public class BackgroundServiceWorker extends Service {
                   return;
                 }
                 if (response.body().getIsSuccess() && !response.body().getIsException()) {
-        
+
                   ResultOfAction resultOfAction = response.body();
                   if (resultOfAction == null) return;
-                  
+
                   mNotifyDAO.loadNotifyById(offlineDelayReasonEntities.get(0).getNotifyId())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new DisposableSingleObserver<Notify>() {
                       @Override
                       public void onSuccess(Notify notify) {
-              
+
                         CommItem commItem = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                         //commItem.setDelayReasonItems(resultOfAction.getDelayReasonItems());
                         List<ActivityItem> activities = commItem.getTaskItem().getActivities();
@@ -384,7 +385,7 @@ public class BackgroundServiceWorker extends Service {
                           }
                         });
                       }
-            
+
                       @Override
                       public void onError(Throwable e) {
                         AsyncTask.execute(new Runnable() {
@@ -397,7 +398,7 @@ public class BackgroundServiceWorker extends Service {
                     });
                 } else {
                   // Zurücksetzen.
-                  
+
                   OfflineDelayReasonEntity entity = offlineDelayReasonEntities.get(0);
                   entity.setInProgress(0);
                   AsyncTask.execute(new Runnable() {
@@ -409,7 +410,7 @@ public class BackgroundServiceWorker extends Service {
                   });
                 }
               }
-    
+
               @Override
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
                 // Zurücksetzen.
@@ -428,30 +429,30 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   private void handleConfirmationJob() {
-    
+
     if (!NetworkUtil.isConnected(getApplicationContext())) {
       addLog(LogLevel.WARNING, LogType.APP_TO_SERVER, "BWS", "No Internet Connection!");
       return;
     }
-  
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-  
+
         List<OfflineConfirmation> offlineConfirmations = mOfflineConfirmationDAO.getAllOfflineConfirmations();
         if (offlineConfirmations.size() > 0) {
           Log.i(TAG, ">>>>>>> NOCH ZU BEARBEITEN......: " + offlineConfirmations.size() + " JOBS");
           Log.i(TAG, ">>>>>>> ID......................: " + offlineConfirmations.get(0).getId());
-          
+
           if (offlineConfirmations.get(0).getUploadFlag() == 1) {
             addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "WAITING", "Warte, Bild wird hochgeladen...");
             return;
           }
-  
+
           if (requestCounter > 20) {
-    
+
             AsyncTask.execute(new Runnable() {
               @Override
               public void run() {
@@ -461,12 +462,12 @@ public class BackgroundServiceWorker extends Service {
               }
             });
           }
-  
+
           if (requestIsRunning) {
             Log.i(TAG, ">>>>>>>>>> WAITING FOR RESPONSE...");
             return;
           }
-  
+
           mNotifyDAO.loadNotifyById(offlineConfirmations.get(0).getNotifyId())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
@@ -474,13 +475,13 @@ public class BackgroundServiceWorker extends Service {
               @Override
               public void onSuccess(Notify notify) {
                 Log.i(TAG, ">>>>>>> NOTIFY OID......: " + notify.getId());
-  
+
                 requestIsRunning = true;
                 requestCounter++;
-  
+
                 CommItem commItemDB = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                 CommItem commItemReq = new CommItem();
-  
+
                 StringBuilder builder1 = new StringBuilder();
                 builder1.append("Handler Next Job - Task ID: ");
                 builder1.append(String.valueOf(notify.getTaskId()));
@@ -489,7 +490,7 @@ public class BackgroundServiceWorker extends Service {
                 builder1.append(" - Mandant: ");
                 builder1.append(String.valueOf(notify.getMandantId()));
                 addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "BWS", builder1.toString());
-                
+
                 // SET HEADER:
                 Header header = new Header();
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
@@ -500,12 +501,12 @@ public class BackgroundServiceWorker extends Service {
                 header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
                 header.setTimestampSenderUTC(new Date());
                 commItemReq.setHeader(header);
-  
+
                 if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.ACTIVITY_CONFIRMED_BY_USER.ordinal()) {
-                  
+
                   OfflineConfirmation apiJob = offlineConfirmations.get(0);
                   ActivityItem _currActivity = commItemDB.getTaskItem().getActivities().get(apiJob.getActivityId());
-                  
+
                   // SET ACTIVITY ITEM CHANGE:
                   ActivityItem activityItem = new ActivityItem();
                   activityItem.setDeviceId(DeviceUtils.getUniqueIMEI(getApplicationContext()));
@@ -514,11 +515,11 @@ public class BackgroundServiceWorker extends Service {
                   activityItem.setActivityId(_currActivity.getActivityId());
                   activityItem.setName(_currActivity.getName());
                   activityItem.setDescription(_currActivity.getDescription());
-                  
+
                   //Date minDate = new Date(2018-1900, 1, 21);
-                  
+
                   if (apiJob.getActivityStatus() == 1) {
-                  
+
                     //if (_currActivity.getStarted() == null || _currActivity.getStarted().before(minDate)) {
                     //  _currActivity.setStarted(AppUtils.getCurrentDateTimeUtc());
                     //}
@@ -531,7 +532,7 @@ public class BackgroundServiceWorker extends Service {
                       }
                     }
                     */
-                    
+
                     if (_currActivity.getSpecialActivities() != null) {
                       int saSize = _currActivity.getSpecialActivities().size();
                       if (saSize > 0) {
@@ -540,16 +541,16 @@ public class BackgroundServiceWorker extends Service {
                           if (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_START_OF_ACTIVITY)) {
                             if (sa.getSpecialFunction().equals(SpecialFunction.STANDARD) || sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE))
                               continue;
-                            
+
                             if (sa.getSpecialActivityResults() != null) {
                               int resultOfSize = sa.getSpecialActivityResults().size();
                               if (resultOfSize > 0) {
                                 for (int j = 0; j < resultOfSize; j++) {
-    
+
                                   SpecialActivityResult sar = sa.getSpecialActivityResults().get(j);
                                   if (sar.getSpecialFunctionFinished() != null)
                                     continue;
-    
+
                                   //_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
                                   commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
                                   updateTask(notify, commItemDB);
@@ -561,7 +562,7 @@ public class BackgroundServiceWorker extends Service {
                           }
                         }
                       }
-                      
+
                     }
                   } else if (apiJob.getActivityStatus() == 2) {
                     //if (_currActivity.getFinished() == null || _currActivity.getFinished().before(minDate)) {
@@ -570,7 +571,7 @@ public class BackgroundServiceWorker extends Service {
                     activityItem.setStarted(_currActivity.getStarted());
                     activityItem.setFinished(_currActivity.getFinished());
                     activityItem.setStatus(ActivityStatus.FINISHED);
-  
+
                     if (_currActivity.getSpecialActivities() != null) {
                       int saSize = _currActivity.getSpecialActivities().size();
                       if (saSize > 0) {
@@ -579,16 +580,16 @@ public class BackgroundServiceWorker extends Service {
                           if (sa.getSpecialFunctionOperationType().equals(SpecialFunctionOperationType.ON_FINISH_OF_ACTIVITY)) {
                             if (sa.getSpecialFunction().equals(SpecialFunction.STANDARD) || sa.getSpecialFunction().equals(SpecialFunction.SCAN_BARCODE))
                               continue;
-          
+
                             if (sa.getSpecialActivityResults() != null) {
                               int resultOfSize = sa.getSpecialActivityResults().size();
                               if (resultOfSize > 0) {
                                 for (int j = 0; j < resultOfSize; j++) {
-                
+
                                   SpecialActivityResult sar = sa.getSpecialActivityResults().get(j);
                                   if (sar.getSpecialFunctionFinished() != null)
                                     continue;
-                
+
                                   //_currActivity.getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
                                   commItemDB.getTaskItem().getActivities().get(offlineConfirmations.get(0).getActivityId()).getSpecialActivities().get(i).getSpecialActivityResults().get(j).setSpecialFunctionFinished(new Date());
                                   updateTask(notify, commItemDB);
@@ -600,9 +601,9 @@ public class BackgroundServiceWorker extends Service {
                           }
                         }
                       }
-                      
+
                     }
-                    
+
                   } else {
                     //activityItem.setStatus(ActivityStatus.PENDING);
                   }
@@ -652,7 +653,7 @@ public class BackgroundServiceWorker extends Service {
                   }*/
                   //commItemReq.setActivityItem(activityItem);
                   commItemReq.setActivityItem(activityItem);
-    
+
                   Call<ResultOfAction> call = App.getInstance().apiManager.getActivityApi().activityChange(commItemReq);
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
@@ -661,38 +662,38 @@ public class BackgroundServiceWorker extends Service {
                       allowRequest = true;
                       requestIsRunning = false;
                       requestCounter = 0;
-                      
+
                       if (response.isSuccessful()) {
-                        
+
                         int lastID = offlineConfirmations.get(0).getId();
-  
+
                         // Verbindung OK -> Entferne den Task.
                         deleteTask(offlineConfirmations.get(0));
-                        
+
                         if (response.body() == null) return;
-                        
+
                         if (response.body().getIsSuccess()) {
                           // Activity vom API akzeptiert.
-                          
+
                           addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "RESPONSE FROM API", response.body().toString());
-                          
+
                           // LastActivity setzen.
                           lastActivity(commItemDB.getTaskItem().getTaskId(), commItemDB.getTaskItem().getMandantId(), _currActivity, lastID);
                         } else {
-                          
+
                           // Fehlerbehandlung... -> vom API nicht akzeptiert oder fehlerzustand.
                           if (!response.body().getIsException()) {
-                            
+
                             // isSuccess = false, Exception = false, CommItem != null -> Task Updaten.
                             if (response.body().getCommItem() != null) {
                               updateTask(notify, response.body().getCommItem());
-                              
+
                               // Entferne alle Einträge mit dieser ID aus dem Offline-Queue.
                               // deleteAllTaskByID(notify.getId());
-                              
+
                               addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "NOT SUCCESS", response.body().getText());
                             }
-                          
+
                           } else {
                             // Exception anzeigen.
                             showErrorMessage(response.body().getText());
@@ -702,12 +703,12 @@ public class BackgroundServiceWorker extends Service {
                       } else if (response.code() == 401) {
                         handleAccessToken();
                       } else if (response.code() == 400 || response.code() == 404 || response.code() == 406 || response.code() == 412 || response.code() == 409) {
-                        
+
                         // ERROR HANDLING:
-  
+
                         //Gson gson = new Gson();
                         Type type = new TypeToken<ResultOfAction>() {}.getType();
-                        
+
                         //ResultOfAction resultOfAction = gson.fromJson(response.errorBody().charStream(),type);
                         ResultOfAction resultOfAction = App.getInstance().gsonUtc.fromJson(response.errorBody().charStream(),type);
                         if (resultOfAction != null && !resultOfAction.getIsException()) {
@@ -722,7 +723,7 @@ public class BackgroundServiceWorker extends Service {
                         }
                       }
                     }
-      
+
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
                       // SERVER NICHT ERREICHBAR.
@@ -734,8 +735,8 @@ public class BackgroundServiceWorker extends Service {
                       addLog(LogLevel.WARNING, LogType.APP_TO_SERVER, "onFailure", t.getMessage());
                     }
                   });
-    
-    
+
+
                 } else {
                   // SET CONFIRMATION ITEM:
                   ConfirmationItem confirmationItem = new ConfirmationItem();
@@ -744,26 +745,26 @@ public class BackgroundServiceWorker extends Service {
                   } else if (offlineConfirmations.get(0).getConfirmType() == ConfirmationType.TASK_CONFIRMED_BY_USER.ordinal()) {
                     confirmationItem.setConfirmationType(ConfirmationType.TASK_CONFIRMED_BY_USER);
                   }
-                  
+
                   confirmationItem.setTimeStampConfirmationUTC(new Date());
                   confirmationItem.setMandantId(commItemDB.getTaskItem().getMandantId());
                   confirmationItem.setTaskId(commItemDB.getTaskItem().getTaskId());
                   confirmationItem.setTaskChangeId(commItemDB.getTaskItem().getTaskChangeId());
                   commItemReq.setConfirmationItem(confirmationItem);
-    
+
                   final Call<ResultOfAction> call = App.getInstance().apiManager.getConfirmApi().confirm(commItemReq);
                   call.enqueue(new Callback<ResultOfAction>() {
                     @Override
                     public void onResponse(Call<ResultOfAction> call, Response<ResultOfAction> response) {
-                      
+
                       allowRequest = true;
                       requestIsRunning = false;
                       requestCounter = 0;
-                      
+
                       if (response.isSuccessful() && response.body() != null) {
-                        
+
                         addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "RESPONSE FROM API", response.body().toString());
-  
+
                         // Verbindung OK -> Entferne den Task.
                         deleteTask(offlineConfirmations.get(0));
 
@@ -810,31 +811,31 @@ public class BackgroundServiceWorker extends Service {
                             }
                           });*/
                         } else {
-            
+
                           // Fehlerbehandlung... -> vom API nicht akzeptiert oder Fehlerzustand.
                           if (!response.body().getIsException()) {
-                          
+
                             // isSuccess = false, Exception = false, CommItem != null -> Task Updaten.
                             if (response.body().getCommItem() != null) {
                               updateTask(notify, response.body().getCommItem());
-  
+
                               // Entferne alle Einträge mit dieser ID aus dem Offline-Queue.
                               //deleteAllTaskByID(notify.getId());
                               addLog(LogLevel.WARNING, LogType.APP_TO_SERVER, "NOT SUCCESS", response.body().getText());
                             }
                           } else {
-  
+
                             // Exception anzeigen.
                             showErrorMessage(response.body().getText());
                             addLog(LogLevel.ASSERT, LogType.APP_TO_SERVER, "Exception", response.body().getText());
                           }
                         }
-          
+
                       } else if (response.code() == 401) {
                         handleAccessToken();
                       }
                     }
-      
+
                     @Override
                     public void onFailure(Call<ResultOfAction> call, Throwable t) {
                       allowRequest = true;
@@ -844,17 +845,17 @@ public class BackgroundServiceWorker extends Service {
                   });
                 }
               }
-  
+
               @Override
               public void onError(Throwable e) {
                 allowRequest = true;
                 requestIsRunning = false;
                 requestCounter = 0;
-  
+
                 deleteDocumentConfirmation(offlineConfirmations);
               }
             });
-          
+
         } else {
           Log.i(TAG, ">>>>>>> NO JOB DO WORK");
         }
@@ -904,25 +905,25 @@ public class BackgroundServiceWorker extends Service {
       public void run() {
         List<OfflineConfirmation> offlineConfirmations = mOfflineConfirmationDAO.getAllOfflineConfirmations();
         if (offlineConfirmations.size() > 0 && offlineConfirmations.get(0).getUploadFlag() == 1) {
-          
+
           Log.i(TAG, ">>>>>>>>>> Prepare Upload..: " + offlineConfirmations.get(0).getId());
           addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "UPLOADING", "Task ID: " + String.valueOf(offlineConfirmations.get(0).getNotifyId()));
-          
+
           mNotifyDAO.loadNotifyByTaskId(offlineConfirmations.get(0).getNotifyId())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(new DisposableSingleObserver<Notify>() {
               @Override
               public void onSuccess(Notify notify) {
-  
+
                 deleteDocumentConfirmation(offlineConfirmations);
-    
+
                 if (notify == null || notify.getPhotoUrls() == null) {
                 } else {
-                
+
                   int photoSize = notify.getPhotoUrls().size();
                   if (photoSize > 0) {
-                  
+
                     boolean uploadFiles = false;
                     for (int i = 0; i < photoSize; i++) {
                       UploadItem uploadItem = App.getInstance().gson.fromJson(notify.getPhotoUrls().get(i), UploadItem.class);
@@ -939,12 +940,12 @@ public class BackgroundServiceWorker extends Service {
 
                       // UPLOADING FILES....END
                       EventBus.getDefault().post(new UploadAllDocsEvent(notify.getTaskId())); // even if it's no connection - document already waiting to upload in offline confirmations so removing photos from preview
-                    
+
                     }
                   }
                 }
               }
-  
+
               @Override
               public void onError(Throwable e) {
                 // Entfernen:
@@ -1044,7 +1045,7 @@ public class BackgroundServiceWorker extends Service {
                 handleAccessToken();
                 break;
               default:
-                
+
                 break;
             }
           }
@@ -1068,25 +1069,25 @@ public class BackgroundServiceWorker extends Service {
   private boolean isDeviceUpdateToken() {
     if (TextSecurePreferences.getFcmTokenUpdate(ContextUtils.getApplicationContext())) {
       Log.i(TAG, ">>>>>>> PREPARE DEVICE TOKEN UPDATE...");
-      
+
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
-          
+
           List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
           if (deviceProfiles.size() > 0) {
-  
+
             CommItem commItem = new CommItem();
             Header header = new Header();
             header.setDataType(DataType.DEVICE_PROFILE);
             header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             commItem.setHeader(header);
-  
+
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
             deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
             deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
             commItem.setDeviceProfileItem(deviceProfileItem);
-  
+
             Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
@@ -1098,7 +1099,7 @@ public class BackgroundServiceWorker extends Service {
                     TextSecurePreferences.setFcmTokenUpdate(getApplicationContext(), false);
                   }
                 } else {
-  
+
                   // error case:
                   switch (response.code()) {
                     case 401:
@@ -1107,7 +1108,7 @@ public class BackgroundServiceWorker extends Service {
                   }
                 }
               }
-  
+
               @Override
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
                 Log.i(TAG, ">>>>>>> ERROR ON DEVICE UPDATE TOKEN!!!");
@@ -1117,30 +1118,30 @@ public class BackgroundServiceWorker extends Service {
           }
         }
       });
-      
+
       return false;
     }
-    
+
     return true;
   }
-  
+
   private void updateVersionForPatch() {
-  
+
     patchRequestIsRunning = true;
-    
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-      
+
         List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
         if (deviceProfiles.size() > 0) {
-        
+
           CommItem commItem = new CommItem();
           Header header = new Header();
           header.setDataType(DataType.DEVICE_PROFILE);
           header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
           commItem.setHeader(header);
-        
+
           DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
           //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
           deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
@@ -1156,7 +1157,7 @@ public class BackgroundServiceWorker extends Service {
           }
           //deviceProfileItem.setLanguageCode(Locale.getDefault().toString());
           commItem.setDeviceProfileItem(deviceProfileItem);
-        
+
           Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
           call.enqueue(new Callback<ResultOfAction>() {
             @Override
@@ -1167,7 +1168,7 @@ public class BackgroundServiceWorker extends Service {
                   TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_GET_ALL_TASK);
                 }
               } else {
-              
+
                 // error case:
                 switch (response.code()) {
                   case 401:
@@ -1176,7 +1177,7 @@ public class BackgroundServiceWorker extends Service {
                 }
               }
             }
-          
+
             @Override
             public void onFailure(Call<ResultOfAction> call, Throwable t) {
               patchRequestIsRunning = false;
@@ -1186,25 +1187,25 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   private boolean isUpdateDevice() {
-    
+
     if (TextSecurePreferences.getDeviceUpdate()) {
       Log.i(TAG, ">>>>>>>>>> UPDATE DEVICE...");
-      
+
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
-    
+
           List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
           if (deviceProfiles.size() > 0) {
-  
+
             CommItem commItem = new CommItem();
             Header header = new Header();
             header.setDataType(DataType.DEVICE_PROFILE);
             header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             commItem.setHeader(header);
-  
+
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
             //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
             deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
@@ -1220,7 +1221,7 @@ public class BackgroundServiceWorker extends Service {
             }
             //deviceProfileItem.setLanguageCode(Locale.getDefault().toString());
             commItem.setDeviceProfileItem(deviceProfileItem);
-            
+
             Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
@@ -1231,7 +1232,7 @@ public class BackgroundServiceWorker extends Service {
                     TextSecurePreferences.setDeviceUpdate(false);
                   }
                 } else {
-  
+
                   // error case:
                   switch (response.code()) {
                     case 401:
@@ -1240,7 +1241,7 @@ public class BackgroundServiceWorker extends Service {
                   }
                 }
               }
-  
+
               @Override
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
                 Log.d(TAG, ">>>>>>> ERROR ON DEVICE UPDATE!!!");
@@ -1250,15 +1251,15 @@ public class BackgroundServiceWorker extends Service {
           }
         }
       });
-      
+
       return false;
     }
-    
+
     return true;
   }
-  
+
   private void updateGetAllTasks() {
-    
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
@@ -1271,7 +1272,7 @@ public class BackgroundServiceWorker extends Service {
               //EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_come), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
               handleGetAllTasks(response.body());
             } else {
-              
+
               switch (response.code()) {
                 case 401: {
                   handleAccessToken();
@@ -1280,7 +1281,7 @@ public class BackgroundServiceWorker extends Service {
               }
             }
           }
-  
+
           @Override
           public void onFailure(Call<ResultOfAction> call, Throwable t) {
             //EventBus.getDefault().post(new LogEvent(getString(R.string.log_tasks_error), LogType.SERVER_TO_APP, LogLevel.INFO, getString(R.string.log_title_get_tasks_bg), 0));
@@ -1289,22 +1290,22 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   private void updateLangCode() {
 
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-    
+
         List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
-        
+
         CommItem commItem = new CommItem();
         Header header = new Header();
         header.setDataType(DataType.DEVICE_PROFILE);
         header.setTimestampSenderUTC(new Date());
         header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         commItem.setHeader(header);
-        
+
         DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
         //deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
         deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
@@ -1313,7 +1314,7 @@ public class BackgroundServiceWorker extends Service {
         //deviceProfileItem.setUpdatedDate(DateConverter.fromTimestamp(deviceProfiles.get(0).getModifiedAt()));
         deviceProfileItem.setLanguageCode(TextSecurePreferences.getLanguage(ContextUtils.getApplicationContext()));
         commItem.setDeviceProfileItem(deviceProfileItem);
-        
+
         Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
         call.enqueue(new Callback<ResultOfAction>() {
           @Override
@@ -1323,23 +1324,23 @@ public class BackgroundServiceWorker extends Service {
                 TextSecurePreferences.setUpdateLangCode(false);
               }
             } else {
-              
+
               // error case:
               switch (response.code()) {
                 case 401: handleAccessToken(); break;
               }
             }
           }
-  
+
           @Override
           public void onFailure(Call<ResultOfAction> call, Throwable t) {
-    
+
           }
         });
       }
     });
   }
-  
+
   private static final int _PATCH_00_STATE_DELETE_ALL_TABLES = 0;
   private static final int _PATCH_00_STATE_GENERATE_RANDOM_NUMBER = 1;
   private static final int _PATCH_00_STATE_WAITING = 2;
@@ -1348,14 +1349,14 @@ public class BackgroundServiceWorker extends Service {
   private static final int _PATCH_00_STATE_GET_ALL_TASK = 16;
   private static final int _PATCH_00_STATE_COMPLETED = 32;
   private static boolean patchRequestIsRunning = false;
-  
+
   private boolean isPatch00_Completed() {
     if (TextSecurePreferences.isPatch00_Completed()) {
       return true;
     } else {
-      
+
       String title = "Erledigt";
-      
+
       int state = TextSecurePreferences.getPatch00_State();
       switch (state) {
         case _PATCH_00_STATE_DELETE_ALL_TABLES:
@@ -1364,20 +1365,20 @@ public class BackgroundServiceWorker extends Service {
           deleteTables();
           TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_GENERATE_RANDOM_NUMBER);
           break;
-          
+
         case _PATCH_00_STATE_GENERATE_RANDOM_NUMBER:
           Log.i(TAG, "2. RANDOM_NUMBER");
           title = "Zufallszahl generiert...";
-          
+
           int random = ThreadLocalRandom.current().nextInt(1, 7200);
           Log.i(TAG, "RANDOM INT: " + random);
-          
+
           if (random >= 1 && random <= 7200) {
             TextSecurePreferences.setPatch00_RandomNumber(random);
             TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_WAITING);
           }
           break;
-          
+
         case _PATCH_00_STATE_WAITING:
           Log.i(TAG, "3. WAITING");
           title = "Warten...";
@@ -1385,7 +1386,7 @@ public class BackgroundServiceWorker extends Service {
             TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_CHECK_ENDPOINT);
           }
           break;
-          
+
         case _PATCH_00_STATE_CHECK_ENDPOINT:
           title = "Hole neuen Endpoint...";
           Log.i(TAG, "4. ENDPOINT");
@@ -1393,7 +1394,7 @@ public class BackgroundServiceWorker extends Service {
             fetchEndpoint("10783");
           }
           break;
-          
+
         case _PATCH_00_STATE_SEND_NEW_VERSION:
           Log.i(TAG, "5. NEW VERSION");
           title = "Sende App Version...";
@@ -1401,7 +1402,7 @@ public class BackgroundServiceWorker extends Service {
             updateVersionForPatch();
           }
           break;
-          
+
         case _PATCH_00_STATE_GET_ALL_TASK:
           Log.i(TAG, "5. GET ALL TASK");
           title = "Get All Task...";
@@ -1409,51 +1410,51 @@ public class BackgroundServiceWorker extends Service {
           TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_COMPLETED);
           TextSecurePreferences.setPatch00_Completed(true);
           break;
-          
+
         case _PATCH_00_STATE_COMPLETED:
           break;
       }
-  
+
       int randomNumber = TextSecurePreferences.getPatch00_RandomNumber();
       randomNumber = randomNumber - 10;
       TextSecurePreferences.setPatch00_RandomNumber(randomNumber);
-      
+
       if (randomNumber <= 0) {
         App.eventBus.post(new PatchEvent(randomNumber, title, false));
       } else {
         App.eventBus.post(new PatchEvent(randomNumber, title, true));
       }
-      
+
       return false;
     }
   }
-  
+
   private boolean isDeviceRegistrated() {
     if (TextSecurePreferences.isDeviceRegistrated()) {
       return true;
     } else {
-      
+
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
-          
+
           if (registrationRequest) {
             Log.i(TAG, ">>>>>>>>>> WAITING OF RESPONSE...");
             return;
           }
           List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
-  
+
           if (deviceProfiles.size() > 0) {
             Log.i(TAG, ">>>>>>> PREPARE DEVICE REGISTRATION");
-            
+
             App.eventBus.post(new RegistrationEvent(RegistrationEvent.State.STARTED));
-  
+
             CommItem commItem = new CommItem();
             Header header = new Header();
             header.setDataType(DataType.DEVICE_PROFILE);
             header.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
             commItem.setHeader(header);
-  
+
             DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
             deviceProfileItem.setInstanceId(deviceProfiles.get(0).getInstanceId());
             deviceProfileItem.setDeviceId(deviceProfiles.get(0).getDeviceId());
@@ -1465,10 +1466,10 @@ public class BackgroundServiceWorker extends Service {
             deviceProfileItem.setVersionCode(deviceProfiles.get(0).getVersionCode());
             deviceProfileItem.setVersionName(deviceProfiles.get(0).getVersionName());
             commItem.setDeviceProfileItem(deviceProfileItem);
-            
+
             registrationRequest = true;
             Log.i(TAG, ">>>>>>>>>> REGISTRATION STARTED...");
-            
+
             Call<ResultOfAction> call = App.getInstance().apiManager.getFCMApi().deviceProfile(commItem);
             call.enqueue(new Callback<ResultOfAction>() {
               @Override
@@ -1480,14 +1481,14 @@ public class BackgroundServiceWorker extends Service {
                     Log.d(TAG, ">>>>>>> DEVICE REGISTRATION WAS SUCCESSFULLY!!!");
                     TextSecurePreferences.setDeviceRegistrated(true);
                     TextSecurePreferences.setRegistrationStarted(false);
-                    
+
                     App.eventBus.post(new PageEvent(new PageItemDescriptor(PageItemDescriptor.PAGE_DEVICE_REGISTRATED), null));
                     App.eventBus.post(new RegistrationEvent(RegistrationEvent.State.FINISHED));
                   } else {
                     App.eventBus.post(new RegistrationEvent(RegistrationEvent.State.ERROR));
                   }
                 } else {
-        
+
                   // error case:
                   switch (response.code()) {
                     case 401:
@@ -1496,7 +1497,7 @@ public class BackgroundServiceWorker extends Service {
                   }
                 }
               }
-    
+
               @Override
               public void onFailure(Call<ResultOfAction> call, Throwable t) {
                 Log.d(TAG, ">>>>>>> ERROR ON DEVICE REGISTRATION!!! - " + t.getMessage());
@@ -1510,15 +1511,15 @@ public class BackgroundServiceWorker extends Service {
           }
         }
       });
-      
+
       return false;
     }
   }
-  
+
   private boolean isDevicePermissionGranted() {
     return TextSecurePreferences.isDevicePermissionsGranted();
   }
-  
+
   @Override
   public void onTaskRemoved(Intent rootIntent) {
     Log.i(TAG, "onTaskRemoved() called!");
@@ -1527,23 +1528,113 @@ public class BackgroundServiceWorker extends Service {
     startService(restartServiceIntent);
     super.onTaskRemoved(rootIntent);
   }
-  
+
   @Override
   public void onCreate() {
     super.onCreate();
     Log.i(TAG, "onCreate() called!");
-    
+
     mHandler = new Handler();
     mDelayReasonHandler = new Handler();
     mRunner = new Runner();
     mDelayReasonRunner = new DelayReasonRunner();
   }
-  
+
+  //that is to send deviceID from background
+
+
+
+  private MobileVersReceiver mobileVersReceiver = null;
+
+  /**
+   * other app started, we getting this message and send ids.
+   * other case - migration done, change flag, unregister.
+   */
+  private class MobileVersReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if(intent.getExtras().getBoolean(Constants.EXTRA_MIGRATION_DONE) == true){
+        TextSecurePreferences.setMigrationDone(true);
+        if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
+        android.util.Log.e(TAG, "migration Done");
+      } else {
+        TextSecurePreferences.setMigrationDone(false);
+        MigrationUtil.sendBroadcast(context);
+        android.util.Log.e(TAG, "Sending broadcast from mobile request");
+      }
+    }
+  }
+
+
+
+
+  private Handler migrationHandler = new Handler();
+  private MigrationRunnable migrationRunnable = null;
+
+  /**
+   * Checking if mobile version exist
+   * sending each 2hours broadcast with IDs,
+   * works in background, as parent service
+   * when received Migration Done, stops.
+   */
+  private class MigrationRunnable implements Runnable {
+    @Override
+    public void run() {
+      if (TextSecurePreferences.isMigrationDone() == false) {
+        if (MigrationUtil.mobileVersionExist(getBaseContext()) && checkUserSet()) {
+          Handler broadCastHandler = new Handler();
+          if (App.isAppInForeground) {
+            tryLaunchMobileVersion();
+            //then send IDS:
+            broadCastHandler.postDelayed(() -> MigrationUtil.sendBroadcast(getBaseContext()), TimeUnit.SECONDS.toMillis(5));//wait with broadcast until other app launch
+          } else {
+            MigrationUtil.sendBroadcast(getBaseContext());
+            android.util.Log.e(TAG, "Sending broadcast from runnable");
+          }
+        }
+        //call itself with delay, until find DriverAppMobile, and get response migration done.
+        migrationHandler.postDelayed(migrationRunnable, TimeUnit.MINUTES.toMillis(Constants.FIND_APP_DELAY_MIN));
+      } else {
+        Log.e(TAG, "migration Done");
+      }
+    }
+
+    private void tryLaunchMobileVersion() {
+      try{
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(Constants.MOBILE_PACKAGE);
+        if (launchIntent != null) {
+          startActivity(launchIntent);//null pointer check in case package name was not found
+          Log.e(TAG, "starting mobile app");
+        }
+      } catch (ActivityNotFoundException ex){
+        Log.e(TAG, "no mobile app");
+      } catch (Exception e){
+        Log.e(TAG, "Exception launching mobile app");
+      }
+    }
+  }
+
+  private boolean checkUserSet() {
+    if(TextSecurePreferences.getDeviceUpdate() == true)return false;
+    if(TextSecurePreferences.getClientID().isEmpty())return false;
+    return true;
+  }
+
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     if(intent.getBooleanExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, false) == true){
       Log.e(TAG, "service stop");
       stopService();
+    }
+    //register receiver from mobile version, when user open it  - we receive migration done=false and send user ID's
+    if(mobileVersReceiver == null){
+      mobileVersReceiver = new MobileVersReceiver();
+      getBaseContext().registerReceiver(mobileVersReceiver, new IntentFilter(Constants.MOBILE_PACKAGE_BROADCAST));
+    }
+    if(migrationRunnable ==null){
+      migrationRunnable = new MigrationRunnable();
+      //line below for trying find mobile version, when it is not opened after installation.
+      migrationRunnable.run();
     }
     Notification notification = prepareNotification(getApplicationContext().getResources().getString(R.string.alarm_check_title),
             getApplicationContext().getResources().getString(R.string.running_text)).build();
@@ -1585,31 +1676,31 @@ public class BackgroundServiceWorker extends Service {
     super.onDestroy();
     mHandler.removeCallbacks(mRunner);
     mDelayReasonHandler.removeCallbacks(mDelayReasonRunner);
-    
+    if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
     Intent broadcastIntent =
       new Intent("com.abona_erp.driver.app.RestartBackgroundServiceWorker");
     sendBroadcast(broadcastIntent);
   }
-  
+
   private void deleteTask(OfflineConfirmation offlineConfirmation) {
     if (offlineConfirmation != null) {
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
-          
+
           mOfflineConfirmationDAO.delete(offlineConfirmation);
           Log.i("TABLE", "--------------------------------------- Lösche Eintrag " + offlineConfirmation.getId());
         }
       });
     }
   }
-  
+
   private void deleteAllTaskByID(int id) {
     if (id > 0) {
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
-  
+
           List<OfflineConfirmation> offlineConfirmations = mOfflineConfirmationDAO.getAllOfflineConfirmations();
           if (offlineConfirmations.size() > 0) {
             for (int i = 0; i < offlineConfirmations.size(); i++) {
@@ -1622,25 +1713,25 @@ public class BackgroundServiceWorker extends Service {
       });
     }
   }
-  
+
   private void lastActivity(int taskID, int mandantID, ActivityItem activityItem, int lastID) {
-    
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-    
+
         mLastActivityDAO.getLastActivityByTaskClientId(taskID, mandantID)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribeOn(Schedulers.io())
           .subscribe(new DisposableSingleObserver<LastActivity>() {
-            
+
             @Override
             public void onSuccess(LastActivity lastActivity) {
               postActivityChangeSent((activityItem.getStatus() == ActivityStatus.FINISHED) ? ActionType.FINISH_ACTIVITY : ActionType.START_ACTIVITY,
                 activityItem.getTaskId(), activityItem.getActivityId(), UtilCommon.parseInt(lastActivity.getOrderNo()), activityItem.getMandantId(), lastID);
               updateLastActivity(mLastActivityDAO, lastActivity, 2, "CHANGED", -1);
             }
-            
+
             @Override
             public void onError(Throwable e) {
             }
@@ -1648,12 +1739,12 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   private void updateTask(Notify notify, CommItem commItem) {
-    
+
     if (commItem == null) return;
     if (notify == null) return;
-  
+
     notify.setData(App.getInstance().gsonUtc.toJson(commItem));
     //notify.setRead(false);
     if (commItem.getTaskItem().getTaskStatus().equals(TaskStatus.PENDING)) {
@@ -1668,7 +1759,7 @@ public class BackgroundServiceWorker extends Service {
       notify.setStatus(51);
     }
     notify.setTaskDueFinish(commItem.getTaskItem().getTaskDueDateFinish());
-  
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
@@ -1676,7 +1767,7 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   @Override
   public void onLowMemory() {
     Log.i(TAG, "onLowMemory() called!");
@@ -1684,17 +1775,17 @@ public class BackgroundServiceWorker extends Service {
     //App.eventBus.post(new GetAllTaskEvent());
     super.onLowMemory();
   }
-  
+
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
     return null;
   }
-  
+
   private void updateLastActivity(LastActivityDAO dao, LastActivity lastActivity, int statusType, String description, int confirmationStatus) {
 
     lastActivity.setModifiedAt(AppUtils.getCurrentDateTime());
-    
+
     ArrayList<String> _list = lastActivity.getDetailList();
     LastActivityDetails _detail = new LastActivityDetails();
     if (description != null && !TextUtils.isEmpty(description)) {
@@ -1702,14 +1793,14 @@ public class BackgroundServiceWorker extends Service {
     }
     _list.add(App.getInstance().gson.toJson(_detail));
     lastActivity.setDetailList(_list);
-    
+
     if (confirmationStatus != -1) {
       lastActivity.setConfirmStatus(confirmationStatus);
     }
     if (statusType != -1) {
       lastActivity.setStatusType(statusType);
     }
-    
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
@@ -1719,24 +1810,24 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   private void handleGetAllTasks(ResultOfAction resultOfAction) {
-    
+
     if (resultOfAction == null) return;
-    
+
     try {
       if (resultOfAction.getIsSuccess() && !resultOfAction.getIsException()) {
         if (resultOfAction.getAllTask() != null && resultOfAction.getAllTask().size() > 0) {
           for (int i = 0; i < resultOfAction.getAllTask().size(); i++) {
-  
+
             TaskItem taskItem = resultOfAction.getAllTask().get(i);
             if (taskItem.getMandantId() == null) continue;
             int mandantId = taskItem.getMandantId();
             TextSecurePreferences.setMandantID(mandantId);
-  
+
             if (taskItem.getTaskId() == null) continue;
             int taskId = taskItem.getTaskId();
-            
+
             mNotifyDAO.loadNotifyByTaskMandantId(mandantId, taskId)
               .observeOn(AndroidSchedulers.mainThread())
               .subscribeOn(Schedulers.io())
@@ -1747,12 +1838,12 @@ public class BackgroundServiceWorker extends Service {
                   commItem = App.getInstance().gson.fromJson(notify.getData(), CommItem.class);
                   if (commItem != null) {
                     commItem.setTaskItem(taskItem);
-  
+
                     notify.setRead(false);
                     notify.setTaskDueFinish(taskItem.getTaskDueDateFinish());
                     notify.setData(App.getInstance().gson.toJson(commItem));
                     notify.setModifiedAt(AppUtils.getCurrentDateTime());
-  
+
                     if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
                       notify.setStatus(0);
                     } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
@@ -1764,17 +1855,17 @@ public class BackgroundServiceWorker extends Service {
                     } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
                       notify.setStatus(51);
                     }
-                    
+
                     mNotifyDAO.updateNotify(notify);
                   }
                 }
-  
+
                 @Override
                 public void onError(Throwable e) {
-  
+
                   CommItem commItem = new CommItem();
                   commItem.setTaskItem(taskItem);
-  
+
                   // Nicht vorhanden:
                   Notify notify = new Notify();
                   notify.setMandantId(mandantId);
@@ -1785,7 +1876,7 @@ public class BackgroundServiceWorker extends Service {
                   notify.setCreatedAt(AppUtils.getCurrentDateTime());
                   notify.setModifiedAt(AppUtils.getCurrentDateTime());
                   notify.setData(App.getInstance().gsonUtc.toJson(commItem));
-  
+
                   if (taskItem.getTaskStatus().equals(TaskStatus.PENDING)) {
                     notify.setStatus(0);
                   } else if (taskItem.getTaskStatus().equals(TaskStatus.RUNNING)) {
@@ -1797,7 +1888,7 @@ public class BackgroundServiceWorker extends Service {
                   } else if (taskItem.getTaskStatus().equals(TaskStatus.BREAK)) {
                     notify.setStatus(51);
                   }
-  
+
                   mNotifyDAO.updateNotify(notify);
                 }
               });
@@ -1809,15 +1900,15 @@ public class BackgroundServiceWorker extends Service {
       Log.d(TAG, e.getMessage());
     }
   }
-  
+
   private void showErrorMessage(String message) {
     App.eventBus.post(new RestApiErrorEvent(message));
   }
-  
+
   private void handleAccessToken() {
     MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
     RequestBody body = RequestBody.create(mediaType, "grant_type=password&username=manyvehicles%40abona-erp.com&password=1234qwerQWER%2C.-");
-    
+
     Request request = new Request.Builder()
       .url(TextSecurePreferences.getEndpoint() + "authentication")
       .post(body)
@@ -1830,13 +1921,13 @@ public class BackgroundServiceWorker extends Service {
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-        
+
         getClient().newCall(request).enqueue(new okhttp3.Callback() {
           @Override
           public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
             //allowRequest = true;
           }
-          
+
           @Override
           public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
             //allowRequest = true;
@@ -1849,7 +1940,7 @@ public class BackgroundServiceWorker extends Service {
                 if (!TextUtils.isEmpty(access_token)) {
                   TextSecurePreferences.setAccessToken(getApplicationContext(), access_token);
                 }
-  
+
                 addLog(LogLevel.INFO, LogType.APP_TO_SERVER, "ACCESS TOKEN", "GET NEW TOKEN");
               } catch (NullPointerException e) {
                 e.printStackTrace();
@@ -1862,12 +1953,12 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   OkHttpClient mClient = null;
   private OkHttpClient getClient() {
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
     logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-    
+
     if (mClient == null) {
       synchronized (BackgroundServiceWorker.class) {
         if (mClient == null) {
@@ -1886,9 +1977,9 @@ public class BackgroundServiceWorker extends Service {
     }
     return mClient;
   }
-  
+
   private void deleteTables() {
-    
+
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
@@ -1898,20 +1989,20 @@ public class BackgroundServiceWorker extends Service {
       }
     });
   }
-  
+
   private void fetchEndpoint(String clientID) {
-    
+
     patchRequestIsRunning = true;
-    
+
     String url = "http://endpoint.abona-erp.com/Api/AbonaClients/GetServerURLByClientId/" + clientID + "/2";
-    
+
     RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(com.android.volley.Request.Method.GET, url, null, new com.android.volley.Response.Listener<JSONObject>() {
-      
+
       @Override
       public void onResponse(JSONObject response) {
         patchRequestIsRunning = false;
-        
+
         try {
           boolean active = response.getBoolean("IsActive");
           if (active) {
@@ -1921,9 +2012,9 @@ public class BackgroundServiceWorker extends Service {
             }
             TextSecurePreferences.setEndpoint(webService);
             TextSecurePreferences.setClientID(clientID);
-  
+
             TextSecurePreferences.setLoginPageEnable(false);
-            
+
             TextSecurePreferences.setPatch00_State(_PATCH_00_STATE_SEND_NEW_VERSION);
           }
         } catch (JSONException e) {
@@ -1936,11 +2027,11 @@ public class BackgroundServiceWorker extends Service {
         patchRequestIsRunning = false;
       }
     });
-    
+
     // Add JsonObjectRequest to the RequestQueue:
     requestQueue.add(jsonObjectRequest);
   }
-  
+
   private boolean uploadSpecialFunctionImages(
     String filePath,
     String mandantId,
@@ -1948,19 +2039,19 @@ public class BackgroundServiceWorker extends Service {
     String taskId,
     SpecialFunction specialFunction
   ) {
-    
+
     boolean success = false;
-    
+
     File file = new File(filePath);
-    
+
     RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
     MultipartBody.Part body = MultipartBody.Part.createFormData("", file.getName(), requestBody);
-  
+
     RequestBody _mandantId = RequestBody.create(MediaType.parse("multipart/form-data"), mandantId);
     RequestBody _orderNo = RequestBody.create(MediaType.parse("multipart/form-data"), orderNo);
     RequestBody _taskId = RequestBody.create(MediaType.parse("multipart/form-data"), taskId);
     RequestBody _driverNo = RequestBody.create(MediaType.parse("multipart/form-data"), String.valueOf(-1));
-  
+
     String dmsType = "0";
     if (specialFunction.equals(SpecialFunction.TAKE_IMAGES_CMR)) {
       dmsType = "24";
@@ -1969,23 +2060,23 @@ public class BackgroundServiceWorker extends Service {
     }
     RequestBody _documentType = RequestBody.create(MediaType
       .parse("multipart/form-data"), dmsType);
-    
+
     Call<UploadResult> call = App.getInstance().apiManager.getFileUploadApi()
       .upload(_mandantId, _orderNo, _taskId, _driverNo, _documentType, body);
     call.enqueue(new Callback<UploadResult>() {
       @Override
       public void onResponse(Call<UploadResult> call, Response<UploadResult> response) {
-      
+
         //allowRequest = true;
         //requestIsRunning = false;
         //requestCounter = 0;
-      
+
         if (response.isSuccessful()) {
         } else if (response.code() == 401) {
           handleAccessToken();
         }
       }
-    
+
       @Override
       public void onFailure(Call<UploadResult> call, Throwable t) {
         //allowRequest = true;
@@ -2009,10 +2100,10 @@ public class BackgroundServiceWorker extends Service {
     }
     
      */
-    
+
     return success;
   }
-  
+
   // ------------------------------------------------------------------------
   // Logging
   private void addLog(LogLevel level, LogType type, String title, String message) {
@@ -2031,8 +2122,8 @@ public class BackgroundServiceWorker extends Service {
       });
     }
   }
-  
-  
+
+
   private boolean pingServer(String ipAddress) {
     Runtime runtime = Runtime.getRuntime();
     try {
