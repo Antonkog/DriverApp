@@ -4,6 +4,18 @@ import android.Manifest;
 
 public interface Constants {
 
+    String PACKAGE_NAME = "com.abona_erp.driver.app";
+    //below keys for communication with mobile app
+    String CLIENT_IDS_BROADCAST = PACKAGE_NAME + ".broadcast";
+    String EXTRA_DEVICE_ID = PACKAGE_NAME +".DeviceID";
+    String EXTRA_CLIENT_ID = PACKAGE_NAME +".ClientID";
+
+    int MOBILE_APP_VERSION = 210010226;
+    String MOBILE_PACKAGE = "com.abona_erp.driverapp";
+    String MOBILE_PACKAGE_BROADCAST = MOBILE_PACKAGE +".broadcast";
+    int FIND_APP_DELAY_MIN = 15;
+    String EXTRA_MIGRATION_DONE = MOBILE_PACKAGE +".MIGRATION_DONE";
+    //end of comminication keys
     String EXTRAS_ALARM_TASK_ID = "extras_alarm_task_id";
     String EXTRAS_FCM_MESSAGE = "extras_alarm_task_id";
     String ALARM_TAG_SUFFIX = "alarmTask";
@@ -20,7 +32,6 @@ public interface Constants {
     int TIMEOUT_SMTP_SEND = 5000; // to prevent photos duplication
 
     int TEST_TIME_QUOTES = 10;
-    String PACKAGE_NAME = "com.abona_erp.driver.app";
     int REQUEST_PERMISSIONS_KEY = 111;
 
     String LOG_FILE_PREFIX = "actionHistory";

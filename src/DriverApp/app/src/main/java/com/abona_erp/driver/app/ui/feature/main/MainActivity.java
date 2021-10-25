@@ -583,14 +583,14 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
             mMainViewModel.getDeviceProfile().subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(databaseProfile -> {
-                              if(databaseProfile.getDeviceId()== null || !databaseProfile.getDeviceId().equals(getAndroidQnewID())) {
-                                Log.d(TAG, " migrating deviceID :  old : " + databaseProfile.getDeviceId() + " new  : " + getAndroidQnewID());
-                                apiService.migrateDeviceId(databaseProfile.getDeviceId(), getAndroidQnewID())
+                              if(databaseProfile.getDeviceId()== null || DeviceUtils.isDeviceIDChanged(databaseProfile.getDeviceId(), getBaseContext())) {
+                                Log.d(TAG, " migrating deviceID :  old : " + databaseProfile.getDeviceId() + " new  : " + DeviceUtils.getUniqueIMEI(getBaseContext()));
+                                apiService.migrateDeviceId(databaseProfile.getDeviceId(), DeviceUtils.getUniqueIMEI(getBaseContext()))
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(result -> {
                                           if (result.getIsSuccess()) {
-                                            databaseProfile.setDeviceId(getAndroidQnewID());
+                                            databaseProfile.setDeviceId(DeviceUtils.getUniqueIMEI(getBaseContext()));
                                             databaseProfile.setDeviceSerial(DeviceUtils.getSerial());
                                             databaseProfile.setDeviceManufacturer("MainActivity - changeDeviceIdNewApi()");
                                             mMainViewModel.update(databaseProfile); //that is old implementation to update room table
@@ -621,10 +621,6 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
                     throwable -> Log.e(TAG, "Unable to getDeviceFrom db", throwable)));
   }
 
-  @NotNull
-  private String getAndroidQnewID() {
-    return DeviceUtils.getUniqueID(getBaseContext());
-  }
 
   private void registerLocaleReceiver() {
     if(localeChangeReceiver == null){

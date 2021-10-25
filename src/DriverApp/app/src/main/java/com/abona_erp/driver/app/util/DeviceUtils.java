@@ -32,6 +32,10 @@ public class DeviceUtils {
 
   }
 
+  public static boolean isDeviceIDChanged(String oldID,Context context){
+    return !oldID.equals(getUniqueIMEI(context));
+  }
+
   /**
    * see:
    * https://developer.android.com/training/articles/user-data-ids#instance-ids-guids
@@ -41,7 +45,7 @@ public class DeviceUtils {
    * Between Android 6.0 (API level 23) and Android 9 (API level 28), local device MAC addresses, such as Wi-Fi and Bluetooth, aren't available via third-party APIs. The WifiInfo.getMacAddress() method and the BluetoothAdapter.getDefaultAdapter().getAddress() method both return 02:00:00:00:00:00
    * author A.KOGAN
    */
-  public static String getUniqueID(Context context) {
+  private static String getUniqueID(Context context) {
     StringBuilder idBuilder = new StringBuilder();
     try {
       idBuilder.append(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));

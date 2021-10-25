@@ -90,7 +90,7 @@ public class DeviceProfileWorker extends Worker implements ProfileUpdater {
 
         DeviceProfileItem deviceProfileItem = new DeviceProfileItem();
         deviceProfileItem.setInstanceId(profile.getInstanceId());
-        deviceProfileItem.setDeviceId(profile.getDeviceId());
+        deviceProfileItem.setDeviceId(DeviceUtils.getUniqueIMEI(ContextUtils.getApplicationContext()));
         commItem.setDeviceProfileItem(deviceProfileItem);
         return commItem;
     }

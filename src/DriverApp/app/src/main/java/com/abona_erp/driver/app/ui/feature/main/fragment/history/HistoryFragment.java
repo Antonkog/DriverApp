@@ -147,7 +147,7 @@ public class HistoryFragment extends Fragment {
     historyDisposibles.add(
       historyViewModel.getDeviceProfile().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
               result -> sendEmailWithMessage(result.toString()),
-              error -> sendEmailWithMessage(" \n deviceId:" + DeviceUtils.getUniqueID(getContext())))
+              error -> sendEmailWithMessage(" \n deviceId:" + DeviceUtils.getUniqueIMEI(getContext())))
     );
   }
 
