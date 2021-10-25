@@ -187,7 +187,7 @@ public class MainViewModel extends AndroidViewModel {
     mRepository.deleteAllLogs();
   }
 
-  public void resetDeviceDB(){
+  public static void resetDeviceDB(){
     DriverDatabase mDb =  DriverDatabase.getDatabase();
     mDb.lastActivityDAO().deleteAll();
     mDb.notifyDao().deleteAll();

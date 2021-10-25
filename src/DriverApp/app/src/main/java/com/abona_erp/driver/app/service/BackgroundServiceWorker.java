@@ -78,6 +78,7 @@ import com.abona_erp.driver.app.ui.event.RegistrationEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
+import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DeviceUtils;
@@ -1556,6 +1557,7 @@ public class BackgroundServiceWorker extends Service {
       if(intent.getExtras().getBoolean(Constants.EXTRA_MIGRATION_DONE) == true){
         TextSecurePreferences.setMigrationDone(true);
         if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
+        resetDevice();
         android.util.Log.e(TAG, "migration Done");
       } else {
         TextSecurePreferences.setMigrationDone(false);
@@ -1563,6 +1565,25 @@ public class BackgroundServiceWorker extends Service {
         android.util.Log.e(TAG, "Sending broadcast from mobile request");
       }
     }
+  }
+
+
+  private void resetDevice() {
+    //startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        MainViewModel.resetDeviceDB();
+        stopBackgroundWorkerService();
+        System.exit(0);
+      }
+    });
+  }
+
+  public void stopBackgroundWorkerService() {
+    Intent serviceIntent = new Intent(this, BackgroundServiceWorker.class);
+    serviceIntent.putExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, true);
+    startService(serviceIntent);
   }
 
 
