@@ -2,6 +2,7 @@ package com.abona_erp.driver.app.ui.feature.main;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -339,6 +340,7 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     getAllTaskImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        tryLaunchMobileVersion();
         mMainViewModel.addLog(getResources().getString(R.string.log_update_pressed), LogType.APP_TO_SERVER, LogLevel.INFO, getResources().getString(R.string.log_title_get_tasks));
         onUpdateClick();
       }
@@ -485,6 +487,20 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
          */
       }
     });
+  }
+
+  private void tryLaunchMobileVersion() {
+    try{
+      Intent launchIntent = getPackageManager().getLaunchIntentForPackage(Constants.MOBILE_PACKAGE);
+      if (launchIntent != null) {
+        startActivity(launchIntent);//null pointer check in case package name was not found
+        com.abona_erp.driver.app.logging.Log.e(TAG, "starting mobile app");
+      }
+    } catch (ActivityNotFoundException ex){
+      com.abona_erp.driver.app.logging.Log.e(TAG, "no mobile app");
+    } catch (Exception e){
+      com.abona_erp.driver.app.logging.Log.e(TAG, "Exception launching mobile app");
+    }
   }
 
   private void addFirebaseListener() {

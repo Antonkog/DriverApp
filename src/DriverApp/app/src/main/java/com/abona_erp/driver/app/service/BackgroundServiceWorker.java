@@ -78,9 +78,7 @@ import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
-import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
-import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
 import com.abona_erp.driver.app.util.AppUtils;
 import com.abona_erp.driver.app.util.DeviceUtils;
@@ -1583,13 +1581,9 @@ public class BackgroundServiceWorker extends Service {
       if (TextSecurePreferences.isMigrationDone() == false) {
         if (MigrationUtil.mobileVersionExist(getBaseContext()) && checkUserSet()) {
           Handler broadCastHandler = new Handler();
-          if (App.isAppInForeground) {
-            tryLaunchMobileVersion();
-            //then send IDS:
-            broadCastHandler.postDelayed(() -> MigrationUtil.sendBroadcast(getBaseContext()), TimeUnit.SECONDS.toMillis(5));//wait with broadcast until other app launch
-          } else {
-            MigrationUtil.sendBroadcast(getBaseContext());
-          }
+          tryLaunchMobileVersion();
+          //then send IDS:
+          broadCastHandler.postDelayed(() -> MigrationUtil.sendBroadcast(getBaseContext()), TimeUnit.SECONDS.toMillis(5));//wait with broadcast until other app launch
         }
         //call itself with delay, until find DriverAppMobile, and get response migration done.
         migrationHandler.postDelayed(migrationRunnable, TimeUnit.MINUTES.toMillis(Constants.FIND_APP_DELAY_MIN));
@@ -1614,8 +1608,7 @@ public class BackgroundServiceWorker extends Service {
   }
 
   private boolean checkUserSet() {
-    if(TextSecurePreferences.getDeviceUpdate() == true)return false;
-    if(TextSecurePreferences.getClientID().isEmpty())return false;
+    if(TextSecurePreferences.getClientID().isEmpty()) return false;
     return true;
   }
 
@@ -1675,7 +1668,11 @@ public class BackgroundServiceWorker extends Service {
     super.onDestroy();
     mHandler.removeCallbacks(mRunner);
     mDelayReasonHandler.removeCallbacks(mDelayReasonRunner);
-    if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
+    try {
+      if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
+    } catch (Exception e){
+      Log.e(TAG, e.getMessage());
+    }
     Intent broadcastIntent =
       new Intent("com.abona_erp.driver.app.RestartBackgroundServiceWorker");
     sendBroadcast(broadcastIntent);
