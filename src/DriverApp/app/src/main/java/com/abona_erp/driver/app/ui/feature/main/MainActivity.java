@@ -74,6 +74,7 @@ import com.abona_erp.driver.app.ui.event.ConnectivityEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.GetAllTaskEvent;
 import com.abona_erp.driver.app.ui.event.HistoryClick;
+import com.abona_erp.driver.app.ui.event.LogOutEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.PatchEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
@@ -712,7 +713,13 @@ public class MainActivity extends BaseActivity implements CustomDialogFragment.C
     Log.i(TAG, "GetAllTask starting...");
     onUpdateClick();
   }
-  
+
+  @Subscribe
+  public void onMessageEvent(LogOutEvent event) {
+    resetDevice();
+  }
+
+
   @Subscribe
   public void onMessageEvent(PatchEvent event) {
     //AsyncTask.execute(new Runnable() {

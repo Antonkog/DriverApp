@@ -71,12 +71,14 @@ import com.abona_erp.driver.app.logging.Log;
 import com.abona_erp.driver.app.ui.event.ChangeHistoryEvent;
 import com.abona_erp.driver.app.ui.event.DocumentEvent;
 import com.abona_erp.driver.app.ui.event.GetAllTaskEvent;
+import com.abona_erp.driver.app.ui.event.LogOutEvent;
 import com.abona_erp.driver.app.ui.event.PageEvent;
 import com.abona_erp.driver.app.ui.event.PatchEvent;
 import com.abona_erp.driver.app.ui.event.ProgressBarEvent;
 import com.abona_erp.driver.app.ui.event.RegistrationEvent;
 import com.abona_erp.driver.app.ui.event.RestApiErrorEvent;
 import com.abona_erp.driver.app.ui.event.UploadAllDocsEvent;
+import com.abona_erp.driver.app.ui.feature.login.LoginActivity;
 import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainViewModel;
 import com.abona_erp.driver.app.ui.feature.main.PageItemDescriptor;
@@ -120,7 +122,6 @@ import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Response;
 
 public class BackgroundServiceWorker extends Service {
@@ -1557,36 +1558,14 @@ public class BackgroundServiceWorker extends Service {
       if(intent.getExtras().getBoolean(Constants.EXTRA_MIGRATION_DONE) == true){
         TextSecurePreferences.setMigrationDone(true);
         if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
-        resetDevice();
-        android.util.Log.e(TAG, "migration Done");
+        EventBus.getDefault().post(new LogOutEvent());
       } else {
         TextSecurePreferences.setMigrationDone(false);
         MigrationUtil.sendBroadcast(context);
-        android.util.Log.e(TAG, "Sending broadcast from mobile request");
+        Log.e(TAG, "Sending broadcast from mobile request");
       }
     }
   }
-
-
-  private void resetDevice() {
-    //startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
-        MainViewModel.resetDeviceDB();
-        stopBackgroundWorkerService();
-        System.exit(0);
-      }
-    });
-  }
-
-  public void stopBackgroundWorkerService() {
-    Intent serviceIntent = new Intent(this, BackgroundServiceWorker.class);
-    serviceIntent.putExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, true);
-    startService(serviceIntent);
-  }
-
-
 
 
   private Handler migrationHandler = new Handler();
@@ -1594,7 +1573,7 @@ public class BackgroundServiceWorker extends Service {
 
   /**
    * Checking if mobile version exist
-   * sending each 2hours broadcast with IDs,
+   * sending each 15 minutes broadcast with IDs,
    * works in background, as parent service
    * when received Migration Done, stops.
    */
@@ -1610,13 +1589,12 @@ public class BackgroundServiceWorker extends Service {
             broadCastHandler.postDelayed(() -> MigrationUtil.sendBroadcast(getBaseContext()), TimeUnit.SECONDS.toMillis(5));//wait with broadcast until other app launch
           } else {
             MigrationUtil.sendBroadcast(getBaseContext());
-            android.util.Log.e(TAG, "Sending broadcast from runnable");
           }
         }
         //call itself with delay, until find DriverAppMobile, and get response migration done.
         migrationHandler.postDelayed(migrationRunnable, TimeUnit.MINUTES.toMillis(Constants.FIND_APP_DELAY_MIN));
       } else {
-        Log.e(TAG, "migration Done");
+        Log.e(TAG, "migration already Done, not sending info");
       }
     }
 
