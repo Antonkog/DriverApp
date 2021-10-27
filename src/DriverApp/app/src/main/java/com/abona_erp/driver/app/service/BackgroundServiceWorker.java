@@ -1442,6 +1442,7 @@ public class BackgroundServiceWorker extends Service {
             Log.i(TAG, ">>>>>>>>>> WAITING OF RESPONSE...");
             return;
           }
+          if(TextSecurePreferences.isMigrationDone())return;
           List<DeviceProfile> deviceProfiles = mDeviceProfileDAO.getDeviceProfiles();
 
           if (deviceProfiles.size() > 0) {
@@ -1557,7 +1558,6 @@ public class BackgroundServiceWorker extends Service {
         TextSecurePreferences.setMigrationDone(true);
         if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
         EventBus.getDefault().post(new LogOutEvent());
-        TextSecurePreferences.setDeviceRegistrated(true);//that is to prevent new call of setDeviceProfile after migration done.
       } else {
         TextSecurePreferences.setMigrationDone(false);
         MigrationUtil.sendBroadcast(context);

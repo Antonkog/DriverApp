@@ -24,7 +24,7 @@ public class TextSecurePreferences {
   private static final String PREF_GCM_REGISTRATION_ID_TIME    = "pref_gcm_registration_id_last_set_time";
   private static final String PREF_DEVICE_REGISTRATED          = "pref_device_registrated";
   private static final String PREF_ACCESS_TOKEN                = "pref_access_token";
-  
+
   private static final String PREF_ACTIVITY_BACK_ENABLE        = "pref_activity_back_enable";
   
   private static final String PREF_CLIENT_NAME                 = "pref_client_name";

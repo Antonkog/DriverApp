@@ -11,7 +11,9 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import com.abona_erp.driver.app.R;
 import com.abona_erp.driver.app.data.remote.NetworkUtil;
+import com.abona_erp.driver.app.service.BackgroundServiceWorker;
 import com.abona_erp.driver.app.ui.feature.main.BaseActivity;
+import com.abona_erp.driver.app.ui.feature.main.Constants;
 import com.abona_erp.driver.app.ui.feature.main.MainActivity;
 import com.abona_erp.driver.app.util.CustomDialogFragment;
 import com.abona_erp.driver.app.util.TextSecurePreferences;
@@ -72,7 +74,7 @@ public class LoginActivity extends BaseActivity implements CustomDialogFragment.
     } catch (Exception e) {
       e.printStackTrace();
     }
-    
+
     String url = "http://endpoint.abona-erp.com/Api/AbonaClients/GetServerURLByClientId/" + clientID + "/2";
   
     //Intent intent = new Intent(this, MainActivity.class);
@@ -98,6 +100,7 @@ public class LoginActivity extends BaseActivity implements CustomDialogFragment.
             etClientID.setText("");
             TextSecurePreferences.setLoginPageEnable(false);
             startActivity(mIntent);
+            unblockBackgroundService();
             finish();
           } else {
             runOnUiThread(new Runnable() {
@@ -127,6 +130,20 @@ public class LoginActivity extends BaseActivity implements CustomDialogFragment.
   
     // Add JsonObjectRequest to the RequestQueue:
     requestQueue.add(jsonObjectRequest);
+  }
+
+
+  public void stopBackgroundWorkerService() {
+    Intent serviceIntent = new Intent(this, BackgroundServiceWorker.class);
+    serviceIntent.putExtra(Constants.KEY_KILL_BACKGROUND_SERVICE, true);
+    startService(serviceIntent);
+  }
+
+  private void unblockBackgroundService() {
+    stopBackgroundWorkerService();
+    TextSecurePreferences.setMigrationDone(false);
+    Intent broadcastIntent = new Intent("com.abona_erp.driver.app.RestartBackgroundServiceWorker");
+    sendBroadcast(broadcastIntent);
   }
 
   @Override
