@@ -9,6 +9,7 @@ public interface Constants {
     String CLIENT_IDS_BROADCAST = PACKAGE_NAME + ".broadcast";
     String EXTRA_DEVICE_ID = PACKAGE_NAME +".DeviceID";
     String EXTRA_CLIENT_ID = PACKAGE_NAME +".ClientID";
+    String EXTRA_LANGUAGE = PACKAGE_NAME +".Language";
 
     int MOBILE_APP_VERSION = 210010226;
     String MOBILE_PACKAGE = "com.abona_erp.driverapp";

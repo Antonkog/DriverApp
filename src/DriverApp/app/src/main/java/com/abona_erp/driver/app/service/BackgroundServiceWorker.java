@@ -1557,6 +1557,7 @@ public class BackgroundServiceWorker extends Service {
         TextSecurePreferences.setMigrationDone(true);
         if(mobileVersReceiver!=null) getBaseContext().unregisterReceiver(mobileVersReceiver);
         EventBus.getDefault().post(new LogOutEvent());
+        TextSecurePreferences.setDeviceRegistrated(true);//that is to prevent new call of setDeviceProfile after migration done.
       } else {
         TextSecurePreferences.setMigrationDone(false);
         MigrationUtil.sendBroadcast(context);

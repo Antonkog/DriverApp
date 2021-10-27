@@ -16,6 +16,7 @@ public class MigrationUtil {
         Intent intent = new Intent(Constants.CLIENT_IDS_BROADCAST);
         intent.putExtra(Constants.EXTRA_CLIENT_ID, TextSecurePreferences.getClientID());
         intent.putExtra(Constants.EXTRA_DEVICE_ID, DeviceUtils.getUniqueIMEI(context));
+        intent.putExtra(Constants.EXTRA_LANGUAGE,TextSecurePreferences.getLanguage(context));
         context.sendBroadcast(intent);
         android.util.Log.e(TAG, "broadcast sent");
     }
